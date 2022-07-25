@@ -1,8 +1,8 @@
 <div align="center">
 
-<h1>Capsule-Author Dashboard</h1>
+<h1>Blogchain.app</h1>
 
-Front-End powering Capsule Social's author dashboard.
+Front-End powering Capsule Social's Blogchain application.
 
 </div>
 
@@ -46,7 +46,7 @@ $ `yarn build`
 
 # Vue 3 + Typescript + Vue-CLI
 
-This template should help get you started developing with Vue 3 and Typescript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+This template should help get you started developing with Vue 3 and Typescript with Vue CLI. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
 
 ## Recommended IDE Setup
 
