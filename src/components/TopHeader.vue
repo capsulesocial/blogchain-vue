@@ -73,17 +73,17 @@ function logout() {
 		<nav class="w-full flex-no-wrap hidden flex-row items-center justify-between py-5 lg:flex">
 			<!-- Left side: Logo, links -->
 			<div class="flex flex-row items-center" style="font-size: 0.95rem">
-				<a :href="url + `/home`" class="mr-5 text-lightSecondaryText dark:text-gray1">
+				<router-link to="/home" class="mr-5 text-lightSecondaryText dark:text-gray1">
 					<Logo />
-				</a>
-				<a :href="url + `/home`" class="mx-4 font-regular text-gray5 dark:text-gray3">Home</a>
-				<a :href="url + `/discover`" class="mx-4 font-regular text-gray5 dark:text-gray3">Discover</a>
-				<a :href="url + `/bookmarks`" class="mx-4 font-regular text-gray5 dark:text-gray3">Bookmarks</a>
-				<a
-					:href="url + `/post`"
+				</router-link>
+				<router-link to="/home" class="mx-4 font-regular text-gray5 dark:text-gray3">Home</router-link>
+				<router-link to="/discover" class="mx-4 font-regular text-gray5 dark:text-gray3">Discover</router-link>
+				<router-link to="/bookmarks" class="mx-4 font-regular text-gray5 dark:text-gray3">Bookmarks</router-link>
+				<router-link
+					to="/post"
 					style="padding: 0.6rem 1.7rem"
 					class="mx-4 bg-primary dark:bg-secondary text-lightButtonText focus:outline-none transform rounded-lg font-bold transition duration-500 ease-in-out hover:shadow-lg"
-					>Write a Post</a
+					>Write a Post</router-link
 				>
 			</div>
 			<!-- Right side: avatar & icons -->

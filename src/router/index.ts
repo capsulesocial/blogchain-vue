@@ -1,6 +1,9 @@
 import { createWebHistory, createRouter } from 'vue-router'
 import Index from '../pages/Index.vue'
 import Home from '../pages/Home.vue'
+import Discover from '../pages/Discover.vue'
+import Bookmarks from '../pages/Bookmarks.vue'
+import Post from '../pages/Post.vue'
 import { useStore } from '@/store/session'
 
 const routes = [
@@ -16,7 +19,34 @@ const routes = [
 		component: Home,
 		meta: {
 			requiresAuth: true,
-			title: 'Overview - Author dashboard - Blogchain',
+			title: 'Home - Blogchain',
+		},
+	},
+	{
+		path: '/discover',
+		name: 'Discover',
+		component: Discover,
+		meta: {
+			requiresAuth: true,
+			title: 'Discover - Blogchain',
+		},
+	},
+	{
+		path: '/bookmarks',
+		name: 'Bookmarks',
+		component: Bookmarks,
+		meta: {
+			requiresAuth: true,
+			title: 'Bookmarks - Blogchain',
+		},
+	},
+	{
+		path: '/post',
+		name: 'Post',
+		component: Post,
+		meta: {
+			requiresAuth: true,
+			title: 'Bookmarks - Blogchain',
 		},
 	},
 ]
