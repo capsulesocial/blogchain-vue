@@ -1,5 +1,3 @@
-import { getProfile } from '@/backend/profile'
-import { getPhotoFromIPFS } from '@/backend/getPhoto'
 import { avatars } from '@/config/avatars'
 
 export function keyChecker(x: Array<string>, y?: string) {
@@ -24,10 +22,6 @@ export function dateConvert(timestampMs: number) {
 	return new Date(timestampMs).toDateString()
 }
 
-export async function subscriberProfile(username: string) {
-	const res = await getProfile(username)
-	return res.profile
-}
 export function usernameToPicture(username: string, buckets = 11): number {
 	let x = 0
 	for (let i = 0; i < username.length; i++) {
@@ -38,5 +32,6 @@ export function usernameToPicture(username: string, buckets = 11): number {
 }
 
 export function getAvatar(cid: string): Promise<string | ArrayBuffer> | null {
-	return getPhotoFromIPFS(cid)
+	return null
+	// return getPhotoFromIPFS(cid)
 }

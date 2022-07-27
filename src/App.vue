@@ -11,11 +11,9 @@ import { useStoreSettings } from './store/settings'
 import { initColors } from './plugins/colors'
 import { getBGImage } from './plugins/background'
 import { setColorMode } from './plugins/colormode'
-import ipfs, { initIPFS } from './backend/utilities/ipfs'
 import { onBeforeMount, ref } from 'vue'
 // import { useRouter } from 'vue-router'
 
-initIPFS()
 const store = useStore()
 const settings = useStoreSettings()
 const avatar = ref<string>(``)
@@ -27,11 +25,6 @@ function getAvatar(cid: string) {
 	if (cid === ``) {
 		return
 	}
-	ipfs()
-		.getData(cid)
-		.then((res) => {
-			avatar.value = res
-		})
 }
 // Run init methods
 onBeforeMount(() => {
@@ -84,4 +77,5 @@ onBeforeMount(() => {
 			</div>
 		</div>
 	</main>
+	<div id="popup"></div>
 </template>
