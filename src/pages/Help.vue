@@ -1,3 +1,3 @@
 <script setup lang="ts"></script>
 
-<template>{{ $route.params.id }}</template>
+<template><div>Help</div></template>
