@@ -10,10 +10,10 @@ import CopyIcon from '../icons/Copy.vue'
 import ChevronDown from '../icons/ChevronDown.vue'
 import ChevronUp from '../icons/ChevronUp.vue'
 import { toastSuccess } from '../../plugins/toast'
-import axios from 'axios'
+// import axios from 'axios'
 import { ref } from 'vue'
-import { capsuleServer, baseUrl } from './../../backend/utilities/config'
-import { handleError } from '@/plugins/toast'
+// import { capsuleServer, baseUrl } from './../../backend/utilities/config'
+// import { handleError } from '@/plugins/toast'
 
 const props = defineProps({
 	image: { type: String, required: true },
@@ -63,16 +63,16 @@ async function generateLinks() {
 	if (!props.cid) {
 		return
 	}
-	const cid: string = props.cid
-	generatedBlogchainLink.value = `${baseUrl}/post/${cid}`
-	try {
-		const shareableLink = await axios.post(`${capsuleServer}/share`, {
-			cid,
-		})
-		generatedDirectLink.value = shareableLink.data.data
-	} catch (ex) {
-		handleError(ex)
-	}
+	// const cid: string = props.cid
+	// generatedBlogchainLink.value = `${baseUrl}/post/${cid}`
+	// try {
+	// 	const shareableLink = await axios.post(`${capsuleServer}/share`, {
+	// 		cid,
+	// 	})
+	// 	generatedDirectLink.value = shareableLink.data.data
+	// } catch (ex) {
+	// 	handleError(ex)
+	// }
 	isLoading.value = false
 }
 

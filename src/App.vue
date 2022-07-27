@@ -11,14 +11,13 @@ import { useStoreSettings } from './store/settings'
 import { initColors } from './plugins/colors'
 import { getBGImage } from './plugins/background'
 import { setColorMode } from './plugins/colormode'
-import ipfs, { initIPFS } from './backend/utilities/ipfs'
 import { onBeforeMount, ref } from 'vue'
 // import { useRouter } from 'vue-router'
 
-initIPFS()
 const store = useStore()
 const settings = useStoreSettings()
 const avatar = ref<string>(``)
+const fullPageRoutes = ref<string[]>([`Login`, `Register`])
 // const router = useRouter()
 
 // Methods
@@ -26,11 +25,6 @@ function getAvatar(cid: string) {
 	if (cid === ``) {
 		return
 	}
-	ipfs()
-		.getData(cid)
-		.then((res) => {
-			avatar.value = res
-		})
 }
 // Run init methods
 onBeforeMount(() => {
@@ -47,8 +41,11 @@ onBeforeMount(() => {
 </script>
 
 <template>
+	<!-- Full screen pages -->
+	<router-view v-if="fullPageRoutes.includes($route.name as string)" :key="$route.path" />
 	<!-- wrapper -->
 	<main
+		v-else
 		class="bg-img m-0 h-screen overflow-y-hidden p-0 bg-lightBG dark:bg-darkBG"
 		:style="{
 			backgroundImage: `url(` + getBGImage(store.background) + `)`,
@@ -80,4 +77,5 @@ onBeforeMount(() => {
 			</div>
 		</div>
 	</main>
+	<div id="popup"></div>
 </template>

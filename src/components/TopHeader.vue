@@ -13,7 +13,6 @@ import { useStore } from '../store/session'
 import ProfileIcon from './icons/ProfileIcon.vue'
 import SettingsIcon from './icons/SettingsIcon.vue'
 import LogoutIcon from './icons/LogoutIcon.vue'
-import { useStripeStatusStore } from '@/store/stripeStatus'
 const sessionStore = useStore()
 // const sessionStoreSettings = useStoreSettings()
 
@@ -59,7 +58,6 @@ function toggleMobileMenu() {
 
 function logout() {
 	localStorage.clear()
-	useStripeStatusStore().$reset()
 	window.location.replace(url.value + `/login`)
 }
 </script>

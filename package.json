@@ -10,12 +10,15 @@
     "format": "prettier .  --write"
   },
   "dependencies": {
+    "@toruslabs/customauth": "^10.1.0",
+    "@toruslabs/openlogin-ed25519": "^2.0.0",
     "axios": "^0.27.2",
     "capsule-config": "^1.2.3",
     "core-js": "^3.22.8",
     "ipfs-core": "^0.14.3",
     "libsodium-wrappers": "^0.7.10",
-    "near-api-js": "^0.44.2",
+    "near-api-js": "^0.45.1",
+    "node-polyfill-webpack-plugin": "^2.0.0",
     "pinia": "^2.0.14",
     "pinia-plugin-persistedstate": "^1.6.1",
     "toastify-js": "^1.11.2",

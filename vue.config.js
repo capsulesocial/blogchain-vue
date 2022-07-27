@@ -1,5 +1,6 @@
 const { defineConfig } = require('@vue/cli-service')
 const webpack = require('webpack')
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin')
 
 module.exports = defineConfig({
   devServer: {
@@ -12,6 +13,7 @@ module.exports = defineConfig({
       new webpack.ProvidePlugin({
         Buffer: ['buffer', 'Buffer'],
       }),
+      new NodePolyfillPlugin(),
     ],
     resolve: {
       extensions: ['.ts', '.js'],
