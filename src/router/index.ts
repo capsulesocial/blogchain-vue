@@ -13,11 +13,11 @@ import Reposts from '@/pages/Reposts.vue'
 import Tag from '@/pages/Tag.vue'
 import Help from '@/pages/Help.vue'
 import Subscriptions from '@/pages/Subscriptions.vue'
-import Settings from '@/pages/Settings.vue'
-import SettingsNetwork from '@/pages/SettingsNetwork.vue'
-import SettingsSecurity from '@/pages/SettingsSecurity.vue'
-import SettingsStyling from '@/pages/SettingsStyling.vue'
-import SettingsAccount from '@/pages/SettingsAccount.vue'
+import Settings from '@/pages/Settings/Index.vue'
+import SettingsNetwork from '@/pages/Settings/Network.vue'
+import SettingsSecurity from '@/pages/Settings/Security.vue'
+import SettingsStyling from '@/pages/Settings/Styling.vue'
+import SettingsAccount from '@/pages/Settings/Account.vue'
 import PaymentPolicy from '@/pages/PaymentPolicy.vue'
 import { useStore } from '@/store/session'
 
@@ -26,14 +26,14 @@ const routes = [
 		path: '/',
 		name: 'Index',
 		component: Index,
-		meta: { requiresAuth: true, title: 'Author dashboard - Blogchain' },
+		meta: { requiresAuth: false, title: 'Author dashboard - Blogchain' },
 	},
 	{
 		path: '/home',
 		name: 'Home',
 		component: Home,
 		meta: {
-			requiresAuth: true,
+			requiresAuth: false,
 			title: 'Home - Blogchain',
 		},
 	},
@@ -42,7 +42,7 @@ const routes = [
 		name: 'Discover',
 		component: Discover,
 		meta: {
-			requiresAuth: true,
+			requiresAuth: false,
 			title: 'Discover - Blogchain',
 		},
 	},
@@ -59,7 +59,7 @@ const routes = [
 		name: 'Bookmarks',
 		component: Bookmarks,
 		meta: {
-			requiresAuth: true,
+			requiresAuth: false,
 			title: 'Bookmarks - Blogchain',
 		},
 	},
@@ -68,7 +68,7 @@ const routes = [
 		name: 'Post',
 		component: Post,
 		meta: {
-			requiresAuth: true,
+			requiresAuth: false,
 			title: 'Posts - Blogchain',
 		},
 	},
@@ -136,7 +136,7 @@ const routes = [
 		name: 'Subscriptions',
 		component: Subscriptions,
 		meta: {
-			requiresAuth: true,
+			requiresAuth: false,
 			title: 'Subscriptions - Blogchain',
 		},
 	},
@@ -145,7 +145,7 @@ const routes = [
 		name: 'Settings',
 		component: Settings,
 		meta: {
-			requiresAuth: true,
+			requiresAuth: false,
 			title: 'Settings - Blogchain',
 		},
 	},
@@ -154,7 +154,7 @@ const routes = [
 		name: 'SettingsNetwork',
 		component: SettingsNetwork,
 		meta: {
-			requiresAuth: true,
+			requiresAuth: false,
 			title: 'SettingsNetwork - Blogchain',
 		},
 	},
@@ -163,7 +163,7 @@ const routes = [
 		name: 'SettingsSecurity',
 		component: SettingsSecurity,
 		meta: {
-			requiresAuth: true,
+			requiresAuth: false,
 			title: 'SettingsSecurity - Blogchain',
 		},
 	},
@@ -172,7 +172,7 @@ const routes = [
 		name: 'SettingsStyling',
 		component: SettingsStyling,
 		meta: {
-			requiresAuth: true,
+			requiresAuth: false,
 			title: 'SettingsStyling - Blogchain',
 		},
 	},
@@ -181,7 +181,7 @@ const routes = [
 		name: 'SettingsAccount',
 		component: SettingsAccount,
 		meta: {
-			requiresAuth: true,
+			requiresAuth: false,
 			title: 'SettingsAccount - Blogchain',
 		},
 	},
