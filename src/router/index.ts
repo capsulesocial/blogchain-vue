@@ -4,6 +4,21 @@ import Home from '../pages/Home.vue'
 import Discover from '../pages/Discover.vue'
 import Bookmarks from '../pages/Bookmarks.vue'
 import Post from '../pages/Post.vue'
+import Login from '@/pages/Login.vue'
+import Register from '@/pages/Register.vue'
+import Category from '@/pages/Category.vue'
+import Profile from '@/pages/Profile.vue'
+import Comments from '@/pages/Comments.vue'
+import Reposts from '@/pages/Reposts.vue'
+import Tag from '@/pages/Tag.vue'
+import Help from '@/pages/Help.vue'
+import Subscriptions from '@/pages/Subscriptions.vue'
+import Settings from '@/pages/Settings.vue'
+import SettingsNetwork from '@/pages/SettingsNetwork.vue'
+import SettingsSecurity from '@/pages/SettingsSecurity.vue'
+import SettingsStyling from '@/pages/SettingsStyling.vue'
+import SettingsAccount from '@/pages/SettingsAccount.vue'
+import PaymentPolicy from '@/pages/PaymentPolicy.vue'
 import { useStore } from '@/store/session'
 
 const routes = [
@@ -32,6 +47,14 @@ const routes = [
 		},
 	},
 	{
+		path: '/discover/:category',
+		name: 'Category',
+		component: Category,
+		meta: {
+			requiresAuth: false,
+		},
+	},
+	{
 		path: '/bookmarks',
 		name: 'Bookmarks',
 		component: Bookmarks,
@@ -46,7 +69,129 @@ const routes = [
 		component: Post,
 		meta: {
 			requiresAuth: true,
-			title: 'Bookmarks - Blogchain',
+			title: 'Posts - Blogchain',
+		},
+	},
+	{
+		path: '/login',
+		name: 'Login',
+		component: Login,
+		meta: {
+			requiresAuth: false,
+			title: 'Login - Blogchain',
+		},
+	},
+	{
+		path: '/register',
+		name: 'Register',
+		component: Register,
+		meta: {
+			requiresAuth: false,
+			title: 'Register - Blogchain',
+		},
+	},
+	{
+		path: '/id/:id',
+		name: 'Profile',
+		component: Profile,
+		meta: {
+			requiresAuth: false,
+		},
+	},
+	{
+		path: '/id/:id/:comments',
+		name: 'Comments',
+		component: Comments,
+		meta: {
+			requiresAuth: false,
+		},
+	},
+	{
+		path: '/id/:id/:reposts',
+		name: 'Reposts',
+		component: Reposts,
+		meta: {
+			requiresAuth: false,
+		},
+	},
+	{
+		path: '/tag/:tag',
+		name: 'Tag',
+		component: Tag,
+		meta: {
+			requiresAuth: false,
+		},
+	},
+	{
+		path: '/help',
+		name: 'Help',
+		component: Help,
+		meta: {
+			requiresAuth: false,
+			title: 'Help - Blogchain',
+		},
+	},
+	{
+		path: '/subscriptions',
+		name: 'Subscriptions',
+		component: Subscriptions,
+		meta: {
+			requiresAuth: true,
+			title: 'Subscriptions - Blogchain',
+		},
+	},
+	{
+		path: '/settings',
+		name: 'Settings',
+		component: Settings,
+		meta: {
+			requiresAuth: true,
+			title: 'Settings - Blogchain',
+		},
+	},
+	{
+		path: '/settings/network',
+		name: 'SettingsNetwork',
+		component: SettingsNetwork,
+		meta: {
+			requiresAuth: true,
+			title: 'SettingsNetwork - Blogchain',
+		},
+	},
+	{
+		path: '/settings/security',
+		name: 'SettingsSecurity',
+		component: SettingsSecurity,
+		meta: {
+			requiresAuth: true,
+			title: 'SettingsSecurity - Blogchain',
+		},
+	},
+	{
+		path: '/settings/styling',
+		name: 'SettingsStyling',
+		component: SettingsStyling,
+		meta: {
+			requiresAuth: true,
+			title: 'SettingsStyling - Blogchain',
+		},
+	},
+	{
+		path: '/settings/acount',
+		name: 'SettingsAccount',
+		component: SettingsAccount,
+		meta: {
+			requiresAuth: true,
+			title: 'SettingsAccount - Blogchain',
+		},
+	},
+	{
+		path: '/paymentpolicy',
+		name: 'PaymentPolicy',
+		component: PaymentPolicy,
+		meta: {
+			requiresAuth: false,
+			title: 'PaymentPolicy - Blogchain',
 		},
 	},
 ]
