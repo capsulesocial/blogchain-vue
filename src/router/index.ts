@@ -99,7 +99,7 @@ const routes = [
 		},
 	},
 	{
-		path: '/id/:id/:comments',
+		path: '/id/:id/comments',
 		name: 'Comments',
 		component: Comments,
 		meta: {
@@ -107,7 +107,7 @@ const routes = [
 		},
 	},
 	{
-		path: '/id/:id/:reposts',
+		path: '/id/:id/reposts',
 		name: 'Reposts',
 		component: Reposts,
 		meta: {
