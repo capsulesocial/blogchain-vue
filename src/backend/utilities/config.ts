@@ -1,4 +1,5 @@
 import { ILocalNetNearConfig, INearConfig } from './near'
+import type { SubVerifierDetails } from '@toruslabs/customauth'
 
 export const capsuleOrbit = process.env.VUE_APP_ORBIT_URL || `https://payments.capsule.social/orbit`
 export const capsuleServer = (process.env.VUE_APP_CAPSULE_SERVER as string) || `https://payments.capsule.social/server`
@@ -69,4 +70,30 @@ export function nodeUrl() {
 	}
 
 	return preferredNodeUrl + `/orbit`
+}
+
+const torusEnv = {
+	google: {
+		verifier: process.env.TORUS_GOOGLE_VERIFIER || `capsule-social-test-google`,
+		clientId:
+			process.env.TORUS_GOOGLE_CLIENTID || `653379121360-j8t9ua763vfvd86d1qjguonhrgqvkigo.apps.googleusercontent.com`,
+	},
+	discord: {
+		verifier: process.env.TORUS_DISCORD_VERIFIER || `capsule-social-test-discord`,
+		clientId: process.env.TORUS_DISCORD_CLIENTID || `906210984396468275`,
+	},
+}
+
+export type TorusVerifiers = `google` | `discord`
+export const torusVerifiers: Record<TorusVerifiers, SubVerifierDetails> = {
+	google: {
+		typeOfLogin: `google`,
+		verifier: torusEnv.google.verifier,
+		clientId: torusEnv.google.clientId,
+	},
+	discord: {
+		typeOfLogin: `discord`,
+		verifier: torusEnv.discord.verifier,
+		clientId: torusEnv.discord.clientId,
+	},
 }

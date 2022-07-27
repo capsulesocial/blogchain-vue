@@ -19,6 +19,7 @@ initIPFS()
 const store = useStore()
 const settings = useStoreSettings()
 const avatar = ref<string>(``)
+const fullPageRoutes = ref<string[]>([`Login`, `Register`])
 // const router = useRouter()
 
 // Methods
@@ -47,8 +48,11 @@ onBeforeMount(() => {
 </script>
 
 <template>
+	<!-- Full screen pages -->
+	<router-view v-if="fullPageRoutes.includes($route.name as string)" :key="$route.path" />
 	<!-- wrapper -->
 	<main
+		v-else
 		class="bg-img m-0 h-screen overflow-y-hidden p-0 bg-lightBG dark:bg-darkBG"
 		:style="{
 			backgroundImage: `url(` + getBGImage(store.background) + `)`,
