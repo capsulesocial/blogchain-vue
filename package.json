@@ -24,6 +24,7 @@
     "toastify-js": "^1.11.2",
     "util": "^0.12.4",
     "vue": "^3.2.36",
+    "vue-meta": "^3.0.0-alpha.10",
     "vue-router": "^4.0.15"
   },
   "devDependencies": {

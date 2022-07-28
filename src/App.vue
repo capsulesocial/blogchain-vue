@@ -12,6 +12,7 @@ import { initColors } from './plugins/colors'
 import { getBGImage } from './plugins/background'
 import { setColorMode } from './plugins/colormode'
 import { onBeforeMount, ref } from 'vue'
+import { useMeta } from 'vue-meta'
 // import { useRouter } from 'vue-router'
 
 const store = useStore()
@@ -19,6 +20,13 @@ const settings = useStoreSettings()
 const avatar = ref<string>(``)
 const fullPageRoutes = ref<string[]>([`Login`, `Register`])
 // const router = useRouter()
+
+// meta tags
+
+useMeta({
+	title: '',
+	htmlAttrs: { lang: 'en', amp: true },
+})
 
 // Methods
 function getAvatar(cid: string) {
@@ -41,6 +49,9 @@ onBeforeMount(() => {
 </script>
 
 <template>
+	<metainfo>
+		<template #title="{ content }">{{ `${content}` }}</template>
+	</metainfo>
 	<!-- Full screen pages -->
 	<router-view v-if="fullPageRoutes.includes($route.name as string)" :key="$route.path" />
 	<!-- wrapper -->
