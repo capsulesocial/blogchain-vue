@@ -26,7 +26,7 @@ const routes = [
 		path: '/',
 		name: 'Index',
 		component: Index,
-		meta: { requiresAuth: false, title: 'Author dashboard - Blogchain' },
+		meta: { requiresAuth: false, title: 'Home - Blogchain' },
 	},
 	{
 		path: '/home',
@@ -87,7 +87,7 @@ const routes = [
 		component: Register,
 		meta: {
 			requiresAuth: false,
-			title: 'Register - Blogchain',
+			title: 'Create an account on Blogchain',
 		},
 	},
 	{
