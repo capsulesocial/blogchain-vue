@@ -19,6 +19,7 @@ import SettingsSecurity from '@/pages/Settings/Security.vue'
 import SettingsStyling from '@/pages/Settings/Styling.vue'
 import SettingsAccount from '@/pages/Settings/Account.vue'
 import PaymentPolicy from '@/pages/PaymentPolicy.vue'
+import ContentPolicy from '@/pages/ContentPolicy.vue'
 import { useStore } from '@/store/session'
 
 const routes = [
@@ -123,15 +124,6 @@ const routes = [
 		},
 	},
 	{
-		path: '/help',
-		name: 'Help',
-		component: Help,
-		meta: {
-			requiresAuth: false,
-			title: 'Help - Blogchain',
-		},
-	},
-	{
 		path: '/subscriptions',
 		name: 'Subscriptions',
 		component: Subscriptions,
@@ -186,7 +178,25 @@ const routes = [
 		},
 	},
 	{
-		path: '/paymentpolicy',
+		path: '/help',
+		name: 'Help',
+		component: Help,
+		meta: {
+			requiresAuth: false,
+			title: 'Help - Blogchain',
+		},
+	},
+	{
+		path: '/content-policy',
+		name: 'Content Policy',
+		component: ContentPolicy,
+		meta: {
+			requiresAuth: false,
+			title: 'Content Policy - Blogchain',
+		},
+	},
+	{
+		path: '/payment-policy',
 		name: 'PaymentPolicy',
 		component: PaymentPolicy,
 		meta: {
