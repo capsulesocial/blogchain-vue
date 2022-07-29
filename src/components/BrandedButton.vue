@@ -12,7 +12,7 @@ const props = defineProps({
 	},
 	loading: Boolean,
 })
-props.action
+
 function triggerAction() {
 	props.action()
 }
