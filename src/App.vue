@@ -2,9 +2,7 @@
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup
 import TopHeader from './components/TopHeader.vue'
-import SideNav from './components/SideNav.vue'
-import Footer from './components/Footer.vue'
-import Ressouces from './components/Ressources.vue'
+import WidgetsContainer from './components/WidgetsContainer.vue'
 
 import { useStore } from './store/session'
 import { useStoreSettings } from './store/settings'
@@ -75,18 +73,7 @@ onBeforeMount(() => {
 					>
 						<router-view :key="$route.path" />
 					</div>
-					<aside
-						v-if="!fullPageRoutes.includes($route.name as string)"
-						class="w-5/12 -mr-5 -mt-4 hidden overflow-y-auto p-4 lg:block"
-						:style="`min-height: calc(100vh - 150px); height: calc(100vh - 80px)`"
-					>
-						<SideNav
-							class="from-lightBGStart to-lightBGStop dark:from-darkBGStart dark:to-darkBGStop border-lightBorder mb-5 overflow-hidden rounded-lg border bg-gradient-to-r shadow-lg"
-							style="backdrop-filter: blur(10px)"
-						/>
-						<Ressouces />
-						<Footer />
-					</aside>
+					<WidgetsContainer v-if="!fullPageRoutes.includes($route.name as string)" />
 				</section>
 			</div>
 		</div>
