@@ -18,7 +18,8 @@ import { useMeta } from 'vue-meta'
 const store = useStore()
 const settings = useStoreSettings()
 const avatar = ref<string>(``)
-const fullPageRoutes = ref<string[]>([`Login`, `Register`])
+const unauthRoutes = ref<string[]>([`Login`, `Register`])
+const fullPageRoutes = ref<string[]>([`PaymentPolicy`])
 // const router = useRouter()
 
 // meta tags
@@ -53,7 +54,7 @@ onBeforeMount(() => {
 		<template #title="{ content }">{{ `${content}` }}</template>
 	</metainfo>
 	<!-- Full screen pages -->
-	<router-view v-if="fullPageRoutes.includes($route.name as string)" :key="$route.path" />
+	<router-view v-if="unauthRoutes.includes($route.name as string)" :key="$route.path" />
 	<!-- wrapper -->
 	<main
 		v-else
@@ -66,8 +67,16 @@ onBeforeMount(() => {
 		<div class="flex w-full justify-center">
 			<div class="flex flex-col w-full lg:w-11/12 xl:w-10/12 max-w-1220">
 				<TopHeader :name="store.name" :avatar="avatar" />
-				<!-- Body -->
-				<section class="modal-animation flex flex-row">
+				<!-- Full page layout -->
+				<section v-if="fullPageRoutes.includes($route.name as string)" class="modal-animation flex flex-row">
+					<div
+						class="w-full min-h-80 h-80 from-lightBGStart to-lightBGStop dark:from-darkBGStart dark:to-darkBGStop border border-lightBorder z-10 w-full overflow-y-auto rounded-t-lg bg-gradient-to-r p-6 pt-4 pb-0 shadow-lg"
+					>
+						<router-view :key="$route.path" />
+					</div>
+				</section>
+				<!-- Pages with widgets layout -->
+				<section v-else class="modal-animation flex flex-row">
 					<div
 						class="lg:w-7.5 min-h-80 h-80 from-lightBGStart to-lightBGStop dark:from-darkBGStart dark:to-darkBGStop border border-lightBorder z-10 w-full overflow-y-auto rounded-t-lg bg-gradient-to-r p-6 pt-4 pb-0 shadow-lg"
 					>
