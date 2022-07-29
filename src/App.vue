@@ -19,7 +19,7 @@ const store = useStore()
 const settings = useStoreSettings()
 const avatar = ref<string>(``)
 const unauthRoutes = ref<string[]>([`Login`, `Register`])
-const fullPageRoutes = ref<string[]>([`PaymentPolicy`])
+const fullPageRoutes = ref<string[]>([`Payment Policy`, `Content Policy`])
 // const router = useRouter()
 
 // meta tags
@@ -67,22 +67,16 @@ onBeforeMount(() => {
 		<div class="flex w-full justify-center">
 			<div class="flex flex-col w-full lg:w-11/12 xl:w-10/12 max-w-1220">
 				<TopHeader :name="store.name" :avatar="avatar" />
-				<!-- Full page layout -->
-				<section v-if="fullPageRoutes.includes($route.name as string)" class="modal-animation flex flex-row">
+				<!-- Body -->
+				<section class="modal-animation flex flex-row">
 					<div
-						class="w-full min-h-80 h-80 from-lightBGStart to-lightBGStop dark:from-darkBGStart dark:to-darkBGStop border border-lightBorder z-10 w-full overflow-y-auto rounded-t-lg bg-gradient-to-r p-6 pt-4 pb-0 shadow-lg"
-					>
-						<router-view :key="$route.path" />
-					</div>
-				</section>
-				<!-- Pages with widgets layout -->
-				<section v-else class="modal-animation flex flex-row">
-					<div
-						class="lg:w-7.5 min-h-80 h-80 from-lightBGStart to-lightBGStop dark:from-darkBGStart dark:to-darkBGStop border border-lightBorder z-10 w-full overflow-y-auto rounded-t-lg bg-gradient-to-r p-6 pt-4 pb-0 shadow-lg"
+						:class="fullPageRoutes.includes($route.name as string) ? `w-full` : `lg:w-7.5`"
+						class="min-h-80 h-80 from-lightBGStart to-lightBGStop dark:from-darkBGStart dark:to-darkBGStop border border-lightBorder z-10 w-full overflow-y-auto rounded-t-lg bg-gradient-to-r p-6 pt-4 pb-0 shadow-lg"
 					>
 						<router-view :key="$route.path" />
 					</div>
 					<aside
+						v-if="!fullPageRoutes.includes($route.name as string)"
 						class="w-5/12 -mr-5 -mt-4 hidden overflow-y-auto p-4 lg:block"
 						:style="`min-height: calc(100vh - 150px); height: calc(100vh - 80px)`"
 					>
