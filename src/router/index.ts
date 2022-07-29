@@ -197,7 +197,7 @@ const routes = [
 	},
 	{
 		path: '/payment-policy',
-		name: 'PaymentPolicy',
+		name: 'Payment Policy',
 		component: PaymentPolicy,
 		meta: {
 			requiresAuth: false,
