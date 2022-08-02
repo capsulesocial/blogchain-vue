@@ -42,7 +42,6 @@ export const useStoreSettings = defineStore(`settings`, {
 			this.lastTopAlgorithm = alg
 		},
 		setHomeFeed(alg: `NEW` | `TOP` | `FOLLOWING`) {
-			console.log(alg)
 			this.homeFeed = alg
 		},
 	},

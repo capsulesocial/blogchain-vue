@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useStoreSettings } from '@/store/settings'
 import ChevronUp from '@/components/icons/ChevronUp.vue'
 import ChevronDown from '@/components/icons/ChevronDown.vue'
@@ -7,6 +7,16 @@ import { storeToRefs } from 'pinia'
 // refs
 const showAlgorithmDropdown = ref<boolean>(false)
 const settings = storeToRefs(useStoreSettings())
+
+onMounted(() => {
+	document.addEventListener(`click`, (e) => {
+		// Dropdown is closed
+		if (!showAlgorithmDropdown.value) {
+			return
+		}
+		showAlgorithmDropdown.value = false
+	})
+})
 </script>
 
 <template>
@@ -41,12 +51,12 @@ const settings = storeToRefs(useStoreSettings())
 			<button
 				id="filter"
 				class="toggle focus:outline-none lg:ml-4 flex items-center justify-between rounded-lg border dark:border-gray3 text-sm shadow-lg dark:text-gray3"
-				@click="showAlgorithmDropdown = !showAlgorithmDropdown"
+				@click.stop="showAlgorithmDropdown = !showAlgorithmDropdown"
 			>
 				<span class="toggle font-bold capitalize pl-4">
 					{{ settings.topAlgorithm.value }}
 				</span>
-				<ChevronUp v-if="showAlgorithmDropdown" class="pr-4" />
+				<ChevronUp v-if="showAlgorithmDropdown" class="toggle pr-4" />
 				<ChevronDown v-else class="toggle pr-4" />
 			</button>
 			<div
