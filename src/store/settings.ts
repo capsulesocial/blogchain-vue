@@ -14,7 +14,17 @@ export const useStoreSettings = defineStore(`settings`, {
 		return {
 			color: ``,
 			mode: ``,
+			lastTopAlgorithm: `This month`,
+			homeFeed: `NEW`,
 		}
+	},
+	getters: {
+		topAlgorithm(state) {
+			return state.lastTopAlgorithm
+		},
+		activeHomeFeed(state) {
+			return state.homeFeed
+		},
 	},
 	actions: {
 		sync() {
@@ -25,7 +35,15 @@ export const useStoreSettings = defineStore(`settings`, {
 			this.$patch({
 				color: settings.color,
 				mode: settings.mode,
+				lastTopAlgorithm: `This month`,
 			})
+		},
+		setTopAlgorithm(alg: `Today` | `This week` | `This month` | `This year` | `All time`) {
+			this.lastTopAlgorithm = alg
+		},
+		setHomeFeed(alg: `NEW` | `TOP` | `FOLLOWING`) {
+			console.log(alg)
+			this.homeFeed = alg
 		},
 	},
 })
