@@ -3,6 +3,7 @@
 // Check out https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup
 import TopHeader from './components/TopHeader.vue'
 import WidgetsContainer from './components/WidgetsContainer.vue'
+import '@/assets/css/tailwind.css'
 import TitleContainer from './components/TitleContainer.vue'
 
 import { useStore } from './store/session'
@@ -53,6 +54,7 @@ onBeforeMount(() => {
 	<metainfo>
 		<template #title="{ content }">{{ `${content}` }}</template>
 	</metainfo>
+
 	<!-- Full screen pages -->
 	<router-view v-if="unauthRoutes.includes($route.name as string)" :key="$route.path" />
 	<!-- wrapper -->
