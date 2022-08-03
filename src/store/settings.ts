@@ -16,6 +16,11 @@ export const useStoreSettings = defineStore(`settings`, {
 			mode: ``,
 			lastTopAlgorithm: `This month`,
 			homeFeed: `NEW`,
+			widgets: {
+				primary: `feed`,
+				secondary: `drafts`,
+				secondary2: `tags`,
+			},
 		}
 	},
 	getters: {
@@ -24,6 +29,15 @@ export const useStoreSettings = defineStore(`settings`, {
 		},
 		activeHomeFeed(state) {
 			return state.homeFeed
+		},
+		primaryWidget(state) {
+			return state.widgets.primary
+		},
+		secondaryWidget(state) {
+			return state.widgets.secondary
+		},
+		secondary2Widget(state) {
+			return state.widgets.secondary2
 		},
 	},
 	actions: {
@@ -43,6 +57,16 @@ export const useStoreSettings = defineStore(`settings`, {
 		},
 		setHomeFeed(alg: `NEW` | `TOP` | `FOLLOWING`) {
 			this.homeFeed = alg
+		},
+		setPrimaryWidget(w: `feed` | `editor`) {
+			this.widgets.primary = w
+		},
+		setSecondaryWidget(w: `drafts` | `bookmarks`) {
+			console.log(`setting secondary widget `, w)
+			this.widgets.secondary = w
+		},
+		setSecondary2Widget(w: `tags` | `followers`) {
+			this.widgets.secondary2 = w
 		},
 	},
 })

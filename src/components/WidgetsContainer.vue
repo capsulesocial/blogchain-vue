@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import SideNav from '@/components/SideNav.vue'
 import HomeWidgets from '@/components/widgets/HomeWidgets.vue'
 import Footer from '@/components/Footer.vue'
-import Ressouces from '@/components/Ressources.vue'
 </script>
 <template>
 	<aside
@@ -10,8 +8,6 @@ import Ressouces from '@/components/Ressources.vue'
 		:style="`min-height: calc(100vh - 150px); height: calc(100vh - 80px)`"
 	>
 		<HomeWidgets v-if="$route.name === `Home`" />
-		<SideNav />
-		<Ressouces />
 		<Footer />
 	</aside>
 </template>
