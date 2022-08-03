@@ -1,0 +1,341 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+@layer base {
+	@font-face {
+		font-family: 'Noto';
+		src: url(@/assets/fonts/NotoSans-Thin.woff2);
+		font-weight: 100;
+	}
+	@font-face {
+		font-family: 'Noto';
+		src: url(@/assets/fonts/NotoSans-ExtraLight.woff2);
+		font-weight: 200;
+	}
+	@font-face {
+		font-family: 'Noto';
+		src: url(@/assets/fonts/NotoSans-Light.woff2);
+		font-weight: 300;
+	}
+	@font-face {
+		font-family: 'Noto';
+		src: url(@/assets/fonts/NotoSans-Regular.woff2);
+		font-weight: 400;
+	}
+	@font-face {
+		font-family: 'Noto';
+		src: url(@/assets/fonts/NotoSans-Italic.woff2);
+		font-weight: 400;
+		font-style: italic;
+	}
+	@font-face {
+		font-family: 'Noto';
+		src: url(@/assets/fonts/NotoSans-Medium.woff2);
+		font-weight: 500;
+	}
+	@font-face {
+		font-family: 'Noto';
+		src: url(@/assets/fonts/NotoSans-SemiBold.woff2);
+		font-weight: 600;
+	}
+	@font-face {
+		font-family: 'Noto';
+		src: url(@/assets/fonts/NotoSans-Bold.woff2);
+		font-weight: 700;
+	}
+	@font-face {
+		font-family: 'Noto';
+		src: url(@/assets/fonts/NotoSans-BoldItalic.woff2);
+		font-weight: 700;
+		font-style: italic;
+	}
+	@font-face {
+		font-family: 'Noto';
+		src: url(@/assets/fonts/NotoSans-ExtraBold.woff2);
+		font-weight: 800;
+	}
+	@font-face {
+		font-family: 'Noto';
+		src: url(@/assets/fonts/NotoSans-Black.woff2);
+		font-weight: 900;
+	}
+	@font-face {
+		font-family: 'NotoSerif';
+		src: url(@/assets/fonts/NotoSerif-Regular.woff2);
+		font-weight: 400;
+	}
+	@font-face {
+		font-family: 'NotoSerif';
+		src: url(@/assets/fonts/NotoSerif-Italic.woff2);
+		font-weight: 400;
+		font-style: italic;
+	}
+	@font-face {
+		font-family: 'NotoSerif';
+		src: url(@/assets/fonts/NotoSerif-Bold.woff2);
+		font-weight: 700;
+	}
+	@font-face {
+		font-family: 'NotoSerif';
+		src: url(@/assets/fonts/NotoSerif-BoldItalic.woff2);
+		font-weight: 700;
+		font-style: italic;
+	}
+	/* .medium-editor-toolbar {
+    @apply bg-white border rounded-xl shadow-xl
+  } */
+	/* width */
+	::-webkit-scrollbar {
+		padding-top: 5px;
+		margin-top: 5px;
+		width: 3px;
+	}
+
+	/* Track */
+	::-webkit-scrollbar-track {
+		background: rgba(0, 0, 0, 0);
+	}
+
+	/* Handle */
+	::-webkit-scrollbar-thumb {
+		background: #454545;
+		border-radius: 50px;
+	}
+
+	/* Handle on hover */
+	::-webkit-scrollbar-thumb:hover {
+		opacity: 0.8
+	}
+
+	/* Dark Handle */
+	.dark ::-webkit-scrollbar-thumb {
+		background: #DDDDDD;
+	}
+	/* Hide aside scrollbar for Chrome, Safari and Opera */
+	aside::-webkit-scrollbar {
+		display: none;
+	}
+
+	/* Hide aside scrollbar for IE, Edge and Firefox */
+	aside {
+		-ms-overflow-style: none; /* IE and Edge */
+		scrollbar-width: none; /* Firefox */
+	}
+
+	h1 {
+		@apply font-serif;
+	}
+	.editable h1 {
+		@apply text-h1 font-serif font-semibold mt-6 mb-3;
+	}
+	.editable h2 {
+		@apply text-h2 font-serif font-semibold mt-5 mb-2;
+	}
+	.editable h3 {
+		@apply text-h3 font-serif font-semibold mt-4 mb-1;
+	}
+	.editable h4 {
+		@apply text-h4 font-serif font-semibold mt-3;
+	}
+	.editable h5 {
+		@apply text-h5 font-serif font-semibold mt-2;
+	}
+	.editable h6 {
+		@apply text-h6 font-serif font-semibold mt-1;
+	}
+	.editable a {
+		@apply text-secondary underline;
+		text-underline-offset: 3.52px;
+	}
+	.editable p {
+		@apply text-p font-normal leading-normal my-5;
+	}
+	.editable ul {
+		@apply text-p font-normal leading-relaxed my-3 pl-6 list-disc list-inside;
+	}
+	.editable ol {
+		@apply text-p font-normal leading-relaxed my-3 pl-6 list-decimal list-inside;
+	}
+	.editable code {
+		font-size: 85%;
+		padding: 2px 4px;
+		background-color: #f0f0f0;
+		border-radius: 3px;
+	}
+	.editable u {
+		text-decoration: underline;
+	}
+	.editable pre code {
+		background-color: #23241f;
+		color: #f8f8f2;
+		overflow: visible;
+		white-space: pre-wrap;
+		margin-bottom: 5px;
+		margin-top: 5px;
+		padding: 5px 10px;
+		border-radius: 3px;
+	}
+	blockquote {
+		border-left: 4px solid #ccc;
+		margin-bottom: 0.75rem;
+		margin-top: 0.75rem;
+		padding-left: 16px;
+	}
+}
+
+.toastify-avatar {
+	margin-right: 10px;
+}
+
+.toastify.on {
+	opacity: 1;
+}
+
+.toastify {
+	opacity: 0;
+	box-shadow: 0 3px 6px -1px rgba(0, 0, 0, 0.12), 0 10px 36px -4px rgba(77, 96, 232, 0.1);
+	transition: all 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+.toast-close {
+	padding-left: 5px;
+}
+
+/* Add Animation */
+.modal-animation,
+#caption {
+	animation-name: fade;
+	animation-duration: 0.4s;
+}
+
+.modal-animation-delay,
+#caption {
+	animation-name: fadedelay1;
+	animation-duration: 0.6s;
+}
+
+.card-animation,
+#caption {
+	animation-name: enter;
+	animation-duration: 0.6s;
+}
+
+.card-animation-delay1,
+#caption {
+	animation-name: enterdelay1;
+	animation-duration: 0.8s;
+}
+
+.card-animation-delay2,
+#caption {
+	animation-name: enterdelay2;
+	animation-duration: 1s;
+}
+
+.card-animation-delay3,
+#caption {
+	animation-name: enterdelay3;
+	animation-duration: 1s;
+}
+
+@keyframes fade {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes fadedelay1 {
+	0% {
+		opacity: 0;
+	}
+	75% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+@keyframes enter {
+	from {
+		transform: translate(0px, 10px);
+	}
+	to {
+		transform: translate(0px, 0px);
+	}
+}
+
+@keyframes enterdelay1 {
+	from {
+		transform: translate(0px, 20px);
+	}
+	to {
+		transform: translate(0px, 0px);
+	}
+}
+
+@keyframes enterdelay2 {
+	from {
+		transform: translate(0px, 40px);
+	}
+	to {
+		transform: translate(0px, 0px);
+	}
+}
+
+@keyframes enterdelay3 {
+	from {
+		transform: translate(0px, 60px);
+	}
+	to {
+		transform: translate(0px, 0px);
+	}
+}
+
+/* Loader */
+.loader {
+	animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+/* Background image */
+.bg-img {
+	background-attachment: fixed;
+	background-size: cover !important;
+	background-repeat: no-repeat !important;
+}
+
+.bg-img-unauth {
+	background-size: cover !important;
+	background-repeat: no-repeat !important;
+	background-position: center right !important;
+}
+
+/* accent colors */
+.green {
+	--color-text-primary: #7097AC;
+}
+.orange {
+	--color-text-primary: #FF4747;
+}
+.blue {
+	--color-text-primary: #396BF8;
+}
+.pink {
+	--color-text-primary: #EB3D7C;
+}
+.yellow {
+	--color-text-primary: #FFCC33;
+}
