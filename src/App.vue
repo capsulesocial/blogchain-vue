@@ -3,6 +3,7 @@
 // Check out https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup
 import TopHeader from './components/TopHeader.vue'
 import WidgetsContainer from './components/WidgetsContainer.vue'
+import TitleContainer from './components/TitleContainer.vue'
 
 import { useStore } from './store/session'
 import { useStoreSettings } from './store/settings'
@@ -18,6 +19,7 @@ const settings = useStoreSettings()
 const avatar = ref<string>(``)
 const unauthRoutes = ref<string[]>([`Login`, `Register`])
 const fullPageRoutes = ref<string[]>([`Payment Policy`, `Content Policy`])
+const routesWithTitle = ref<string[]>([`Home`, `Discover`, `Bookmarks`])
 // const router = useRouter()
 
 // meta tags
@@ -66,7 +68,8 @@ onBeforeMount(() => {
 			<div class="flex flex-col w-full lg:w-11/12 xl:w-10/12 max-w-1220">
 				<TopHeader :name="store.name" :avatar="avatar" />
 				<!-- Body -->
-				<section class="modal-animation flex flex-row">
+				<TitleContainer v-if="routesWithTitle.includes($route.name as string)" />
+				<section class="modal-animation flex flex-row lg:mt-2 xl:mt-5">
 					<div
 						:class="fullPageRoutes.includes($route.name as string) ? `w-full` : `lg:w-7.5`"
 						class="min-h-80 h-80 from-lightBGStart to-lightBGStop dark:from-darkBGStart dark:to-darkBGStop border border-lightBorder z-10 w-full overflow-y-auto rounded-t-lg bg-gradient-to-r shadow-lg"
