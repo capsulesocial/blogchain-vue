@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Logo from './icons/CapsuleIcon.vue'
+import Logo from './icons/CapsuleLogo.vue'
 import MobileNav from './icons/MobileNav.vue'
 import HomeIcon from './icons/Home.vue'
 import DiscoverIcon from './icons/Discover.vue'

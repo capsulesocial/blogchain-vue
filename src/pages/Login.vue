@@ -80,7 +80,9 @@ onMounted(async () => {
 				<div class="-mt-5 flex w-full flex-col items-center p-14">
 					<!-- Step 1: Choose Login / register -->
 					<article v-if="!noAccount" class="w-full lg:w-3/4 xl:w-1/2">
-						<h1 class="text-lightPrimaryText dark:text-gray1 mb-10 font-semibold" style="font-size: 2.6rem">Log in</h1>
+						<h1 class="text-lightPrimaryText dark:text-gray1 mb-10 font-semibold font-serif" style="font-size: 2.6rem">
+							Log in
+						</h1>
 						<button
 							class="bg-gray2 dark:bg-gray7 focus:outline-none mb-4 flex w-full items-center justify-center rounded-lg py-2"
 							@click="() => torusLogin('discord')"
