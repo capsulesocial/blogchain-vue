@@ -30,12 +30,17 @@ function changeSecondary2(w: `tags` | `followers`) {
 	settingsStore.setSecondary2Widget(w)
 	showConfigure.value = false
 }
+function handleClose() {
+	console.log(`close`)
+	showConfigure.value = false
+}
 </script>
 <template>
 	<TagsWidget v-if="secondary2Widget === `tags`" />
 	<FollowersWidget v-if="secondary2Widget === `followers`" />
 	<DraftsWidget v-if="secondaryWidget === `drafts`" />
 	<BookmarksWidget v-if="secondaryWidget === `bookmarks`" />
+	<!-- Configure popup button -->
 	<button
 		class="bg-lightBG dark:bg-darkBGStop focus:outline-none mb-5 w-full rounded-lg border border-lightBorder shadow-lg"
 		style="height: 80px; background-repeat: no-repeat; background-position: -6em center; background-size: cover"
@@ -51,9 +56,9 @@ function changeSecondary2(w: `tags` | `followers`) {
 	<div
 		v-if="showConfigure"
 		class="popup bg-darkBG dark:bg-gray5 modal-animation fixed top-0 bottom-0 left-0 right-0 z-30 flex h-screen w-full items-center justify-center bg-opacity-50 dark:bg-opacity-50"
-		@click.self="showConfigure = false"
+		@click.self="handleClose"
 	>
-		<div class="popup flex flex-col items-center w-full justify-center">
+		<div class="popup flex flex-col items-center w-full justify-center" @click.self="handleClose">
 			<button
 				class="bg-gray1 dark:bg-gray5 focus:outline-none m-6 mt-28 rounded-full p-1"
 				@click="showConfigure = false"
