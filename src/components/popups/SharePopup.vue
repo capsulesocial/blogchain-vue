@@ -9,7 +9,7 @@ import MailIcon from '../icons/brands/solid/Mail.vue'
 import CopyIcon from '../icons/Copy.vue'
 import ChevronDown from '../icons/ChevronDown.vue'
 import ChevronUp from '../icons/ChevronUp.vue'
-import { toastSuccess } from '../../plugins/toast'
+import { toastError, toastSuccess } from '../../plugins/toast'
 // import axios from 'axios'
 import { ref } from 'vue'
 // import { capsuleServer, baseUrl } from './../../backend/utilities/config'
@@ -22,9 +22,6 @@ const props = defineProps({
 	cid: { type: String, required: true },
 	authorID: { type: String, required: true },
 })
-
-const directLink = ref<HTMLInputElement>()
-const blogchainLink = ref<HTMLInputElement>()
 
 const isOpen1 = ref<boolean>(false)
 
@@ -39,23 +36,33 @@ function toggleAccordion1() {
 }
 
 function copyDirectLink() {
-	if (generatedDirectLink.value === `` || !directLink.value) {
+	if (generatedDirectLink.value === ``) {
 		return
 	}
-	directLink.value.setSelectionRange(0, directLink.value.value.length)
-	directLink.value.focus()
-	document.execCommand(`copy`)
-	toastSuccess(`Link copied to clipboard!`)
+
+	navigator.clipboard
+		.writeText(generatedDirectLink.value)
+		.then(() => {
+			toastSuccess(`Link copied to clipboard!`)
+		})
+		.catch(() => {
+			toastError(`Could not copy link to clipboard`)
+		})
 }
 
 function copyBlogchainLink() {
-	if (generatedBlogchainLink.value === `` || !blogchainLink.value) {
+	if (generatedBlogchainLink.value === ``) {
 		return
 	}
-	blogchainLink.value.setSelectionRange(0, blogchainLink.value.value.length)
-	blogchainLink.value.focus()
-	document.execCommand(`copy`)
-	toastSuccess(`Link copied to clipboard!`)
+
+	navigator.clipboard
+		.writeText(generatedBlogchainLink.value)
+		.then(() => {
+			toastSuccess(`Link copied to clipboard!`)
+		})
+		.catch(() => {
+			toastError(`Could not copy link to clipboard`)
+		})
 }
 
 async function generateLinks() {
@@ -189,11 +196,10 @@ generateLinks()
 				<p class="text-gray5 dark:text-gray3 mb-2">Social media friendly link that you can share on any platform</p>
 				<div class="relative flex w-full h-8 rounded-lg bg-gray1 dark:bg-gray7 items-center">
 					<input
-						id="id"
-						ref="directLink"
 						v-model="generatedDirectLink"
 						class="absolute w-4/5 ml-2 overflow-hidden dark:text-darkPrimaryText bg-transparent focus:outline-none"
 						style="text-overflow: ellipsis"
+						disabled
 					/>
 					<button
 						class="text-primary flex items-center focus:outline-none absolute right-0 mr-3 text-xs"
@@ -228,11 +234,10 @@ generateLinks()
 				<p class="text-gray5 dark:text-gray3 mb-2">IPFS decentralized permanent link</p>
 				<div class="relative flex w-full h-8 rounded-lg bg-gray1 dark:bg-gray7 items-center">
 					<input
-						id="id"
-						ref="blogchainLink"
 						v-model="generatedBlogchainLink"
 						class="absolute w-4/5 ml-2 overflow-hidden dark:text-darkPrimaryText bg-transparent focus:outline-none"
 						style="text-overflow: ellipsis"
+						disabled
 					/>
 					<button
 						class="text-primary flex items-center focus:outline-none absolute right-0 mr-3 text-xs"
