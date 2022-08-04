@@ -27,7 +27,7 @@ const followers = ref<Profile[]>([
 	},
 	{
 		id: `fziohogheabfhoeaof`,
-		name: `Tom Brady`,
+		name: `Tom Not Brady`,
 		email: `tb12@gmail.com`,
 		bio: `6-time super bowl champion`,
 		location: `Tampa Bay`,
@@ -45,6 +45,7 @@ const followers = ref<Profile[]>([
 				<span> It seems no one is following you yet </span>
 			</p>
 			<HorizontalProfilePreview v-for="profile in followers" :key="profile.id" :profile="profile" class="" />
+			<button class="text-primary text-sm mt-2" @click="$emit(``)">Show more</button>
 		</div>
 	</div>
 </template>

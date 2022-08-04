@@ -113,7 +113,7 @@ function handleClose() {
 								@click="changeSecondary2(`tags`)"
 							>
 								<div class="flex flex-col items-center">
-									<h4 class="text-gray5 dark:text-gray3 mb-2">Tags</h4>
+									<h4 class="text-gray5 dark:text-gray3 mb-2">Topics</h4>
 									<div class="bg-darkBG my-2 flex h-8 w-32 items-center rounded-lg">
 										<span class="pl-3 text-darkPrimaryText">#</span>
 									</div>
