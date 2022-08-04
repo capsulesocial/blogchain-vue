@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useMeta } from 'vue-meta'
+import type { Profile } from '@/backend/profile'
 import router from '@/router/index'
 import { ref } from 'vue'
 
@@ -23,18 +24,6 @@ const userIsFollowed = ref<boolean>(false)
 const activeSubscription = ref<boolean>(false)
 const longBio = ref<boolean>(false)
 const expandBio = ref<boolean>(false)
-
-interface Profile {
-	id: string
-	name: string
-	email: string
-	bio: string
-	location: string
-	avatar: string
-	socials: string[]
-	website?: string
-	background?: string
-}
 
 // TODO: fetch profile and set to ref
 const visitProfile = ref<Profile>({

@@ -1,18 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import type { Profile } from '@/backend/profile'
 import HorizontalProfilePreview from '@/components/HorizontalProfilePreview.vue'
 
-interface Profile {
-	id: string
-	name: string
-	email: string
-	bio: string
-	location: string
-	avatar: string
-	socials: string[]
-	website?: string
-	background?: string
-}
 // TODO: fetch followers from store / backend
 const followers = ref<Profile[]>([
 	{
