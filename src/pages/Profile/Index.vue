@@ -275,5 +275,6 @@ function getStyles(tab: string): string {
 				</nuxt-link>
 			</div>
 		</article>
+		<router-view></router-view>
 	</section>
 </template>
