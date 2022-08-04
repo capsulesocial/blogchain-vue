@@ -6,4 +6,4 @@ useMeta({
 })
 </script>
 
-<template>{{ $route.params }}</template>
+<template>{{ $route.params }}/comments</template>
