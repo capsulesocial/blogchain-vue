@@ -65,7 +65,7 @@ const drafts = ref<DraftPost[]>([
 		<div
 			v-show="showInfo"
 			class="absolute z-10 border-lightBorder modal-animation rounded-lg border bg-lightBG dark:bg-darkBG p-2 shadow-lg text-gray5 dark:text-gray1 self-center text-xs"
-			:class="settings.darkMode ? `DraftInfoOpenDark` : `DraftInfoOpen`"
+			:class="settings.isDarkMode ? `DraftInfoOpenDark` : `DraftInfoOpen`"
 			style="top: 55px; right: 7px; width: 80%"
 		>
 			Note: drafts are stored in your browser's local storage and may be erased on actions such as clearing history

@@ -73,7 +73,7 @@ function toggleDropdownDelete() {
 			<div
 				v-show="showDelete"
 				class="bg-lightBG dark:bg-darkBG dark:text-darkPrimaryText text-lightPrimaryText border-lightBorder modal-animation absolute z-10 flex w-40 flex-col rounded-lg border p-2 shadow-lg"
-				:class="settings.darkMode ? `dropdownDraftOpenDark` : `dropdownDraftOpen`"
+				:class="settings.isDarkMode ? `dropdownDraftOpenDark` : `dropdownDraftOpen`"
 				style="top: 35px; right: -5px"
 			>
 				<button class="focus:outline-none text-primary flex" @click="setActiveDraft(draft)">

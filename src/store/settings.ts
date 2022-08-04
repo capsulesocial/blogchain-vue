@@ -14,6 +14,7 @@ export const useStoreSettings = defineStore(`settings`, {
 		return {
 			color: ``,
 			mode: ``,
+			darkMode: false,
 			lastTopAlgorithm: `This month`,
 			homeFeed: `NEW`,
 			widgets: {
@@ -40,11 +41,8 @@ export const useStoreSettings = defineStore(`settings`, {
 		secondary2Widget(state) {
 			return state.widgets.secondary2
 		},
-		darkMode(state) {
-			if (state.mode === `Dark`) {
-				return true
-			}
-			return false
+		isDarkMode(state) {
+			return state.darkMode
 		},
 	},
 	actions: {
@@ -58,6 +56,13 @@ export const useStoreSettings = defineStore(`settings`, {
 				mode: settings.mode,
 				lastTopAlgorithm: `This month`,
 			})
+		},
+		setMode(mode: `Light` | `Dark` | `OS`) {
+			this.mode = mode
+		},
+		setDarkMode(isDark: boolean) {
+			console.log(isDark)
+			this.darkMode = isDark
 		},
 		setTopAlgorithm(alg: `Today` | `This week` | `This month` | `This year` | `All time`) {
 			this.lastTopAlgorithm = alg

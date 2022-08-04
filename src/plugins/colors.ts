@@ -4,6 +4,27 @@ import { useStoreSettings } from '../store/settings'
 export function initColors() {
 	const store = useStore()
 	const settings = useStoreSettings()
+
+	// add event listeners
+	const darkEventListener = (e: MediaQueryListEvent) => {
+		console.log(`darkEventLisener`)
+		if (e.matches && settings.mode === `OS`) {
+			document.documentElement.classList.add(`dark`)
+		}
+	}
+
+	const lightEventListener = (e: MediaQueryListEvent) => {
+		console.log(`lightEventListener`)
+		if (e.matches && settings.mode === `OS`) {
+			document.documentElement.classList.remove(`dark`)
+		}
+	}
+
+	window.matchMedia(`(prefers-color-scheme: dark)`).addEventListener(`change`, darkEventListener)
+	window.matchMedia(`(prefers-color-scheme: light)`).addEventListener(`change`, lightEventListener)
+
+	// console.log(window.matchMedia(`(prefers-color-scheme: dark)`).matches)
+
 	if (!store.id) {
 		store.login()
 	}
@@ -12,19 +33,24 @@ export function initColors() {
 	}
 	switch (settings.mode) {
 		case `Dark`:
+			settings.setDarkMode(true)
 			document.documentElement.classList.add(`dark`)
 			break
 		case `Light`:
+			settings.setDarkMode(false)
 			document.documentElement.classList.remove(`dark`)
 			break
 		case `OS`:
 			if (window.matchMedia(`(prefers-color-scheme: dark)`).matches) {
+				settings.setDarkMode(true)
 				document.documentElement.classList.add(`dark`)
 			} else if (window.matchMedia(`(prefers-color-scheme: light)`).matches) {
+				settings.setDarkMode(false)
 				document.documentElement.classList.remove(`dark`)
 			}
 			break
 		default:
+			settings.setDarkMode(false)
 			document.documentElement.classList.remove(`dark`)
 			break
 	}

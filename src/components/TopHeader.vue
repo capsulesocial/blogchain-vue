@@ -93,7 +93,7 @@ function logout() {
 				<div
 					v-show="showDropdown"
 					class="w-max from-lightBGStart to-lightBGStop dark:from-darkBGStart dark:to-darkBGStop border-lightBorder modal-animation absolute mt-16 flex flex-col rounded-lg border bg-gradient-to-r p-4 shadow-lg backdrop-blur-lg backdrop-filter right-0"
-					:class="settings.darkMode ? `dropdownOpenDark` : `dropdownOpen`"
+					:class="settings.isDarkMode ? `dropdownOpenDark` : `dropdownOpen`"
 				>
 					<!-- Unauthenticated: Log in -->
 					<a
@@ -180,7 +180,7 @@ function logout() {
 				<div
 					v-show="showMobileMenu"
 					class="from-lightBGStart to-lightBGStop dark:from-darkBGStart dark:to-darkBGStop border-lightBorder modal-animation absolute mt-4 -ml-1 flex flex-col rounded-lg border bg-gradient-to-r p-4 shadow-lg backdrop-blur-lg backdrop-filter"
-					:class="settings.darkMode ? `dropdownMainOpenDark` : `dropdownMainOpen`"
+					:class="settings.isDarkMode ? `dropdownMainOpenDark` : `dropdownMainOpen`"
 				>
 					<a
 						:href="url + `/home`"
@@ -225,7 +225,7 @@ function logout() {
 				<div
 					v-show="showDropdown"
 					class="w-max from-lightBGStart to-lightBGStop dark:from-darkBGStart dark:to-darkBGStop border-lightBorder modal-animation absolute mt-16 flex flex-col rounded-lg border bg-gradient-to-r p-4 shadow-lg backdrop-blur-lg backdrop-filter right-0"
-					:class="settings.darkMode ? `dropdownOpenDark` : `dropdownOpen`"
+					:class="settings.isDarkMode ? `dropdownOpenDark` : `dropdownOpen`"
 				>
 					<!-- Unauthenticated: Log in -->
 					<a
