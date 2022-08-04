@@ -95,7 +95,7 @@ function changeSecondary2(w: `tags` | `followers`) {
 					</div>
 				</article>
 				<!-- Right side: side widgets -->
-				<div class="w-5/12 -mr-5 -mt-4 hidden overflow-y-auto p-4 lg:block">
+				<div class="w-5/12 -mr-5 -mt-4 hidden h-full p-4 lg:block">
 					<article
 						class="bg-lightBG dark:bg-darkBGStop card-animation-delay1 z-10 mb-5 overflow-y-auto rounded-lg p-6 pt-4 shadow-lg"
 					>
@@ -106,7 +106,7 @@ function changeSecondary2(w: `tags` | `followers`) {
 								@click="changeSecondary2(`tags`)"
 							>
 								<div class="flex flex-col items-center">
-									<h4 class="text-gray5 dark:text-gray3 mb-2">Tags</h4>
+									<h4 class="text-gray5 dark:text-gray3 mb-2">Topics</h4>
 									<div class="bg-darkBG my-2 flex h-8 w-32 items-center rounded-lg">
 										<span class="pl-3 text-darkPrimaryText">#</span>
 									</div>
