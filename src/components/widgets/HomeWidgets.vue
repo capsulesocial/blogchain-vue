@@ -102,7 +102,7 @@ function handleClose() {
 					</div>
 				</article>
 				<!-- Right side: side widgets -->
-				<div class="w-5/12 -mr-5 -mt-4 hidden overflow-y-auto p-4 lg:block">
+				<div class="w-5/12 -mr-5 -mt-4 hidden h-full p-4 lg:block">
 					<article
 						class="bg-lightBG dark:bg-darkBGStop card-animation-delay1 z-10 mb-5 overflow-y-auto rounded-lg p-6 pt-4 shadow-lg"
 					>
