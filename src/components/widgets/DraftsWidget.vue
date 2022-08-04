@@ -1,19 +1,14 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useStore } from '../../store/session'
+import { useStore } from '@/store/session'
+import { useStoreSettings } from '@/store/settings'
 import { Post } from '@/backend/post'
 import HorizontalDraftPreview from '@/components/HorizontalDraftPreview.vue'
 import InfoIcon from '../../components/icons/Info.vue'
 
+const settings = useStoreSettings()
 const store = useStore()
 const showInfo = ref<boolean>(false)
-const isDark = ref<boolean>(false)
-
-if (document.documentElement.classList.contains(`dark`)) {
-	isDark.value = true
-} else {
-	isDark.value = false
-}
 
 type DraftPost = Omit<Post, `authorID`>
 
@@ -70,7 +65,7 @@ const drafts = ref<DraftPost[]>([
 		<div
 			v-show="showInfo"
 			class="absolute z-10 border-lightBorder modal-animation rounded-lg border bg-lightBG dark:bg-darkBG p-2 shadow-lg text-gray5 dark:text-gray1 self-center text-xs"
-			:class="isDark ? `DraftInfoOpenDark` : `DraftInfoOpen`"
+			:class="settings.darkMode ? `DraftInfoOpenDark` : `DraftInfoOpen`"
 			style="top: 55px; right: 7px; width: 80%"
 		>
 			Note: drafts are stored in your browser's local storage and may be erased on actions such as clearing history

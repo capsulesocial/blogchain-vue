@@ -40,6 +40,12 @@ export const useStoreSettings = defineStore(`settings`, {
 		secondary2Widget(state) {
 			return state.widgets.secondary2
 		},
+		darkMode(state) {
+			if (state.mode === `Dark`) {
+				return true
+			}
+			return false
+		},
 	},
 	actions: {
 		sync() {

@@ -9,25 +9,17 @@ import Crown2Icon from './icons/CrownEmptyIcon.vue'
 import Avatar from './../components/Avatar.vue'
 import { onMounted, PropType, ref } from 'vue'
 import { useStore } from '../store/session'
-// import { useStoreSettings } from '../store/settings'
+import { useStoreSettings } from '@/store/settings'
 import ProfileIcon from './icons/ProfileIcon.vue'
 import SettingsIcon from './icons/SettingsIcon.vue'
 import LogoutIcon from './icons/LogoutIcon.vue'
 const sessionStore = useStore()
-// const sessionStoreSettings = useStoreSettings()
+const settings = useStoreSettings()
 
 const props = defineProps({
 	name: { type: String, required: true },
 	avatar: { type: String as PropType<string | ArrayBuffer>, required: true },
 })
-
-const isDark = ref<boolean>(false)
-
-if (document.documentElement.classList.contains(`dark`)) {
-	isDark.value = true
-} else {
-	isDark.value = false
-}
 
 const showMobileMenu = ref<boolean>(false)
 const showDropdown = ref<boolean>(false)
@@ -101,7 +93,7 @@ function logout() {
 				<div
 					v-show="showDropdown"
 					class="w-max from-lightBGStart to-lightBGStop dark:from-darkBGStart dark:to-darkBGStop border-lightBorder modal-animation absolute mt-16 flex flex-col rounded-lg border bg-gradient-to-r p-4 shadow-lg backdrop-blur-lg backdrop-filter right-0"
-					:class="isDark ? `dropdownOpenDark` : `dropdownOpen`"
+					:class="settings.darkMode ? `dropdownOpenDark` : `dropdownOpen`"
 				>
 					<!-- Unauthenticated: Log in -->
 					<a
@@ -188,7 +180,7 @@ function logout() {
 				<div
 					v-show="showMobileMenu"
 					class="from-lightBGStart to-lightBGStop dark:from-darkBGStart dark:to-darkBGStop border-lightBorder modal-animation absolute mt-4 -ml-1 flex flex-col rounded-lg border bg-gradient-to-r p-4 shadow-lg backdrop-blur-lg backdrop-filter"
-					:class="isDark ? `dropdownMainOpenDark` : `dropdownMainOpen`"
+					:class="settings.darkMode ? `dropdownMainOpenDark` : `dropdownMainOpen`"
 				>
 					<a
 						:href="url + `/home`"
@@ -233,7 +225,7 @@ function logout() {
 				<div
 					v-show="showDropdown"
 					class="w-max from-lightBGStart to-lightBGStop dark:from-darkBGStart dark:to-darkBGStop border-lightBorder modal-animation absolute mt-16 flex flex-col rounded-lg border bg-gradient-to-r p-4 shadow-lg backdrop-blur-lg backdrop-filter right-0"
-					:class="isDark ? `dropdownOpenDark` : `dropdownOpen`"
+					:class="settings.darkMode ? `dropdownOpenDark` : `dropdownOpen`"
 				>
 					<!-- Unauthenticated: Log in -->
 					<a

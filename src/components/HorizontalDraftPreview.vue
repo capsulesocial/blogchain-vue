@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { PropType } from 'vue'
 import { ref } from 'vue'
+import { useStoreSettings } from '@/store/settings'
 import { Post } from '@/backend/post'
 import { formatDate } from '@/helpers/helpers'
 import MoreIcon from '@/components/icons/MoreIcon.vue'
@@ -14,16 +15,10 @@ defineProps({
 	},
 })
 
+const settings = useStoreSettings()
 const featuredPhoto = ref<any>()
 const inWidget = ref<boolean>(true)
 const showDelete = ref<boolean>(false)
-const isDark = ref<boolean>(false)
-
-if (document.documentElement.classList.contains(`dark`)) {
-	isDark.value = true
-} else {
-	isDark.value = false
-}
 
 function setActiveDraft(draft: DraftPost) {
 	return
@@ -78,7 +73,7 @@ function toggleDropdownDelete() {
 			<div
 				v-show="showDelete"
 				class="bg-lightBG dark:bg-darkBG dark:text-darkPrimaryText text-lightPrimaryText border-lightBorder modal-animation absolute z-10 flex w-40 flex-col rounded-lg border p-2 shadow-lg"
-				:class="isDark ? `dropdownDraftOpenDark` : `dropdownDraftOpen`"
+				:class="settings.darkMode ? `dropdownDraftOpenDark` : `dropdownDraftOpen`"
 				style="top: 35px; right: -5px"
 			>
 				<button class="focus:outline-none text-primary flex" @click="setActiveDraft(draft)">

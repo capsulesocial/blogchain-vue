@@ -10,7 +10,6 @@ export function initColors() {
 	if (!settings.color || !settings.mode) {
 		settings.sync()
 	}
-
 	switch (settings.mode) {
 		case `Dark`:
 			document.documentElement.classList.add(`dark`)
