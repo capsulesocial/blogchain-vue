@@ -18,6 +18,7 @@ export const useStore = defineStore(`session`, {
 			avatar: ``,
 		}
 	},
+	persist: true,
 	actions: {
 		login() {
 			const userData = getLocalSession()

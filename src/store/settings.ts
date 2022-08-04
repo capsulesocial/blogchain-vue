@@ -23,6 +23,7 @@ export const useStoreSettings = defineStore(`settings`, {
 			},
 		}
 	},
+	persist: true,
 	getters: {
 		topAlgorithm(state) {
 			return state.lastTopAlgorithm
