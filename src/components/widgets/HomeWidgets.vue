@@ -18,21 +18,14 @@ const showConfigure = ref<boolean>(false)
 function changePrimary(w: `feed` | `editor`) {
 	// update state
 	settingsStore.setPrimaryWidget(w)
-	showConfigure.value = false
 }
 function changeSecondary(w: `drafts` | `bookmarks`) {
 	// Update state
 	settingsStore.setSecondaryWidget(w)
-	showConfigure.value = false
 }
 function changeSecondary2(w: `tags` | `followers`) {
 	// update state
 	settingsStore.setSecondary2Widget(w)
-	showConfigure.value = false
-}
-function handleClose() {
-	console.log(`close`)
-	showConfigure.value = false
 }
 </script>
 <template>
@@ -56,9 +49,9 @@ function handleClose() {
 	<div
 		v-if="showConfigure"
 		class="popup bg-darkBG dark:bg-gray5 modal-animation fixed top-0 bottom-0 left-0 right-0 z-30 flex h-screen w-full items-center justify-center bg-opacity-50 dark:bg-opacity-50"
-		@click.self="handleClose"
+		@click.self="showConfigure = false"
 	>
-		<div class="popup flex flex-col items-center w-full justify-center" @click.self="handleClose">
+		<div class="popup flex flex-col items-center w-full justify-center" @click.self="showConfigure = false">
 			<button
 				class="bg-gray1 dark:bg-gray5 focus:outline-none m-6 mt-28 rounded-full p-1"
 				@click="showConfigure = false"

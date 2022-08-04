@@ -9,6 +9,7 @@ export const usePostsStore = defineStore(`posts`, {
 			finished: false,
 		}
 	},
+	persist: true,
 	getters: {},
 	actions: {},
 })
