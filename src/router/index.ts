@@ -95,22 +95,18 @@ const routes = [
 		path: '/id/:id',
 		name: 'Profile',
 		component: Profile,
-		meta: {
-			requiresAuth: false,
-		},
-	},
-	{
-		path: '/id/:id/comments',
-		name: 'Comments',
-		component: Comments,
-		meta: {
-			requiresAuth: false,
-		},
-	},
-	{
-		path: '/id/:id/reposts',
-		name: 'Reposts',
-		component: Reposts,
+		children: [
+			{
+				path: 'comments',
+				name: 'Comments',
+				component: Comments,
+			},
+			{
+				path: 'reposts',
+				name: 'Reposts',
+				component: Reposts,
+			},
+		],
 		meta: {
 			requiresAuth: false,
 		},
