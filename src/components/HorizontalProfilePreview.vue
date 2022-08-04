@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { PropType } from 'vue'
+import type { Profile } from '@/backend/profile'
 // import { ref } from 'vue'
 import { useStore } from '../store/session'
 // import Avatar from './Avatar.vue'
@@ -7,18 +8,6 @@ import { useStore } from '../store/session'
 const store = useStore()
 // const userIsFollowed = ref<boolean>(false)
 // const visitAvatar = ref<string | ArrayBuffer>(``)
-
-interface Profile {
-	id: string
-	name: string
-	email: string
-	bio: string
-	location: string
-	avatar: string
-	socials: string[]
-	website?: string
-	background?: string
-}
 
 defineProps({
 	profile: {
