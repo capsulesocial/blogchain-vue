@@ -1,8 +1,13 @@
 <script setup lang="ts">
+import { ref } from 'vue'
+import router from '@/router/index'
 import { useMeta } from 'vue-meta'
 import type { Profile } from '@/backend/profile'
-import router from '@/router/index'
-import { ref } from 'vue'
+import BackButton from '@/components/icons/ChevronLeft.vue'
+import PencilIcon from '@/components/icons/Pencil.vue'
+import SecondaryButton from '@/components/SecondaryButton.vue'
+import FriendButton from '@/components/FriendButton.vue'
+import SubscribeButton from '@/components/SubscribeButton.vue'
 
 useMeta({
 	title: `authorName - Blogchain`,
@@ -103,14 +108,14 @@ function getStyles(tab: string): string {
 							:disabled="!scrollingDown"
 							@click="showAvatarPopup = true"
 						>
-							<Avatar
+							<!-- <Avatar
 								:avatar="visitAvatar"
 								:author-i-d="$route.params.id"
 								:size="`w-8 h-8`"
 								:no-click="true"
 								class="rounded-base flex-shrink-0"
 								:class="!visitAvatar ? `cursor-default` : ``"
-							/>
+							/> -->
 						</button>
 						<button
 							class="focus:outline-none"
@@ -264,15 +269,15 @@ function getStyles(tab: string): string {
 			<div id="divider" class="w-full bg-lightBorder dark:bg-darkBorder my-4 rounded" style="height: 1px"></div>
 			<!-- Tabs -->
 			<div id="tabs" class="text-gray5 dark:text-gray3 text-sm header-profile flex w-full justify-between pb-3 xl:px-6">
-				<nuxt-link :to="'/id/' + $route.params.id" class="pb-1" :class="getStyles('id-id')">
+				<router-link :to="'/id/' + $route.params.id" class="pb-1" :class="getStyles('id-id')">
 					<span class="px-4">Posts</span>
-				</nuxt-link>
-				<nuxt-link :to="'/id/' + $route.params.id + '/comments'" class="pb-1" :class="getStyles('id-id-comments')">
+				</router-link>
+				<router-link :to="'/id/' + $route.params.id + '/comments'" class="pb-1" :class="getStyles('id-id-comments')">
 					<span class="px-4">Comments</span>
-				</nuxt-link>
-				<nuxt-link :to="'/id/' + $route.params.id + '/reposts'" class="pb-1" :class="getStyles('id-id-reposts')">
+				</router-link>
+				<router-link :to="'/id/' + $route.params.id + '/reposts'" class="pb-1" :class="getStyles('id-id-reposts')">
 					<span class="px-4">Reposts</span>
-				</nuxt-link>
+				</router-link>
 			</div>
 		</article>
 		<router-view></router-view>
