@@ -61,9 +61,9 @@ if (document.documentElement.classList.contains(`dark`)) {
 			v-show="showInfo"
 			class="absolute z-10 border-lightBorder modal-animation rounded-lg border bg-lightBG dark:bg-gray7 p-2 shadow-lg text-gray5 dark:text-gray1 self-center text-xs"
 			:class="isDark ? `NodesInfoOpenDark` : `NodesInfoOpen`"
-			style="top: -5px; right: 205px; width: 140%"
+			style="top: -5px; right: 205px; width: 138%"
 		>
-			Number of hosts on Blogchain's public networking currently serving content
+			Number of hosts on Blogchain's public network currently serving content
 		</div>
 	</div>
 </template>
