@@ -44,7 +44,7 @@ export function getBlobExtension(blob: Blob): string | null {
 	}
 }
 
-export function calculateReadingTime(wordCount?: number, postImagesLength: number = 0) {
+export function calculateReadingTime(wordCount?: number, postImagesLength = 0) {
 	if (!wordCount) {
 		return null
 	}
