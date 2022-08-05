@@ -7,7 +7,6 @@ module.exports = defineConfig({
 		port: 3000,
 	},
 	transpileDependencies: true,
-	publicPath: process.env.NODE_ENV === 'production' ? '/' : '/',
 	configureWebpack: {
 		plugins: [
 			new webpack.ProvidePlugin({
