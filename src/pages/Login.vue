@@ -7,7 +7,7 @@ import GoogleIcon from '@/components/icons/brands/Google.vue'
 import FileIcon from '@/components/icons/File.vue'
 import InfoIcon from '@/components/icons/Info.vue'
 import CloseIcon from '@/components/icons/CloseIcon.vue'
-import { useStore } from '../store/session'
+import { useSessionStore } from '../store/session'
 import router from '@/router/index'
 import { toastError } from '@/plugins/toast'
 
@@ -19,7 +19,7 @@ const noAccount = ref<boolean>(false)
 const key = ref<HTMLInputElement>()
 const showPasswordPopup = ref<boolean>(false)
 const password = ref<string>()
-const store = useStore()
+const store = useSessionStore()
 
 // methods
 function handleKeyClick(): void {

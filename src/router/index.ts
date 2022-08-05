@@ -20,7 +20,7 @@ import SettingsStyling from '@/pages/Settings/Styling.vue'
 import SettingsAccount from '@/pages/Settings/Account.vue'
 import PaymentPolicy from '@/pages/PaymentPolicy.vue'
 import ContentPolicy from '@/pages/ContentPolicy.vue'
-import { useStore } from '@/store/session'
+import { useSessionStore } from '@/store/session'
 
 const routes = [
 	{
@@ -208,7 +208,7 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to) => {
-	const store = useStore()
+	const store = useSessionStore()
 	if (to.meta.requiresAuth && !store.$state.id) {
 		window.location.href = window.location.origin + '/login'
 	}

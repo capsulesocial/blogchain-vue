@@ -9,7 +9,7 @@ function getLocalSession() {
 	return JSON.parse(ls).session
 }
 
-export const useStore = defineStore(`session`, {
+export const useSessionStore = defineStore(`session`, {
 	state: () => {
 		return {
 			name: ``,

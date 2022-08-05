@@ -1,8 +1,8 @@
-import { useStore } from '../store/session'
+import { useSessionStore } from '../store/session'
 import { useStoreSettings } from '../store/settings'
 
 export function initColors() {
-	const store = useStore()
+	const store = useSessionStore()
 	const settings = useStoreSettings()
 	if (!store.id) {
 		store.login()

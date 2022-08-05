@@ -2,10 +2,10 @@
 import type { PropType } from 'vue'
 import type { Profile } from '@/backend/profile'
 // import { ref } from 'vue'
-import { useStore } from '../store/session'
+import { useSessionStore } from '../store/session'
 // import Avatar from './Avatar.vue'
 
-const store = useStore()
+const store = useSessionStore()
 // const userIsFollowed = ref<boolean>(false)
 // const visitAvatar = ref<string | ArrayBuffer>(``)
 

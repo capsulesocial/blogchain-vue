@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useStore } from '../../store/session'
+import { useSessionStore } from '../../store/session'
 import { Post } from '@/backend/post'
 import HorizontalDraftPreview from '@/components/HorizontalDraftPreview.vue'
 import InfoIcon from '../../components/icons/Info.vue'
 
-const store = useStore()
+const store = useSessionStore()
 const showInfo = ref<boolean>(false)
 const isDark = ref<boolean>(false)
 

@@ -6,7 +6,7 @@ import WidgetsContainer from './components/WidgetsContainer.vue'
 import '@/assets/css/tailwind.css'
 import TitleContainer from './components/TitleContainer.vue'
 
-import { useStore } from './store/session'
+import { useSessionStore } from './store/session'
 import { useStoreSettings } from './store/settings'
 import { initColors } from './plugins/colors'
 import { getBGImage } from './plugins/background'
@@ -15,7 +15,7 @@ import { onBeforeMount, ref } from 'vue'
 import { useMeta } from 'vue-meta'
 // import { useRouter } from 'vue-router'
 
-const store = useStore()
+const store = useSessionStore()
 const settings = useStoreSettings()
 const avatar = ref<string>(``)
 const unauthRoutes = ref<string[]>([`Login`, `Register`])
