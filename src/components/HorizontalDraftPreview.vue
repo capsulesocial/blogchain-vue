@@ -1,35 +1,35 @@
 <script setup lang="ts">
-import type { PropType } from 'vue'
-import { ref } from 'vue'
-import { useStoreSettings } from '@/store/settings'
-import { Post } from '@/backend/post'
-import { formatDate } from '@/helpers/helpers'
-import MoreIcon from '@/components/icons/MoreIcon.vue'
+import type { PropType } from 'vue';
+import { ref } from 'vue';
+import { useStoreSettings } from '@/store/settings';
+import { Post } from '@/backend/post';
+import { formatDate } from '@/helpers/helpers';
+import MoreIcon from '@/components/icons/MoreIcon.vue';
 
-type DraftPost = Omit<Post, `authorID`>
+type DraftPost = Omit<Post, `authorID`>;
 
 defineProps({
 	draft: {
 		type: Object as PropType<DraftPost>,
 		required: true,
 	},
-})
+});
 
-const settings = useStoreSettings()
-const featuredPhoto = ref<any>()
-const inWidget = ref<boolean>(true)
-const showDelete = ref<boolean>(false)
+const settings = useStoreSettings();
+const featuredPhoto = ref<any>();
+const inWidget = ref<boolean>(true);
+const showDelete = ref<boolean>(false);
 
 function setActiveDraft(draft: DraftPost) {
-	return
+	return;
 }
 
 function deleteDraft(draft: DraftPost) {
-	return
+	return;
 }
 
 function toggleDropdownDelete() {
-	showDelete.value = !showDelete.value
+	showDelete.value = !showDelete.value;
 }
 
 // IF featuredPhotoCID: fetch featuredPhoto

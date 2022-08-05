@@ -10,4 +10,4 @@ export const avatars = [
 	require(`./../assets/images/avatars/fastfood.webp`),
 	require(`./../assets/images/avatars/streetart.webp`),
 	require(`./../assets/images/avatars/strongwomen.webp`),
-]
+];

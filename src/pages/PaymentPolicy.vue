@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import CloseIcon from '../components/icons/CloseIcon.vue'
+import CloseIcon from '../components/icons/CloseIcon.vue';
 </script>
 <template>
 	<main class="w-full flex flex-col items-center pt-10">

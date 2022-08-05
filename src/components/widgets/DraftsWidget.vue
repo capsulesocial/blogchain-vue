@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useStore } from '@/store/session'
-import { useStoreSettings } from '@/store/settings'
-import { Post } from '@/backend/post'
-import HorizontalDraftPreview from '@/components/HorizontalDraftPreview.vue'
-import InfoIcon from '../../components/icons/Info.vue'
+import { ref } from 'vue';
+import { useStore } from '@/store/session';
+import { useStoreSettings } from '@/store/settings';
+import { Post } from '@/backend/post';
+import HorizontalDraftPreview from '@/components/HorizontalDraftPreview.vue';
+import InfoIcon from '../../components/icons/Info.vue';
 
-const settings = useStoreSettings()
-const store = useStore()
-const showInfo = ref<boolean>(false)
+const settings = useStoreSettings();
+const store = useStore();
+const showInfo = ref<boolean>(false);
 
-type DraftPost = Omit<Post, `authorID`>
+type DraftPost = Omit<Post, `authorID`>;
 
 // TODO: fetch followers from store / backend
 const drafts = ref<DraftPost[]>([
@@ -38,7 +38,7 @@ const drafts = ref<DraftPost[]>([
 		postImages: [],
 		encrypted: false,
 	},
-])
+]);
 </script>
 <template>
 	<div class="bg-lightBG dark:bg-darkBGStop mb-5 rounded-lg border border-lightBorder shadow-lg px-6 py-4 relative">

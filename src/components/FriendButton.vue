@@ -35,14 +35,14 @@
 </template>
 
 <script setup lang="ts">
-import FriendAddIcon from '@/components/icons/FriendAdd.vue'
-import FriendRemoveIcon from '@/components/icons/FriendRemove.vue'
-import { PropType } from 'vue'
+import FriendAddIcon from '@/components/icons/FriendAdd.vue';
+import FriendRemoveIcon from '@/components/icons/FriendRemove.vue';
+import { PropType } from 'vue';
 
 defineProps({
 	userIsFollowed: { type: Boolean, required: true },
 	toggleFriend: { type: Function as PropType<() => void>, required: true },
-})
+});
 </script>
 
 <style scoped>

@@ -1,15 +1,15 @@
-import type { Options, IPFS, CID } from 'ipfs-core'
-import { bootstrapNodes } from './config'
+import type { Options, IPFS, CID } from 'ipfs-core';
+import { bootstrapNodes } from './config';
 
 export interface IPFSInterface {
-	sendData: (content: string | ArrayBuffer) => Promise<string>
-	getData: (cid: string) => Promise<string>
-	getJSONData: <T>(hash: string) => Promise<T>
-	sendJSONData: <T>(content: T) => Promise<string>
-	getNodes: () => Promise<number>
-	loadingResult: Promise<{ create: (options?: Options | undefined) => Promise<IPFS>; CID: typeof CID }>
-	initResult: Promise<{ ipfs: IPFS; CIDObj: typeof CID }>
-	startResult: Promise<void>
+	sendData: (content: string | ArrayBuffer) => Promise<string>;
+	getData: (cid: string) => Promise<string>;
+	getJSONData: <T>(hash: string) => Promise<T>;
+	sendJSONData: <T>(content: T) => Promise<string>;
+	getNodes: () => Promise<number>;
+	loadingResult: Promise<{ create: (options?: Options | undefined) => Promise<IPFS>; CID: typeof CID }>;
+	initResult: Promise<{ ipfs: IPFS; CIDObj: typeof CID }>;
+	startResult: Promise<void>;
 }
 
 const ipfsConfig: Options = {
@@ -24,147 +24,147 @@ const ipfsConfig: Options = {
 	config: {
 		Bootstrap: bootstrapNodes,
 	},
-}
+};
 
 /**
  * An IPFS interface is created, but the node doesn't start right away. Generally we observed that the node starting procedure is slow and blocks the loading of the whole app.
  * Hence, we made the loading of the node async and we basically keep a cache of all the requests to IPFS while the node is initialising to dispatch them after the fact.
  */
 function createIPFSInterface(): IPFSInterface {
-	let ipfsInitialised = false
-	let node: IPFS | null = null
-	let CIDClass: typeof CID | null = null
+	let ipfsInitialised = false;
+	let node: IPFS | null = null;
+	let CIDClass: typeof CID | null = null;
 
-	const loadingResult = import(`ipfs-core`)
+	const loadingResult = import(`ipfs-core`);
 
 	const promise = loadingResult.then(async ({ create, CID: CIDObj }) => {
-		const ipfs = await create(ipfsConfig)
+		const ipfs = await create(ipfsConfig);
 
-		return { ipfs, CIDObj }
-	})
+		return { ipfs, CIDObj };
+	});
 
 	const promiseCache: Array<{
-		func: (...args: any[]) => Promise<any>
-		args: any[]
-		resolver: (value: any) => void
-	}> = []
+		func: (...args: any[]) => Promise<any>;
+		args: any[];
+		resolver: (value: any) => void;
+	}> = [];
 
 	function _resolveCachedPromises() {
 		for (const v of promiseCache) {
-			const { resolver, func, args } = v
-			resolver(func(...args))
+			const { resolver, func, args } = v;
+			resolver(func(...args));
 		}
 
 		// Clear the array
-		promiseCache.splice(0, promiseCache.length)
+		promiseCache.splice(0, promiseCache.length);
 	}
 
 	function _promiseWrapper<T>(func: (...funcArgs: any[]) => Promise<T>, ...args: any[]) {
 		if (ipfsInitialised) {
-			return func(...args)
+			return func(...args);
 		}
 
-		let resolver: (value: T) => void = () => null
+		let resolver: (value: T) => void = () => null;
 		const promise = new Promise<T>((resolve) => {
-			resolver = resolve
-		})
+			resolver = resolve;
+		});
 
-		promiseCache.push({ func, args, resolver })
+		promiseCache.push({ func, args, resolver });
 
-		return promise
+		return promise;
 	}
 
 	function _maintainConnection() {
 		setTimeout(async () => {
-			await ensureConnectedToBootstrapNodes()
-			_maintainConnection()
-		}, 10000)
+			await ensureConnectedToBootstrapNodes();
+			_maintainConnection();
+		}, 10000);
 	}
 
 	async function ensureConnectedToBootstrapNodes() {
 		if (!node) {
-			throw new Error(`Not initialised!`)
+			throw new Error(`Not initialised!`);
 		}
 		// get a list of all addresses for all of the peers we're currently connected to
-		const peerAddrs = new Set<string>()
+		const peerAddrs = new Set<string>();
 		try {
-			const swarmAddrs = await node.swarm.addrs({ timeout: 5000 })
-			swarmAddrs.forEach((p) => p.addrs.forEach((a) => peerAddrs.add(a.toString())))
+			const swarmAddrs = await node.swarm.addrs({ timeout: 5000 });
+			swarmAddrs.forEach((p) => p.addrs.forEach((a) => peerAddrs.add(a.toString())));
 		} catch (err) {
 			// eslint-disable-next-line no-console
-			console.log(`Failed to get IPFS swarm addreses: ${err}`)
-			return
+			console.log(`Failed to get IPFS swarm addreses: ${err}`);
+			return;
 		}
 
 		// get a list of boostrap nodes that we're not currently connected to, and try connecting to them
-		const disconnectedBootstrapNodes = bootstrapNodes.filter((bootstrapNode: string) => !peerAddrs.has(bootstrapNode))
+		const disconnectedBootstrapNodes = bootstrapNodes.filter((bootstrapNode: string) => !peerAddrs.has(bootstrapNode));
 		for (const a of disconnectedBootstrapNodes) {
 			try {
-				await node.swarm.connect(a)
+				await node.swarm.connect(a);
 			} catch (err) {
 				// eslint-disable-next-line no-console
-				console.error(`Failed to connect to ${a}: ${err}`)
+				console.error(`Failed to connect to ${a}: ${err}`);
 			}
 		}
 	}
 
 	const getData = async (cid: string) => {
 		if (!node) {
-			throw new Error(`Not initialised!`)
+			throw new Error(`Not initialised!`);
 		}
-		const content: Buffer[] = []
+		const content: Buffer[] = [];
 		for await (const chunk of node.cat(cid)) {
-			content.push(Buffer.from(chunk))
+			content.push(Buffer.from(chunk));
 		}
-		return Buffer.concat(content).toString()
-	}
+		return Buffer.concat(content).toString();
+	};
 
 	const getJSONData = async <T>(cid: string) => {
 		if (!node || !CIDClass) {
-			throw new Error(`Not initialised!`)
+			throw new Error(`Not initialised!`);
 		}
-		const res = await node.dag.get(CIDClass.parse(cid))
+		const res = await node.dag.get(CIDClass.parse(cid));
 		if (!res.value) {
-			throw new Error(`No data found!`)
+			throw new Error(`No data found!`);
 		}
-		return res.value as T
-	}
+		return res.value as T;
+	};
 
 	const sendData = async (content: string | ArrayBuffer) => {
 		if (!node) {
-			throw new Error(`Not initialised!`)
+			throw new Error(`Not initialised!`);
 		}
-		const { cid } = await node.add(content)
-		return cid.toString()
-	}
+		const { cid } = await node.add(content);
+		return cid.toString();
+	};
 
 	const sendJSONData = async <T>(content: T) => {
 		if (!node) {
-			throw new Error(`Not initialised!`)
+			throw new Error(`Not initialised!`);
 		}
-		const cid = await node.dag.put(content)
-		return cid.toString()
-	}
+		const cid = await node.dag.put(content);
+		return cid.toString();
+	};
 
 	const getNodes = async () => {
 		if (!node) {
-			throw new Error(`Not initialised!`)
+			throw new Error(`Not initialised!`);
 		}
-		const peers = await node.swarm.peers()
-		return peers.length
-	}
+		const peers = await node.swarm.peers();
+		return peers.length;
+	};
 
-	const initResult = promise
+	const initResult = promise;
 
 	const startResult = promise.then(async ({ ipfs, CIDObj }) => {
-		node = ipfs
-		CIDClass = CIDObj
+		node = ipfs;
+		CIDClass = CIDObj;
 
-		await node.start()
-		ipfsInitialised = true
-		_maintainConnection()
-		_resolveCachedPromises()
-	})
+		await node.start();
+		ipfsInitialised = true;
+		_maintainConnection();
+		_resolveCachedPromises();
+	});
 
 	return {
 		getJSONData: <T>(cid: string) => _promiseWrapper<T>(getJSONData, cid),
@@ -175,25 +175,25 @@ function createIPFSInterface(): IPFSInterface {
 		loadingResult,
 		initResult,
 		startResult,
-	}
+	};
 }
 
-let _ipfs: IPFSInterface | null = null
+let _ipfs: IPFSInterface | null = null;
 
 export function initIPFS() {
 	if (_ipfs) {
-		return _ipfs
+		return _ipfs;
 	}
 
-	_ipfs = createIPFSInterface()
-	return _ipfs
+	_ipfs = createIPFSInterface();
+	return _ipfs;
 }
 
 function ipfs() {
 	if (!_ipfs) {
-		throw new Error(`IPFS isn't initiated!`)
+		throw new Error(`IPFS isn't initiated!`);
 	}
-	return _ipfs
+	return _ipfs;
 }
 
-export default ipfs
+export default ipfs;

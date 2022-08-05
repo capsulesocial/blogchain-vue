@@ -1,7 +1,7 @@
-const config = require('@capsulesocial/capsule-config').config
+const config = require('@capsulesocial/capsule-config').config;
 
-config.content.push('./src/App.vue')
-config.content.push('./src/pages/*')
-config.content.push('./src/components/**')
+config.content.push('./src/App.vue');
+config.content.push('./src/pages/*');
+config.content.push('./src/components/**');
 
-module.exports = config
+module.exports = config;

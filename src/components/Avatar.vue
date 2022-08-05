@@ -29,24 +29,24 @@
 	</span>
 </template>
 <script setup lang="ts">
-import { PropType, ref } from 'vue'
-import { avatars } from './../config/avatars'
+import { PropType, ref } from 'vue';
+import { avatars } from './../config/avatars';
 
 const props = defineProps({
 	avatar: { type: String as PropType<string | undefined>, required: true },
 	authorid: { type: String, default: `` },
 	size: { type: String, default: `w-10 h-10` },
 	noClick: { type: Boolean, default: false },
-})
+});
 
-const avatarList = ref<Array<undefined>>(avatars)
+const avatarList = ref<Array<undefined>>(avatars);
 
 function usernameToPicture(username: string, buckets = 11): number {
-	let x = 0
+	let x = 0;
 	for (let i = 0; i < username.length; i++) {
-		x += username.charCodeAt(i)
+		x += username.charCodeAt(i);
 	}
-	const v = ((Math.sin(x) + 1) * (buckets - 1)) / 2
-	return Math.floor(v)
+	const v = ((Math.sin(x) + 1) * (buckets - 1)) / 2;
+	return Math.floor(v);
 }
 </script>

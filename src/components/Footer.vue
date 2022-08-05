@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
 
-const currentYear = ref<string>(``)
-const theDate = new Date()
-currentYear.value = theDate.getFullYear().toString()
+const currentYear = ref<string>(``);
+const theDate = new Date();
+currentYear.value = theDate.getFullYear().toString();
 </script>
 
 <template>

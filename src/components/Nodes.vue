@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useStoreSettings } from '../store/settings'
+import { ref } from 'vue';
+import { useStoreSettings } from '../store/settings';
 
-import CapsuleIcon from './icons/CapsuleIcon.vue'
+import CapsuleIcon from './icons/CapsuleIcon.vue';
 
-const settings = useStoreSettings()
-const showInfo = ref<boolean>(false)
-const loadingIPFS = ref<boolean>(false)
-const initIPFS = ref<boolean>(false)
-const startIPFS = ref<boolean>(false)
-const initNodes = ref<boolean>(false)
-const nodes = ref<number>(0)
+const settings = useStoreSettings();
+const showInfo = ref<boolean>(false);
+const loadingIPFS = ref<boolean>(false);
+const initIPFS = ref<boolean>(false);
+const startIPFS = ref<boolean>(false);
+const initNodes = ref<boolean>(false);
+const nodes = ref<number>(0);
 </script>
 
 <template>

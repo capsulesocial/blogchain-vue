@@ -1,31 +1,31 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useStoreSettings } from '@/store/settings'
-import { storeToRefs } from 'pinia'
-import TagsWidget from '@/components/widgets/TagsWidget.vue'
-import FollowersWidget from '@/components/widgets/FollowersWidget.vue'
-import DraftsWidget from '@/components/widgets/DraftsWidget.vue'
-import BookmarksWidget from '@/components/widgets/BookmarksWidget.vue'
-import XIcon from '@/components/icons/CloseIcon.vue'
-import CheckCircle from '@/components/icons/CheckCircle.vue'
-import PencilIcon from '@/components/icons/Pencil.vue'
-import BookmarksIcon from '@/components/icons/Bookmarks.vue'
+import { ref } from 'vue';
+import { useStoreSettings } from '@/store/settings';
+import { storeToRefs } from 'pinia';
+import TagsWidget from '@/components/widgets/TagsWidget.vue';
+import FollowersWidget from '@/components/widgets/FollowersWidget.vue';
+import DraftsWidget from '@/components/widgets/DraftsWidget.vue';
+import BookmarksWidget from '@/components/widgets/BookmarksWidget.vue';
+import XIcon from '@/components/icons/CloseIcon.vue';
+import CheckCircle from '@/components/icons/CheckCircle.vue';
+import PencilIcon from '@/components/icons/Pencil.vue';
+import BookmarksIcon from '@/components/icons/Bookmarks.vue';
 
-const settingsStore = useStoreSettings()
-const { primaryWidget, secondaryWidget, secondary2Widget } = storeToRefs(settingsStore)
-const showConfigure = ref<boolean>(false)
+const settingsStore = useStoreSettings();
+const { primaryWidget, secondaryWidget, secondary2Widget } = storeToRefs(settingsStore);
+const showConfigure = ref<boolean>(false);
 
 function changePrimary(w: `feed` | `editor`) {
 	// update state
-	settingsStore.setPrimaryWidget(w)
+	settingsStore.setPrimaryWidget(w);
 }
 function changeSecondary(w: `drafts` | `bookmarks`) {
 	// Update state
-	settingsStore.setSecondaryWidget(w)
+	settingsStore.setSecondaryWidget(w);
 }
 function changeSecondary2(w: `tags` | `followers`) {
 	// update state
-	settingsStore.setSecondary2Widget(w)
+	settingsStore.setSecondary2Widget(w);
 }
 </script>
 <template>

@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia'
+import { defineStore } from 'pinia';
 
 export const usePostsStore = defineStore(`posts`, {
 	state: () => {
@@ -7,9 +7,9 @@ export const usePostsStore = defineStore(`posts`, {
 			offset: 0,
 			sort: 'TOP',
 			finished: false,
-		}
+		};
 	},
 	persist: true,
 	getters: {},
 	actions: {},
-})
+});

@@ -1,37 +1,38 @@
 <script setup lang="ts">
-import ChevronLeft from '@/components/icons/ChevronLeft.vue'
-import XIcon from '@/components/icons/CloseIcon.vue'
-import Check from '@/components/icons/Check.vue'
-import { backgrounds, getBackground } from '@/config/backgrounds'
-import { getBGImage } from '@/plugins/background'
-import { colors, IColor, IMode, modes } from '@/config/colors'
-import { ref } from 'vue'
-import { useStoreSettings } from '@/store/settings'
-import { useStore } from '@/store/session'
-import { initColors } from '@/plugins/colors'
+import ChevronLeft from '@/components/icons/ChevronLeft.vue';
+import XIcon from '@/components/icons/CloseIcon.vue';
+import Check from '@/components/icons/Check.vue';
+import { backgrounds, getBackground } from '@/config/backgrounds';
+import { getBGImage } from '@/plugins/background';
+import { colors, modes } from '@/config/colors';
+import { ref } from 'vue';
+import { useStoreSettings } from '@/store/settings';
+import { useStore } from '@/store/session';
+import { initColors } from '@/plugins/colors';
 
-const settings = useStoreSettings()
-const session = useStore()
-console.log(getBackground(session.background))
-const selectedBG = ref(backgrounds[0])
-const showPopupBG = ref(false)
-const showPopupMode = ref(false)
-const showPopupColor = ref(false)
+const settings = useStoreSettings();
+const session = useStore();
+console.log(getBackground(session.background));
+const selectedBG = ref(backgrounds[0]);
+const showPopupBG = ref(false);
+const showPopupMode = ref(false);
+const showPopupColor = ref(false);
 
 function confirmBackgroundImage() {
 	if (selectedBG.value.id === session.background) {
-		return
+		return;
 	}
-	session.setBackground(selectedBG.value.id)
+	session.setBackground(selectedBG.value.id);
 }
 function setColorMode(mode: 'Light' | 'Dark' | 'OS') {
-	settings.setMode(mode)
-	initColors()
+	settings.setMode(mode);
+	initColors();
 }
 function setColor(color: `Green` | `Orange` | `Blue` | `Pink` | `Yellow`) {
-	console.log(color)
-	settings.setColor(color)
+	console.log(color);
+	settings.setColor(color);
 }
+function confirmColor() {}
 </script>
 
 <template>

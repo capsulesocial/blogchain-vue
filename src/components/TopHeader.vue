@@ -1,56 +1,56 @@
 <script setup lang="ts">
-import Logo from './icons/CapsuleLogo.vue'
-import MobileNav from './icons/MobileNav.vue'
-import HomeIcon from './icons/Home.vue'
-import DiscoverIcon from './icons/Discover.vue'
-import BookmarksIcon from './icons/BookmarkIcon.vue'
-import DashboardIcon from './icons/OverviewIcon.vue'
-import Crown2Icon from './icons/CrownEmptyIcon.vue'
-import Avatar from './../components/Avatar.vue'
-import { onMounted, PropType, ref } from 'vue'
-import { useStore } from '../store/session'
-import { useStoreSettings } from '@/store/settings'
-import ProfileIcon from './icons/ProfileIcon.vue'
-import SettingsIcon from './icons/SettingsIcon.vue'
-import LogoutIcon from './icons/LogoutIcon.vue'
-const sessionStore = useStore()
-const settings = useStoreSettings()
+import Logo from './icons/CapsuleLogo.vue';
+import MobileNav from './icons/MobileNav.vue';
+import HomeIcon from './icons/Home.vue';
+import DiscoverIcon from './icons/Discover.vue';
+import BookmarksIcon from './icons/BookmarkIcon.vue';
+import DashboardIcon from './icons/OverviewIcon.vue';
+import Crown2Icon from './icons/CrownEmptyIcon.vue';
+import Avatar from './../components/Avatar.vue';
+import { onMounted, PropType, ref } from 'vue';
+import { useStore } from '../store/session';
+import { useStoreSettings } from '@/store/settings';
+import ProfileIcon from './icons/ProfileIcon.vue';
+import SettingsIcon from './icons/SettingsIcon.vue';
+import LogoutIcon from './icons/LogoutIcon.vue';
+const sessionStore = useStore();
+const settings = useStoreSettings();
 
 const props = defineProps({
 	name: { type: String, required: true },
 	avatar: { type: String as PropType<string | ArrayBuffer>, required: true },
-})
+});
 
-const showMobileMenu = ref<boolean>(false)
-const showDropdown = ref<boolean>(false)
-const url = ref<string>(window.location.origin)
+const showMobileMenu = ref<boolean>(false);
+const showDropdown = ref<boolean>(false);
+const url = ref<string>(window.location.origin);
 
 // Auto-close event listener (only works with @click.stop to prevent bubbling)
 onMounted(() => {
 	window.addEventListener(`click`, (e) => {
 		if (!e) {
-			return
+			return;
 		}
 		if (showMobileMenu.value) {
-			showMobileMenu.value = false
+			showMobileMenu.value = false;
 		}
 		if (showDropdown.value) {
-			showDropdown.value = false
+			showDropdown.value = false;
 		}
-	})
-})
+	});
+});
 
 function toggleDropdown() {
-	showDropdown.value = !showDropdown.value
+	showDropdown.value = !showDropdown.value;
 }
 
 function toggleMobileMenu() {
-	showMobileMenu.value = !showMobileMenu.value
+	showMobileMenu.value = !showMobileMenu.value;
 }
 
 function logout() {
-	localStorage.clear()
-	window.location.replace(url.value + `/login`)
+	localStorage.clear();
+	window.location.replace(url.value + `/login`);
 }
 </script>
 
