@@ -42,7 +42,6 @@ function getAvatar(cid: string) {
 function handle(delta: number) {
 	const target = document.getElementById(`scrollable_content`) as HTMLElement
 	const top = target.scrollTop - delta * 12
-	console.log(`top`, target.scrollTop)
 	target.scrollTop = delta < 0 ? Math.ceil(top) : Math.floor(top)
 }
 
@@ -115,9 +114,8 @@ window.onwheel = document.onwheel = wheel
 				<TitleContainer v-if="routesWithTitle.includes($route.name as string)" />
 				<section class="modal-animation flex flex-row lg:mt-2 xl:mt-5">
 					<div
-						id="scrollable_content"
 						:class="fullPageRoutes.includes($route.name as string) ? `w-full` : `lg:w-7.5`"
-						class="min-h-80 h-80 from-lightBGStart to-lightBGStop dark:from-darkBGStart dark:to-darkBGStop border border-lightBorder z-10 w-full overflow-y-hidden rounded-t-lg bg-gradient-to-r shadow-lg"
+						class="min-h-61 h-61 bg-lightBG dark:bg-darkBGStop border border-lightBorder z-10 w-full overflow-y-hidden rounded-t-lg shadow-lg relative"
 					>
 						<router-view :key="$route.path" />
 					</div>
