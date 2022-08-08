@@ -82,5 +82,10 @@ onMounted(() => {
 			</div>
 		</div>
 	</nav>
-	<div v-for="i in 20" :key="i" class="w-full h-20 bg-gray1 rounded-lg my-2"></div>
+	<div v-for="i in 51" :key="i" class="w-full p-6">
+		<div class="bg-gray1 rounded-lg h-20">
+			<p v-if="i === 50">end</p>
+			<p v-else>{{ i }}</p>
+		</div>
+	</div>
 </template>
