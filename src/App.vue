@@ -39,10 +39,9 @@ function getAvatar(cid: string) {
  */
 function handle(delta: number) {
 	const target = document.getElementById(`scrollable_content`) as HTMLElement
-	console.log(target.scrollTop)
-	const fluid = delta > 0 ? 5 : -5
-	const top = target.scrollTop - fluid
-	target.scrollTop = top
+	const top = target.scrollTop - delta * 12
+	console.log(`top`, target.scrollTop)
+	target.scrollTop = delta < 0 ? Math.ceil(top) : Math.floor(top)
 }
 
 /** Event handler for mouse wheel event.
@@ -104,7 +103,7 @@ window.onwheel = document.onwheel = wheel
 		:style="{
 			backgroundImage: `url(` + getBGImage(store.background) + `)`,
 		}"
-		style="overscroll-behavior-y: none"
+		style="overscroll-behavior-y: none; scroll-behavior: smooth"
 	>
 		<!-- Wrapper -->
 		<div class="flex w-full justify-center">
