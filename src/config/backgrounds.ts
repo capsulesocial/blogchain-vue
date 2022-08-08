@@ -188,3 +188,12 @@ export const backgrounds: IBackground[] = [
 		label: `Yellow Mesh`,
 	},
 ]
+
+export function getBackground(id: string): IBackground {
+	for (const i in backgrounds) {
+		if (backgrounds[i].id === id) {
+			return backgrounds[i]
+		}
+	}
+	return backgrounds[0]
+}

@@ -2,7 +2,8 @@
 import ChevronLeft from '@/components/icons/ChevronLeft.vue'
 import XIcon from '@/components/icons/CloseIcon.vue'
 import Check from '@/components/icons/Check.vue'
-import { IBackground, backgrounds } from '@/config/backgrounds'
+import { backgrounds, getBackground } from '@/config/backgrounds'
+import { getBGImage } from '@/plugins/background'
 import { colors, IColor, IMode, modes } from '@/config/colors'
 import { ref } from 'vue'
 import { useStoreSettings } from '@/store/settings'
@@ -11,7 +12,7 @@ import { initColors } from '@/plugins/colors'
 
 const settings = useStoreSettings()
 const session = useStore()
-const profilebgImage = ref(backgrounds[0])
+console.log(getBackground(session.background))
 const selectedBG = ref(backgrounds[0])
 const showPopupBG = ref(false)
 const showPopupMode = ref(false)
@@ -45,10 +46,10 @@ function setColor(color: `Green` | `Orange` | `Blue` | `Pink` | `Yellow`) {
 			<h3 class="w-36 xl:w-56 font-semibold text-gray5 dark:text-gray3 text-sm">App Background</h3>
 			<button class="text-primary focus:outline-none flex flex-row items-center" @click="showPopupBG = true">
 				<p class="mr-4">
-					{{ profilebgImage.label }}
+					{{ session.background }}
 				</p>
 				<img
-					:src="settings.isDarkMode ? profilebgImage.dark : profilebgImage.light"
+					:src="getBGImage(session.background)"
 					class="h-20 w-32 rounded-lg bg-lightBG dark:bg-darkBG border border-lightBorder"
 				/>
 			</button>
