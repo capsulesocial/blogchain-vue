@@ -20,7 +20,7 @@ onMounted(() => {
 </script>
 
 <template>
-	<nav class="flex w-full flex-row justify-between text-sm rounded-t-lg">
+	<nav class="flex w-full flex-row justify-between text-sm rounded-lg bg-lightBG dark:bg-darkBGStop shadow-sm">
 		<div class="flex">
 			<button
 				:class="
@@ -82,8 +82,8 @@ onMounted(() => {
 			</div>
 		</div>
 	</nav>
-	<div v-for="i in 51" :key="i" class="w-full p-6">
-		<div class="bg-gray1 rounded-lg h-20">
+	<div id="scrollable_content" class="min-h-120 h-120 lg:min-h-220 lg:h-220 w-full overflow-y-hidden relative p-6">
+		<div v-for="i in 50" :key="i" class="bg-gray1 rounded-lg h-20 mb-4">
 			<p v-if="i === 50">end</p>
 			<p v-else>{{ i }}</p>
 		</div>
