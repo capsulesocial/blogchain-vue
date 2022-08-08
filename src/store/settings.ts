@@ -61,8 +61,10 @@ export const useStoreSettings = defineStore(`settings`, {
 			this.mode = mode
 		},
 		setDarkMode(isDark: boolean) {
-			console.log(isDark)
 			this.darkMode = isDark
+		},
+		setColor(c: `Green` | `Orange` | `Blue` | `Pink` | `Yellow`) {
+			this.color = c
 		},
 		setTopAlgorithm(alg: `Today` | `This week` | `This month` | `This year` | `All time`) {
 			this.lastTopAlgorithm = alg

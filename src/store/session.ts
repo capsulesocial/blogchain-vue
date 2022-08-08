@@ -32,6 +32,9 @@ export const useStore = defineStore(`session`, {
 				avatar: userData.avatar,
 			})
 		},
+		setBackground(bg: string) {
+			this.background = bg
+		},
 	},
 	getters: {},
 })

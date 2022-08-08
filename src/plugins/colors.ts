@@ -1,5 +1,10 @@
+import { reactive } from 'vue'
 import { useStore } from '../store/session'
 import { useStoreSettings } from '../store/settings'
+
+export const darkMode = reactive({
+	dark: false,
+})
 
 export function initColors() {
 	const store = useStore()
@@ -7,14 +12,12 @@ export function initColors() {
 
 	// add event listeners
 	const darkEventListener = (e: MediaQueryListEvent) => {
-		console.log(`darkEventLisener`)
 		if (e.matches && settings.mode === `OS`) {
 			document.documentElement.classList.add(`dark`)
 		}
 	}
 
 	const lightEventListener = (e: MediaQueryListEvent) => {
-		console.log(`lightEventListener`)
 		if (e.matches && settings.mode === `OS`) {
 			document.documentElement.classList.remove(`dark`)
 		}
