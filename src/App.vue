@@ -75,6 +75,19 @@ function wheel(event: any) {
 	event.returnValue = false
 }
 
+const mobileDelta = ref<number>(0)
+
+function mobileWheel(e: TouchEvent) {
+	let delta = 0
+	delta = (mobileDelta.value - e.touches[0].clientY) * -1
+	handle(delta)
+	mobileDelta.value = e.touches[0].clientY
+}
+
+function handleTouchStart(e: TouchEvent) {
+	mobileDelta.value = e.touches[0].clientY
+}
+
 // Run init methods
 onBeforeMount(() => {
 	store.login();
@@ -87,6 +100,8 @@ onBeforeMount(() => {
 // 	if (!store.$state.id) {
 // })
 if (window.addEventListener) window.addEventListener('DOMMouseScroll', wheel, false)
+if (window.addEventListener) window.addEventListener('touchstart', handleTouchStart, false)
+if (window.addEventListener) window.addEventListener('touchmove', mobileWheel, false)
 window.onwheel = document.onwheel = wheel
 </script>
 
