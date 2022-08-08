@@ -35,6 +35,48 @@ function getAvatar(cid: string) {
 		return;
 	}
 }
+
+/** This is high-level function.
+ * It must react to delta being more/less than zero.
+ */
+function handle(delta: number) {
+	const target = document.getElementById(`scrollable_content`) as HTMLElement
+	console.log(target.scrollTop)
+	const fluid = delta > 0 ? 5 : -5
+	const top = target.scrollTop - fluid
+	target.scrollTop = top
+}
+
+/** Event handler for mouse wheel event.
+ */
+function wheel(event: any) {
+	let delta = 0
+	if (!event) /* For IE. */ event = window.event
+	if (event.wheelDelta) {
+		/* IE/Opera. */
+		delta = event.wheelDelta / 120
+	} else if (event.detail) {
+		/** Mozilla case. */
+		/** In Mozilla, sign of delta is different than in IE.
+		 * Also, delta is multiple of 3.
+		 */
+		delta = -event.detail / 3
+	}
+
+	/** If delta is nonzero, handle it.
+	 * Basically, delta is now positive if wheel was scrolled up,
+	 * and negative, if wheel was scrolled down.
+	 */
+	if (delta) handle(delta)
+
+	/** Prevent default actions caused by mouse wheel.
+	 * That might be ugly, but we handle scrolls somehow
+	 * anyway, so don't bother here..
+	 */
+	if (event.preventDefault) event.preventDefault()
+	event.returnValue = false
+}
+
 // Run init methods
 onBeforeMount(() => {
 	store.login();
@@ -46,6 +88,8 @@ onBeforeMount(() => {
 // onMounted(async () => {
 // 	if (!store.$state.id) {
 // })
+if (window.addEventListener) window.addEventListener('DOMMouseScroll', wheel, false)
+window.onwheel = document.onwheel = wheel
 </script>
 
 <template>
@@ -62,6 +106,7 @@ onBeforeMount(() => {
 		:style="{
 			backgroundImage: `url(` + getBGImage(store.background) + `)`,
 		}"
+		style="overscroll-behavior-y: none"
 	>
 		<!-- Wrapper -->
 		<div class="flex w-full justify-center">
@@ -71,8 +116,9 @@ onBeforeMount(() => {
 				<TitleContainer v-if="routesWithTitle.includes($route.name as string)" />
 				<section class="modal-animation flex flex-row lg:mt-2 xl:mt-5">
 					<div
+						id="scrollable_content"
 						:class="fullPageRoutes.includes($route.name as string) ? `w-full` : `lg:w-7.5`"
-						class="min-h-80 h-80 from-lightBGStart to-lightBGStop dark:from-darkBGStart dark:to-darkBGStop border border-lightBorder z-10 w-full overflow-y-auto rounded-t-lg bg-gradient-to-r shadow-lg"
+						class="min-h-80 h-80 from-lightBGStart to-lightBGStop dark:from-darkBGStart dark:to-darkBGStop border border-lightBorder z-10 w-full overflow-y-hidden rounded-t-lg bg-gradient-to-r shadow-lg"
 					>
 						<router-view :key="$route.path" />
 					</div>
