@@ -41,7 +41,8 @@ function getAvatar(cid: string) {
  */
 function handle(delta: number) {
 	const target = document.getElementById(`scrollable_content`) as HTMLElement
-	const top = target.scrollTop - delta * 12
+	const speed = 15
+	const top = target.scrollTop - delta * speed
 	target.scrollTop = delta < 0 ? Math.ceil(top) : Math.floor(top)
 }
 
@@ -65,27 +66,15 @@ function wheel(event: any) {
 	 * Basically, delta is now positive if wheel was scrolled up,
 	 * and negative, if wheel was scrolled down.
 	 */
+	console.log(delta)
 	if (delta) handle(delta)
 
 	/** Prevent default actions caused by mouse wheel.
 	 * That might be ugly, but we handle scrolls somehow
 	 * anyway, so don't bother here..
 	 */
-	if (event.preventDefault) event.preventDefault()
+	// if (event.preventDefault) event.preventDefault()
 	event.returnValue = false
-}
-
-const mobileDelta = ref<number>(0)
-
-function mobileWheel(e: TouchEvent) {
-	let delta = 0
-	delta = (mobileDelta.value - e.touches[0].clientY) * -1
-	handle(delta)
-	mobileDelta.value = e.touches[0].clientY
-}
-
-function handleTouchStart(e: TouchEvent) {
-	mobileDelta.value = e.touches[0].clientY
 }
 
 // Run init methods
@@ -99,10 +88,13 @@ onBeforeMount(() => {
 // onMounted(async () => {
 // 	if (!store.$state.id) {
 // })
-if (window.addEventListener) window.addEventListener('DOMMouseScroll', wheel, false)
-if (window.addEventListener) window.addEventListener('touchstart', handleTouchStart, false)
-if (window.addEventListener) window.addEventListener('touchmove', mobileWheel, false)
-window.onwheel = document.onwheel = wheel
+
+/** Event listener for mouse wheel event,
+ * only for screens > 1024px (:lg size of tailwind where we hide side bar).
+ */
+if (window.screen.availWidth > 1024) {
+	if (window.addEventListener) window.addEventListener('wheel', wheel, false)
+}
 </script>
 
 <template>
