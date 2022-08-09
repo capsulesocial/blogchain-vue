@@ -14,8 +14,6 @@ useMeta({
 	htmlAttrs: { lang: 'en', amp: true },
 });
 
-const emit = defineEmits([`openFollowers`, `openFollowing`]);
-
 // refs
 // const id = ref<string>(router.currentRoute.value.params.id as string);
 const fromExternalSite = ref<boolean>(false);
