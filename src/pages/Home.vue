@@ -86,9 +86,9 @@ onMounted(() => {
 		id="scrollable_content"
 		class="min-h-115 h-115 lg:min-h-210 lg:h-210 xl:min-h-220 xl:h-220 w-full overflow-y-auto lg:overflow-y-hidden relative p-6"
 	>
-		<div v-for="i in 50" :key="i" class="bg-gray1 rounded-lg h-20 mb-4">
-			<p v-if="i === 50">end</p>
-			<p v-else>{{ i }}</p>
+		<div v-for="i in 50" :key="i" class="bg-gray1 rounded-lg h-20" :class="i === 50 ? `mb-0` : `mb-4`">
+			<p v-if="i < 50">{{ i }}</p>
+			<p v-else>end</p>
 		</div>
 	</div>
 </template>

@@ -39,7 +39,7 @@ function getAvatar(cid: string) {
  */
 function handle(delta: number) {
 	const target = document.getElementById(`scrollable_content`) as HTMLElement;
-	const speed = 15;
+	const speed = 20;
 	const top = target.scrollTop - delta * speed;
 	target.scrollTop = delta < 0 ? Math.ceil(top) : Math.floor(top);
 }
