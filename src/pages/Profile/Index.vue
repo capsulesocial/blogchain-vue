@@ -14,8 +14,10 @@ useMeta({
 	htmlAttrs: { lang: 'en', amp: true },
 });
 
+const emit = defineEmits([`openFollowers`, `openFollowing`]);
+
 // refs
-const id = ref<string>(router.currentRoute.value.params.id as string);
+// const id = ref<string>(router.currentRoute.value.params.id as string);
 const fromExternalSite = ref<boolean>(false);
 const selfView = ref<boolean>(true);
 const visitAvatar = ref<string | ArrayBuffer>(``);
@@ -196,7 +198,7 @@ function getStyles(tab: string): string {
 							</div>
 							<button
 								class="pl-5 text-sm text-gray5 dark:text-gray3 hover:text-primary dark:hover:text-primary hover:font-bold"
-								@click="$emit(`openFollowers`)"
+								@click="emit(`openFollowers`)"
 							>
 								<span
 									class="text-lightPrimaryText dark:text-darkPrimaryText hover:text-primary dark:hover:text-primary font-bold"
@@ -206,7 +208,7 @@ function getStyles(tab: string): string {
 							</button>
 							<button
 								class="pl-5 text-sm text-gray5 dark:text-gray3 hover:text-primary dark:hover:text-primary hover:font-bold"
-								@click="$emit(`openFollowing`)"
+								@click="emit(`openFollowing`)"
 							>
 								<span
 									class="text-lightPrimaryText dark:text-darkPrimaryText hover:text-primary dark:hover:text-primary font-bold"
