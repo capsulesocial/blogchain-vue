@@ -962,13 +962,13 @@
     "@babel/helper-validator-identifier" "^7.18.6"
     to-fast-properties "^2.0.0"
 
-"@capsulesocial/capsule-config@^1.2.6":
-  version "1.2.6"
-  resolved "https://registry.yarnpkg.com/@capsulesocial/capsule-config/-/capsule-config-1.2.6.tgz#639d987e4227245efa9576952a3d54dcb2619bad"
-  integrity sha512-bkS9fBrvDZoshzR3u7n7wh3LO2Sf4RMrUrX1pJrBDglSJfsIBdEnYDXWgNYmRggnQyBXoUTPPRhtNdOMoxHmSw==
+"@capsulesocial/capsule-config@^1.2.7":
+  version "1.2.7"
+  resolved "https://registry.yarnpkg.com/@capsulesocial/capsule-config/-/capsule-config-1.2.7.tgz#08fb6521b02b46c37ace8bd269ee63debf328b53"
+  integrity sha512-MUdkSRTY17fgcRAzh6nBhqsIUKtJ0wArbBtBjgcyZv+GG0VG9dJps2njXlfG9eK4TBvU+d/Zowb2kWcoWXAMWg==
   dependencies:
-    "@tailwindcss/typography" "^0.5.2"
-    tailwindcss "^3.0.24"
+    "@tailwindcss/typography" "^0.5.4"
+    tailwindcss "^3.1.8"
 
 "@capsulesocial/ipfs-wrapper@1.0.1":
   version "1.0.1"
@@ -1575,7 +1575,7 @@
     "@stablelib/random" "^1.0.1"
     "@stablelib/wipe" "^1.0.1"
 
-"@tailwindcss/typography@^0.5.2":
+"@tailwindcss/typography@^0.5.4":
   version "0.5.4"
   resolved "https://registry.yarnpkg.com/@tailwindcss/typography/-/typography-0.5.4.tgz#ad8c9e6808bae297bb7826742e4789f2a9f09a48"
   integrity sha512-QEdg40EmGvE7kKoDei8zr5sf4D1pIayHj4R31bH3lX8x2BtTiR+jNejYPOkhbmy3DXgkMF9jC8xqNiGFAuL9Sg==
@@ -5729,7 +5729,7 @@ ipfs-core-utils@^0.14.3:
     timeout-abort-controller "^3.0.0"
     uint8arrays "^3.0.0"
 
-ipfs-core@0.14.3:
+ipfs-core@0.14.3, ipfs-core@^0.14.3:
   version "0.14.3"
   resolved "https://registry.yarnpkg.com/ipfs-core/-/ipfs-core-0.14.3.tgz#e2fe617b67d63a839d82a88e1af849181c6453ed"
   integrity sha512-2Xxcoesc15IVzIDwAFBaOtLBZo3lKblFQZDX3n4yDckieyHF8TvgBgSgsqp2puTk0szp9lU4xsZA2cRNeJxIbg==
@@ -9682,10 +9682,38 @@ svgo@^2.7.0:
     picocolors "^1.0.0"
     stable "^0.1.8"
 
-tailwindcss@^3.0.24, tailwindcss@^3.1.7:
+tailwindcss@^3.1.7:
   version "3.1.7"
   resolved "https://registry.yarnpkg.com/tailwindcss/-/tailwindcss-3.1.7.tgz#ce99425f30a74e01457a2e6a724463b0df3159ac"
   integrity sha512-r7mgumZ3k0InfVPpGWcX8X/Ut4xBfv+1O/+C73ar/m01LxGVzWvPxF/w6xIUPEztrCoz7axfx0SMdh8FH8ZvRQ==
+  dependencies:
+    arg "^5.0.2"
+    chokidar "^3.5.3"
+    color-name "^1.1.4"
+    detective "^5.2.1"
+    didyoumean "^1.2.2"
+    dlv "^1.1.3"
+    fast-glob "^3.2.11"
+    glob-parent "^6.0.2"
+    is-glob "^4.0.3"
+    lilconfig "^2.0.6"
+    normalize-path "^3.0.0"
+    object-hash "^3.0.0"
+    picocolors "^1.0.0"
+    postcss "^8.4.14"
+    postcss-import "^14.1.0"
+    postcss-js "^4.0.0"
+    postcss-load-config "^3.1.4"
+    postcss-nested "5.0.6"
+    postcss-selector-parser "^6.0.10"
+    postcss-value-parser "^4.2.0"
+    quick-lru "^5.1.1"
+    resolve "^1.22.1"
+
+tailwindcss@^3.1.8:
+  version "3.1.8"
+  resolved "https://registry.yarnpkg.com/tailwindcss/-/tailwindcss-3.1.8.tgz#4f8520550d67a835d32f2f4021580f9fddb7b741"
+  integrity sha512-YSneUCZSFDYMwk+TGq8qYFdCA3yfBRdBlS7txSq0LUmzyeqRe3a8fBQzbz9M3WS/iFT4BNf/nmw9mEzrnSaC0g==
   dependencies:
     arg "^5.0.2"
     chokidar "^3.5.3"
