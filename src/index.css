@@ -102,9 +102,7 @@
   } */
   /* width */
   ::-webkit-scrollbar {
-    padding-top: 5px;
-    margin-top: 5px;
-    width: 3px;
+    display: none
   }
 
   /* Track */

@@ -82,7 +82,10 @@ onMounted(() => {
 			</div>
 		</div>
 	</nav>
-	<div id="scrollable_content" class="min-h-120 h-120 lg:min-h-220 lg:h-220 w-full overflow-y-hidden relative p-6">
+	<div
+		id="scrollable_content"
+		class="min-h-115 h-115 lg:min-h-210 lg:h-210 xl:min-h-220 xl:h-220 w-full overflow-y-auto lg:overflow-y-hidden relative p-6"
+	>
 		<div v-for="i in 50" :key="i" class="bg-gray1 rounded-lg h-20 mb-4">
 			<p v-if="i === 50">end</p>
 			<p v-else>{{ i }}</p>
