@@ -10,8 +10,9 @@ import { useStore } from './store/session';
 import { useStoreSettings } from './store/settings';
 import { initColors } from './plugins/colors';
 import { getBGImage } from './plugins/background';
-import { onBeforeMount, ref } from 'vue';
+import { onBeforeMount, onMounted, ref } from 'vue';
 import { useMeta } from 'vue-meta';
+import { wheel } from '@/helpers/scrolling';
 // import { useRouter } from 'vue-router'
 
 const store = useStore();
@@ -36,47 +37,6 @@ function getAvatar(cid: string) {
 	}
 }
 
-/** This is high-level function.
- * It must react to delta being more/less than zero.
- */
-function handle(delta: number) {
-	const target = document.getElementById(`scrollable_content`) as HTMLElement;
-	const speed = 20;
-	const top = target.scrollTop - delta * speed;
-	target.scrollTop = delta < 0 ? Math.ceil(top) : Math.floor(top);
-}
-
-/** Event handler for mouse wheel event.
- */
-function wheel(event: any) {
-	let delta = 0;
-	if (!event) /* For IE. */ event = window.event;
-	if (event.wheelDelta) {
-		/* IE/Opera. */
-		delta = event.wheelDelta / 120;
-	} else if (event.detail) {
-		/** Mozilla case. */
-		/** In Mozilla, sign of delta is different than in IE.
-		 * Also, delta is multiple of 3.
-		 */
-		delta = -event.detail / 3;
-	}
-
-	/** If delta is nonzero, handle it.
-	 * Basically, delta is now positive if wheel was scrolled up,
-	 * and negative, if wheel was scrolled down.
-	 */
-	console.log(delta);
-	if (delta) handle(delta);
-
-	/** Prevent default actions caused by mouse wheel.
-	 * That might be ugly, but we handle scrolls somehow
-	 * anyway, so don't bother here..
-	 */
-	// if (event.preventDefault) event.preventDefault()
-	event.returnValue = false;
-}
-
 // Run init methods
 onBeforeMount(() => {
 	store.login();
@@ -85,16 +45,14 @@ onBeforeMount(() => {
 	getAvatar(store.$state.avatar);
 });
 
-// onMounted(async () => {
-// 	if (!store.$state.id) {
-// })
-
-/** Event listener for mouse wheel event,
- * only for screens > 1024px (:lg size of tailwind where we hide side bar).
- */
-if (window.screen.availWidth > 1024) {
-	if (window.addEventListener) window.addEventListener('wheel', wheel, false);
-}
+onMounted(() => {
+	/** Event listener for mouse wheel event,
+	 * only for screens > 1024px (:lg size of tailwind where we hide side bar).
+	 */
+	if (window.screen.availWidth > 1024) {
+		if (window.addEventListener) window.addEventListener('wheel', wheel);
+	}
+});
 </script>
 
 <template>
