@@ -10,7 +10,6 @@ import { useStore } from './store/session'
 import { useStoreSettings } from './store/settings'
 import { initColors } from './plugins/colors'
 import { getBGImage } from './plugins/background'
-import { setColorMode } from './plugins/colormode'
 import { onBeforeMount, ref } from 'vue'
 import { useMeta } from 'vue-meta'
 // import { useRouter } from 'vue-router'
@@ -40,7 +39,6 @@ function getAvatar(cid: string) {
 onBeforeMount(() => {
 	store.login()
 	settings.sync()
-	setColorMode(settings.mode)
 	initColors()
 	getAvatar(store.$state.avatar)
 })

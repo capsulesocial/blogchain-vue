@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { watch } from 'vue'
 // https://pinia.vuejs.org/core-concepts/
 
 function getLocalSession() {
@@ -31,6 +32,17 @@ export const useStore = defineStore(`session`, {
 				background: userData.background,
 				avatar: userData.avatar,
 			})
+			watch(
+				this.$state,
+				(state) => {
+					// persist the whole state to the local storage whenever it changes
+					localStorage.setItem('capsule-store-v2', JSON.stringify(state))
+				},
+				{ deep: true },
+			)
+		},
+		setBackground(bg: string) {
+			this.background = bg
 		},
 	},
 	getters: {},

@@ -1,24 +1,16 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useStoreSettings } from '../store/settings'
 
 import CapsuleIcon from './icons/CapsuleIcon.vue'
 
+const settings = useStoreSettings()
 const showInfo = ref<boolean>(false)
-
 const loadingIPFS = ref<boolean>(false)
 const initIPFS = ref<boolean>(false)
 const startIPFS = ref<boolean>(false)
 const initNodes = ref<boolean>(false)
-
 const nodes = ref<number>(0)
-
-const isDark = ref<boolean>(false)
-
-if (document.documentElement.classList.contains(`dark`)) {
-	isDark.value = true
-} else {
-	isDark.value = false
-}
 </script>
 
 <template>
@@ -60,7 +52,7 @@ if (document.documentElement.classList.contains(`dark`)) {
 		<div
 			v-show="showInfo"
 			class="absolute z-10 border-lightBorder modal-animation rounded-lg border bg-lightBG dark:bg-gray7 p-2 shadow-lg text-gray5 dark:text-gray1 self-center text-xs"
-			:class="isDark ? `NodesInfoOpenDark` : `NodesInfoOpen`"
+			:class="settings.isDarkMode ? `NodesInfoOpenDark` : `NodesInfoOpen`"
 			style="top: -5px; right: 205px; width: 138%"
 		>
 			Number of hosts on Blogchain's public network currently serving content
