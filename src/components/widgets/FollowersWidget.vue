@@ -35,7 +35,7 @@ const followers = ref<Profile[]>([
 				<span> It seems no one is following you yet </span>
 			</p>
 			<HorizontalProfilePreview v-for="profile in followers" :key="profile.id" :profile="profile" />
-			<button class="text-primary text-sm mt-2" @click="$emit(``)">Show more</button>
+			<button class="text-primary text-sm mt-2">Show more</button>
 		</div>
 	</div>
 </template>

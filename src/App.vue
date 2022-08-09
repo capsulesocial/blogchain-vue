@@ -12,7 +12,6 @@ import { initColors } from './plugins/colors';
 import { getBGImage } from './plugins/background';
 import { onBeforeMount, ref } from 'vue';
 import { useMeta } from 'vue-meta';
-// import { useRouter } from 'vue-router'
 
 const store = useStore();
 const settings = useStoreSettings();
@@ -20,7 +19,6 @@ const avatar = ref<string>(``);
 const unauthRoutes = ref<string[]>([`Login`, `Register`]);
 const fullPageRoutes = ref<string[]>([`Payment Policy`, `Content Policy`]);
 const routesWithTitle = ref<string[]>([`Home`, `Discover`, `Bookmarks`]);
-// const router = useRouter()
 
 // meta tags
 
