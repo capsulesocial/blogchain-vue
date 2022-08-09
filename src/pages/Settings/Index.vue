@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import ChevronRight from '@/components/icons/ChevronRight.vue'
-import ProfileIcon from '@/components/icons/ProfileIcon.vue'
-import BrushIcon from '@/components/icons/Brush.vue'
+import ChevronRight from '@/components/icons/ChevronRight.vue';
+import ProfileIcon from '@/components/icons/ProfileIcon.vue';
+import BrushIcon from '@/components/icons/Brush.vue';
 </script>
 
 <template>

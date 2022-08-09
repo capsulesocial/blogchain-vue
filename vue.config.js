@@ -1,13 +1,12 @@
-const { defineConfig } = require('@vue/cli-service')
-const webpack = require('webpack')
-const NodePolyfillPlugin = require('node-polyfill-webpack-plugin')
+const { defineConfig } = require('@vue/cli-service');
+const webpack = require('webpack');
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 
 module.exports = defineConfig({
 	devServer: {
 		port: 3000,
 	},
 	transpileDependencies: true,
-	publicPath: process.env.NODE_ENV === 'production' ? '/' : '/',
 	configureWebpack: {
 		plugins: [
 			new webpack.ProvidePlugin({
@@ -26,4 +25,4 @@ module.exports = defineConfig({
 			},
 		},
 	},
-})
+});

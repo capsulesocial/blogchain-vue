@@ -1,26 +1,26 @@
-import { createWebHistory, createRouter } from 'vue-router'
-import Index from '../pages/Index.vue'
-import Home from '../pages/Home.vue'
-import Discover from '../pages/Discover/Index.vue'
-import Bookmarks from '../pages/Bookmarks.vue'
-import Post from '../pages/Post.vue'
-import Login from '@/pages/Login.vue'
-import Register from '@/pages/Register.vue'
-import Category from '@/pages/Discover/Category.vue'
-import Profile from '@/pages/Profile/Index.vue'
-import Comments from '@/pages/Profile/Comments.vue'
-import Reposts from '@/pages/Profile/Reposts.vue'
-import Tag from '@/pages/Tag.vue'
-import Help from '@/pages/Help.vue'
-import Subscriptions from '@/pages/Subscriptions.vue'
-import Settings from '@/pages/Settings/Index.vue'
-import SettingsNetwork from '@/pages/Settings/Network.vue'
-import SettingsSecurity from '@/pages/Settings/Security.vue'
-import SettingsStyling from '@/pages/Settings/Styling.vue'
-import SettingsAccount from '@/pages/Settings/Account.vue'
-import PaymentPolicy from '@/pages/PaymentPolicy.vue'
-import ContentPolicy from '@/pages/ContentPolicy.vue'
-import { useStore } from '@/store/session'
+import { createWebHistory, createRouter } from 'vue-router';
+import Index from '../pages/Index.vue';
+import Home from '../pages/Home.vue';
+import Discover from '../pages/Discover/Index.vue';
+import Bookmarks from '../pages/Bookmarks.vue';
+import Post from '../pages/Post.vue';
+import Login from '@/pages/Login.vue';
+import Register from '@/pages/Register.vue';
+import Category from '@/pages/Discover/Category.vue';
+import Profile from '@/pages/Profile/Index.vue';
+import Comments from '@/pages/Profile/Comments.vue';
+import Reposts from '@/pages/Profile/Reposts.vue';
+import Tag from '@/pages/Tag.vue';
+import Help from '@/pages/Help.vue';
+import Subscriptions from '@/pages/Subscriptions.vue';
+import Settings from '@/pages/Settings/Index.vue';
+import SettingsNetwork from '@/pages/Settings/Network.vue';
+import SettingsSecurity from '@/pages/Settings/Security.vue';
+import SettingsStyling from '@/pages/Settings/Styling.vue';
+import SettingsAccount from '@/pages/Settings/Account.vue';
+import PaymentPolicy from '@/pages/PaymentPolicy.vue';
+import ContentPolicy from '@/pages/ContentPolicy.vue';
+import { useStore } from '@/store/session';
 
 const routes = [
 	{
@@ -200,21 +200,21 @@ const routes = [
 			title: 'PaymentPolicy - Blogchain',
 		},
 	},
-]
+];
 
 const router = createRouter({
 	history: createWebHistory(),
 	routes,
-})
+});
 
 router.beforeEach(async (to) => {
-	const store = useStore()
+	const store = useStore();
 	if (to.meta.requiresAuth && !store.$state.id) {
-		window.location.href = window.location.origin + '/login'
+		window.location.href = window.location.origin + '/login';
 	}
 	if (to.meta.title) {
-		;(document as any).title = to.meta.title
+		(document as any).title = to.meta.title;
 	}
-})
+});
 
-export default router
+export default router;

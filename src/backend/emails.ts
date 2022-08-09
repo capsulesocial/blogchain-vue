@@ -1,5 +1,5 @@
-import { AxiosError } from 'axios'
-import { genericRequest } from './utilities/request'
+import { AxiosError } from 'axios';
+import { genericRequest } from './utilities/request';
 
 export enum EmailSubscriptionMode {
 	AllPosts = `AllPosts`,
@@ -7,20 +7,20 @@ export enum EmailSubscriptionMode {
 }
 
 export interface IEmailSubscription {
-	_id?: string
-	username?: string
-	authorID: string
-	email: string
-	verified: boolean
-	createdAt: Date
-	updatedAt: Date
-	topics: string[]
-	mode: EmailSubscriptionMode
+	_id?: string;
+	username?: string;
+	authorID: string;
+	email: string;
+	verified: boolean;
+	createdAt: Date;
+	updatedAt: Date;
+	topics: string[];
+	mode: EmailSubscriptionMode;
 }
 
 export interface UserEmail {
-	email: string
-	authorSubbed: boolean
+	email: string;
+	authorSubbed: boolean;
 }
 
 export async function startEmailSubscription(
@@ -36,19 +36,19 @@ export async function startEmailSubscription(
 			email,
 			topics,
 			mode,
-		}
+		};
 		const response = await genericRequest({
 			method: `post`,
 			path: `/emails/auth/subscribe`,
 			username,
 			body,
-		})
-		return response
+		});
+		return response;
 	} catch (err) {
 		if (err instanceof AxiosError && err.response) {
-			throw new Error(err.response.data?.error ?? err.message)
+			throw new Error(err.response.data?.error ?? err.message);
 		}
-		throw new Error(`Network error: ${err}`)
+		throw new Error(`Network error: ${err}`);
 	}
 }
 
@@ -58,13 +58,13 @@ export async function listAllAuthors(username: string) {
 			method: `get`,
 			path: `/emails/authors`,
 			username,
-		})
-		return response.data
+		});
+		return response.data;
 	} catch (err) {
 		if (err instanceof AxiosError && err.response) {
-			throw new Error(err.response.data?.error ?? err.message)
+			throw new Error(err.response.data?.error ?? err.message);
 		}
-		throw new Error(`Network error: ${err}`)
+		throw new Error(`Network error: ${err}`);
 	}
 }
 
@@ -75,13 +75,13 @@ export async function listForAuthor(authorID: string, username: string) {
 			path: `/emails/subscribed`,
 			params: { authorID },
 			username,
-		})
-		return response.data
+		});
+		return response.data;
 	} catch (err) {
 		if (err instanceof AxiosError && err.response) {
-			throw new Error(err.response.data?.error ?? err.message)
+			throw new Error(err.response.data?.error ?? err.message);
 		}
-		throw new Error(`Network error: ${err}`)
+		throw new Error(`Network error: ${err}`);
 	}
 }
 
@@ -92,13 +92,13 @@ export async function listEmails(username: string, authorID: string) {
 			path: `/emails/list`,
 			username,
 			params: { authorID },
-		})
-		return response.data
+		});
+		return response.data;
 	} catch (err) {
 		if (err instanceof AxiosError && err.response) {
-			throw new Error(err.response.data?.error ?? err.message)
+			throw new Error(err.response.data?.error ?? err.message);
 		}
-		throw new Error(`Network error: ${err}`)
+		throw new Error(`Network error: ${err}`);
 	}
 }
 
@@ -108,12 +108,12 @@ export async function deleteSubscription(username: string, id: string) {
 			method: `delete`,
 			path: `/emails/${id}`,
 			username,
-		})
-		return response.data
+		});
+		return response.data;
 	} catch (err) {
 		if (err instanceof AxiosError && err.response) {
-			throw new Error(err.response.data?.error ?? err.message)
+			throw new Error(err.response.data?.error ?? err.message);
 		}
-		throw new Error(`Network error: ${err}`)
+		throw new Error(`Network error: ${err}`);
 	}
 }

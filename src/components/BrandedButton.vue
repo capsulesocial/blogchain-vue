@@ -1,22 +1,22 @@
 <script setup lang="ts">
-import { toRefs } from 'vue'
-import SpinnerIcon from './icons/SpinnerIcon.vue'
+import { toRefs } from 'vue';
+import SpinnerIcon from './icons/SpinnerIcon.vue';
 
 const props = defineProps({
 	text: { type: String, required: true },
 	action: {
 		type: Function,
 		default: () => {
-			console.log(`button clicked with no action passed as prop!`)
+			console.log(`button clicked with no action passed as prop!`);
 		},
 	},
 	loading: Boolean,
-})
+});
 
 function triggerAction() {
-	props.action()
+	props.action();
 }
-const { text } = toRefs(props)
+const { text } = toRefs(props);
 </script>
 
 <template>

@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
 
 const props = defineProps({
 	enabled: Boolean,
-})
-const emit = defineEmits([`toggle`])
+});
+const emit = defineEmits([`toggle`]);
 
-const active = ref<boolean>(props.enabled)
+const active = ref<boolean>(props.enabled);
 
 function toggleSwitch() {
-	active.value = !active.value
-	emit(`toggle`)
+	active.value = !active.value;
+	emit(`toggle`);
 }
 </script>
 

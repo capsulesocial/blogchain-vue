@@ -51,6 +51,6 @@ const textLimits = {
 		min: 0,
 		max: 100,
 	},
-}
+};
 
-export default textLimits
+export default textLimits;

@@ -5,19 +5,19 @@ const props = defineProps({
 	action: {
 		type: Function,
 		default: () => {
-			return null
+			return null;
 		},
 	},
-})
+});
 
 function getStyles(): string {
-	let res = ``
+	let res = ``;
 	if (!props.thin) {
-		res += ` py-3 px-6`
+		res += ` py-3 px-6`;
 	} else {
-		res += ` py-1 px-4`
+		res += ` py-1 px-4`;
 	}
-	return res
+	return res;
 }
 </script>
 

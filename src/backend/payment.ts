@@ -1,11 +1,11 @@
-import axios, { AxiosError } from 'axios'
-import { capsuleServer } from './utilities/config'
-import { genericRequest } from './utilities/request'
-import { SubscriptionTier } from '@/store/paymentProfile'
+import axios, { AxiosError } from 'axios';
+import { capsuleServer } from './utilities/config';
+import { genericRequest } from './utilities/request';
+import { SubscriptionTier } from '@/store/paymentProfile';
 
 export interface IReaderProfile {
-	username: string
-	email?: string
+	username: string;
+	email?: string;
 }
 
 export async function startSubscriptionPayment(
@@ -16,7 +16,7 @@ export async function startSubscriptionPayment(
 	email: string,
 	storeEmail: boolean,
 ) {
-	const amount = getAmountFromTier(period, tier)
+	const amount = getAmountFromTier(period, tier);
 	try {
 		const body = {
 			tierId: tier._id,
@@ -25,19 +25,19 @@ export async function startSubscriptionPayment(
 			email,
 			storeEmail,
 			paymentMethodId,
-		}
+		};
 		const response = await genericRequest({
 			method: `post`,
 			path: `/pay/stripe/subscribe/start`,
 			username,
 			body,
-		})
-		return response
+		});
+		return response;
 	} catch (err) {
 		if (err instanceof AxiosError && err.response) {
-			throw new Error(err.response.data?.error ?? err.message)
+			throw new Error(err.response.data?.error ?? err.message);
 		}
-		throw new Error(`Network error: ${err}`)
+		throw new Error(`Network error: ${err}`);
 	}
 }
 
@@ -46,19 +46,19 @@ export async function confirmSubscriptionPayment(username: string, paymentAttemp
 		const body = {
 			paymentAttemptId,
 			paymentIntentId,
-		}
+		};
 		const response = await genericRequest({
 			method: `post`,
 			path: `/pay/stripe/subscribe/confirm`,
 			username,
 			body,
-		})
-		return response
+		});
+		return response;
 	} catch (err) {
 		if (err instanceof AxiosError && err.response) {
-			throw new Error(err.response.data?.error ?? err.message)
+			throw new Error(err.response.data?.error ?? err.message);
 		}
-		throw new Error(`Network error: ${err}`)
+		throw new Error(`Network error: ${err}`);
 	}
 }
 
@@ -69,43 +69,43 @@ export async function switchSubscriptionTier(
 	period: string,
 ) {
 	try {
-		const amount = getAmountFromTier(period, newTier)
+		const amount = getAmountFromTier(period, newTier);
 		const body = {
 			subscriptionId,
 			tierId: newTier._id,
 			amount,
 			period,
-		}
+		};
 		const response = await genericRequest({
 			method: `post`,
 			path: `/pay/stripe/subscribe/switch`,
 			username,
 			body,
-		})
-		return response
+		});
+		return response;
 	} catch (err) {
 		if (err instanceof AxiosError && err.response) {
-			throw new Error(err.response.data?.error ?? err.message)
+			throw new Error(err.response.data?.error ?? err.message);
 		}
-		throw new Error(`Network error: ${err}`)
+		throw new Error(`Network error: ${err}`);
 	}
 }
 
 export async function getBillingPortalUrl(username: string, subscriptionId: string): Promise<string> {
-	const body = { subscriptionId }
+	const body = { subscriptionId };
 	const response = await genericRequest({
 		method: `post`,
 		path: `/pay/stripe/connect/billingportal`,
 		username,
 		body,
-	})
+	});
 
-	return response.url as string
+	return response.url as string;
 }
 
 export async function retrievePaymentProfile(username: string) {
-	const response = await axios.get(`${capsuleServer}/pay/profile/${username}`)
-	return response.data
+	const response = await axios.get(`${capsuleServer}/pay/profile/${username}`);
+	return response.data;
 }
 
 export async function retrieveReaderProfile(username: string) {
@@ -113,71 +113,71 @@ export async function retrieveReaderProfile(username: string) {
 		method: `get`,
 		path: `/pay/reader`,
 		username,
-	})
+	});
 
-	return response
+	return response;
 }
 
 export function getCurrencySymbol(currency: string) {
 	switch (currency) {
 		case `usd`:
-			return `$`
+			return `$`;
 		case `aed`:
-			return `د.إ`
+			return `د.إ`;
 		case `aud`:
-			return `A$`
+			return `A$`;
 		case `bgn`:
-			return `лв`
+			return `лв`;
 		case `brl`:
-			return `R$`
+			return `R$`;
 		case `cad`:
-			return `C$`
+			return `C$`;
 		case `chf`:
-			return `Fr`
+			return `Fr`;
 		case `czk`:
-			return `Kč`
+			return `Kč`;
 		case `dkk`:
-			return `kr`
+			return `kr`;
 		case `eur`:
-			return `€`
+			return `€`;
 		case `gbp`:
-			return `£`
+			return `£`;
 		case `hkd`:
-			return `HK$`
+			return `HK$`;
 		case `huf`:
-			return `Ft`
+			return `Ft`;
 		case `inr`:
-			return `₹`
+			return `₹`;
 		case `jpy`:
-			return `¥`
+			return `¥`;
 		case `mxn`:
-			return `M$`
+			return `M$`;
 		case `myr`:
-			return `RM`
+			return `RM`;
 		case `nok`:
-			return `kr`
+			return `kr`;
 		case `NZD`:
-			return `N$`
+			return `N$`;
 		case `pln`:
-			return `zł`
+			return `zł`;
 		case `ron`:
-			return `lei`
+			return `lei`;
 		case `sek`:
-			return `kr`
+			return `kr`;
 		case `sgd`:
-			return `S$`
+			return `S$`;
 		default:
-			return currency
+			return currency;
 	}
 }
 
 export function getAmountFromTier(period: string, tier: SubscriptionTier) {
 	if (period === `month`) {
-		return tier.monthlyPrice
+		return tier.monthlyPrice;
 	} else if (period === `year`) {
-		return tier.yearlyPrice
+		return tier.yearlyPrice;
 	}
-	return 0
+	return 0;
 }
 
 export function getZeroDecimalAmount(currency: string, amount: number) {
@@ -198,11 +198,11 @@ export function getZeroDecimalAmount(currency: string, amount: number) {
 		`xaf`,
 		`xof`,
 		`xpf`,
-	]
+	];
 
 	if (zeroDecimalCurrencies.includes(currency)) {
-		return amount
+		return amount;
 	}
 
-	return amount * 100
+	return amount * 100;
 }

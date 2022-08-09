@@ -1,10 +1,10 @@
-import Toastify from 'toastify-js'
+import Toastify from 'toastify-js';
 
-import SuccessAvatar from '../assets/images/util/success.png'
-import WarningAvatar from '../assets/images/util/warning.png'
-import ErrorAvatar from '../assets/images/util/error.png'
-import MesageAvatar from '../assets/images/util/message.png'
-import { AxiosError } from 'axios'
+import SuccessAvatar from '../assets/images/util/success.png';
+import WarningAvatar from '../assets/images/util/warning.png';
+import ErrorAvatar from '../assets/images/util/error.png';
+import MesageAvatar from '../assets/images/util/message.png';
+import { AxiosError } from 'axios';
 
 export function toastSuccess(text: string): void {
 	Toastify({
@@ -34,7 +34,7 @@ export function toastSuccess(text: string): void {
 			flexDirection: `row-reverse`,
 		},
 		onClick() {}, // Callback after click
-	}).showToast()
+	}).showToast();
 }
 
 export function toastWarning(text: string): void {
@@ -64,7 +64,7 @@ export function toastWarning(text: string): void {
 			flexDirection: `row-reverse`,
 		},
 		onClick() {}, // Callback after click
-	}).showToast()
+	}).showToast();
 }
 
 export function toastError(text: string): void {
@@ -96,27 +96,27 @@ export function toastError(text: string): void {
 			flexDirection: `row-reverse`,
 		},
 		onClick() {}, // Callback after click
-	}).showToast()
+	}).showToast();
 }
 
 export function handleError(err: unknown, situation = ''): void {
 	if (err instanceof AxiosError) {
 		if (!err.response) {
-			toastError(`Network error, please try again`)
-			return
+			toastError(`Network error, please try again`);
+			return;
 		}
 		if (err.response.status === 429) {
-			toastError(`Too many requests, please try again in a minute`)
-			return
+			toastError(`Too many requests, please try again in a minute`);
+			return;
 		}
-		toastError(err.response.data.error)
-		return
+		toastError(err.response.data.error);
+		return;
 	}
 	if (err instanceof Error) {
-		toastError(err.message)
-		return
+		toastError(err.message);
+		return;
 	}
-	throw err
+	throw err;
 }
 
 export function toastMessage(text: string): void {
@@ -147,5 +147,5 @@ export function toastMessage(text: string): void {
 			flexDirection: `row-reverse`,
 		},
 		onClick() {}, // Callback after click
-	}).showToast()
+	}).showToast();
 }

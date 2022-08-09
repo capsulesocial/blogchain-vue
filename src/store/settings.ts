@@ -1,12 +1,12 @@
-import { defineStore } from 'pinia'
+import { defineStore } from 'pinia';
 // https://pinia.vuejs.org/core-concepts/
 
 function getLocalSettings() {
-	const ls = window.localStorage.getItem(`capsule-store-v2`)
+	const ls = window.localStorage.getItem(`capsule-store-v2`);
 	if (!ls) {
-		return null
+		return null;
 	}
-	return JSON.parse(ls).settings
+	return JSON.parse(ls).settings;
 }
 
 export const useStoreSettings = defineStore(`settings`, {
@@ -22,65 +22,65 @@ export const useStoreSettings = defineStore(`settings`, {
 				secondary: `drafts`,
 				secondary2: `tags`,
 			},
-		}
+		};
 	},
 	persist: true,
 	getters: {
 		topAlgorithm(state) {
-			return state.lastTopAlgorithm
+			return state.lastTopAlgorithm;
 		},
 		activeHomeFeed(state) {
-			return state.homeFeed
+			return state.homeFeed;
 		},
 		primaryWidget(state) {
-			return state.widgets.primary
+			return state.widgets.primary;
 		},
 		secondaryWidget(state) {
-			return state.widgets.secondary
+			return state.widgets.secondary;
 		},
 		secondary2Widget(state) {
-			return state.widgets.secondary2
+			return state.widgets.secondary2;
 		},
 		isDarkMode(state) {
-			return state.darkMode
+			return state.darkMode;
 		},
 	},
 	actions: {
 		sync() {
-			const settings = getLocalSettings()
+			const settings = getLocalSettings();
 			if (!settings) {
-				return
+				return;
 			}
 			this.$patch({
 				color: settings.color,
 				mode: settings.mode,
 				lastTopAlgorithm: `This month`,
-			})
+			});
 		},
 		setMode(mode: `Light` | `Dark` | `OS`) {
-			this.mode = mode
+			this.mode = mode;
 		},
 		setDarkMode(isDark: boolean) {
-			this.darkMode = isDark
+			this.darkMode = isDark;
 		},
 		setColor(c: `Green` | `Orange` | `Blue` | `Pink` | `Yellow`) {
-			this.color = c
+			this.color = c;
 		},
 		setTopAlgorithm(alg: `Today` | `This week` | `This month` | `This year` | `All time`) {
-			this.lastTopAlgorithm = alg
+			this.lastTopAlgorithm = alg;
 		},
 		setHomeFeed(alg: `NEW` | `TOP` | `FOLLOWING`) {
-			this.homeFeed = alg
+			this.homeFeed = alg;
 		},
 		setPrimaryWidget(w: `feed` | `editor`) {
-			this.widgets.primary = w
+			this.widgets.primary = w;
 		},
 		setSecondaryWidget(w: `drafts` | `bookmarks`) {
-			console.log(`setting secondary widget `, w)
-			this.widgets.secondary = w
+			console.log(`setting secondary widget `, w);
+			this.widgets.secondary = w;
 		},
 		setSecondary2Widget(w: `tags` | `followers`) {
-			this.widgets.secondary2 = w
+			this.widgets.secondary2 = w;
 		},
 	},
-})
+});

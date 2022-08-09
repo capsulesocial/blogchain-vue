@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ChevronLeftIcon from '../components/icons/ChevronLeft.vue'
+import ChevronLeftIcon from '../components/icons/ChevronLeft.vue';
 </script>
 <template>
 	<!-- Mobile back button -->

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import TagCard from '@/components/TagCard.vue'
+import { ref } from 'vue';
+import TagCard from '@/components/TagCard.vue';
 // TODO: fetch tags from store / backend
-const tags = ref<string[]>([`test`])
+const tags = ref<string[]>([`test`]);
 </script>
 <template>
 	<div class="bg-lightBG dark:bg-darkBGStop mb-5 rounded-lg border border-lightBorder shadow-lg px-6 py-4">

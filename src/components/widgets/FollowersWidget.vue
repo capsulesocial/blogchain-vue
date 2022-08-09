@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import type { Profile } from '@/backend/profile'
-import HorizontalProfilePreview from '@/components/HorizontalProfilePreview.vue'
+import { ref } from 'vue';
+import type { Profile } from '@/backend/profile';
+import HorizontalProfilePreview from '@/components/HorizontalProfilePreview.vue';
 
 // TODO: fetch followers from store / backend
 const followers = ref<Profile[]>([
@@ -25,7 +25,7 @@ const followers = ref<Profile[]>([
 		socials: [],
 		website: `tb12.com`,
 	},
-])
+]);
 </script>
 <template>
 	<div class="bg-lightBG dark:bg-darkBGStop mb-5 rounded-lg border border-lightBorder shadow-lg px-6 py-4">

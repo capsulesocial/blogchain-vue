@@ -1,25 +1,25 @@
 <script setup lang="ts">
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup
-import TopHeader from './components/TopHeader.vue'
-import WidgetsContainer from './components/WidgetsContainer.vue'
-import '@/assets/css/tailwind.css'
-import TitleContainer from './components/TitleContainer.vue'
+import TopHeader from './components/TopHeader.vue';
+import WidgetsContainer from './components/WidgetsContainer.vue';
+import '@/assets/css/tailwind.css';
+import TitleContainer from './components/TitleContainer.vue';
 
-import { useStore } from './store/session'
-import { useStoreSettings } from './store/settings'
-import { initColors } from './plugins/colors'
-import { getBGImage } from './plugins/background'
-import { onBeforeMount, ref } from 'vue'
-import { useMeta } from 'vue-meta'
+import { useStore } from './store/session';
+import { useStoreSettings } from './store/settings';
+import { initColors } from './plugins/colors';
+import { getBGImage } from './plugins/background';
+import { onBeforeMount, ref } from 'vue';
+import { useMeta } from 'vue-meta';
 // import { useRouter } from 'vue-router'
 
-const store = useStore()
-const settings = useStoreSettings()
-const avatar = ref<string>(``)
-const unauthRoutes = ref<string[]>([`Login`, `Register`])
-const fullPageRoutes = ref<string[]>([`Payment Policy`, `Content Policy`])
-const routesWithTitle = ref<string[]>([`Home`, `Discover`, `Bookmarks`])
+const store = useStore();
+const settings = useStoreSettings();
+const avatar = ref<string>(``);
+const unauthRoutes = ref<string[]>([`Login`, `Register`]);
+const fullPageRoutes = ref<string[]>([`Payment Policy`, `Content Policy`]);
+const routesWithTitle = ref<string[]>([`Home`, `Discover`, `Bookmarks`]);
 // const router = useRouter()
 
 // meta tags
@@ -27,21 +27,21 @@ const routesWithTitle = ref<string[]>([`Home`, `Discover`, `Bookmarks`])
 useMeta({
 	title: '',
 	htmlAttrs: { lang: 'en', amp: true },
-})
+});
 
 // Methods
 function getAvatar(cid: string) {
 	if (cid === ``) {
-		return
+		return;
 	}
 }
 // Run init methods
 onBeforeMount(() => {
-	store.login()
-	settings.sync()
-	initColors()
-	getAvatar(store.$state.avatar)
-})
+	store.login();
+	settings.sync();
+	initColors();
+	getAvatar(store.$state.avatar);
+});
 
 // onMounted(async () => {
 // 	if (!store.$state.id) {

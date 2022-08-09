@@ -44,7 +44,7 @@ defineProps({
 		required: false,
 		default: false,
 	},
-})
+});
 
 // export default Vue.extend({
 // 	props: {

@@ -1,22 +1,22 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import { useStoreSettings } from '@/store/settings'
-import ChevronUp from '@/components/icons/ChevronUp.vue'
-import ChevronDown from '@/components/icons/ChevronDown.vue'
-import { storeToRefs } from 'pinia'
+import { onMounted, ref } from 'vue';
+import { useStoreSettings } from '@/store/settings';
+import ChevronUp from '@/components/icons/ChevronUp.vue';
+import ChevronDown from '@/components/icons/ChevronDown.vue';
+import { storeToRefs } from 'pinia';
 // refs
-const showAlgorithmDropdown = ref<boolean>(false)
-const settings = storeToRefs(useStoreSettings())
+const showAlgorithmDropdown = ref<boolean>(false);
+const settings = storeToRefs(useStoreSettings());
 
 onMounted(() => {
 	document.addEventListener(`click`, (e) => {
 		// Dropdown is closed
 		if (!showAlgorithmDropdown.value) {
-			return
+			return;
 		}
-		showAlgorithmDropdown.value = false
-	})
-})
+		showAlgorithmDropdown.value = false;
+	});
+});
 </script>
 
 <template>

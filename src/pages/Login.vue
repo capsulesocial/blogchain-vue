@@ -1,57 +1,57 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import BrandedButton from '@/components/BrandedButton.vue'
-import CapsuleIcon from '@/components/icons/CapsuleIcon.vue'
-import DiscordIcon from '@/components/icons/brands/Discord.vue'
-import GoogleIcon from '@/components/icons/brands/Google.vue'
-import FileIcon from '@/components/icons/File.vue'
-import InfoIcon from '@/components/icons/Info.vue'
-import CloseIcon from '@/components/icons/CloseIcon.vue'
-import { useStore } from '../store/session'
-import router from '@/router/index'
-import { toastError } from '@/plugins/toast'
+import { onMounted, ref } from 'vue';
+import BrandedButton from '@/components/BrandedButton.vue';
+import CapsuleIcon from '@/components/icons/CapsuleIcon.vue';
+import DiscordIcon from '@/components/icons/brands/Discord.vue';
+import GoogleIcon from '@/components/icons/brands/Google.vue';
+import FileIcon from '@/components/icons/File.vue';
+import InfoIcon from '@/components/icons/Info.vue';
+import CloseIcon from '@/components/icons/CloseIcon.vue';
+import { useStore } from '../store/session';
+import router from '@/router/index';
+import { toastError } from '@/plugins/toast';
 
 // refs
-const isLoading = ref<boolean>(true)
-const showInfo = ref<boolean>(false)
-const currentYear = ref<string>(new Date().getFullYear().toString())
-const noAccount = ref<boolean>(false)
-const key = ref<HTMLInputElement>()
-const showPasswordPopup = ref<boolean>(false)
-const password = ref<string>()
-const store = useStore()
+const isLoading = ref<boolean>(true);
+const showInfo = ref<boolean>(false);
+const currentYear = ref<string>(new Date().getFullYear().toString());
+const noAccount = ref<boolean>(false);
+const key = ref<HTMLInputElement>();
+const showPasswordPopup = ref<boolean>(false);
+const password = ref<string>();
+const store = useStore();
 
 // methods
 function handleKeyClick(): void {
 	if (key.value) {
-		key.value.click()
+		key.value.click();
 	}
 }
 function handleKey(e: Event): void {
-	const target = e.target as HTMLInputElement
-	const files = target.files
+	const target = e.target as HTMLInputElement;
+	const files = target.files;
 	if (files && files.length > 0) {
-		const keyFile = files[0]
-		const reader: FileReader = new FileReader()
-		reader.readAsText(keyFile)
+		const keyFile = files[0];
+		const reader: FileReader = new FileReader();
+		reader.readAsText(keyFile);
 		if (reader === null) {
-			return
+			return;
 		}
 		reader.onload = (i: Event) => {
 			if (i.target !== null && reader.result !== null) {
 				try {
-					const key = JSON.parse(reader.result as string)
-					console.log(key)
+					const key = JSON.parse(reader.result as string);
+					console.log(key);
 					if (key.privateKey.startsWith(`encrypted:`)) {
-						console.log(`encrypted`)
-						showPasswordPopup.value = true
-						return
+						console.log(`encrypted`);
+						showPasswordPopup.value = true;
+						return;
 					}
 				} catch (err) {
-					toastError(err as string)
+					toastError(err as string);
 				}
 			}
-		}
+		};
 	}
 }
 function decryptKey() {}
@@ -59,12 +59,12 @@ function torusLogin(type: string) {}
 
 // Lifecycle
 onMounted(async () => {
-	const accountIdLocalStorage = window.localStorage.getItem(`accountId`)
+	const accountIdLocalStorage = window.localStorage.getItem(`accountId`);
 	if (store.$state.id !== `` && accountIdLocalStorage) {
-		router.push(`/home`)
-		return
+		router.push(`/home`);
+		return;
 	}
-})
+});
 </script>
 <template>
 	<main

@@ -1,12 +1,12 @@
 export interface Tier {
-	_id?: string
-	name: string
-	description?: string
-	details?: string
-	monthlyEnabled: boolean
-	monthlyPrice: number
-	yearlyEnabled: boolean
-	yearlyPrice: number
+	_id?: string;
+	name: string;
+	description?: string;
+	details?: string;
+	monthlyEnabled: boolean;
+	monthlyPrice: number;
+	yearlyEnabled: boolean;
+	yearlyPrice: number;
 }
 
 export function getEmptyTier() {
@@ -16,5 +16,5 @@ export function getEmptyTier() {
 		monthlyPrice: 10,
 		yearlyEnabled: true,
 		yearlyPrice: 100,
-	}
+	};
 }

@@ -1,119 +1,119 @@
-import { getED25519Key } from '@toruslabs/openlogin-ed25519'
-import { base_decode as baseDecode, base_encode as baseEncode } from 'near-api-js/lib/utils/serialize'
-import { PublicKey } from 'near-api-js/lib/utils/key_pair'
+import { getED25519Key } from '@toruslabs/openlogin-ed25519';
+import { base_decode as baseDecode, base_encode as baseEncode } from 'near-api-js/lib/utils/serialize';
+import { PublicKey } from 'near-api-js/lib/utils/key_pair';
 
-import { initContract, setUserInfoNEAR, setNearPrivateKey, getWalletConnection, getNearPrivateKey } from './near'
-import { addProfileToIPFS, createDefaultProfile, getProfile, Profile } from './profile'
-import { uint8ArrayToHexString } from './utilities/helpers'
+import { initContract, setUserInfoNEAR, setNearPrivateKey, getWalletConnection, getNearPrivateKey } from './near';
+import { addProfileToIPFS, createDefaultProfile, getProfile, Profile } from './profile';
+import { uint8ArrayToHexString } from './utilities/helpers';
 
 export interface IWalletStatus {
-	type: `torus` | `near`
-	accountId: string
-	privateKey: string
+	type: `torus` | `near`;
+	accountId: string;
+	privateKey: string;
 }
 
 export interface IAuthResult {
-	profile: Profile
-	cid: string
+	profile: Profile;
+	cid: string;
 }
 
 export function getAccountIdFromPrivateKey(privateKey: string) {
-	const { pk } = getED25519Key(privateKey)
+	const { pk } = getED25519Key(privateKey);
 
-	const pk58 = `ed25519:${baseEncode(pk)}`
-	const accountId = uint8ArrayToHexString(PublicKey.fromString(pk58).data)
+	const pk58 = `ed25519:${baseEncode(pk)}`;
+	const accountId = uint8ArrayToHexString(PublicKey.fromString(pk58).data);
 
-	return accountId
+	return accountId;
 }
 
 // This is only needed with Torus and implicit login
 export async function setNearUserFromPrivateKey(privateKey: string) {
-	const accountId = getAccountIdFromPrivateKey(privateKey)
-	const { sk } = getED25519Key(privateKey)
+	const accountId = getAccountIdFromPrivateKey(privateKey);
+	const { sk } = getED25519Key(privateKey);
 
-	await setNearPrivateKey(sk, accountId)
+	await setNearPrivateKey(sk, accountId);
 
-	return accountId
+	return accountId;
 }
 
 // POST newly created account to IPFS
 export async function register(id: string, accountId: string): Promise<IAuthResult | { error: string }> {
 	// Reinitialise Smart Contract API
-	initContract(accountId)
+	initContract(accountId);
 
-	const profile = createDefaultProfile(id)
-	const [cid, userSetStatus] = await Promise.all([addProfileToIPFS(profile), setUserInfoNEAR(id)])
+	const profile = createDefaultProfile(id);
+	const [cid, userSetStatus] = await Promise.all([addProfileToIPFS(profile), setUserInfoNEAR(id)]);
 
 	if (userSetStatus.error) {
-		return { error: userSetStatus.error }
+		return { error: userSetStatus.error };
 	}
 
-	return { profile, cid }
+	return { profile, cid };
 }
 
 export async function login(id: string, privateKey: string): Promise<IAuthResult> {
-	await setNearUserFromPrivateKey(privateKey)
+	await setNearUserFromPrivateKey(privateKey);
 
-	let profile = createDefaultProfile(id)
-	const fetchedProfile = await getProfile(id)
+	let profile = createDefaultProfile(id);
+	const fetchedProfile = await getProfile(id);
 	if (fetchedProfile.profile) {
-		profile = fetchedProfile.profile
+		profile = fetchedProfile.profile;
 	}
-	const cid = await addProfileToIPFS(profile)
+	const cid = await addProfileToIPFS(profile);
 
-	return { profile, cid }
+	return { profile, cid };
 }
 
 export async function loginNearAccount(id: string, privateKey: string, accountId: string): Promise<IAuthResult> {
-	const [fetchedProfile] = await Promise.all([getProfile(id), setNearPrivateKey(baseDecode(privateKey), accountId)])
+	const [fetchedProfile] = await Promise.all([getProfile(id), setNearPrivateKey(baseDecode(privateKey), accountId)]);
 
-	initContract(accountId)
+	initContract(accountId);
 
-	const profile = fetchedProfile.profile || createDefaultProfile(id)
-	const cid = await addProfileToIPFS(profile)
+	const profile = fetchedProfile.profile || createDefaultProfile(id);
+	const cid = await addProfileToIPFS(profile);
 
-	return { profile, cid }
+	return { profile, cid };
 }
 
 export async function getUserInfo(): Promise<IWalletStatus | null> {
 	// In the case of near wallet sign up
-	const walletConnection = getWalletConnection()
-	const nearWallet = walletConnection.isSignedIn()
+	const walletConnection = getWalletConnection();
+	const nearWallet = walletConnection.isSignedIn();
 	if (nearWallet) {
-		const accountId: string = walletConnection.getAccountId()
+		const accountId: string = walletConnection.getAccountId();
 		if (!accountId) {
-			throw new Error(`Wallet without accountId!`)
+			throw new Error(`Wallet without accountId!`);
 		}
-		const privateKey = await getNearPrivateKey(accountId)
+		const privateKey = await getNearPrivateKey(accountId);
 		if (!privateKey) {
-			throw new Error(`Wallet without private key!`)
+			throw new Error(`Wallet without private key!`);
 		}
 		return {
 			type: `near`,
 			accountId,
 			privateKey,
-		}
+		};
 	}
 
 	// If the user has refreshed or backtracked etc
 	for (let i = 0; i < localStorage.length; i++) {
-		const key = localStorage.key(i)
+		const key = localStorage.key(i);
 		if (key && key.startsWith(`near-api-js:keystore`)) {
-			const privateKey = localStorage.getItem(key)
-			const accountId = key.split(`:`)[2]
+			const privateKey = localStorage.getItem(key);
+			const accountId = key.split(`:`)[2];
 			if (accountId === `pending_keyed25519`) {
-				localStorage.removeItem(key)
-				return null
+				localStorage.removeItem(key);
+				return null;
 			}
 			if (privateKey && accountId) {
 				return {
 					type: `near`,
 					accountId,
 					privateKey,
-				}
+				};
 			}
 		}
 	}
 
-	return null
+	return null;
 }

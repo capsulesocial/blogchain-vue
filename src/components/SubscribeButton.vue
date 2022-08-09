@@ -37,9 +37,9 @@
 </template>
 
 <script setup lang="ts">
-import type { PropType } from 'vue'
-import CrownIcon from '@/components/icons/Crown.vue'
-import PenIcon from '@/components/icons/Pencil.vue'
+import type { PropType } from 'vue';
+import CrownIcon from '@/components/icons/Crown.vue';
+import PenIcon from '@/components/icons/Pencil.vue';
 
 defineProps({
 	userIsSubscribed: {
@@ -50,7 +50,7 @@ defineProps({
 		type: Function as PropType<() => void>,
 		required: true,
 	},
-})
+});
 
 // export default Vue.extend({
 // 	components: {

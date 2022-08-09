@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import CloseIcon from '../icons/CloseIcon.vue'
+import CloseIcon from '../icons/CloseIcon.vue';
 // import CheckedIcon from '../icons/CheckCircleIcon.vue'
-import TwitterIcon from '../icons/brands/solid/Twitter.vue'
-import FacebookIcon from '../icons/brands/solid/Facebook.vue'
-import RedditIcon from '../icons/brands/solid/Reddit.vue'
-import LinkedinIcon from '../icons/brands/solid/Linkedin.vue'
-import MailIcon from '../icons/brands/solid/Mail.vue'
-import CopyIcon from '../icons/Copy.vue'
-import ChevronDown from '../icons/ChevronDown.vue'
-import ChevronUp from '../icons/ChevronUp.vue'
-import { toastError, toastSuccess } from '../../plugins/toast'
+import TwitterIcon from '../icons/brands/solid/Twitter.vue';
+import FacebookIcon from '../icons/brands/solid/Facebook.vue';
+import RedditIcon from '../icons/brands/solid/Reddit.vue';
+import LinkedinIcon from '../icons/brands/solid/Linkedin.vue';
+import MailIcon from '../icons/brands/solid/Mail.vue';
+import CopyIcon from '../icons/Copy.vue';
+import ChevronDown from '../icons/ChevronDown.vue';
+import ChevronUp from '../icons/ChevronUp.vue';
+import { toastError, toastSuccess } from '../../plugins/toast';
 // import axios from 'axios'
-import { ref } from 'vue'
+import { ref } from 'vue';
 // import { capsuleServer, baseUrl } from './../../backend/utilities/config'
 // import { handleError } from '@/plugins/toast'
 
@@ -21,54 +21,54 @@ const props = defineProps({
 	subtitle: { type: String, required: true },
 	cid: { type: String, required: true },
 	authorID: { type: String, required: true },
-})
+});
 
-const isOpen1 = ref<boolean>(false)
+const isOpen1 = ref<boolean>(false);
 
-const isLoading = ref<boolean>(false)
+const isLoading = ref<boolean>(false);
 
-const generatedDirectLink = ref<string>(``)
+const generatedDirectLink = ref<string>(``);
 
-const generatedBlogchainLink = ref<string>(``)
+const generatedBlogchainLink = ref<string>(``);
 
 function toggleAccordion1() {
-	isOpen1.value = !isOpen1.value
+	isOpen1.value = !isOpen1.value;
 }
 
 function copyDirectLink() {
 	if (generatedDirectLink.value === ``) {
-		return
+		return;
 	}
 
 	navigator.clipboard
 		.writeText(generatedDirectLink.value)
 		.then(() => {
-			toastSuccess(`Link copied to clipboard!`)
+			toastSuccess(`Link copied to clipboard!`);
 		})
 		.catch(() => {
-			toastError(`Could not copy link to clipboard`)
-		})
+			toastError(`Could not copy link to clipboard`);
+		});
 }
 
 function copyBlogchainLink() {
 	if (generatedBlogchainLink.value === ``) {
-		return
+		return;
 	}
 
 	navigator.clipboard
 		.writeText(generatedBlogchainLink.value)
 		.then(() => {
-			toastSuccess(`Link copied to clipboard!`)
+			toastSuccess(`Link copied to clipboard!`);
 		})
 		.catch(() => {
-			toastError(`Could not copy link to clipboard`)
-		})
+			toastError(`Could not copy link to clipboard`);
+		});
 }
 
 async function generateLinks() {
 	// Might need backend investigation into error response on production
 	if (!props.cid) {
-		return
+		return;
 	}
 	// const cid: string = props.cid
 	// generatedBlogchainLink.value = `${baseUrl}/post/${cid}`
@@ -80,7 +80,7 @@ async function generateLinks() {
 	// } catch (ex) {
 	// 	handleError(ex)
 	// }
-	isLoading.value = false
+	isLoading.value = false;
 }
 
 function twitterShare() {
@@ -88,28 +88,28 @@ function twitterShare() {
 		`https://twitter.com/share?url=${encodeURIComponent(
 			generatedDirectLink.value.toString(),
 		)}&hashtags=blogchain&text=${props.title} by ${props.authorID}`,
-	)
+	);
 }
 
 function facebookShare() {
-	window.open(`https://www.facebook.com/sharer/sharer.php?u=${generatedDirectLink.value}`)
+	window.open(`https://www.facebook.com/sharer/sharer.php?u=${generatedDirectLink.value}`);
 }
 
 function redditShare() {
-	window.open(`https://reddit.com/submit?url=${generatedDirectLink.value}&title=${props.title}`)
+	window.open(`https://reddit.com/submit?url=${generatedDirectLink.value}&title=${props.title}`);
 }
 
 function linkedinShare() {
 	window.open(
 		`https://www.linkedin.com/shareArticle?url=${generatedDirectLink.value}&title=${props.title}&summary=${props.subtitle}&source=blogchain.app`,
-	)
+	);
 }
 
 function mailShare() {
-	window.open(`mailto:?subject=${props.title}&body=${props.subtitle}%0D%0A%0D%0A${generatedDirectLink.value}`)
+	window.open(`mailto:?subject=${props.title}&body=${props.subtitle}%0D%0A%0D%0A${generatedDirectLink.value}`);
 }
 
-generateLinks()
+generateLinks();
 </script>
 
 <template>

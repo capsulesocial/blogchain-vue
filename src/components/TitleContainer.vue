@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useStore } from '../store/session'
-import Nodes from './Nodes.vue'
+import { useStore } from '../store/session';
+import Nodes from './Nodes.vue';
 
-const store = useStore()
+const store = useStore();
 </script>
 <template>
 	<div class="modal-animation hidden lg:flex w-full items-center justify-between px-3 lg:px-0" style="height: 62px">

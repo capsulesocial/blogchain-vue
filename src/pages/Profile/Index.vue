@@ -1,34 +1,34 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import router from '@/router/index'
-import { useMeta } from 'vue-meta'
-import type { Profile } from '@/backend/profile'
-import BackButton from '@/components/icons/ChevronLeft.vue'
-import PencilIcon from '@/components/icons/Pencil.vue'
-import SecondaryButton from '@/components/SecondaryButton.vue'
-import FriendButton from '@/components/FriendButton.vue'
-import SubscribeButton from '@/components/SubscribeButton.vue'
+import { ref } from 'vue';
+import router from '@/router/index';
+import { useMeta } from 'vue-meta';
+import type { Profile } from '@/backend/profile';
+import BackButton from '@/components/icons/ChevronLeft.vue';
+import PencilIcon from '@/components/icons/Pencil.vue';
+import SecondaryButton from '@/components/SecondaryButton.vue';
+import FriendButton from '@/components/FriendButton.vue';
+import SubscribeButton from '@/components/SubscribeButton.vue';
 
 useMeta({
 	title: `authorName - Blogchain`,
 	htmlAttrs: { lang: 'en', amp: true },
-})
+});
 
 // refs
-const id = ref<string>(router.currentRoute.value.params.id as string)
-const fromExternalSite = ref<boolean>(false)
-const selfView = ref<boolean>(true)
-const visitAvatar = ref<string | ArrayBuffer>(``)
-const showAvatarPopup = ref<boolean>(false)
-const scrollingDown = ref<boolean>(false)
-const followers = ref<[]>([])
-const following = ref<[]>([])
-const paymentsEnabled = ref<boolean>(true)
-const totalPostsCount = ref<number>(0)
-const userIsFollowed = ref<boolean>(false)
-const activeSubscription = ref<boolean>(false)
-const longBio = ref<boolean>(false)
-const expandBio = ref<boolean>(false)
+const id = ref<string>(router.currentRoute.value.params.id as string);
+const fromExternalSite = ref<boolean>(false);
+const selfView = ref<boolean>(true);
+const visitAvatar = ref<string | ArrayBuffer>(``);
+const showAvatarPopup = ref<boolean>(false);
+const scrollingDown = ref<boolean>(false);
+const followers = ref<[]>([]);
+const following = ref<[]>([]);
+const paymentsEnabled = ref<boolean>(true);
+const totalPostsCount = ref<number>(0);
+const userIsFollowed = ref<boolean>(false);
+const activeSubscription = ref<boolean>(false);
+const longBio = ref<boolean>(false);
+const expandBio = ref<boolean>(false);
 
 // TODO: fetch profile and set to ref
 const visitProfile = ref<Profile>({
@@ -40,47 +40,47 @@ const visitProfile = ref<Profile>({
 	avatar: ``,
 	socials: [],
 	website: `tb12.com`,
-})
+});
 // THEN: fetch avatar
 
 // Check if coming from external site
 router.beforeEach((to, from, next) => {
 	next((vm: any) => {
 		if (to && from.name === null) {
-			fromExternalSite.value = true
+			fromExternalSite.value = true;
 		}
-	})
-})
+	});
+});
 function handleBack() {
 	if (fromExternalSite.value) {
-		router.push(`/home`)
-		return
+		router.push(`/home`);
+		return;
 	}
-	router.go(-1)
+	router.go(-1);
 }
 function toggleSettings() {
-	return
+	return;
 }
 function openHeader(v: boolean) {
-	return
+	return;
 }
 function toggleFriend() {
-	return
+	return;
 }
 function toggleSubscription() {
-	return
+	return;
 }
 function getStyles(tab: string): string {
-	let res = ``
+	let res = ``;
 	if (router.currentRoute.value.name === tab) {
-		res += ` text-primary font-bold`
+		res += ` text-primary font-bold`;
 	} else {
 		if (router.currentRoute.value.name !== `id-followers` && router.currentRoute.value.name !== `id-following`) {
-			res += ` text-grey1`
+			res += ` text-grey1`;
 		}
-		res += ` text-gray5 dark:text-gray3`
+		res += ` text-gray5 dark:text-gray3`;
 	}
-	return res
+	return res;
 }
 </script>
 

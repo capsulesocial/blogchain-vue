@@ -1,6 +1,6 @@
 export interface IMode {
-	image: unknown
-	label: `Light` | `Dark` | `OS`
+	image: unknown;
+	label: `Light` | `Dark` | `OS`;
 }
 
 export const modes: Array<IMode> = [
@@ -16,11 +16,11 @@ export const modes: Array<IMode> = [
 		image: require(`@/assets/images/colors/OS.webp`),
 		label: `OS`,
 	},
-]
+];
 
 export interface IColor {
-	id: string
-	hex: string
+	id: `Green` | `Orange` | `Blue` | `Pink` | `Yellow`;
+	hex: string;
 }
 
 export const colors: Array<IColor> = [
@@ -44,4 +44,4 @@ export const colors: Array<IColor> = [
 		id: `Yellow`,
 		hex: `#ffcc33`,
 	},
-]
+];

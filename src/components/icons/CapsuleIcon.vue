@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
 
 const props = defineProps({
 	shrink: Boolean,
-})
+});
 
-const shrink = ref<boolean>(props.shrink)
+const shrink = ref<boolean>(props.shrink);
 </script>
 
 <template>
