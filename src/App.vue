@@ -54,12 +54,7 @@ onBeforeMount(() => {
 	<!-- Full screen pages -->
 	<router-view v-if="unauthRoutes.includes($route.name as string)" :key="$route.path" />
 
-	<div
-		class="w-full sticky top-0 h-38 z-50 bg-img bg-lightBG dark:bg-darkBG"
-		:style="{
-			backgroundImage: `url(` + getBGImage(store.background) + `)`,
-		}"
-	>
+	<div class="w-full sticky top-0 h-38 z-50 bg-img bg-lightBG dark:bg-darkBG pb-1">
 		<div class="m-auto self-center w-full lg:w-11/12 xl:w-10/12 max-w-1220">
 			<TopHeader :name="store.name" :avatar="avatar" />
 			<!-- Body -->
@@ -67,21 +62,19 @@ onBeforeMount(() => {
 		</div>
 	</div>
 	<!-- wrapper -->
-	<main
-		class="bg-img h-screen p-0 bg-lightBG dark:bg-darkBG justify-center flex scroll-container"
-		:style="{
-			backgroundImage: `url(` + getBGImage(store.background) + `)`,
-		}"
-	>
-		<div class="flex justify-between" :class="fullPageRoutes.includes($route.name as string) ? `w-full` : `lg:w-7.5`">
-			<div class="main flex flex-col w-full">
-				<PostHeader class="z-40 bg-img bg-lightBG dark:bg-darkBG flex fixed w-4.5" />
+	<main class="bg-img h-screen p-0 bg-lightBG dark:bg-darkBG justify-center flex scroll-container pt-4">
+		<div class="flex justify-between w-full lg:w-11/12 xl:w-10/12 max-w-1220">
+			<div
+				class="main flex flex-col w-full"
+				:class="fullPageRoutes.includes($route.name as string) ? `w-full` : `lg:w-7.5`"
+			>
 				<div class="relative">
+					<PostHeader class="z-40 bg-img bg-lightBG dark:bg-darkBG flex absolute w-full" />
 					<div class="flex w-full justify-center flex-row">
-						<div class="flex flex-col w-full lg:w-11/12 xl:w-10/12 max-w-1220">
-							<section class="modal-animation flex flex-row lg:mt-2 xl:mt-5">
+						<div class="flex flex-col w-full">
+							<section class="modal-animation flex flex-row">
 								<div
-									class="min-h-80 h-80 from-lightBGStart to-lightBGStop dark:from-darkBGStart dark:to-darkBGStop border border-lightBorder z-10 w-full rounded-t-lg bg-gradient-to-r shadow-lg"
+									class="min-h-80 h-80 from-lightBGStart to-lightBGStop dark:from-darkBGStart dark:to-darkBGStop border border-lightBorder z-10 w-full rounded-t-lg bg-gradient-to-r shadow-lg px-6 pt-14"
 								>
 									<router-view :key="$route.path" />
 								</div>
@@ -91,7 +84,7 @@ onBeforeMount(() => {
 				</div>
 			</div>
 
-			<div class="sticky top-40 h-10">
+			<div class="sticky top-40 w-5/12 -mr-5 -mt-4 hidden overflow-y-auto p-4 pb-32 lg:block min-h-61 h-61">
 				<WidgetsContainer v-if="!fullPageRoutes.includes($route.name as string)" />
 			</div>
 		</div>
