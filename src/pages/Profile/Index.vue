@@ -196,7 +196,6 @@ function getStyles(tab: string): string {
 							</div>
 							<button
 								class="pl-5 text-sm text-gray5 dark:text-gray3 hover:text-primary dark:hover:text-primary hover:font-bold"
-								@click="$emit(`openFollowers`)"
 							>
 								<span
 									class="text-lightPrimaryText dark:text-darkPrimaryText hover:text-primary dark:hover:text-primary font-bold"
@@ -206,7 +205,6 @@ function getStyles(tab: string): string {
 							</button>
 							<button
 								class="pl-5 text-sm text-gray5 dark:text-gray3 hover:text-primary dark:hover:text-primary hover:font-bold"
-								@click="$emit(`openFollowing`)"
 							>
 								<span
 									class="text-lightPrimaryText dark:text-darkPrimaryText hover:text-primary dark:hover:text-primary font-bold"

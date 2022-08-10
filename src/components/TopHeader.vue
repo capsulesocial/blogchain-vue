@@ -8,13 +8,16 @@ import DashboardIcon from './icons/OverviewIcon.vue';
 import Crown2Icon from './icons/CrownEmptyIcon.vue';
 import Avatar from './../components/Avatar.vue';
 import { onMounted, PropType, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { useStore } from '../store/session';
 import { useStoreSettings } from '@/store/settings';
 import ProfileIcon from './icons/ProfileIcon.vue';
 import SettingsIcon from './icons/SettingsIcon.vue';
 import LogoutIcon from './icons/LogoutIcon.vue';
+
 const sessionStore = useStore();
 const settings = useStoreSettings();
+const router = useRouter();
 
 const props = defineProps({
 	name: { type: String, required: true },
@@ -66,9 +69,39 @@ function logout() {
 				<router-link to="/home" class="mr-5 text-lightSecondaryText dark:text-gray1">
 					<Logo />
 				</router-link>
-				<router-link to="/home" class="mx-4 font-regular text-gray5 dark:text-gray3">Home</router-link>
-				<router-link to="/discover" class="mx-4 font-regular text-gray5 dark:text-gray3">Discover</router-link>
-				<router-link to="/bookmarks" class="mx-4 font-regular text-gray5 dark:text-gray3">Bookmarks</router-link>
+				<router-link
+					to="/home"
+					class="mx-4 transition duration-500 ease-in-out hover:text-primary"
+					:class="
+						router.currentRoute.value.name === `Home`
+							? `text-primary font-semibold`
+							: `text-gray5 dark:text-gray3 font-regular`
+					"
+					:style="router.currentRoute.value.name === `Home` ? `padding: 0` : `padding: 0 0.0341rem`"
+					>Home</router-link
+				>
+				<router-link
+					to="/discover"
+					class="mx-4 transition duration-500 ease-in-out hover:text-primary"
+					:class="
+						router.currentRoute.value.name === `Discover`
+							? `text-primary font-semibold`
+							: `text-gray5 dark:text-gray3 font-regular`
+					"
+					:style="router.currentRoute.value.name === `Discover` ? `padding: 0` : `padding: 0 0.075rem`"
+					>Discover</router-link
+				>
+				<router-link
+					to="/bookmarks"
+					class="mx-4 transition duration-500 ease-in-out hover:text-primary"
+					:class="
+						router.currentRoute.value.name === `Bookmarks`
+							? `text-primary font-semibold`
+							: `text-gray5 dark:text-gray3 font-regular`
+					"
+					:style="router.currentRoute.value.name === `Bookmarks` ? `padding: 0` : `padding: 0 0.111rem`"
+					>Bookmarks</router-link
+				>
 				<router-link
 					to="/post"
 					style="padding: 0.6rem 1.7rem"

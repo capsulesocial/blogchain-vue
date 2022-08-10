@@ -56,7 +56,7 @@ const drafts = ref<DraftPost[]>([
 				</p>
 			</div>
 			<HorizontalDraftPreview v-for="draft in drafts" :key="draft.timestamp" :draft="draft" />
-			<button class="text-primary text-sm mt-2" @click="$emit(``)">Show more</button>
+			<button class="text-primary text-sm mt-2">Show more</button>
 		</div>
 		<div v-else class="text-gray5 dark:text-gray3 pt-3 text-sm">
 			<button class="text-primary focus:outline-none" @click="$router.push(`/register`)">Sign up</button>
