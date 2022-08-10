@@ -5,6 +5,7 @@ import TopHeader from './components/TopHeader.vue';
 import WidgetsContainer from './components/WidgetsContainer.vue';
 import '@/assets/css/tailwind.css';
 import TitleContainer from './components/TitleContainer.vue';
+import PostHeader from './pages/PostHeader.vue';
 
 import { useStore } from './store/session';
 import { useStoreSettings } from './store/settings';
@@ -67,73 +68,33 @@ onBeforeMount(() => {
 	</div>
 	<!-- wrapper -->
 	<main
-		class="bg-img h-screen p-0 bg-lightBG dark:bg-darkBG justify-center flex"
+		class="bg-img h-screen p-0 bg-lightBG dark:bg-darkBG justify-center flex scroll-container"
 		:style="{
 			backgroundImage: `url(` + getBGImage(store.background) + `)`,
 		}"
 	>
-		<div
-			:class="fullPageRoutes.includes($route.name as string) ? `w-full` : `lg:w-7.5`"
-			class="scroll-wrapper min-h-80 h-80 from-lightBGStart to-lightBGStop dark:from-darkBGStart dark:to-darkBGStop border border-lightBorder z-10 w-full rounded-t-lg bg-gradient-to-r shadow-lg"
-		>
-			<div class="scroll-outer">
-				<div class="scroll-inner">
-					<router-view :key="$route.path" />
+		<div class="flex justify-between" :class="fullPageRoutes.includes($route.name as string) ? `w-full` : `lg:w-7.5`">
+			<div class="main flex flex-col w-full">
+				<PostHeader class="z-40 bg-img bg-lightBG dark:bg-darkBG flex fixed w-4.5" />
+				<div class="relative">
+					<div class="flex w-full justify-center flex-row">
+						<div class="flex flex-col w-full lg:w-11/12 xl:w-10/12 max-w-1220">
+							<section class="modal-animation flex flex-row lg:mt-2 xl:mt-5">
+								<div
+									class="min-h-80 h-80 from-lightBGStart to-lightBGStop dark:from-darkBGStart dark:to-darkBGStop border border-lightBorder z-10 w-full rounded-t-lg bg-gradient-to-r shadow-lg"
+								>
+									<router-view :key="$route.path" />
+								</div>
+							</section>
+						</div>
+					</div>
 				</div>
 			</div>
-		</div>
-		<!-- <div
-			:class="fullPageRoutes.includes($route.name as string) ? `w-full` : `lg:w-7.5`"
-			class="min-h-80 h-80 from-lightBGStart to-lightBGStop dark:from-darkBGStart dark:to-darkBGStop border border-lightBorder z-10 w-full rounded-t-lg bg-gradient-to-r shadow-lg"
-		></div> -->
-		<!-- <div :class="fullPageRoutes.includes($route.name as string) ? `w-full` : `lg:w-7.5`" class="relative">
-			<div class="flex w-full justify-center">
-				<div class="flex flex-col w-full lg:w-11/12 xl:w-10/12 max-w-1220">
-					<section class="modal-animation flex flex-row lg:mt-2 xl:mt-5">
-						<div
-							class="min-h-80 h-80 from-lightBGStart to-lightBGStop dark:from-darkBGStart dark:to-darkBGStop border border-lightBorder z-10 w-full rounded-t-lg bg-gradient-to-r shadow-lg"
-						>
-							<router-view :key="$route.path" />
-						</div>
-					</section>
-				</div>
+
+			<div class="sticky top-40 h-10">
 				<WidgetsContainer v-if="!fullPageRoutes.includes($route.name as string)" />
 			</div>
-		</div> -->
+		</div>
 	</main>
 	<div id="popup"></div>
 </template>
-<style>
-.scroll-wrapper {
-	position: static;
-}
-.scroll-outer {
-	/* overflow-y: auto; */
-	/* height: 100%; */
-}
-.scroll-inner {
-	font-weight: bold;
-	margin-left: auto;
-	margin-right: auto;
-	margin: 50px;
-	position: relative;
-	z-index: 1;
-}
-.scroll-wrapper:before,
-.scroll-wrapper:after {
-	height: 50px;
-	z-index: 2;
-	position: absolute;
-	left: 0;
-	right: 20px;
-	content: '';
-	display: block;
-}
-
-.scroll-wrapper:after {
-	bottom: 0;
-}
-.scroll-wrapper:before {
-	top: 0;
-}
-</style>
