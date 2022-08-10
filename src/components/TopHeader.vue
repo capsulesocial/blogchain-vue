@@ -71,32 +71,35 @@ function logout() {
 				</router-link>
 				<router-link
 					to="/home"
-					class="mx-4"
+					class="mx-4 transition duration-500 ease-in-out hover:text-primary"
 					:class="
 						router.currentRoute.value.name === `Home`
-							? `text-primary font-bold`
+							? `text-primary font-semibold`
 							: `text-gray5 dark:text-gray3 font-regular`
 					"
+					:style="router.currentRoute.value.name === `Home` ? `padding: 0` : `padding: 0 0.0341rem`"
 					>Home</router-link
 				>
 				<router-link
 					to="/discover"
-					class="mx-4"
+					class="mx-4 transition duration-500 ease-in-out hover:text-primary"
 					:class="
 						router.currentRoute.value.name === `Discover`
-							? `text-primary font-bold`
+							? `text-primary font-semibold`
 							: `text-gray5 dark:text-gray3 font-regular`
 					"
+					:style="router.currentRoute.value.name === `Discover` ? `padding: 0` : `padding: 0 0.075rem`"
 					>Discover</router-link
 				>
 				<router-link
 					to="/bookmarks"
-					class="mx-4"
+					class="mx-4 transition duration-500 ease-in-out hover:text-primary"
 					:class="
 						router.currentRoute.value.name === `Bookmarks`
-							? `text-primary font-bold`
+							? `text-primary font-semibold`
 							: `text-gray5 dark:text-gray3 font-regular`
 					"
+					:style="router.currentRoute.value.name === `Bookmarks` ? `padding: 0` : `padding: 0 0.111rem`"
 					>Bookmarks</router-link
 				>
 				<router-link
