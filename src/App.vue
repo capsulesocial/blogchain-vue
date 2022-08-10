@@ -67,7 +67,7 @@ onBeforeMount(() => {
 				<TopHeader :name="store.name" :avatar="avatar" />
 				<!-- Body -->
 				<TitleContainer v-if="routesWithTitle.includes($route.name as string)" />
-				<section class="modal-animation flex flex-row lg:mt-2 xl:mt-5">
+				<section class="modal-animation flex flex-row">
 					<div
 						:class="fullPageRoutes.includes($route.name as string) ? `w-full` : `lg:w-7.5`"
 						class="min-h-80 h-80 from-lightBGStart to-lightBGStop dark:from-darkBGStart dark:to-darkBGStop border border-lightBorder z-10 w-full overflow-y-auto rounded-t-lg bg-gradient-to-r shadow-lg"
