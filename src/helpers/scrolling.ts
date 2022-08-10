@@ -2,8 +2,20 @@
  * It must react to delta being more/less than zero.
  */
 export function handle(delta: number) {
+	let OS = navigator.platform as string;
 	const target = document.getElementById(`scrollable_content`) as HTMLElement;
-	const speed = 22;
+	let speed;
+	switch (OS) {
+		case (OS = `Win32`):
+			speed = 40;
+			break;
+		case (OS = `MacIntel`):
+			speed = 22;
+			break;
+		default:
+			speed = 22;
+			break;
+	}
 	const top = target.scrollTop - delta * speed;
 	target.scrollTop = delta < 0 ? Math.ceil(top) : Math.floor(top);
 }
