@@ -5,7 +5,10 @@ import Nodes from './Nodes.vue';
 const store = useStore();
 </script>
 <template>
-	<div class="modal-animation hidden lg:flex w-full items-center justify-between px-3 lg:px-0" style="height: 62px">
+	<div
+		class="modal-animation hidden lg:flex w-full items-center justify-between px-3 lg:px-0 lg:mb-2 xl:mb-5"
+		style="height: 62px"
+	>
 		<!-- Home -->
 		<div v-if="$route.name === `Home`">
 			<h1 v-if="store.$state.name" class="text-lightSecondaryText dark:text-gray1 text-3xl font-semibold xl:text-4xl">

@@ -50,6 +50,8 @@ function handleBack() {
 function toggleHomeFeed() {
 	router.push(`/home`);
 }
+
+isLoading.value = false;
 </script>
 
 <template>
@@ -78,13 +80,13 @@ function toggleHomeFeed() {
 				<p>{{ p.title }}</p>
 			</article>
 			<p v-if="noMorePosts" class="text-gray5 dark:text-gray3 py-5 text-center text-sm">No more posts</p>
+			<!-- Not loaded yet -->
+			<article v-show="isLoading" class="flex w-full justify-center mt-12">
+				<div
+					class="loader m-5 border-2 border-gray1 dark:border-gray7 h-8 w-8 rounded-3xl"
+					:style="`border-top: 2px solid`"
+				></div>
+			</article>
 		</div>
-		<!-- Not loaded yet -->
-		<article v-show="isLoading" class="flex w-full justify-center mt-12">
-			<div
-				class="loader m-5 border-2 border-gray1 dark:border-gray7 h-8 w-8 rounded-3xl"
-				:style="`border-top: 2px solid`"
-			></div>
-		</article>
 	</section>
 </template>
