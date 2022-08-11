@@ -43,7 +43,7 @@ const drafts = ref<DraftPost[]>([
 <template>
 	<div class="bg-lightBG dark:bg-darkBGStop mb-5 rounded-lg border border-lightBorder shadow-lg px-6 py-4 relative">
 		<div class="flex flex-row justify-between items-center">
-			<h3 class="text-lightPrimaryText dark:text-darkPrimaryText font-semibold">Drafts</h3>
+			<h3 class="text-lightPrimaryText dark:text-darkPrimaryText font-semibold">Recent Drafts</h3>
 			<div @mouseenter="showInfo = true" @mouseleave="showInfo = false">
 				<InfoIcon class="w-4 h-4 text-gray5 dark:text-gray3" />
 			</div>
@@ -56,7 +56,7 @@ const drafts = ref<DraftPost[]>([
 				</p>
 			</div>
 			<HorizontalDraftPreview v-for="draft in drafts" :key="draft.timestamp" :draft="draft" />
-			<button class="text-primary text-sm mt-2">Show more</button>
+			<button class="text-primary text-sm">Show more</button>
 		</div>
 		<div v-else class="text-gray5 dark:text-gray3 pt-3 text-sm">
 			<button class="text-primary focus:outline-none" @click="$router.push(`/register`)">Sign up</button>
