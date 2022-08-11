@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { nodeUrl } from './utilities/config';
-import ipfs from './utilities/ipfs';
+import ipfs from '@capsulesocial/ipfs-wrapper';
 import libsodium from './utilities/keys';
 import { ISignedIPFSObject, uint8ArrayToHexString } from './utilities/helpers';
 

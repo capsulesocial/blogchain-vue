@@ -3,7 +3,7 @@ import libsodium from './utilities/keys';
 import { Algorithm, IRepostResponse } from './post';
 import { nodeUrl } from './utilities/config';
 import { ISignedIPFSObject, uint8ArrayToHexString } from './utilities/helpers';
-import ipfs from './utilities/ipfs';
+import ipfs from '@capsulesocial/ipfs-wrapper';
 
 export interface IRepost {
 	authorID: string;
