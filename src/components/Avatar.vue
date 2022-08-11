@@ -2,13 +2,13 @@
 	<button v-if="!props.noClick" class="focus:outline-none" @click="$router.push('/id/' + props.authorid)">
 		<img
 			v-if="props.avatar !== `` && props.avatar !== null"
-			:src="props.avatar"
+			v-lazy="{ src: props.avatar }"
 			class="border border-lightBorder dark:border-darkBorder rounded-lg object-cover"
 			:class="props.size"
 		/>
 		<img
 			v-else
-			:src="avatarList[usernameToPicture(props.authorid)]"
+			v-lazy="{ src: avatarList[usernameToPicture(props.authorid)] }"
 			class="border border-lightBorder dark:border-darkBorder rounded-lg object-cover"
 			:class="props.size"
 		/>
@@ -16,13 +16,13 @@
 	<span v-else>
 		<img
 			v-if="props.avatar !== `` && props.avatar !== null"
-			:src="props.avatar"
+			v-lazy="{ src: props.avatar }"
 			class="border border-lightBorder dark:border-darkBorder rounded-lg object-cover"
 			:class="props.size"
 		/>
 		<img
 			v-else
-			:src="avatarList[usernameToPicture(props.authorid)]"
+			v-lazy="{ src: avatarList[usernameToPicture(props.authorid)] }"
 			class="border border-lightBorder dark:border-darkBorder rounded-lg object-cover"
 			:class="props.size"
 		/>

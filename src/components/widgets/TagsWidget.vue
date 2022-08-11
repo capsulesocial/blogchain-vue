@@ -21,12 +21,12 @@ const tags = ref<string[]>([`test`]);
 		</div>
 		<img
 			v-if="$route.name === `Discover`"
-			class="rounded-lg"
-			:src="
-				settings.isDarkMode
+			v-lazy="{
+				src: settings.isDarkMode
 					? require(`@/assets/images/brand/dark/discover.webp`)
-					: require(`@/assets/images/brand/light/discover.webp`)
-			"
+					: require(`@/assets/images/brand/light/discover.webp`),
+			}"
+			class="rounded-lg"
 		/>
 	</div>
 </template>
