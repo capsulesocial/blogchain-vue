@@ -29,7 +29,7 @@ const authorName = ref<string>(``);
 		<div class="w-24 hidden xl:block">
 			<img
 				v-if="featuredPhoto !== null"
-				:src="featuredPhoto"
+				v-lazy="{ src: featuredPhoto }"
 				:alt="bookmark.title"
 				class="h-16 w-full flex-shrink-0 rounded-lg object-cover"
 			/>

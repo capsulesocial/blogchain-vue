@@ -55,7 +55,7 @@ function toggleDropdownDelete() {
 		>
 			<img
 				v-if="featuredPhoto !== null"
-				:src="featuredPhoto"
+				v-lazy="{ src: featuredPhoto }"
 				:alt="draft.title"
 				class="h-16 w-full flex-shrink-0 rounded-lg object-cover"
 			/>

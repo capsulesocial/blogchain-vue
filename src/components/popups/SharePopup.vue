@@ -135,7 +135,7 @@ generateLinks();
 			>
 				<img
 					v-if="image != ``"
-					:src="image"
+					v-lazy="{ src: image }"
 					class="h-48 w-full lg:w-48 flex-shrink-0 rounded-lg object-cover lg:h-32 mb-4 lg:mb-0 lg:mr-4"
 				/>
 				<div class="flex max-w-full flex-col overflow-hidden">

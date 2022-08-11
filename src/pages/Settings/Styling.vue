@@ -50,7 +50,7 @@ function confirmColor() {}
 					{{ session.background }}
 				</p>
 				<img
-					:src="getBGImage(session.background)"
+					v-lazy="{ src: getBGImage(session.background) }"
 					class="h-20 w-32 rounded-lg bg-lightBG dark:bg-darkBG border border-lightBorder"
 				/>
 			</button>
