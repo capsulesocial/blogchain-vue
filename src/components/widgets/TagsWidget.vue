@@ -21,7 +21,6 @@ const tags = ref<string[]>([`test`]);
 		</div>
 		<img
 			v-if="$route.name === `Discover`"
-			loading="lazy"
 			class="rounded-lg"
 			:src="
 				settings.isDarkMode
