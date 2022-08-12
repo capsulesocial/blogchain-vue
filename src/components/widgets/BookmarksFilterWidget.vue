@@ -40,8 +40,8 @@ function setFilter(categorie: string) {
 			<img
 				:src="
 					settings.isDarkMode
-						? `/images/category/` + categorie + `/dark/icon.webp`
-						: `/images/category/` + categorie + `/light/icon.webp`
+						? require(`@/assets/images/category/` + categorie + `/dark/icon.webp`)
+						: require(`@/assets/images/category/` + categorie + `/light/icon.webp`)
 				"
 				class="hotzone mr-1 h-8 w-8"
 			/>
