@@ -1,0 +1,142 @@
+name: Development Deploy
+on:
+  push:
+    tags:
+      - payments
+
+jobs:
+
+  install-dependencies:
+    runs-on: ubuntu-latest
+    container:
+      image: node:16-alpine
+    steps:
+
+      - uses: actions/checkout@v1
+
+      - name: install tar (for actions/cache)
+        run: apk add --no-cache tar
+
+      # use the cached node_modules -- this is only used to speed up the install-dependencies job
+      - uses: actions/cache@v2
+        with:
+          path: 'node_modules'
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/yarn.lock') }}
+
+      - name: install git
+        run: apk add --no-cache git
+
+      - name: yarn install
+        run: yarn install
+
+      # this copy of node_modules will be used for the rest of the workflow
+      - name: compress node_modules
+        run: tar -czf node_modules.tar.gz node_modules
+      - uses: actions/upload-artifact@v2
+        with:
+          name: node_modules.tar.gz
+          path: node_modules.tar.gz
+
+  lint:
+    needs: install-dependencies
+    runs-on: ubuntu-latest
+    container:
+      image: node:16-alpine
+    steps:
+
+      - uses: actions/checkout@v1
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: node_modules.tar.gz
+      - name: extract node_modules
+        run: tar -xzf node_modules.tar.gz
+
+      - name: lint
+        run: yarn lint
+
+  release:
+    needs: lint
+    runs-on: ubuntu-latest
+    container:
+      image: node:16-alpine
+    steps:
+
+      - name: install git
+        run: apk add --no-cache git
+
+      - name: workaround for git directory permission issue, see https://github.com/actions/checkout/issues/760
+        run: git config --global --add safe.directory /__w/blogchain-vue/blogchain-vue
+
+      - uses: actions/checkout@v1
+
+      - name: Set deploy environment vars
+        run: |
+          echo "DEPLOY_ENV=$(echo ${GITHUB_REF#refs/tags/})" >> $GITHUB_ENV
+          echo "RELEASE_ID=$(git rev-parse --short HEAD)"    >> $GITHUB_ENV
+
+      - name: Copy .env for this deploy environment
+        run: cp ./.github/configs/${DEPLOY_ENV}.env .env
+        env:
+          DEPLOY_ENV: ${{ env.DEPLOY_ENV }}
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: node_modules.tar.gz
+      - name: extract node_modules
+        run: tar -xzf node_modules.tar.gz
+
+      - name: build
+        run: yarn build
+
+      - name: Compress blogchain-vue static site
+        run: |
+          [[ -d dist ]] || { echo "Missing dist, exiting" >&2 ; exit 1 ; }
+          build_name="blogchain_vue-$DEPLOY_ENV-$RELEASE_ID"
+          mv dist $build_name
+          tar -czvf "${build_name}.tar.gz" "$build_name"
+          echo "BUILD_NAME=$build_name" >> $GITHUB_ENV
+        env:
+          DEPLOY_ENV: ${{ env.DEPLOY_ENV }}
+          RELEASE_ID: ${{ env.RELEASE_ID }}
+
+      - name: Upload build as release asset
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts:    ${{ env.BUILD_NAME }}.tar.gz
+          token:        ${{ secrets.GITREPO_TOKEN }}
+          allowUpdates: true
+
+  deploy:
+    needs: release
+    runs-on: ubuntu-latest
+    container:
+      image: lexauw/ansible-alpine:latest
+    steps:
+
+      - name: install git
+        run: apk add --no-cache git
+
+      - name: workaround for git directory permission issue, see https://github.com/actions/checkout/issues/760
+        run: git config --global --add safe.directory /__w/blogchain-vue/blogchain-vue
+
+      - uses: actions/checkout@v1
+
+      - name: install bash
+        run: apk add --no-cache bash
+
+      - name: Set deploy environment vars
+        run: |
+          echo "DEPLOY_ENV=${GITHUB_REF#refs/tags/}"      >> $GITHUB_ENV
+          echo "RELEASE_TAG=${GITHUB_REF#refs/tags/}"     >> $GITHUB_ENV
+          echo "RELEASE_ID=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+      - name: Deploy updated images
+        run: ./.github/scripts/deploy.sh
+        env:
+          DEPLOY_ENV:          ${{ env.DEPLOY_ENV }}
+          RELEASE_ID:          ${{ env.RELEASE_ID }}
+          RELEASE_TAG:         ${{ env.RELEASE_TAG }}
+          GITHUB_USER:         ${{ secrets.GITREPO_USER }}
+          GITHUB_TOKEN:        ${{ secrets.GITREPO_TOKEN }}
+          ANSIBLE_PRIVATE_KEY: ${{ secrets.ANSIBLE_PRIVATE_KEY }}
