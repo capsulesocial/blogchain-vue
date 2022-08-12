@@ -17,6 +17,9 @@ export const useStore = defineStore(`session`, {
 			id: ``,
 			background: ``,
 			avatar: ``,
+			email: ``,
+			location: ``,
+			website: ``,
 		};
 	},
 	persist: true,
@@ -31,6 +34,9 @@ export const useStore = defineStore(`session`, {
 				id: userData.id,
 				background: userData.background,
 				avatar: userData.avatar,
+				email: userData.email,
+				location: userData.location,
+				website: userData.website,
 			});
 			watch(
 				this.$state,
