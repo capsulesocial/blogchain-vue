@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import HomeWidgets from '@/components/widgets/HomeWidgets.vue';
-import DiscoverWidgets from '@/components/widgets/DiscoverWidgets.vue';
+import HomeWidgets from '@/components/widgets/pages/HomeWidgets.vue';
+import DiscoverWidgets from '@/components/widgets/pages/DiscoverWidgets.vue';
+import BookmarksWidgets from '@/components/widgets/pages/BookmarksWidgets.vue';
 import Footer from '@/components/Footer.vue';
 </script>
 <template>
@@ -10,6 +11,7 @@ import Footer from '@/components/Footer.vue';
 	>
 		<HomeWidgets v-if="$route.name === `Home`" />
 		<DiscoverWidgets v-if="$route.name === `Discover`" />
+		<BookmarksWidgets v-if="$route.name === `Bookmarks`" />
 		<Footer />
 	</aside>
 </template>
