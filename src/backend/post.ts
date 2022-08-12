@@ -83,8 +83,33 @@ export function keyRetrievalFailed(keyStatus: IKeyRetrievalResult): keyStatus is
 	return keyStatus.status === `INSUFFICIENT_TIER` || keyStatus.status === `NOT_SUBSCRIBED`;
 }
 
-export type Algorithm = `NEW` | `FOLLOWING` | `TOP`;
-export type Timeframe = `1` | `7` | `30` | `365`;
+export enum Algorithm {
+	NEW = `NEW`,
+	FOLLOWING = `FOLLOWING`,
+	TOP = `TOP`,
+}
+export enum Timeframe {
+	DAY = `1`,
+	WEEK = `7`,
+	MONTH = `30`,
+	YEAR = `365`,
+	ALL_TIME = `ALL_TIME`,
+}
+
+export function readableTimeframe(timeframe: Timeframe) {
+	switch (timeframe) {
+		case Timeframe.DAY:
+			return `Today`;
+		case Timeframe.WEEK:
+			return `This week`;
+		case Timeframe.MONTH:
+			return `This month`;
+		case Timeframe.YEAR:
+			return `This year`;
+		case Timeframe.ALL_TIME:
+			return `All time`;
+	}
+}
 
 export function createRegularPost(
 	title: string,
@@ -235,7 +260,7 @@ async function getEncryptionKeys(username: string, cid: string) {
 export interface IGetPostsOptions {
 	sort?: Algorithm;
 	offset?: number;
-	timeframe?: `1` | `7` | `30` | `365`;
+	timeframe?: Timeframe;
 	limit?: number;
 	following?: string;
 }
