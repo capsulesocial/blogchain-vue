@@ -203,6 +203,37 @@ function openDeleteDropdown() {
 		<div class="my-2 flex flex-wrap overflow-x-auto xl:hidden">
 			<TagCard v-for="t in fetchedPost.post.tags" :key="t.name" :tag="t.name" class="my-2 mr-4" />
 		</div>
+		<!-- Comment and share (Mobile) -->
+		<div class="text-gray5 dark:text-gray3 mt-1 flex xl:hidden">
+			<button
+				class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary mr-4 hover:fill-primary flex items-center"
+				:class="showComments ? `text-primary` : ``"
+				@click="showComments = !showComments"
+			>
+				<CommentIcon :is-active="showComments" class="w-5 h-5" />
+				<span class="ml-1 text-sm">{{ fetchedPost.commentsCount }}</span>
+			</button>
+			<!-- Repost popup -->
+			<button
+				class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary dark:hover:text-primary mr-4 flex items-center"
+				:class="showReposts ? `text-primary` : ``"
+				@click="showReposts = !showReposts"
+			>
+				<RepostIcon class="w-5 h-5" />
+				<span class="ml-1 text-sm">{{ fetchedPost.repostCount }}</span>
+			</button>
+			<!-- Share popup button -->
+			<button
+				class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary mr-4 hover:fill-primary flex items-center"
+				:class="showShare ? `text-primary` : ``"
+				style="margin-top: 2px"
+				@click="showShare = !showShare"
+			>
+				<ShareIcon :is-active="showShare" />
+				<p class="ml-1 text-sm">Share</p>
+			</button>
+			<button class="focus:outline-none" @click="showStats = !showStats"><StatsIcon /></button>
+		</div>
 	</div>
 </template>
 
