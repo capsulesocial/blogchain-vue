@@ -10,7 +10,7 @@ defineProps({
 
 <template>
 	<button
-		class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary dark:hover:text-primary"
+		class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary dark:hover:text-primary w-4 h-4"
 		@click="() => {}"
 	>
 		<BookmarkIcon />
