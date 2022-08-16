@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { useStoreSettings } from '@/store/settings';
-const settings = useStoreSettings();
-
 defineProps({
 	isActive: {
 		type: Boolean,
@@ -35,8 +32,8 @@ defineProps({
 			width="20"
 			height="20"
 			viewBox="0 0 530 530"
-			:fill="settings.color"
-			:stroke="settings.color"
+			fill="currentColor"
+			stroke="currentColor"
 			stroke-width="8"
 			stroke-linecap="round"
 			stroke-linejoin="round"
