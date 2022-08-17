@@ -61,7 +61,7 @@ onMounted(() => {
 				y: e.clientY,
 			};
 
-			thumb.classList.add('cursor-grab', 'select-none');
+			thumb.classList.add('cursor-grab', 'select-none', 'bg-gray5');
 			document.body.classList.add('cursor-grab', 'select-none');
 
 			document.addEventListener('mousemove', mouseMoveHandler);
@@ -78,7 +78,7 @@ onMounted(() => {
 		};
 
 		const mouseUpHandler = function (e: any) {
-			thumb.classList.remove('cursor-grab', 'select-none');
+			thumb.classList.remove('cursor-grab', 'select-none', 'bg-gray5');
 			document.body.classList.remove('cursor-grab', 'select-none');
 
 			document.removeEventListener('mousemove', mouseMoveHandler);
@@ -123,7 +123,10 @@ onMounted(() => {
 			class="bg-gray1 bg-opacity-50 hidden absolute w-4 top-0 right-0 h-full lg:flex justify-center border-l border-gray1"
 		>
 			<div id="track" class="h-full left-0 absolute top-0 w-full"></div>
-			<div id="thumb" class="bg-gray3 rounded cursor-grab center absolute w-6/12 hover:cursor-grab"></div>
+			<div
+				id="thumb"
+				class="bg-gray3 rounded cursor-grab center absolute w-6/12 hover:cursor-grab transition duration-300 ease-in-out hover:bg-gray5"
+			></div>
 		</div>
 		<!-- Wrapper -->
 		<div class="flex w-full justify-center">
