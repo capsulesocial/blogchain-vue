@@ -23,6 +23,9 @@ export function handle(delta: number) {
 /** Event handler for mouse wheel event.
  */
 export function wheel(event: any) {
+	if (event.target.classList.contains(`popup`) || event.target.offsetParent.classList.contains(`popup`)) {
+		return;
+	}
 	let delta = 0;
 	if (!event) /* For IE. */ event = window.event;
 	if (event.wheelDelta) {
