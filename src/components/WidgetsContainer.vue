@@ -13,7 +13,7 @@ import Footer from '@/components/Footer.vue';
 		<HomeWidgets v-if="$route.name === `Home`" />
 		<DiscoverWidgets v-if="$route.name === `Discover`" />
 		<BookmarksWidgets v-if="$route.name === `Bookmarks`" />
-		<ProfileWidgets v-if="$route.name === `Profile`" />
+		<ProfileWidgets v-if="$route.matched[0].path === `/id/:id`" />
 		<Footer />
 	</aside>
 </template>
