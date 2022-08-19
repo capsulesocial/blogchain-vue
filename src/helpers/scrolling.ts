@@ -1,9 +1,7 @@
-/** This is high-level function.
- * It must react to delta being more/less than zero.
- */
 export function handle(delta: number) {
 	let OS = navigator.platform as string;
 	const target = document.getElementById(`scrollable_content`) as HTMLElement;
+	const thumb = document.getElementById('thumb') as HTMLElement;
 	let speed;
 	switch (OS) {
 		case (OS = `Win32`):
@@ -18,6 +16,7 @@ export function handle(delta: number) {
 	}
 	const top = target.scrollTop - delta * speed;
 	target.scrollTop = delta < 0 ? Math.ceil(top) : Math.floor(top);
+	thumb.style.top = `${(target.scrollTop * 100) / target.scrollHeight}%`;
 }
 
 /** Event handler for mouse wheel event.
@@ -44,10 +43,4 @@ export function wheel(event: any) {
 	 * and negative, if wheel was scrolled down.
 	 */
 	if (delta) handle(delta);
-
-	/** Prevent default actions caused by mouse wheel.
-	 * That might be ugly, but we handle scrolls somehow
-	 * anyway, so don't bother here..
-	 */
-	// event.returnValue = false;
 }

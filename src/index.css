@@ -100,9 +100,19 @@
   /* .medium-editor-toolbar {
     @apply bg-white border rounded-xl shadow-xl
   } */
-  /* width */
-  ::-webkit-scrollbar {
-    display: none
+
+  @media (max-width: 1024px) {
+    ::-webkit-scrollbar {
+      padding-top: 5px;
+		  margin-top: 5px;
+		  width: 3px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    ::-webkit-scrollbar {
+      display: none
+    }
   }
 
   /* Track */
@@ -112,7 +122,7 @@
 
   /* Handle */
   ::-webkit-scrollbar-thumb {
-    background: #454545;
+    @apply bg-gray5;
     border-radius: 50px;
   }
 
