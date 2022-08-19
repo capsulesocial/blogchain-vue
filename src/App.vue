@@ -8,10 +8,13 @@ import { useStore } from './store/session';
 import { useStoreSettings } from './store/settings';
 import { initColors } from './plugins/colors';
 import { getBGImage } from './plugins/background';
-import { onBeforeMount, onMounted, ref } from 'vue';
+import { onBeforeMount, ref } from 'vue';
 import { useMeta } from 'vue-meta';
 import { wheel } from '@/helpers/scrolling';
+import { useRouter } from 'vue-router';
+import { watch } from 'vue';
 
+const router = useRouter();
 const store = useStore();
 const settings = useStoreSettings();
 const avatar = ref<string>(``);
@@ -40,8 +43,9 @@ onBeforeMount(() => {
 	getAvatar(store.$state.avatar);
 });
 
-onMounted(() => {
-	document.addEventListener('DOMContentLoaded', function () {
+watch(router.currentRoute, () => {
+	// Scrolling event listener
+	document.addEventListener('DOMContentLoaded', () => {
 		// Query elements
 		const content = document.getElementById('scrollable_content') as HTMLElement;
 		const track = document.getElementById('track') as HTMLElement;
