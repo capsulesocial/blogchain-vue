@@ -5,7 +5,6 @@ import ChevronUp from '@/components/icons/ChevronUp.vue';
 import ChevronDown from '@/components/icons/ChevronDown.vue';
 import { storeToRefs } from 'pinia';
 import SimplePostCard from '@/components/post/SimpleCard.vue';
-import SimpleCard from '@/components/post/SimpleCard.vue';
 
 // refs
 const showAlgorithmDropdown = ref<boolean>(false);
