@@ -1,8 +1,10 @@
 <div align="center">
 
-<h1>Blogchain.app</h1>
+<h1>Blogchain</h1>
 
 Front-End powering Capsule Social's Blogchain application.
+
+Production code for blogchain.app can be found on the [capsule-vue](https://github.com/capsulesocial/capsule-vue) repository.
 
 </div>
 
