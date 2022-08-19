@@ -37,7 +37,8 @@ onUnmounted(() => {
 			<p class="text-gray5 dark:text-gray3">Read more of what you love by browsing top categories:</p>
 		</div>
 		<article
-			class="min-h-170 h-170 xl:min-h-240 xl:h-240 box-border w-full grid grid-cols-2 gap-4 overflow-y-auto px-6 pb-8 pt-4"
+			id="scrollable_content"
+			class="min-h-115 h-115 lg:min-h-210 lg:h-210 xl:min-h-220 xl:h-220 overflow-y-auto lg:overflow-y-hidden relative w-full grid grid-cols-2 gap-4 px-6 pb-8 pt-4"
 		>
 			<CategoryCard v-for="c in categoryList" :key="c" :text="c" :bg-image="c" class="w-full" />
 		</article>
