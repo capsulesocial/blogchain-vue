@@ -3,6 +3,7 @@ import HomeWidgets from '@/components/widgets/pages/HomeWidgets.vue';
 import DiscoverWidgets from '@/components/widgets/pages/DiscoverWidgets.vue';
 import BookmarksWidgets from '@/components/widgets/pages/BookmarksWidgets.vue';
 import ProfileWidgets from '@/components/widgets/pages/ProfileWidgets.vue';
+import HelpWidgets from '@/components/widgets/pages/HelpWidgets.vue';
 import Footer from '@/components/Footer.vue';
 </script>
 <template>
@@ -10,7 +11,8 @@ import Footer from '@/components/Footer.vue';
 		<HomeWidgets v-if="$route.name === `Home`" />
 		<DiscoverWidgets v-if="$route.name === `Discover`" />
 		<BookmarksWidgets v-if="$route.name === `Bookmarks`" />
-		<ProfileWidgets v-if="$route.matched[0]?.path === `/id/:id`" />
+		<ProfileWidgets v-if="$route.matched[0].path === `/id/:id`" />
+		<HelpWidgets v-if="$route.name === `Help`" />
 		<Footer />
 	</aside>
 </template>
