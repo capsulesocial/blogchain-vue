@@ -15,7 +15,7 @@ useMeta({
 });
 
 // refs
-const id = ref<string>(router.currentRoute.value.params.id as string);
+// const id = ref<string>(router.currentRoute.value.params.id as string);
 const fromExternalSite = ref<boolean>(false);
 const selfView = ref<boolean>(true);
 const visitAvatar = ref<string | ArrayBuffer>(``);
