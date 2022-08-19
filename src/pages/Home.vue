@@ -5,6 +5,7 @@ import ChevronUp from '@/components/icons/ChevronUp.vue';
 import ChevronDown from '@/components/icons/ChevronDown.vue';
 import { storeToRefs } from 'pinia';
 import SimplePostCard from '@/components/post/SimpleCard.vue';
+import SimpleCard from '@/components/post/SimpleCard.vue';
 
 // refs
 const showAlgorithmDropdown = ref<boolean>(false);
@@ -86,11 +87,10 @@ onMounted(() => {
 	</nav>
 	<div
 		id="scrollable_content"
-		class="min-h-115 h-115 lg:min-h-210 lg:h-210 xl:min-h-220 xl:h-220 w-full overflow-y-auto lg:overflow-y-hidden relative p-6"
+		class="min-h-115 h-115 lg:min-h-210 lg:h-210 xl:min-h-220 xl:h-220 w-full overflow-y-auto lg:overflow-y-hidden relative"
 	>
-		<div v-for="i in 50" :key="i" class="bg-gray1 rounded-lg h-20" :class="i === 50 ? `mb-0` : `mb-4`">
-			<p v-if="i < 50">{{ i }}</p>
-			<p v-else>end</p>
+		<div v-for="i in 50" :key="i">
+			<SimplePostCard />
 		</div>
 	</div>
 </template>

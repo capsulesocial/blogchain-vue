@@ -5,6 +5,9 @@ import { useStoreSettings } from '@/store/settings';
 import { Post } from '@/backend/post';
 import { formatDate } from '@/helpers/helpers';
 import MoreIcon from '@/components/icons/MoreIcon.vue';
+import ImageIcon from '@/components/icons/ImageIcon.vue';
+import PencilIcon from '@/components/icons/Pencil.vue';
+import BinIcon from '@/components/icons/BinIcon.vue';
 
 type DraftPost = Omit<Post, `authorID`>;
 

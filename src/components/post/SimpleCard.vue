@@ -8,6 +8,8 @@ import TagCard from '@/components/TagCard.vue';
 import CommentIcon from '@/components/icons/CommentIcon.vue';
 import RepostIcon from '@/components/icons/RepostIcon.vue';
 import ShareIcon from '@/components/icons/ShareIcon.vue';
+import CrownIcon from '@/components/icons/Crown.vue';
+import StatsIcon from '@/components/icons/Stats.vue';
 
 import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';

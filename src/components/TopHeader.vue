@@ -162,11 +162,12 @@ function logout() {
 						class="text-gray5 dark:text-gray3 mb-2 flex w-full flex-row items-center text-left"
 						><ProfileIcon class="mr-2 h-5 w-5 flex-shrink-0" />Profile</a
 					>
-					<router-link
+					<a
 						v-if="sessionStore.$state.id !== ``"
-						to="/overview"
+						href="https://blogchain.app/authordashboard"
+						target="_blank"
 						class="text-gray5 dark:text-gray3 flex w-full flex-row items-center text-left"
-						><DashboardIcon class="mr-2 h-5 w-5 flex-shrink-0" />Author Dashboard</router-link
+						><DashboardIcon class="mr-2 h-5 w-5 flex-shrink-0" />Author Dashboard</a
 					>
 					<div
 						v-if="sessionStore.$state.id !== ``"
@@ -294,11 +295,12 @@ function logout() {
 						class="text-gray5 dark:text-gray3 mb-2 flex w-full flex-row items-center text-left"
 						><ProfileIcon class="mr-2 h-5 w-5 flex-shrink-0" />Profile</a
 					>
-					<router-link
+					<a
 						v-if="sessionStore.$state.id !== ``"
-						to="/overview"
+						href="https://blogchain.app/authordashboard"
+						target="_blank"
 						class="text-gray5 dark:text-gray3 flex w-full flex-row items-center text-left"
-						><DashboardIcon class="mr-2 h-5 w-5 flex-shrink-0" />Author Dashboard</router-link
+						><DashboardIcon class="mr-2 h-5 w-5 flex-shrink-0" />Author Dashboard</a
 					>
 					<div
 						v-if="sessionStore.$state.id !== ``"
