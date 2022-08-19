@@ -12,7 +12,7 @@ defineProps({
 </script>
 
 <template>
-	<div class="flex justify-center">
+	<div class="flex justify-center col-span-2 xl:col-span-1">
 		<router-link
 			v-if="bgImage !== ``"
 			:to="'/discover/' + text"
