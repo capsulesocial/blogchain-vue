@@ -1,4 +1,5 @@
 import { Algorithm, getPosts, IGenericPostResponse, readableTimeframe, Timeframe } from '@/backend/post';
+import { handleError } from '@/plugins/toast';
 import { defineStore } from 'pinia';
 import { useStore } from './session';
 
@@ -6,9 +7,6 @@ export interface Posts {
 	postMap: {
 		[key: string]: IGenericPostResponse;
 	};
-	newPosts: string[];
-	topPosts: string[];
-	followingPosts: string[];
 	homeFeed: {
 		algorithm: Algorithm;
 		currentOffset: number;
@@ -23,9 +21,6 @@ export const usePostsStore = defineStore(`posts`, {
 	state: (): Posts => {
 		return {
 			postMap: {},
-			newPosts: [],
-			topPosts: [],
-			followingPosts: [],
 			homeFeed: {
 				algorithm: Algorithm.NEW,
 				currentOffset: 0,
@@ -38,11 +33,8 @@ export const usePostsStore = defineStore(`posts`, {
 	},
 	persist: true,
 	getters: {
-		newPostsList: (state: Posts) => {
-			return state.newPosts.map((cid) => state.postMap[cid]);
-		},
-		topPostsList: (state: Posts) => {
-			return state.topPosts.map((cid) => state.postMap[cid]);
+		posts: (state: Posts) => {
+			return Object.values(state.postMap);
 		},
 		displayTimeframe: (state: Posts) => {
 			return readableTimeframe(state.homeFeed.timeframe);
@@ -50,6 +42,9 @@ export const usePostsStore = defineStore(`posts`, {
 	},
 	actions: {
 		async fetchHomePosts(shouldReset = false) {
+			if (this.homeFeed.isLoading) {
+				return;
+			}
 			this.homeFeed.isLoading = true;
 			const id = useStore().$state.id;
 			const timeframe = this.homeFeed.timeframe !== Timeframe.ALL_TIME ? this.homeFeed.timeframe : undefined;
@@ -61,14 +56,23 @@ export const usePostsStore = defineStore(`posts`, {
 				following: id,
 			};
 			const bookmarker = id !== `` ? id : `x`;
-			const posts = await getPosts(timePayload, bookmarker, payload);
-			if (shouldReset) {
-				this.emptyPosts(this.homeFeed.algorithm);
+			try {
+				const posts = await getPosts(timePayload, bookmarker, payload);
+				// Emptying posts when algorithm is changed
+				if (shouldReset) {
+					this.emptyPosts();
+				}
+				for (const post of posts) {
+					this.postMap[post.post._id] = post;
+				}
+
+				if (posts.length < this.homeFeed.limit) {
+					this.homeFeed.noMorePosts = true;
+				}
+			} catch (error) {
+				handleError(error);
 			}
-			for (const post of posts) {
-				this.postMap[post.post._id] = post;
-				this.addPost(this.homeFeed.algorithm, post);
-			}
+			this.homeFeed.currentOffset = Object.keys(this.postMap).length;
 			this.homeFeed.isLoading = false;
 		},
 		async setAlgorithm(algorithm: Algorithm) {
@@ -89,31 +93,8 @@ export const usePostsStore = defineStore(`posts`, {
 			this.homeFeed.noMorePosts = false;
 			await this.fetchHomePosts(true);
 		},
-		addPost(algorithm: Algorithm, post: IGenericPostResponse) {
-			switch (algorithm) {
-				case Algorithm.NEW:
-					this.newPosts.push(post.post._id);
-					break;
-				case Algorithm.TOP:
-					this.topPosts.push(post.post._id);
-					break;
-				case Algorithm.FOLLOWING:
-					this.followingPosts.push(post.post._id);
-					break;
-			}
-		},
-		emptyPosts(algorithm: Algorithm) {
-			switch (algorithm) {
-				case Algorithm.NEW:
-					this.newPosts = [];
-					break;
-				case Algorithm.TOP:
-					this.topPosts = [];
-					break;
-				case Algorithm.FOLLOWING:
-					this.followingPosts = [];
-					break;
-			}
+		emptyPosts() {
+			this.postMap = {};
 		},
 	},
 });
