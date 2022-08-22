@@ -22,7 +22,7 @@ onMounted(() => {
 </script>
 
 <template>
-	<nav class="flex w-full flex-row justify-between text-sm rounded-lg bg-lightBG dark:bg-darkBGStop shadow-sm">
+	<nav class="flex w-full flex-row justify-between text-sm rounded-t-lg bg-lightBG dark:bg-darkBGStop shadow-sm">
 		<div class="flex">
 			<button
 				:class="
