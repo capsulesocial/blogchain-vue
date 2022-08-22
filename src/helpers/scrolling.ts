@@ -17,6 +17,8 @@ export function handle(delta: number) {
 	const top = target.scrollTop - delta * speed;
 	target.scrollTop = delta < 0 ? Math.ceil(top) : Math.floor(top);
 	thumb.style.top = `${(target.scrollTop * 100) / target.scrollHeight}%`;
+	const scrollRatio = target.clientHeight / target.scrollHeight;
+	thumb.style.height = `${scrollRatio * 100}%`;
 }
 
 /** Event handler for mouse wheel event.
