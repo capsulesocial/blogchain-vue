@@ -13,6 +13,8 @@ import { useMeta } from 'vue-meta';
 import { wheel } from '@/helpers/scrolling';
 import { useRouter } from 'vue-router';
 import { watch } from 'vue';
+import { initIPFS } from '@capsulesocial/ipfs-wrapper';
+import { bootstrapNodes } from './backend/utilities/config';
 
 const router = useRouter();
 const store = useStore();
@@ -21,6 +23,7 @@ const avatar = ref<string>(``);
 const unauthRoutes = ref<string[]>([`Login`, `Register`]);
 const fullPageRoutes = ref<string[]>([`Payment Policy`, `Content Policy`]);
 const routesWithTitle = ref<string[]>([`Home`, `Discover`, `Bookmarks`]);
+initIPFS(bootstrapNodes);
 
 // meta tags
 useMeta({
