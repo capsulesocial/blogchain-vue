@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { PropType, ref } from 'vue';
 import Avatar from '@/components/Avatar.vue';
 import BookmarkButton from '@/components/post/BookmarkButton.vue';
 import MoreIcon from '@/components/icons/MoreIcon.vue';
@@ -28,27 +28,8 @@ const showShare = ref<boolean>(false);
 const showStats = ref<boolean>(false);
 const featuredPhoto = ref<string | null>(null);
 
-// Pass post in as prop
-const fetchedPost = ref<IGenericPostResponse>({
-	post: {
-		authorID: `jackistesting`,
-		title: `This is the title`,
-		subtitle: `This is the subtitle`,
-		category: `technology`,
-		featuredPhotoCID: null,
-		featuredPhotoCaption: null,
-		timestamp: 0,
-		tags: [{ name: `test` }],
-		encrypted: false,
-		postImages: [],
-		_id: `bafyasdfofdwa3w`,
-		excerpt: `here is some content`,
-		wordCount: 800,
-	},
-	bookmarked: false,
-	bookmarksCount: 1,
-	commentsCount: 1,
-	repostCount: 1,
+defineProps({
+	fetchedPost: { type: Object as PropType<IGenericPostResponse>, required: true },
 });
 
 // Get profile of authorID

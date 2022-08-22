@@ -38,15 +38,11 @@ export const usePostsStore = defineStore(`posts`, {
 	},
 	persist: true,
 	getters: {
-		posts: (state: Posts) => {
-			switch (state.homeFeed.algorithm) {
-				case Algorithm.NEW:
-					return state.newPosts.map((cid) => state.postMap[cid]);
-				case Algorithm.TOP:
-					return state.topPosts.map((cid) => state.postMap[cid]);
-				case Algorithm.FOLLOWING:
-					return state.followingPosts.map((cid) => state.postMap[cid]);
-			}
+		newPostsList: (state: Posts) => {
+			return state.newPosts.map((cid) => state.postMap[cid]);
+		},
+		topPostsList: (state: Posts) => {
+			return state.topPosts.map((cid) => state.postMap[cid]);
 		},
 		displayTimeframe: (state: Posts) => {
 			return readableTimeframe(state.homeFeed.timeframe);
@@ -82,7 +78,6 @@ export const usePostsStore = defineStore(`posts`, {
 			this.homeFeed.algorithm = algorithm;
 			this.homeFeed.currentOffset = 0;
 			this.homeFeed.noMorePosts = false;
-			this.postMap = {};
 			await this.fetchHomePosts(true);
 		},
 		async setTimeframe(timeframe: Timeframe) {
@@ -92,8 +87,6 @@ export const usePostsStore = defineStore(`posts`, {
 			this.homeFeed.timeframe = timeframe;
 			this.homeFeed.currentOffset = 0;
 			this.homeFeed.noMorePosts = false;
-			this.postMap = {};
-			this.topPosts = [];
 			await this.fetchHomePosts(true);
 		},
 		addPost(algorithm: Algorithm, post: IGenericPostResponse) {

@@ -11,7 +11,7 @@ import SimplePostCard from '@/components/post/SimpleCard.vue';
 // refs
 const showAlgorithmDropdown = ref<boolean>(false);
 const postsStore = usePostsStore();
-const { homeFeed, displayTimeframe, posts } = storeToRefs(postsStore);
+const { homeFeed, displayTimeframe, newPostsList, topPostsList } = storeToRefs(postsStore);
 
 onMounted(async () => {
 	usePostsStore().fetchHomePosts();
@@ -53,7 +53,7 @@ onMounted(async () => {
 			</button>
 		</div>
 		<!-- Top algorithms -->
-		<div v-if="homeFeed.algorithm === `TOP`" class="flex items-center relative modal-animation lg:pr-6">
+		<div v-if="homeFeed.algorithm === Algorithm.TOP" class="flex items-center relative modal-animation lg:pr-6">
 			<button
 				id="filter"
 				class="toggle focus:outline-none lg:ml-4 flex items-center justify-between rounded-lg border dark:border-gray3 text-sm shadow-lg dark:text-gray3"
@@ -90,8 +90,15 @@ onMounted(async () => {
 		id="scrollable_content"
 		class="min-h-115 h-115 lg:min-h-210 lg:h-210 xl:min-h-220 xl:h-220 w-full overflow-y-auto lg:overflow-y-hidden relative"
 	>
-		<div v-for="post in posts" :key="post.post._id">
-			<SimplePostCard />
+		<div v-if="homeFeed.algorithm === Algorithm.NEW">
+			<div v-for="post in newPostsList" :key="`new_${post.post._id}`" class="border-2 p-1 b-1">
+				<SimplePostCard :fetched-post="post" />
+			</div>
+		</div>
+		<div v-if="homeFeed.algorithm === Algorithm.TOP">
+			<div v-for="post in topPostsList" :key="`top_${post.post._id}`" class="border-2 p-1 b-1">
+				<SimplePostCard :fetched-post="post" />
+			</div>
 		</div>
 	</div>
 </template>
