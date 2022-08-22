@@ -34,7 +34,6 @@ export const torusNetwork: TORUS_NETWORK_TYPE = (parsedTorusNetwork as `mainnet`
 export const nearNetwork = process.env.VUE_APP_NEAR_NETWORK || `testnet`;
 
 export function nodeUrl() {
-	console.log('lol', capsuleOrbit);
 	const preferredNodeUrl = window.localStorage.getItem(`preferredNodeUrl`);
 	if (!preferredNodeUrl) {
 		return capsuleOrbit;
