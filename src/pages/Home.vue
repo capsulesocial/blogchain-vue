@@ -35,8 +35,8 @@ onMounted(async () => {
 		showAlgorithmDropdown.value = false;
 	});
 
-	if (scrollContainer.value && scrollContainer.value.parentNode) {
-		scrollContainer.value.parentNode.addEventListener('scroll', scrollListener);
+	if (scrollContainer.value) {
+		scrollContainer.value.addEventListener('scroll', scrollListener);
 	}
 });
 </script>
@@ -107,15 +107,8 @@ onMounted(async () => {
 		ref="scrollContainer"
 		class="min-h-115 h-115 lg:min-h-210 lg:h-210 xl:min-h-220 xl:h-220 w-full overflow-y-auto lg:overflow-y-hidden relative"
 	>
-		<!-- <div v-if="homeFeed.algorithm === Algorithm.NEW"> -->
 		<div v-for="post in posts" :key="`new_${post.post._id}`">
 			<SimplePostCard :fetched-post="post" />
 		</div>
-		<!-- </div>
-		<div v-if="homeFeed.algorithm === Algorithm.TOP">
-			<div v-for="post in topPostsList" :key="`top_${post.post._id}`">
-				<SimplePostCard :fetched-post="post" />
-			</div>
-		</div> -->
 	</div>
 </template>

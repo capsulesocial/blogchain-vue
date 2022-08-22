@@ -31,7 +31,6 @@ export const usePostsStore = defineStore(`posts`, {
 			},
 		};
 	},
-	persist: true,
 	getters: {
 		posts: (state: Posts) => {
 			return Object.values(state.postMap);
