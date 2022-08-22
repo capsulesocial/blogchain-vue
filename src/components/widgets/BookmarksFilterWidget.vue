@@ -22,7 +22,7 @@ function setFilter(categorie: string) {
 <template>
 	<div
 		class="bg-lightBG dark:bg-darkBGStop mb-5 rounded-lg border border-lightBorder shadow-lg px-6 py-4 relative overflow-y-auto"
-		style="min-height: calc(80vh - 160px); height: calc(80vh - 160px)"
+		style="min-height: calc(70vh - 160px); height: calc(70vh - 160px)"
 	>
 		<div class="flex flex-row items-center justify-between pb-4">
 			<h6 class="text-lightPrimaryText dark:text-darkPrimaryText text-base font-semibold">Filter by Category</h6>
