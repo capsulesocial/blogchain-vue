@@ -20,7 +20,7 @@ Production code for blogchain.app can be found on the [capsule-vue](https://gith
 # Create .env with the credentials below
 
 VUE_CAPSULE_SERVER=https://payments.capsule.social/server
-VUE_CONTRACT_NAME=dev-1635323648697-81373157539648
+VUE_CONTRACT_NAME=dev-1657702549987-47675900699610
 VUE_NEAR_NETWORK=testnet
 
 ```
