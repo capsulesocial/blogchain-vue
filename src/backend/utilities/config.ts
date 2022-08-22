@@ -10,8 +10,8 @@ const defaultBootstraps = [
 	`/dns4/payments.capsule.social/tcp/443/wss/p2p/12D3KooWBUvj6A9iNe6zPoz3i8sxhJSBNiGGL8tqRN5bY3a3khPv`,
 ];
 
-export const capsuleOrbit = process.env.VUE_APP_ORBIT_URL || `https://test-node.capsule.social/orbit`;
-export const capsuleServer = process.env.VUE_APP_CAPSULE_SERVER || `https://test-node.capsule.social/server`;
+export const capsuleOrbit = process.env.VUE_APP_ORBIT_URL || `https://alpha.capsule.social/orbit`;
+export const capsuleServer = process.env.VUE_APP_CAPSULE_SERVER || `https://alpha.capsule.social/server`;
 export const domain = process.env.VUE_APP_DOMAIN || `http://localhost:3000`;
 export const contractName = process.env.VUE_APP_CONTRACT_NAME || `capsule-vue`;
 export const sufficientFunds = process.env.VUE_APP_SUFFICIENT_ACCOUNT_FUNDS || `8180000000000000000000`;
