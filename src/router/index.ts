@@ -132,45 +132,30 @@ const routes = [
 		path: '/settings',
 		name: 'Settings',
 		component: Settings,
+		children: [
+			{
+				path: 'account',
+				name: 'Account',
+				component: SettingsAccount,
+			},
+			{
+				path: 'network',
+				name: 'Network',
+				component: SettingsNetwork,
+			},
+			{
+				path: 'security',
+				name: 'Security',
+				component: SettingsSecurity,
+			},
+			{
+				path: 'styling',
+				name: 'Styling',
+				component: SettingsStyling,
+			},
+		],
 		meta: {
 			requiresAuth: false,
-			title: 'Settings - Blogchain',
-		},
-	},
-	{
-		path: '/settings/network',
-		name: 'SettingsNetwork',
-		component: SettingsNetwork,
-		meta: {
-			requiresAuth: false,
-			title: 'SettingsNetwork - Blogchain',
-		},
-	},
-	{
-		path: '/settings/security',
-		name: 'SettingsSecurity',
-		component: SettingsSecurity,
-		meta: {
-			requiresAuth: false,
-			title: 'SettingsSecurity - Blogchain',
-		},
-	},
-	{
-		path: '/settings/styling',
-		name: 'SettingsStyling',
-		component: SettingsStyling,
-		meta: {
-			requiresAuth: false,
-			title: 'SettingsStyling - Blogchain',
-		},
-	},
-	{
-		path: '/settings/acount',
-		name: 'SettingsAccount',
-		component: SettingsAccount,
-		meta: {
-			requiresAuth: false,
-			title: 'SettingsAccount - Blogchain',
 		},
 	},
 	{

@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import ChevronRight from '@/components/icons/ChevronRight.vue';
-import ProfileIcon from '@/components/icons/ProfileIcon.vue';
-import BrushIcon from '@/components/icons/Brush.vue';
+// import ChevronRight from '@/components/icons/ChevronRight.vue';
+// import ProfileIcon from '@/components/icons/ProfileIcon.vue';
+// import BrushIcon from '@/components/icons/Brush.vue';
 </script>
 
 <template>
 	<main>
-		<div
+		<!-- <div
 			class="bg-lightBG dark:bg-darkBGStop border-lightBorder modal-animation flex flex-col overflow-hidden rounded-lg border py-4 px-6 pb-2 shadow-lg"
 		>
 			<h3 class="text-primary pb-4 text-base font-semibold">Settings</h3>
@@ -32,6 +32,6 @@ import BrushIcon from '@/components/icons/Brush.vue';
 				</div>
 				<span class="bg-gray1 dark:bg-gray5 rounded-full p-1"><ChevronRight /></span>
 			</router-link>
-		</div>
+		</div> -->
 	</main>
 </template>
