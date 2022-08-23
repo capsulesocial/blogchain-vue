@@ -1,37 +1,12 @@
 <script setup lang="ts">
-// import ChevronRight from '@/components/icons/ChevronRight.vue';
-// import ProfileIcon from '@/components/icons/ProfileIcon.vue';
-// import BrushIcon from '@/components/icons/Brush.vue';
+import ChevronLeft from '@/components/icons/ChevronLeft.vue';
 </script>
 
 <template>
-	<main>
-		<!-- <div
-			class="bg-lightBG dark:bg-darkBGStop border-lightBorder modal-animation flex flex-col overflow-hidden rounded-lg border py-4 px-6 pb-2 shadow-lg"
-		>
-			<h3 class="text-primary pb-4 text-base font-semibold">Settings</h3>
-			<router-link
-				:class="$route.name === `settings-account` ? `bg-lightInput font-semibold` : ``"
-				class="text-gray5 dark:text-gray3 focus:outline-none mb-2 flex w-full items-center justify-between rounded-lg py-2 text-left"
-				to="/settings/account"
-			>
-				<div class="flex flex-row items-center">
-					<ProfileIcon class="w-4 h-4" />
-					<h6 class="ml-4">Account</h6>
-				</div>
-				<span class="bg-gray1 dark:bg-gray5 rounded-full p-1"><ChevronRight /></span>
-			</router-link>
-			<router-link
-				to="/settings/styling"
-				:class="$route.name === `settings-styling` ? `bg-lightInput font-semibold` : ``"
-				class="text-gray5 dark:text-gray3 focus:outline-none mb-2 flex w-full items-center justify-between rounded-lg py-2 text-left"
-			>
-				<div class="flex flex-row items-center">
-					<BrushIcon class="w-4 h-4" />
-					<h6 class="ml-4">Appearance and Styling</h6>
-				</div>
-				<span class="bg-gray1 dark:bg-gray5 rounded-full p-1"><ChevronRight /></span>
-			</router-link>
-		</div> -->
-	</main>
+	<!-- Mobile back button -->
+	<router-link v-if="$route.name !== `Settings`" to="/settings" class="mb-6 flex items-center lg:hidden">
+		<span class="bg-gray1 dark:bg-gray5 mr-4 rounded-full p-1"><ChevronLeft /></span>
+		<h6 class="font-semibold dark:text-darkPrimaryText">All Settings</h6>
+	</router-link>
+	<router-view></router-view>
 </template>

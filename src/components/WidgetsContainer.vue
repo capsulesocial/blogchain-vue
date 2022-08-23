@@ -15,7 +15,6 @@ import Footer from '@/components/Footer.vue';
 		<ProfileWidgets v-if="$route.matched[0]?.path === `/id/:id`" />
 		<HelpWidgets v-if="$route.name === `Help`" />
 		<SettingsWidgets v-if="$route.matched[0]?.path === `/settings`" />
-		{{ $route }}
 		<Footer />
 	</aside>
 </template>

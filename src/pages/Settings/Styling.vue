@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import ChevronLeft from '@/components/icons/ChevronLeft.vue';
 import XIcon from '@/components/icons/CloseIcon.vue';
 import Check from '@/components/icons/Check.vue';
 import { backgrounds, getBackground } from '@/config/backgrounds';
@@ -36,12 +35,7 @@ function confirmColor() {}
 </script>
 
 <template>
-	<main>
-		<!-- Mobile back button -->
-		<router-link to="/settings" class="mb-6 flex items-center lg:hidden">
-			<span class="bg-gray1 dark:bg-gray5 mr-4 rounded-full p-1"><ChevronLeft /></span>
-			<h6 class="font-semibold dark:text-darkPrimaryText">All Settings</h6>
-		</router-link>
+	<div class="px-6 pt-4">
 		<h3 class="text-lightPrimaryText dark:text-darkPrimaryText pb-4 text-base font-semibold">Display</h3>
 		<div class="mb-8 flex w-full xl:w-4/5 items-center justify-between">
 			<h3 class="w-36 xl:w-56 font-semibold text-gray5 dark:text-gray3 text-sm">App Background</h3>
@@ -246,5 +240,5 @@ function confirmColor() {}
 				</div>
 			</div>
 		</Teleport>
-	</main>
+	</div>
 </template>

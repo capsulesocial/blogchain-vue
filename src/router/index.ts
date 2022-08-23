@@ -8,6 +8,7 @@ import Login from '@/pages/Login.vue';
 import Register from '@/pages/Register.vue';
 import Category from '@/pages/Discover/Category.vue';
 import Profile from '@/pages/Profile/Index.vue';
+import Posts from '@/pages/Profile/Posts.vue';
 import Comments from '@/pages/Profile/Comments.vue';
 import Reposts from '@/pages/Profile/Reposts.vue';
 import Tag from '@/pages/Tag.vue';
@@ -18,6 +19,7 @@ import SettingsNetwork from '@/pages/Settings/Network.vue';
 import SettingsSecurity from '@/pages/Settings/Security.vue';
 import SettingsStyling from '@/pages/Settings/Styling.vue';
 import SettingsAccount from '@/pages/Settings/Account.vue';
+import SettingsHome from '@/pages/Settings/Nav.vue';
 import PaymentPolicy from '@/pages/PaymentPolicy.vue';
 import ContentPolicy from '@/pages/ContentPolicy.vue';
 import { useStore } from '@/store/session';
@@ -97,6 +99,11 @@ const routes = [
 		component: Profile,
 		children: [
 			{
+				path: '',
+				name: 'Posts',
+				component: Posts,
+			},
+			{
 				path: 'comments',
 				name: 'Comments',
 				component: Comments,
@@ -133,6 +140,11 @@ const routes = [
 		name: 'Settings',
 		component: Settings,
 		children: [
+			{
+				path: '',
+				name: 'Settings',
+				component: SettingsHome,
+			},
 			{
 				path: 'account',
 				name: 'Account',
