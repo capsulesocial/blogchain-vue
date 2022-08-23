@@ -188,7 +188,7 @@ function logout() {
 					></div>
 					<a
 						v-if="sessionStore.$state.id !== ``"
-						:href="url + `/settings`"
+						:href="url + `/settings/account`"
 						class="text-gray5 dark:text-gray3 mb-2 flex w-full flex-row items-center text-left"
 					>
 						<SettingsIcon class="mr-2 h-5 w-5 flex-shrink-0" />Settings</a
@@ -321,7 +321,7 @@ function logout() {
 					></div>
 					<a
 						v-if="sessionStore.$state.id !== ``"
-						:href="url + `/settings`"
+						:href="url + `/settings/account`"
 						class="text-gray5 dark:text-gray3 mb-2 flex w-full flex-row items-center text-left"
 					>
 						<SettingsIcon class="mr-2 h-5 w-5 flex-shrink-0" />Settings</a

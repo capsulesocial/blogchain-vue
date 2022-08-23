@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import ProfileIcon from '@/components/icons/ProfileIcon.vue';
-import BrushlIcon from '@/components/icons/Brush.vue';
+import BrushIcon from '@/components/icons/Brush.vue';
 </script>
 <template>
 	<div
@@ -28,7 +28,7 @@ import BrushlIcon from '@/components/icons/Brush.vue';
 			"
 			class="focus:outline-none mb-4 w-full rounded-lg py-2 px-4 text-left flex flex-row items-center"
 		>
-			<BrushlIcon class="w-4 h-4" />
+			<BrushIcon class="w-4 h-4" />
 			<p class="ml-4">Appearance and Styling</p>
 		</router-link>
 	</div>

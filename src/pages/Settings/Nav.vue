@@ -1,3 +1,8 @@
+<script setup lang="ts">
+import ProfileIcon from '@/components/icons/ProfileIcon.vue';
+import BrushIcon from '@/components/icons/Brush.vue';
+import ChevronRight from '@/components/icons/ChevronRight.vue';
+</script>
 <template>
 	<div
 		class="bg-lightBG dark:bg-darkBGStop border-lightBorder modal-animation flex flex-col overflow-hidden rounded-lg border py-4 px-6 pb-2 shadow-lg"
