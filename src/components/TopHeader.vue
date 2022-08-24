@@ -114,8 +114,10 @@ function logout() {
 				<button class="dropdown focus:outline-none" @click.stop="toggleDropdown()">
 					<Avatar
 						class="dropdown"
-						:avatar="
-							sessionStore.$state.id === `` ? require(`./../assets/images/avatars/unauthenticated.webp`) : props.avatar
+						:cid="
+							sessionStore.$state.id === ``
+								? require(`./../assets/images/avatars/unauthenticated.webp`)
+								: sessionStore.$state.avatar
 						"
 						:authorid="sessionStore.$state.id"
 						:no-click="true"
