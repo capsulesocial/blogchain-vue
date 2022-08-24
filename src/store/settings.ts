@@ -22,6 +22,7 @@ export const useStoreSettings = defineStore(`settings`, {
 				secondary: `drafts`,
 				secondary2: `tags`,
 			},
+			recentlyInSettings: false,
 		};
 	},
 	persist: true,
@@ -81,6 +82,9 @@ export const useStoreSettings = defineStore(`settings`, {
 		},
 		setSecondary2Widget(w: `tags` | `followers`) {
 			this.widgets.secondary2 = w;
+		},
+		setRecentlyInSettings(isRecentlyInSettings: boolean) {
+			this.recentlyInSettings = isRecentlyInSettings;
 		},
 	},
 });

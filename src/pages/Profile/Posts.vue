@@ -6,4 +6,6 @@ useMeta({
 });
 </script>
 
-<template>{{ $route.params }}/posts</template>
+<template>
+	<div id="scrollable_content">{{ $route.params }}/posts</div>
+</template>

@@ -39,9 +39,10 @@ const showPopupColor = ref(false);
 		<div class="flex w-full xl:w-4/5 items-center justify-between">
 			<h3 class="w-36 xl:w-56 font-semibold text-gray5 dark:text-gray3 text-sm">App Background</h3>
 			<button class="text-primary focus:outline-none flex flex-row items-center" @click="showPopupBG = true">
-				<p class="mr-4">
+				<p v-if="session.background !== ``" class="mr-4">
 					{{ session.background }}
 				</p>
+				<p v-else class="mr-4">Default</p>
 				<img
 					v-lazy="{ src: getBGImage(session.background) }"
 					class="h-20 w-32 rounded-lg bg-lightBG dark:bg-darkBG border border-lightBorder"

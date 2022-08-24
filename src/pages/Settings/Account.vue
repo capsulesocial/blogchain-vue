@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from '@/store/session';
-// import { useStoreSettings } from '@/store/settings';
+import { useStoreSettings } from '@/store/settings';
 import SecondaryButton from '@/components/SecondaryButton.vue';
 import BrandedButton from '@/components/BrandedButton.vue';
 import FileDownloadIcon from '@/components/icons/FileDownload.vue';
@@ -13,7 +13,7 @@ import { getEncryptedPrivateKey } from '@/backend/privateKey';
 
 const router = useRouter();
 const store = useStore();
-// const settings = useStoreSettings();
+const settings = useStoreSettings();
 const encryptionKey = ref<string>(``);
 const encrypted = ref<boolean>(false);
 const showEncrypted = ref(false);
@@ -51,7 +51,7 @@ function toggleEncrypted() {
 }
 
 function redirectProfile() {
-	// settings.setRecentlyInSettings(true);
+	settings.setRecentlyInSettings(true);
 	router.push(`/id/` + store.$state.id);
 }
 </script>
