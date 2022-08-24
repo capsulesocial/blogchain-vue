@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, PropType, ref } from 'vue';
 import Avatar from '@/components/Avatar.vue';
 import BookmarkButton from '@/components/post/BookmarkButton.vue';
 import MoreIcon from '@/components/icons/MoreIcon.vue';
@@ -15,12 +15,13 @@ import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
 import { formatDate } from '@/helpers/helpers';
 import type { IGenericPostResponse } from '@/backend/post';
-import type { Profile } from '@/backend/profile';
+import { useProfilesStore } from '@/store/profiles';
 import { calculateReadingTime } from '@/backend/utilities/helpers';
 import { createPostExcerpt } from '@/helpers/post';
 
 const store = useStore();
 const settings = useStoreSettings();
+const profilesStore = useProfilesStore();
 const showDelete = ref<boolean>(false);
 const showComments = ref<boolean>(false);
 const showReposts = ref<boolean>(false);
@@ -28,39 +29,12 @@ const showShare = ref<boolean>(false);
 const showStats = ref<boolean>(false);
 const featuredPhoto = ref<string | null>(null);
 
-// Pass post in as prop
-const fetchedPost = ref<IGenericPostResponse>({
-	post: {
-		authorID: `jackistesting`,
-		title: `This is the title`,
-		subtitle: `This is the subtitle`,
-		category: `technology`,
-		featuredPhotoCID: null,
-		featuredPhotoCaption: null,
-		timestamp: 0,
-		tags: [{ name: `test` }],
-		encrypted: false,
-		postImages: [],
-		_id: `bafyasdfofdwa3w`,
-		excerpt: `here is some content`,
-		wordCount: 800,
-	},
-	bookmarked: false,
-	bookmarksCount: 1,
-	commentsCount: 1,
-	repostCount: 1,
+const props = defineProps({
+	fetchedPost: { type: Object as PropType<IGenericPostResponse>, required: true },
 });
 
 // Get profile of authorID
-const author = ref<Profile>({
-	id: `jackistesting`,
-	name: `Jack Dishman`,
-	email: `jack@capsule.social`,
-	bio: `Testing account`,
-	location: `Boston, MA`,
-	avatar: ``,
-	socials: [],
-});
+const author = computed(() => profilesStore.getProfile(props.fetchedPost.post.authorID));
 
 // Fetch featured photo
 
@@ -71,6 +45,8 @@ function openDeleteDropdown() {
 		showDelete.value = false;
 	});
 }
+
+profilesStore.fetchProfile(props.fetchedPost.post.authorID);
 </script>
 
 <template>
@@ -82,7 +58,7 @@ function openDeleteDropdown() {
 			<div class="flex">
 				<Avatar
 					:authorid="author.id"
-					:avatar="author.avatar"
+					:cid="author.avatar"
 					size="w-12 h-12 transition ease-in-out hover:opacity-75 modal-animation"
 				/>
 			</div>
