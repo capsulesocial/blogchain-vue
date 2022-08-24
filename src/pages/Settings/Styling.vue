@@ -34,7 +34,7 @@ const showPopupColor = ref(false);
 </script>
 
 <template>
-	<div class="px-6 pt-4">
+	<div id="scrollable_content" class="px-6 pt-4">
 		<h3 class="text-lightPrimaryText dark:text-darkPrimaryText pb-4 text-base font-semibold">Display</h3>
 		<div class="flex w-full xl:w-4/5 items-center justify-between">
 			<h3 class="w-36 xl:w-56 font-semibold text-gray5 dark:text-gray3 text-sm">App Background</h3>

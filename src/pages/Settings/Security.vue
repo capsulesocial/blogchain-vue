@@ -1,4 +1,4 @@
 <script setup lang="ts"></script>
 <template>
-	<div>Settings Security</div>
+	<div id="scrollable_content">Settings Security</div>
 </template>

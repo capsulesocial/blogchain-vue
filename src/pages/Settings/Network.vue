@@ -1,4 +1,4 @@
 <script setup lang="ts"></script>
 <template>
-	<div>Settings Network</div>
+	<div id="scrollable_content">Settings Network</div>
 </template>

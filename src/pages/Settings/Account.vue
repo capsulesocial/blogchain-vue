@@ -56,7 +56,7 @@ function redirectProfile() {
 }
 </script>
 <template>
-	<div class="px-6 pt-4">
+	<div id="scrollable_content" class="px-6 pt-4">
 		<!-- Account Security -->
 		<h3 class="text-lightPrimaryText dark:text-darkPrimaryText pb-4 text-base font-semibold">Account Security</h3>
 		<!-- ID -->
