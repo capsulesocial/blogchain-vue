@@ -14,6 +14,7 @@ const session = useStore();
 const showPopupBG = ref(false);
 const showPopupMode = ref(false);
 const showPopupColor = ref(false);
+// console.log(getBGImage(session.background));
 
 // function confirmBackgroundImage() {
 // 	if (selectedBG.value.id === session.background) {

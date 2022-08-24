@@ -1,6 +1,7 @@
 import { backgrounds } from '../config/backgrounds';
 
 export function getBGImage(id: string | undefined) {
+	console.log(backgrounds);
 	const darkMode: boolean = document.documentElement.classList[0] === `dark`;
 	const bg = backgrounds.filter((background) => {
 		return background.id === id;
