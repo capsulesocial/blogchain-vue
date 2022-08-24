@@ -3,6 +3,11 @@ import { ref } from 'vue';
 import SimplePostCard from '@/components/post/SimpleCard.vue';
 import BookmarksFilter from '@/components/BookmarksFilter.vue';
 import { BookmarkSort } from '@/backend/bookmarks';
+import { storeToRefs } from 'pinia';
+import { usePostsStore } from '@/store/posts';
+
+const postsStore = usePostsStore();
+const { posts } = storeToRefs(postsStore);
 
 const filter = ref<string>(`BOOKMARK_DESC`);
 
@@ -21,8 +26,8 @@ function setSort(sort: BookmarkSort) {
 		id="scrollable_content"
 		class="min-h-115 h-115 lg:min-h-210 lg:h-210 xl:min-h-220 xl:h-220 w-full overflow-y-auto lg:overflow-y-hidden relative"
 	>
-		<div v-for="i in 10" :key="i">
-			<SimplePostCard />
+		<div v-for="post in posts" :key="`new_${post.post._id}`">
+			<SimplePostCard :fetched-post="post" />
 		</div>
 	</article>
 </template>
