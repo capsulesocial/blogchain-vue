@@ -6,4 +6,6 @@ useMeta({
 });
 </script>
 
-<template>{{ $route.params }}/comments</template>
+<template>
+	<div id="scrollable_content">{{ $route.params }}/comments</div>
+</template>
