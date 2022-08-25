@@ -22,6 +22,7 @@ import SettingsAccount from '@/pages/Settings/Account.vue';
 import SettingsHome from '@/pages/Settings/Nav.vue';
 import PaymentPolicy from '@/pages/PaymentPolicy.vue';
 import ContentPolicy from '@/pages/ContentPolicy.vue';
+import NotFound from '@/pages/404.vue';
 import { useStore } from '@/store/session';
 
 const routes = [
@@ -195,6 +196,15 @@ const routes = [
 		meta: {
 			requiresAuth: false,
 			title: 'PaymentPolicy - Blogchain',
+		},
+	},
+	{
+		path: '/not-found',
+		name: 'Not Found',
+		component: NotFound,
+		meta: {
+			requiresAuth: false,
+			title: 'Page not found - Blogchain',
 		},
 	},
 ];

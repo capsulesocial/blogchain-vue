@@ -39,6 +39,7 @@ onMounted(async () => {
 		}
 	} catch (err) {
 		handleError(err);
+		router.push(`/not-found`);
 	}
 	void profilesStore.fetchProfile(authorID);
 });
