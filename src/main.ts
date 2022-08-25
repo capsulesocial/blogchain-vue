@@ -6,9 +6,12 @@ import VueLazyLoad from 'vue3-lazyload';
 import App from './App.vue';
 import './index.css';
 import router from './router';
+import { initBackend } from './plugins/backend';
 
 const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);
 const metaManager = createMetaManager();
 
-createApp(App).use(pinia).use(router).use(metaManager).use(VueLazyLoad).mount('#app');
+initBackend().then(() => {
+	createApp(App).use(pinia).use(router).use(metaManager).use(VueLazyLoad).mount('#app');
+});

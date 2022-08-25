@@ -8,6 +8,7 @@ import Login from '@/pages/Login.vue';
 import Register from '@/pages/Register.vue';
 import Category from '@/pages/Discover/Category.vue';
 import Profile from '@/pages/Profile/Index.vue';
+import Posts from '@/pages/Profile/Posts.vue';
 import Comments from '@/pages/Profile/Comments.vue';
 import Reposts from '@/pages/Profile/Reposts.vue';
 import Tag from '@/pages/Tag.vue';
@@ -18,8 +19,10 @@ import SettingsNetwork from '@/pages/Settings/Network.vue';
 import SettingsSecurity from '@/pages/Settings/Security.vue';
 import SettingsStyling from '@/pages/Settings/Styling.vue';
 import SettingsAccount from '@/pages/Settings/Account.vue';
+import SettingsHome from '@/pages/Settings/Nav.vue';
 import PaymentPolicy from '@/pages/PaymentPolicy.vue';
 import ContentPolicy from '@/pages/ContentPolicy.vue';
+import NotFound from '@/pages/404.vue';
 import { useStore } from '@/store/session';
 
 const routes = [
@@ -97,6 +100,11 @@ const routes = [
 		component: Profile,
 		children: [
 			{
+				path: '',
+				name: 'Posts',
+				component: Posts,
+			},
+			{
 				path: 'comments',
 				name: 'Comments',
 				component: Comments,
@@ -132,45 +140,35 @@ const routes = [
 		path: '/settings',
 		name: 'Settings',
 		component: Settings,
+		children: [
+			{
+				path: '',
+				name: 'Settings',
+				component: SettingsHome,
+			},
+			{
+				path: 'account',
+				name: 'Account',
+				component: SettingsAccount,
+			},
+			{
+				path: 'network',
+				name: 'Network',
+				component: SettingsNetwork,
+			},
+			{
+				path: 'security',
+				name: 'Security',
+				component: SettingsSecurity,
+			},
+			{
+				path: 'styling',
+				name: 'Styling',
+				component: SettingsStyling,
+			},
+		],
 		meta: {
 			requiresAuth: false,
-			title: 'Settings - Blogchain',
-		},
-	},
-	{
-		path: '/settings/network',
-		name: 'SettingsNetwork',
-		component: SettingsNetwork,
-		meta: {
-			requiresAuth: false,
-			title: 'SettingsNetwork - Blogchain',
-		},
-	},
-	{
-		path: '/settings/security',
-		name: 'SettingsSecurity',
-		component: SettingsSecurity,
-		meta: {
-			requiresAuth: false,
-			title: 'SettingsSecurity - Blogchain',
-		},
-	},
-	{
-		path: '/settings/styling',
-		name: 'SettingsStyling',
-		component: SettingsStyling,
-		meta: {
-			requiresAuth: false,
-			title: 'SettingsStyling - Blogchain',
-		},
-	},
-	{
-		path: '/settings/acount',
-		name: 'SettingsAccount',
-		component: SettingsAccount,
-		meta: {
-			requiresAuth: false,
-			title: 'SettingsAccount - Blogchain',
 		},
 	},
 	{
@@ -198,6 +196,15 @@ const routes = [
 		meta: {
 			requiresAuth: false,
 			title: 'PaymentPolicy - Blogchain',
+		},
+	},
+	{
+		path: '/not-found',
+		name: 'Not Found',
+		component: NotFound,
+		meta: {
+			requiresAuth: false,
+			title: 'Page not found - Blogchain',
 		},
 	},
 ];

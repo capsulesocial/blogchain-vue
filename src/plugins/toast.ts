@@ -70,11 +70,10 @@ export function toastWarning(text: string): void {
 export function toastError(text: string): void {
 	Toastify({
 		text,
-		duration: 8000,
+		duration: 4000,
 		gravity: `bottom`, // `top` or `bottom`
 		position: `left`,
 		avatar: ErrorAvatar,
-		close: true,
 		stopOnFocus: true,
 		style: {
 			background: `#FDE9EF`,

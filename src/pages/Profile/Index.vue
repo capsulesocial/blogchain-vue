@@ -1,24 +1,51 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import router from '@/router/index';
+import { ref, computed, onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import { useMeta } from 'vue-meta';
-import type { Profile } from '@/backend/profile';
+import { useProfilesStore } from '@/store/profiles';
+import { useStore } from '@/store/session';
 import BackButton from '@/components/icons/ChevronLeft.vue';
 import PencilIcon from '@/components/icons/Pencil.vue';
 import SecondaryButton from '@/components/SecondaryButton.vue';
 import FriendButton from '@/components/FriendButton.vue';
 import SubscribeButton from '@/components/SubscribeButton.vue';
+import Avatar from '@/components/Avatar.vue';
+import { getUserInfoNEAR } from '@/backend/near';
+import { handleError } from '@/plugins/toast';
 
 useMeta({
 	title: `authorName - Blogchain`,
 	htmlAttrs: { lang: 'en', amp: true },
 });
 
-// refs
-// const id = ref<string>(router.currentRoute.value.params.id as string);
+const store = useStore();
+const router = useRouter();
+const route = useRoute();
+const profilesStore = useProfilesStore();
+
+if (typeof route.params.id !== 'string') {
+	throw new Error('Invalid param type for id');
+}
+const authorID = route.params.id;
+const profileExists = ref<boolean>(false);
+
+const profile = computed(() => profilesStore.getProfile(authorID));
+
+onMounted(async () => {
+	try {
+		const nearUserInfo = await getUserInfoNEAR(authorID);
+		if (nearUserInfo.publicKey) {
+			profileExists.value = true;
+		}
+	} catch (err) {
+		handleError(err);
+		router.push(`/not-found`);
+	}
+	void profilesStore.fetchProfile(authorID);
+});
+
 const fromExternalSite = ref<boolean>(false);
-const selfView = ref<boolean>(true);
-const visitAvatar = ref<string | ArrayBuffer>(``);
+const selfView = ref<boolean>(authorID === store.$state.id);
 const showAvatarPopup = ref<boolean>(false);
 const scrollingDown = ref<boolean>(false);
 const followers = ref<[]>([]);
@@ -29,19 +56,6 @@ const userIsFollowed = ref<boolean>(false);
 const activeSubscription = ref<boolean>(false);
 const longBio = ref<boolean>(false);
 const expandBio = ref<boolean>(false);
-
-// TODO: fetch profile and set to ref
-const visitProfile = ref<Profile>({
-	id: `tombrady`,
-	name: `Tom Brady`,
-	email: `tb12@gmail.com`,
-	bio: `6-time super bowl champion`,
-	location: `Tampa Bay`,
-	avatar: ``,
-	socials: [],
-	website: `tb12.com`,
-});
-// THEN: fetch avatar
 
 // Check if coming from external site
 router.beforeEach((to, from, next) => {
@@ -61,9 +75,6 @@ function handleBack() {
 function toggleSettings() {
 	return;
 }
-function openHeader(v: boolean) {
-	return;
-}
 function toggleFriend() {
 	return;
 }
@@ -72,7 +83,7 @@ function toggleSubscription() {
 }
 function getStyles(tab: string): string {
 	let res = ``;
-	if (router.currentRoute.value.name === tab) {
+	if (route.name === tab) {
 		res += ` text-primary font-bold`;
 	} else {
 		if (router.currentRoute.value.name !== `id-followers` && router.currentRoute.value.name !== `id-following`) {
@@ -89,14 +100,14 @@ function getStyles(tab: string): string {
 		<!-- top -->
 		<article id="header" ref="topContainer" class="min-h-fit header-profile z-20 w-full px-4 pt-3 xl:px-6 xl:pt-4">
 			<!-- Back button -->
-			<div class="flex flex-row items-center pb-4">
+			<div v-if="!selfView" class="flex flex-row items-center pb-4">
 				<!-- IF viewing someone elses profile -->
-				<button v-if="!selfView" class="focus:outline-none flex flex-row items-center" @click="handleBack">
+				<button class="focus:outline-none flex flex-row items-center" @click="handleBack">
 					<span class="bg-gray1 dark:bg-gray5 rounded-full p-1"><BackButton :reduce-size="true" /></span>
 					<h6 class="ml-2 font-sans font-semibold dark:text-darkPrimaryText">Back</h6>
 				</button>
 
-				<div
+				<!-- <div
 					id="small"
 					class="header-profile flex w-full flex-row items-center justify-between z-40 opacity0"
 					:class="selfView ? `` : `ml-6`"
@@ -108,14 +119,14 @@ function getStyles(tab: string): string {
 							:disabled="!scrollingDown"
 							@click="showAvatarPopup = true"
 						>
-							<!-- <Avatar
+							<Avatar
 								:avatar="visitAvatar"
 								:author-i-d="$route.params.id"
 								:size="`w-8 h-8`"
 								:no-click="true"
 								class="rounded-base flex-shrink-0"
 								:class="!visitAvatar ? `cursor-default` : ``"
-							/> -->
+							/>
 						</button>
 						<button
 							class="focus:outline-none"
@@ -150,7 +161,6 @@ function getStyles(tab: string): string {
 							:class="scrollingDown ? `cursor-pointer` : `cursor-default`"
 							:disabled="!scrollingDown"
 						/>
-						<!-- Subscription button -->
 						<SubscribeButton
 							v-if="selfView && paymentsEnabled"
 							:toggle-subscription="toggleSubscription"
@@ -160,29 +170,29 @@ function getStyles(tab: string): string {
 							:disabled="!scrollingDown"
 						/>
 					</div>
-				</div>
+				</div> -->
 			</div>
 			<!-- Name, socials, follow, bio -->
 			<div class="flex flex-row justify-between">
 				<div id="infos" class="header-profile flex items-center" :class="selfView ? `-mt-12` : ``">
-					<button class="focus:outline-none" @click="showAvatarPopup = true">
+					<button class="focus:outline-none mr-5" style="width: 5rem; height: 5rem" @click="showAvatarPopup = true">
 						<Avatar
-							:avatar="visitAvatar"
-							:author-i-d="$route.params.id"
+							:authorid="profile.id"
+							:cid="profile.avatar"
 							:size="`w-20 h-20`"
 							:no-click="true"
 							class="flex-shrink-0 rounded-lg"
-							:class="!visitAvatar ? `cursor-default` : ``"
+							:class="!profile.avatar ? `cursor-default` : ``"
 						/>
 					</button>
-					<div class="ml-5 flex flex-grow flex-col">
+					<div class="flex flex-grow flex-col">
 						<!-- Name Username, Follow button -->
 						<div class="flex flex-col">
-							<h3 v-if="visitProfile.name != ``" class="pr-4 text-2xl font-semibold dark:text-darkPrimaryText">
-								{{ visitProfile.name }}
+							<h3 v-if="profile.name != ``" class="pr-4 text-2xl font-semibold dark:text-darkPrimaryText">
+								{{ profile.name }}
 							</h3>
-							<h3 v-else class="text-gray5 dark:text-gray3 pr-4 text-2xl font-semibold">{{ visitProfile.id }}</h3>
-							<h5 class="text-gray5 dark:text-gray3 text-lg">@{{ visitProfile.id }}</h5>
+							<h3 v-else class="text-gray5 dark:text-gray3 pr-4 text-2xl font-semibold">{{ profile.id }}</h3>
+							<h5 class="text-gray5 dark:text-gray3 text-lg">@{{ profile.id }}</h5>
 						</div>
 						<!-- Tabs: posts, following, followers -->
 						<div class="text-gray5 -mr-12 flex flex-row pt-2 text-sm">
@@ -247,13 +257,13 @@ function getStyles(tab: string): string {
 			</div>
 			<!-- Bio -->
 			<div
-				v-show="visitProfile.bio"
+				v-show="profile.bio"
 				id="bio"
 				ref="bio"
 				class="header-profile px-1 pt-4 dark:text-darkPrimaryText"
 				:style="expandBio ? `` : `max-height: 5.5rem; overflow: hidden`"
 			>
-				<p>{{ visitProfile.bio.slice(0, 200) + (visitProfile.bio.length > 200 ? '...' : '') }}<br /></p>
+				<p>{{ profile.bio.slice(0, 200) + (profile.bio.length > 200 ? '...' : '') }}<br /></p>
 			</div>
 			<button
 				v-show="longBio"
@@ -263,17 +273,17 @@ function getStyles(tab: string): string {
 			>
 				Read more
 			</button>
-			<div v-show="!visitProfile.bio" id="bio" class="header-profile"></div>
+			<div v-show="!profile.bio" id="bio" class="header-profile"></div>
 			<div id="divider" class="w-full bg-lightBorder dark:bg-darkBorder my-4 rounded" style="height: 1px"></div>
 			<!-- Tabs -->
 			<div id="tabs" class="text-gray5 dark:text-gray3 text-sm header-profile flex w-full justify-between pb-3 xl:px-6">
-				<router-link :to="'/id/' + $route.params.id" class="pb-1" :class="getStyles('id-id')">
+				<router-link :to="'/id/' + $route.params.id" class="pb-1" :class="getStyles('Posts')">
 					<span class="px-4">Posts</span>
 				</router-link>
-				<router-link :to="'/id/' + $route.params.id + '/comments'" class="pb-1" :class="getStyles('id-id-comments')">
+				<router-link :to="'/id/' + $route.params.id + '/comments'" class="pb-1" :class="getStyles('Comments')">
 					<span class="px-4">Comments</span>
 				</router-link>
-				<router-link :to="'/id/' + $route.params.id + '/reposts'" class="pb-1" :class="getStyles('id-id-reposts')">
+				<router-link :to="'/id/' + $route.params.id + '/reposts'" class="pb-1" :class="getStyles('Reposts')">
 					<span class="px-4">Reposts</span>
 				</router-link>
 			</div>
