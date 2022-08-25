@@ -12,5 +12,6 @@ const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);
 const metaManager = createMetaManager();
 
-initBackend();
-createApp(App).use(pinia).use(router).use(metaManager).use(VueLazyLoad).mount('#app');
+initBackend().then(() => {
+	createApp(App).use(pinia).use(router).use(metaManager).use(VueLazyLoad).mount('#app');
+});
