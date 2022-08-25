@@ -54,7 +54,7 @@ const paymentsEnabled = ref<boolean>(true);
 const totalPostsCount = ref<number>(0);
 const userIsFollowed = ref<boolean>(false);
 const activeSubscription = ref<boolean>(false);
-const longBio = ref<boolean>(false);
+const longBio = ref<boolean>(profile.value.bio.length > 200);
 const expandBio = ref<boolean>(false);
 
 // Check if coming from external site

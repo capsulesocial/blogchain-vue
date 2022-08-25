@@ -1,5 +1,5 @@
 <template>
-	<button class="focus:outline-none block rounded-lg" @click="toggleSubscription">
+	<button class="focus:outline-none block rounded-lg">
 		<div v-if="userIsSubscribed">
 			<!-- Desktop -->
 			<div
@@ -37,17 +37,12 @@
 </template>
 
 <script setup lang="ts">
-import type { PropType } from 'vue';
 import CrownIcon from '@/components/icons/Crown.vue';
 import PenIcon from '@/components/icons/Pencil.vue';
 
 defineProps({
 	userIsSubscribed: {
 		type: Boolean,
-		required: true,
-	},
-	toggleSubscription: {
-		type: Function as PropType<() => void>,
 		required: true,
 	},
 });
