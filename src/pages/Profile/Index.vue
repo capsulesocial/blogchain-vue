@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useMeta } from 'vue-meta';
 import { useProfilesStore } from '@/store/profiles';
@@ -10,6 +10,8 @@ import SecondaryButton from '@/components/SecondaryButton.vue';
 import FriendButton from '@/components/FriendButton.vue';
 import SubscribeButton from '@/components/SubscribeButton.vue';
 import Avatar from '@/components/Avatar.vue';
+import { getUserInfoNEAR } from '@/backend/near';
+import { handleError } from '@/plugins/toast';
 
 useMeta({
 	title: `authorName - Blogchain`,
@@ -21,12 +23,28 @@ const router = useRouter();
 const route = useRoute();
 const profilesStore = useProfilesStore();
 
-const profile = computed(() => profilesStore.getProfile(route.params.id as string));
+if (typeof route.params.id !== 'string') {
+	throw new Error('Invalid param type for id');
+}
+const authorID = route.params.id;
+const profileExists = ref<boolean>(false);
 
-profilesStore.fetchProfile(route.params.id as string);
+const profile = computed(() => profilesStore.getProfile(authorID));
+
+onMounted(async () => {
+	try {
+		const nearUserInfo = await getUserInfoNEAR(authorID);
+		if (nearUserInfo.publicKey) {
+			profileExists.value = true;
+		}
+	} catch (err) {
+		handleError(err);
+	}
+	void profilesStore.fetchProfile(authorID);
+});
 
 const fromExternalSite = ref<boolean>(false);
-const selfView = ref<boolean>((route.params.id as string) === store.$state.id);
+const selfView = ref<boolean>(authorID === store.$state.id);
 const showAvatarPopup = ref<boolean>(false);
 const scrollingDown = ref<boolean>(false);
 const followers = ref<[]>([]);
