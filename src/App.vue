@@ -10,9 +10,10 @@ import { initColors } from './plugins/colors';
 import { getBGImage } from './plugins/background';
 import { onBeforeMount, ref } from 'vue';
 import { useMeta } from 'vue-meta';
-import { initScroll } from '@/helpers/scrolling';
+import { wheel, setThumbHeight, mouseUpHandler, mouseMoveHandler, trackClickHandler } from '@/helpers/scrolling';
 import { useRouter } from 'vue-router';
 import { watch } from 'vue';
+import { nextTick } from 'process';
 
 const router = useRouter();
 const store = useStore();
@@ -43,10 +44,43 @@ onBeforeMount(() => {
 	getAvatar(store.$state.avatar);
 });
 
+const initScroll = () => {
+	// Query elements
+	const track = document.getElementById('track') as HTMLElement;
+	const thumb = document.getElementById('thumb') as HTMLElement;
+
+	// Set the initial height for thumb
+	setThumbHeight();
+
+	const mouseDownThumbHandler = (e: MouseEvent, pos?: { top: number; y: number }) => {
+		const content = document.getElementById('scrollable_content') as HTMLElement;
+		const thumb = document.getElementById('thumb') as HTMLElement;
+		pos = {
+			// The current scroll
+			top: content.scrollTop,
+			// Get the current mouse position
+			y: e.clientY,
+		};
+
+		thumb.classList.add('cursor-grab', 'select-none', 'bg-gray5');
+		document.body.classList.add('cursor-grab', 'select-none');
+
+		document.addEventListener('mousemove', mouseMoveHandler);
+		document.addEventListener('mouseup', mouseUpHandler);
+	};
+
+	if (window.screen.availWidth > 1024) {
+		if (window.addEventListener) window.addEventListener('wheel', wheel);
+		if (thumb.addEventListener) thumb.addEventListener('mousedown', mouseDownThumbHandler);
+		if (track.addEventListener) track.addEventListener('click', trackClickHandler);
+	}
+};
+
 watch(router.currentRoute, () => {
 	// Scrolling event listener
 	document.removeEventListener('DOMContentLoaded', initScroll);
 	document.addEventListener('DOMContentLoaded', initScroll);
+	nextTick(setThumbHeight);
 });
 </script>
 

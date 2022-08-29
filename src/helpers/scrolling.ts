@@ -47,68 +47,45 @@ export function wheel(event: any) {
 	if (delta) handle(delta);
 }
 
-export const initScroll = () => {
-	// Query elements
-	const content = document.getElementById('scrollable_content') as HTMLElement;
-	const track = document.getElementById('track') as HTMLElement;
+export const setThumbHeight = () => {
 	const thumb = document.getElementById('thumb') as HTMLElement;
+	const content = document.getElementById('scrollable_content') as HTMLElement;
 
 	// Set the initial height for thumb
 	const scrollRatio = content.clientHeight / content.scrollHeight;
 	thumb.style.height = `${scrollRatio * 100}%`;
+};
 
-	let pos = { top: 0, y: 0 };
-
-	const mouseDownThumbHandler = (e: any) => {
-		const content = document.getElementById('scrollable_content') as HTMLElement;
-		const thumb = document.getElementById('thumb') as HTMLElement;
-		pos = {
-			// The current scroll
-			top: content.scrollTop,
-			// Get the current mouse position
-			y: e.clientY,
-		};
-
-		thumb.classList.add('cursor-grab', 'select-none', 'bg-gray5');
-		document.body.classList.add('cursor-grab', 'select-none');
-
-		document.addEventListener('mousemove', mouseMoveHandler);
-		document.addEventListener('mouseup', mouseUpHandler);
-	};
-
-	const mouseMoveHandler = (e: any) => {
-		const content = document.getElementById('scrollable_content') as HTMLElement;
-		const thumb = document.getElementById('thumb') as HTMLElement;
-		// How far the mouse has been moved
-		const dy = e.clientY - pos.y;
-
-		// Scroll the content
-		content.scrollTop = pos.top + dy / scrollRatio;
-		thumb.style.top = `${(content.scrollTop * 100) / content.scrollHeight}%`;
-	};
-
-	const mouseUpHandler = (e: any) => {
-		const thumb = document.getElementById('thumb') as HTMLElement;
-		thumb.classList.remove('cursor-grab', 'select-none', 'bg-gray5');
-		document.body.classList.remove('cursor-grab', 'select-none');
-
-		document.removeEventListener('mousemove', mouseMoveHandler);
-		document.removeEventListener('mouseup', mouseUpHandler);
-	};
-
-	const trackClickHandler = (e: any) => {
-		const content = document.getElementById('scrollable_content') as HTMLElement;
-		const track = document.getElementById('track') as HTMLElement;
-		const thumb = document.getElementById('thumb') as HTMLElement;
-		const bound = track.getBoundingClientRect();
-		const percentage = (e.clientY - bound.top) / bound.height;
-		content.scrollTop = percentage * (content.scrollHeight - content.clientHeight);
-		thumb.style.top = `${(content.scrollTop * 100) / content.scrollHeight}%`;
-	};
-
-	if (window.screen.availWidth > 1024) {
-		if (window.addEventListener) window.addEventListener('wheel', wheel);
-		if (thumb.addEventListener) thumb.addEventListener('mousedown', mouseDownThumbHandler);
-		if (track.addEventListener) track.addEventListener('click', trackClickHandler);
+export const mouseMoveHandler = (e: any, pos?: { top: number; y: number }) => {
+	let position = { top: 0, y: 0 };
+	if (pos) {
+		position = pos;
 	}
+	const content = document.getElementById('scrollable_content') as HTMLElement;
+	const scrollRatio = content.clientHeight / content.scrollHeight;
+	const thumb = document.getElementById('thumb') as HTMLElement;
+	// How far the mouse has been moved
+	const dy = e.clientY - position.y;
+
+	// Scroll the content
+	content.scrollTop = position.top + dy / scrollRatio;
+	thumb.style.top = `${(content.scrollTop * 100) / content.scrollHeight}%`;
+};
+
+export const mouseUpHandler = (e: any) => {
+	const thumb = document.getElementById('thumb') as HTMLElement;
+	thumb.classList.remove('cursor-grab', 'select-none', 'bg-gray5');
+	document.body.classList.remove('cursor-grab', 'select-none');
+	document.removeEventListener('mousemove', mouseMoveHandler);
+	document.removeEventListener('mouseup', mouseUpHandler);
+};
+
+export const trackClickHandler = (e: any) => {
+	const content = document.getElementById('scrollable_content') as HTMLElement;
+	const track = document.getElementById('track') as HTMLElement;
+	const thumb = document.getElementById('thumb') as HTMLElement;
+	const bound = track.getBoundingClientRect();
+	const percentage = (e.clientY - bound.top) / bound.height;
+	content.scrollTop = percentage * (content.scrollHeight - content.clientHeight);
+	thumb.style.top = `${(content.scrollTop * 100) / content.scrollHeight}%`;
 };
