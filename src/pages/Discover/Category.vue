@@ -33,14 +33,13 @@ const category = ref<string>(route.params.category as string);
 		}"
 	>
 		<div class="flex h-full flex-col justify-between px-4 py-5 xl:px-6">
-			<button class="focus:outline-none relative flex">
+			<button class="focus:outline-none relative flex" @click="$router.push(`/discover`)">
 				<div class="bg-gray1 z-10 flex-shrink-0 rounded-full">
 					<BackIcon />
 				</div>
 				<p
 					id="buttontitle"
-					class="animatefast pl-3 pr-4 font-semibold text-lightPrimaryText dark:text-darkPrimaryText"
-					style="z-index: 1"
+					class="animatefast pl-3 z-10 pr-4 font-semibold text-lightPrimaryText dark:text-darkPrimaryText"
 				>
 					All categories
 				</p>
@@ -52,8 +51,8 @@ const category = ref<string>(route.params.category as string);
 				</h2> -->
 				<div
 					id="buttonbg"
-					class="bg-lightBG animatefast absolute h-full rounded-full bg-opacity-50"
-					style="width: 155px; z-index: 0"
+					class="bg-lightBG animatefast absolute h-full rounded-full bg-opacity-50 z-0"
+					style="width: 155px"
 				></div>
 			</button>
 			<h2

@@ -3,13 +3,14 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
+import { toastError, toastSuccess } from '@/plugins/toast';
+import { getNearPrivateKey } from '@/backend/near';
+import { getEncryptedPrivateKey } from '@/backend/privateKey';
 import SecondaryButton from '@/components/SecondaryButton.vue';
 import BrandedButton from '@/components/BrandedButton.vue';
 import FileDownloadIcon from '@/components/icons/FileDownload.vue';
 import BasicSwitch from '@/components/BasicSwitch.vue';
-import { toastError, toastSuccess } from '@/plugins/toast';
-import { getNearPrivateKey } from '@/backend/near';
-import { getEncryptedPrivateKey } from '@/backend/privateKey';
+import PencilIcon from '@/components/icons/Pencil.vue';
 
 const router = useRouter();
 const store = useStore();
@@ -61,9 +62,7 @@ function redirectProfile() {
 		<h3 class="text-lightPrimaryText dark:text-darkPrimaryText pb-4 text-base font-semibold">Account Security</h3>
 		<!-- ID -->
 		<div class="mb-4 flex w-full flex-col sm:flex-row items-start sm:items-center">
-			<label for="id" class="w-48 font-semibold text-gray5 dark:text-gray3 text-sm mb-2 sm:mb-0" style="width: 12rem"
-				>Identifier</label
-			>
+			<label for="id" class="w-48 font-semibold text-gray5 dark:text-gray3 text-sm mb-2 sm:mb-0">Identifier</label>
 			<input
 				id="id"
 				type="text"
@@ -74,7 +73,7 @@ function redirectProfile() {
 		</div>
 		<!-- Export Private Key -->
 		<div class="mb-8 flex w-full flex-col sm:flex-row items-start">
-			<h6 class="w-48 flex-shrink-0 font-semibold text-gray5 dark:text-gray3 text-sm mb-2 sm:mb-0" style="width: 12rem">
+			<h6 class="w-48 flex-shrink-0 font-semibold text-gray5 dark:text-gray3 text-sm mb-2 sm:mb-0">
 				Blogchain private key
 			</h6>
 			<div class="bg-gray1 dark:bg-gray7 rounded-lg pt-4 pb-5 px-6 w-full">
@@ -100,9 +99,7 @@ function redirectProfile() {
 		<!-- Account Profile -->
 		<h3 class="text-lightPrimaryText dark:text-darkPrimaryText pb-4 text-base font-semibold">Account Profile</h3>
 		<div class="mb-8 flex w-full flex-row items-center justify-between xl:justify-start">
-			<label for="editProfile" class="w-48 font-semibold text-gray5 dark:text-gray3 text-sm" style="width: 12rem"
-				>Public Profile</label
-			>
+			<label for="editProfile" class="w-48 font-semibold text-gray5 dark:text-gray3 text-sm">Public Profile</label>
 			<button class="bg-darkBG focus:outline-none block rounded-lg xl:hidden" @click="redirectProfile">
 				<PencilIcon class="m-2 h-5 w-5 text-white" />
 			</button>
