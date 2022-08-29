@@ -8,7 +8,7 @@ import { useStore } from './store/session';
 import { useStoreSettings } from './store/settings';
 import { initColors } from './plugins/colors';
 import { getBGImage } from './plugins/background';
-import { onBeforeMount, onMounted, ref } from 'vue';
+import { onBeforeMount, ref } from 'vue';
 import { useMeta } from 'vue-meta';
 import { wheel } from '@/helpers/scrolling';
 import { useRouter } from 'vue-router';
