@@ -54,6 +54,7 @@ export const setThumbHeight = () => {
 	// Set the initial height for thumb
 	const scrollRatio = content.clientHeight / content.scrollHeight;
 	thumb.style.height = `${scrollRatio * 100}%`;
+	thumb.style.top = `0`;
 };
 
 export const mouseMoveHandler = (e: any, pos?: { top: number; y: number }) => {
@@ -105,15 +106,8 @@ export const initScroll = () => {
 	// Set the initial height for thumb
 	setThumbHeight();
 
-	const mouseDownThumbHandler = (e: MouseEvent, pos?: { top: number; y: number }) => {
-		const content = document.getElementById('scrollable_content') as HTMLElement;
+	const mouseDownThumbHandler = () => {
 		const thumb = document.getElementById('thumb') as HTMLElement;
-		pos = {
-			// The current scroll
-			top: content.scrollTop,
-			// Get the current mouse position
-			y: e.clientY,
-		};
 
 		thumb.classList.add('bg-gray5');
 		thumb.style.userSelect = `none`;
