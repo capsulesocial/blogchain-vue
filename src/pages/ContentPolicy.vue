@@ -3,7 +3,10 @@ import CloseIcon from '../components/icons/CloseIcon.vue';
 </script>
 
 <template>
-	<main class="w-full flex flex-col items-center pt-10">
+	<main
+		id="scrollable_content"
+		class="w-full flex flex-col items-center py-10 w-full h-screen max-h-screen overflow-y-auto lg:overflow-y-hidden"
+	>
 		<section class="lg:w-760 lg:max-w-760 mt-10">
 			<!-- Page title -->
 			<article class="px-4 py-4 xl:px-6 xl:py-5">

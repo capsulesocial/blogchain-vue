@@ -46,3 +46,82 @@ export function wheel(event: any) {
 	 */
 	if (delta) handle(delta);
 }
+
+export const setThumbHeight = () => {
+	const thumb = document.getElementById('thumb') as HTMLElement;
+	const content = document.getElementById('scrollable_content') as HTMLElement;
+
+	// Set the initial height for thumb
+	const scrollRatio = content.clientHeight / content.scrollHeight;
+	thumb.style.height = `${scrollRatio * 100}%`;
+	thumb.style.top = `0`;
+};
+
+export const mouseMoveHandler = (e: any, pos?: { top: number; y: number }) => {
+	let position = { top: 0, y: 0 };
+	if (pos) {
+		position = pos;
+	}
+	const content = document.getElementById('scrollable_content') as HTMLElement;
+	const scrollRatio = content.clientHeight / content.scrollHeight;
+	const thumb = document.getElementById('thumb') as HTMLElement;
+	// How far the mouse has been moved
+	const dy = e.clientY - position.y;
+
+	// Scroll the content
+	content.scrollTop = position.top + dy / scrollRatio;
+	thumb.style.top = `${(content.scrollTop * 100) / content.scrollHeight}%`;
+};
+
+export const mouseUpHandler = (e: any) => {
+	const thumb = document.getElementById('thumb') as HTMLElement;
+	thumb.classList.remove('cursor-grab', 'select-none');
+	document.body.classList.remove('cursor-grab', 'select-none');
+
+	thumb.classList.remove('bg-gray5');
+	thumb.style.userSelect = `text`;
+	thumb.style.cursor = `auto`;
+	document.body.style.userSelect = `text`;
+	document.body.style.cursor = `auto`;
+
+	document.removeEventListener('mousemove', mouseMoveHandler);
+	document.removeEventListener('mouseup', mouseUpHandler);
+};
+
+export const trackClickHandler = (e: any) => {
+	const content = document.getElementById('scrollable_content') as HTMLElement;
+	const track = document.getElementById('track') as HTMLElement;
+	const thumb = document.getElementById('thumb') as HTMLElement;
+	const bound = track.getBoundingClientRect();
+	const percentage = (e.clientY - bound.top) / bound.height;
+	content.scrollTop = percentage * (content.scrollHeight - content.clientHeight);
+	thumb.style.top = `${(content.scrollTop * 100) / content.scrollHeight}%`;
+};
+
+export const initScroll = () => {
+	// Query elements
+	const track = document.getElementById('track') as HTMLElement;
+	const thumb = document.getElementById('thumb') as HTMLElement;
+
+	// Set the initial height for thumb
+	setThumbHeight();
+
+	const mouseDownThumbHandler = () => {
+		const thumb = document.getElementById('thumb') as HTMLElement;
+
+		thumb.classList.add('bg-gray5');
+		thumb.style.userSelect = `none`;
+		thumb.style.cursor = `grabbing`;
+		document.body.style.userSelect = `none`;
+		document.body.style.cursor = `grabbing`;
+
+		document.addEventListener('mousemove', mouseMoveHandler);
+		document.addEventListener('mouseup', mouseUpHandler);
+	};
+
+	if (window.screen.availWidth > 1024) {
+		if (window.addEventListener) window.addEventListener('wheel', wheel);
+		if (thumb.addEventListener) thumb.addEventListener('mousedown', mouseDownThumbHandler);
+		if (track.addEventListener) track.addEventListener('click', trackClickHandler);
+	}
+};

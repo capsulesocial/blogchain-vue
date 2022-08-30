@@ -10,9 +10,10 @@ import { initColors } from './plugins/colors';
 import { getBGImage } from './plugins/background';
 import { onBeforeMount, ref } from 'vue';
 import { useMeta } from 'vue-meta';
-import { wheel } from '@/helpers/scrolling';
+import { setThumbHeight, initScroll } from '@/helpers/scrolling';
 import { useRouter } from 'vue-router';
 import { watch } from 'vue';
+import { nextTick } from 'process';
 
 const router = useRouter();
 const store = useStore();
@@ -45,63 +46,9 @@ onBeforeMount(() => {
 
 watch(router.currentRoute, () => {
 	// Scrolling event listener
-	document.addEventListener('DOMContentLoaded', () => {
-		// Query elements
-		const content = document.getElementById('scrollable_content') as HTMLElement;
-		const track = document.getElementById('track') as HTMLElement;
-		const thumb = document.getElementById('thumb') as HTMLElement;
-
-		// Set the initial height for thumb
-		const scrollRatio = content.clientHeight / content.scrollHeight;
-		thumb.style.height = `${scrollRatio * 100}%`;
-
-		let pos = { top: 0, y: 0 };
-
-		const mouseDownThumbHandler = function (e: any) {
-			pos = {
-				// The current scroll
-				top: content.scrollTop,
-				// Get the current mouse position
-				y: e.clientY,
-			};
-
-			thumb.classList.add('cursor-grab', 'select-none', 'bg-gray5');
-			document.body.classList.add('cursor-grab', 'select-none');
-
-			document.addEventListener('mousemove', mouseMoveHandler);
-			document.addEventListener('mouseup', mouseUpHandler);
-		};
-
-		const mouseMoveHandler = function (e: any) {
-			// How far the mouse has been moved
-			const dy = e.clientY - pos.y;
-
-			// Scroll the content
-			content.scrollTop = pos.top + dy / scrollRatio;
-			thumb.style.top = `${(content.scrollTop * 100) / content.scrollHeight}%`;
-		};
-
-		const mouseUpHandler = function (e: any) {
-			thumb.classList.remove('cursor-grab', 'select-none', 'bg-gray5');
-			document.body.classList.remove('cursor-grab', 'select-none');
-
-			document.removeEventListener('mousemove', mouseMoveHandler);
-			document.removeEventListener('mouseup', mouseUpHandler);
-		};
-
-		const trackClickHandler = function (e: any) {
-			const bound = track.getBoundingClientRect();
-			const percentage = (e.clientY - bound.top) / bound.height;
-			content.scrollTop = percentage * (content.scrollHeight - content.clientHeight);
-			thumb.style.top = `${(content.scrollTop * 100) / content.scrollHeight}%`;
-		};
-
-		if (window.screen.availWidth > 1024) {
-			if (window.addEventListener) window.addEventListener('wheel', wheel);
-			if (thumb.addEventListener) thumb.addEventListener('mousedown', mouseDownThumbHandler);
-			if (track.addEventListener) track.addEventListener('click', trackClickHandler);
-		}
-	});
+	document.removeEventListener('DOMContentLoaded', initScroll);
+	document.addEventListener('DOMContentLoaded', initScroll);
+	nextTick(setThumbHeight);
 });
 </script>
 
