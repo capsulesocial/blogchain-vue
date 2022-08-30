@@ -17,6 +17,7 @@ import SubscriptionsWidgets from '@/components/widgets/pages/SubscriptionsWidget
 		<HelpWidgets v-if="$route.name === `Help`" />
 		<SettingsWidgets v-if="$route.matched[0]?.path === `/settings`" />
 		<SubscriptionsWidgets v-if="$route.name === `Subscriptions`" />
+		<DiscoverWidgets v-if="$route.name === `Category`" />
 		<Footer />
 	</aside>
 </template>

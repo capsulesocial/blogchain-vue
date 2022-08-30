@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useMeta } from 'vue-meta';
 import { useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
@@ -17,6 +17,84 @@ const postsStore = usePostsStore();
 
 const { posts } = storeToRefs(postsStore);
 const category = ref<string>(route.params.category as string);
+const lastScroll = ref<number>(0);
+const isScrollingDown = ref<boolean>(false);
+
+function collapse() {
+	const body = document.getElementById(`scrollable_content`);
+	const header = document.getElementById(`header`);
+	const buttontitle = document.getElementById(`buttontitle`);
+	const buttonbg = document.getElementById(`buttonbg`);
+	const title = document.getElementById(`title`);
+	const hiddentitle = document.getElementById(`hiddentitle`);
+	const scrollUp = `scrollup`;
+	const scrollDown = `scrolldown`;
+	const opacity0 = `opacity0`;
+	const opacity1 = `opacity1`;
+	if (!body) {
+		return;
+	}
+	if (!buttontitle) {
+		return;
+	}
+	if (!buttonbg) {
+		return;
+	}
+	if (!title) {
+		return;
+	}
+	if (!hiddentitle) {
+		return;
+	}
+	if (!header) {
+		return;
+	}
+	// console.log(body);
+	// console.log(header);
+	// console.log(buttontitle);
+	// console.log(buttonbg);
+	// console.log(title);
+	// console.log(hiddentitle);
+	const currentScroll = body.scrollTop;
+	if (currentScroll > lastScroll.value && !header.classList.contains(scrollDown)) {
+		// down
+		isScrollingDown.value = true;
+		header.classList.remove(scrollUp);
+		buttontitle.classList.remove(opacity1);
+		buttonbg.classList.remove(opacity1);
+		title.classList.remove(opacity1);
+		hiddentitle.classList.remove(opacity0);
+		header.classList.add(scrollDown);
+		buttontitle.classList.add(opacity0);
+		buttonbg.classList.add(opacity0);
+		title.classList.add(opacity0);
+		hiddentitle.classList.add(opacity1);
+		console.log(`down`);
+	} else if (
+		currentScroll < lastScroll.value &&
+		header.classList.contains(scrollDown) &&
+		body.scrollTop + body.clientHeight !== body.scrollHeight
+	) {
+		// up
+		isScrollingDown.value = true;
+		header.classList.remove(scrollDown);
+		buttontitle.classList.remove(opacity0);
+		buttonbg.classList.remove(opacity0);
+		title.classList.remove(opacity0);
+		hiddentitle.classList.remove(opacity1);
+		header.classList.add(scrollUp);
+		buttontitle.classList.add(opacity1);
+		title.classList.add(opacity1);
+		hiddentitle.classList.add(opacity0);
+		console.log(`up`);
+	}
+	lastScroll.value = currentScroll;
+}
+
+onMounted(() => {
+	usePostsStore().fetchHomePosts();
+	if (window.addEventListener) window.addEventListener('wheel', collapse);
+});
 </script>
 
 <template>
@@ -43,12 +121,12 @@ const category = ref<string>(route.params.category as string);
 				>
 					All categories
 				</p>
-				<!-- <h2
+				<h2
 					id="hiddentitle"
 					class="text-lightPrimaryText dark:text-darkPrimaryText animatelong absolute ml-8 -mt-1 px-2 text-xl font-semibold capitalize opacity-0"
 				>
 					{{ category.replace(`-`, ` `) }}
-				</h2> -->
+				</h2>
 				<div
 					id="buttonbg"
 					class="bg-lightBG animatefast absolute h-full rounded-full bg-opacity-50 z-0"
@@ -67,10 +145,33 @@ const category = ref<string>(route.params.category as string);
 	<!-- Posts -->
 	<article
 		id="scrollable_content"
-		class="min-h-115 h-115 lg:min-h-210 lg:h-210 xl:min-h-220 xl:h-220 w-full overflow-y-auto lg:overflow-y-hidden relative"
+		class="min-h-115 h-115 lg:min-h-150 lg:h-150 w-full overflow-y-auto lg:overflow-y-hidden relative"
 	>
 		<div v-for="post in posts" :key="`new_${post.post._id}`">
 			<SimplePostCard :fetched-post="post" />
 		</div>
 	</article>
 </template>
+<style>
+.animatefast {
+	transition: all 0.4s;
+}
+.animatelong {
+	transition: all 0.6s;
+	z-index: 50;
+}
+.scrolldown {
+	background: linear-gradient(180deg, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, 0.25) 100%), none !important;
+	height: 4rem;
+}
+.scrollup {
+	opacity: 1;
+	transform: none;
+}
+.opacity0 {
+	opacity: 0;
+}
+.opacity1 {
+	opacity: 1;
+}
+</style>
