@@ -31,30 +31,9 @@ function collapse() {
 	const scrollDown = `scrolldown`;
 	const opacity0 = `opacity0`;
 	const opacity1 = `opacity1`;
-	if (!body) {
+	if (!body || !buttontitle || !buttonbg || !title || !hiddentitle || !header) {
 		return;
 	}
-	if (!buttontitle) {
-		return;
-	}
-	if (!buttonbg) {
-		return;
-	}
-	if (!title) {
-		return;
-	}
-	if (!hiddentitle) {
-		return;
-	}
-	if (!header) {
-		return;
-	}
-	// console.log(body);
-	// console.log(header);
-	// console.log(buttontitle);
-	// console.log(buttonbg);
-	// console.log(title);
-	// console.log(hiddentitle);
 	const currentScroll = body.scrollTop;
 	if (currentScroll > lastScroll.value && !header.classList.contains(scrollDown)) {
 		// down
@@ -69,7 +48,6 @@ function collapse() {
 		buttonbg.classList.add(opacity0);
 		title.classList.add(opacity0);
 		hiddentitle.classList.add(opacity1);
-		console.log(`down`);
 	} else if (
 		currentScroll < lastScroll.value &&
 		header.classList.contains(scrollDown) &&
@@ -86,14 +64,16 @@ function collapse() {
 		buttontitle.classList.add(opacity1);
 		title.classList.add(opacity1);
 		hiddentitle.classList.add(opacity0);
-		console.log(`up`);
 	}
 	lastScroll.value = currentScroll;
 }
 
 onMounted(() => {
 	usePostsStore().fetchHomePosts();
-	if (window.addEventListener) window.addEventListener('wheel', collapse);
+	if (window.addEventListener) {
+		window.addEventListener('wheel', collapse);
+		window.addEventListener('touchmove', collapse);
+	}
 });
 </script>
 
