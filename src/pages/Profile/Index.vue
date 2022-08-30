@@ -174,8 +174,8 @@ function getStyles(tab: string): string {
 			</div>
 			<!-- Name, socials, follow, bio -->
 			<div class="flex flex-row justify-between">
-				<div id="infos" class="header-profile flex items-center" :class="selfView ? `-mt-12` : ``">
-					<button class="focus:outline-none mr-5" style="width: 5rem; height: 5rem" @click="showAvatarPopup = true">
+				<div id="infos" class="header-profile flex items-center">
+					<button class="focus:outline-none mr-5" @click="showAvatarPopup = true">
 						<Avatar
 							:authorid="profile.id"
 							:cid="profile.avatar"
@@ -226,7 +226,7 @@ function getStyles(tab: string): string {
 					</div>
 				</div>
 				<!-- Profile buttons -->
-				<div id="buttons" class="header-profile h-fit flex items-center xl:h-auto" :class="selfView ? `-mt-12` : ``">
+				<div id="buttons" class="header-profile h-fit flex items-center xl:h-auto">
 					<!-- Edit profile button -->
 					<span v-if="selfView">
 						<button class="bg-darkBG focus:outline-none block rounded-lg xl:hidden" @click="toggleSettings">
