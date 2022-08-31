@@ -1,36 +1,47 @@
 <script setup lang="ts">
-// import XIcon from '@/components/icons/CloseIcon.vue';
-// import Check from '@/components/icons/Check.vue';
-import { getBGImage } from '@/plugins/background';
-// import { colors, modes } from '@/config/colors';
 import { ref } from 'vue';
-import { useStoreSettings } from '@/store/settings';
 import { useStore } from '@/store/session';
-// import { initColors } from '@/plugins/colors';
+import { useStoreSettings } from '@/store/settings';
+import { getBGImage } from '@/plugins/background';
+import { IBackground, backgrounds } from '@/config/backgrounds';
+import { initColors } from '@/plugins/colors';
+
+import ChangeBGPopup from '@/components/popups/ChangeBGPopup.vue';
+import ChangeModePopup from '@/components/popups/ChangeModePopup.vue';
+import ChangeColorPopup from '@/components/popups/ChangeColorPopup.vue';
 
 const settings = useStoreSettings();
 const session = useStore();
-// const selectedBG = ref(backgrounds[0]);
-const showPopupBG = ref(false);
-const showPopupMode = ref(false);
-const showPopupColor = ref(false);
-// console.log(getBGImage(session.background));
 
-// function confirmBackgroundImage() {
-// 	if (selectedBG.value.id === session.background) {
-// 		return;
-// 	}
-// 	session.setBackground(selectedBG.value.id);
-// }
-// function setColorMode(mode: 'Light' | 'Dark' | 'OS') {
-// 	settings.setMode(mode);
-// 	initColors();
-// }
-// function setColor(color: `Green` | `Orange` | `Blue` | `Pink` | `Yellow`) {
-// 	console.log(color);
-// 	settings.setColor(color);
-// }
-// function confirmColor() {}
+const currentBG = ref<IBackground>(getCurrentBG(session.background));
+
+const showPopupBG = ref<boolean>(false);
+const showPopupMode = ref<boolean>(false);
+const showPopupColor = ref<boolean>(false);
+
+function getCurrentBG(id: string): IBackground {
+	for (const bg of backgrounds) {
+		if (bg.id === id) {
+			return bg;
+		}
+	}
+	return backgrounds[0];
+}
+
+function refreshCurrentBG() {
+	showPopupBG.value = false;
+	currentBG.value = getCurrentBG(session.background);
+}
+
+function refreshCurrentMode() {
+	showPopupMode.value = false;
+	initColors();
+}
+
+function refreshCurrentColor() {
+	showPopupColor.value = false;
+	initColors();
+}
 </script>
 
 <template>
@@ -40,7 +51,7 @@ const showPopupColor = ref(false);
 			<h3 class="w-36 xl:w-56 font-semibold text-gray5 dark:text-gray3 text-sm">App Background</h3>
 			<button class="text-primary focus:outline-none flex flex-row items-center" @click="showPopupBG = true">
 				<p v-if="session.background !== ``" class="mr-4">
-					{{ session.background }}
+					{{ currentBG.label }}
 				</p>
 				<p v-else class="mr-4">Default</p>
 				<img
@@ -66,4 +77,7 @@ const showPopupColor = ref(false);
 			</button>
 		</div>
 	</div>
+	<ChangeBGPopup v-if="showPopupBG" @close="refreshCurrentBG" />
+	<ChangeModePopup v-if="showPopupMode" @close="refreshCurrentMode" />
+	<ChangeColorPopup v-if="showPopupColor" @close="refreshCurrentColor" />
 </template>
