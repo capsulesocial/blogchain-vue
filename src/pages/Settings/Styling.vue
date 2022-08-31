@@ -42,7 +42,6 @@ function refreshCurrentColor() {
 	showPopupColor.value = false;
 	initColors();
 }
-
 </script>
 
 <template>
