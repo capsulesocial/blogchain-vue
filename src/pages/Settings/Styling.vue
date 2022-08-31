@@ -25,6 +25,11 @@ function getCurrentBG(id: string): IBackground {
 	return backgrounds[0];
 }
 
+function refreshCurrentName() {
+	showPopupBG.value = false;
+	currentBG.value = getCurrentBG(session.background);
+}
+
 // function setColorMode(mode: 'Light' | 'Dark' | 'OS') {
 // 	settings.setMode(mode);
 // 	initColors();
@@ -70,5 +75,5 @@ function getCurrentBG(id: string): IBackground {
 			</button>
 		</div>
 	</div>
-	<ChangeBGPopup v-if="showPopupBG" @close="showPopupBG = false" />
+	<ChangeBGPopup v-if="showPopupBG" @close="refreshCurrentName" />
 </template>
