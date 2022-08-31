@@ -7,28 +7,87 @@ import GoogleIcon from '@/components/icons/brands/Google.vue';
 import FileIcon from '@/components/icons/File.vue';
 import InfoIcon from '@/components/icons/Info.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
-import { useStore } from '../store/session';
+import { createSessionFromProfile, useStore } from '../store/session';
 import router from '@/router/index';
-import { toastError } from '@/plugins/toast';
+import { toastError, toastWarning } from '@/plugins/toast';
+import { getUserInfoNEAR, getUsernameNEAR } from '@/backend/near';
+import { loginNearAccount } from '@/backend/auth';
+import { getDecryptedPrivateKey } from '@/backend/privateKey';
+// import { walletLogin } from '@/backend/near';
 
 // refs
-const isLoading = ref<boolean>(true);
+const isLoading = ref<boolean>(false);
 const showInfo = ref<boolean>(false);
 const currentYear = ref<string>(new Date().getFullYear().toString());
 const noAccount = ref<boolean>(false);
 const key = ref<HTMLInputElement>();
 const showPasswordPopup = ref<boolean>(false);
-const password = ref<string>();
+const passwordInput = ref<HTMLInputElement>();
+const password = ref<string>(``);
 const store = useStore();
+const accountIdInput = ref<string>(``);
+const privateKey = ref<string>(``);
+const username = ref<string | null>(null);
+const keyFileTarget = ref<HTMLInputElement | null>(null);
 
 // methods
+async function walletLogin(): Promise<void> {
+	try {
+		username.value = await getUsernameNEAR(accountIdInput.value);
+		// If no account found
+		if (!username.value) {
+			toastWarning(`Looks like you don't have an account`);
+			router.push(`/register`);
+			return;
+		}
+		// Check if blocked
+		const { blocked } = await getUserInfoNEAR(username.value);
+		if (blocked) {
+			toastError(`Your account has been deactivated or banned`);
+			router.push(`/register`);
+			return;
+		}
+		walletVerify();
+	} catch (err) {
+		if (keyFileTarget.value) {
+			keyFileTarget.value = null;
+		}
+		toastError(err as string);
+	}
+}
+
+async function walletVerify() {
+	try {
+		if (!accountIdInput.value || !privateKey.value || !username.value) {
+			throw new Error(`Unexpected condition!`);
+		}
+		isLoading.value = true;
+		const { profile, cid } = await loginNearAccount(username.value, privateKey.value, accountIdInput.value);
+		window.localStorage.setItem(`accountId`, accountIdInput.value);
+		const account = createSessionFromProfile(cid, profile);
+		store.setCID(cid);
+		store.setID(account.id);
+		store.setName(account.name);
+		store.setEmail(account.email);
+		store.setAvatar(account.avatar);
+		store.setBio(account.bio);
+		store.setLocation(account.location);
+		store.setWebsite(account.website ? account.website : ``);
+		router.push(`/home`);
+	} catch (err: unknown) {
+		isLoading.value = false;
+		toastError(err as string);
+	}
+}
+
 function handleKeyClick(): void {
 	if (key.value) {
 		key.value.click();
 	}
 }
 function handleKey(e: Event): void {
-	const target = e.target as HTMLInputElement;
+	keyFileTarget.value = e.target as HTMLInputElement;
+	const target = keyFileTarget.value;
 	const files = target.files;
 	if (files && files.length > 0) {
 		const keyFile = files[0];
@@ -41,20 +100,34 @@ function handleKey(e: Event): void {
 			if (i.target !== null && reader.result !== null) {
 				try {
 					const key = JSON.parse(reader.result as string);
-					console.log(key);
-					if (key.privateKey.startsWith(`encrypted:`)) {
-						console.log(`encrypted`);
+					accountIdInput.value = key.accountId;
+					privateKey.value = key.privateKey;
+					if (privateKey.value.startsWith(`encrypted:`)) {
 						showPasswordPopup.value = true;
 						return;
 					}
+					// Login with non-encrypted key
+					walletLogin();
 				} catch (err) {
+					if (keyFileTarget.value) {
+						keyFileTarget.value = null;
+					}
 					toastError(err as string);
 				}
 			}
 		};
 	}
 }
-function decryptKey() {}
+function decryptKey() {
+	getDecryptedPrivateKey(password.value, accountIdInput.value, privateKey.value).then((pk) => {
+		if (!pk) {
+			toastError(`Password incorrect`);
+			return;
+		}
+		privateKey.value = pk;
+		walletLogin();
+	});
+}
 function torusLogin(type: string) {}
 
 // Lifecycle
@@ -66,6 +139,7 @@ onMounted(async () => {
 	}
 });
 </script>
+
 <template>
 	<main
 		class="bg-img-unauth m-0 h-screen overflow-y-hidden p-0 bg-lightBG dark:bg-darkBG"
@@ -175,7 +249,8 @@ onMounted(async () => {
 					account:
 				</p>
 				<input
-					ref="password"
+					ref="passwordInput"
+					v-model="password"
 					type="password"
 					class="w-full bg-gray2 dark:bg-gray7 mt-6 rounded-lg px-4 py-3 focus:outline-none"
 					placeholder="Enter password"
