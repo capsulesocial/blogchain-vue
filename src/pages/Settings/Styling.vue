@@ -8,6 +8,7 @@ import { initColors } from '@/plugins/colors';
 
 import ChangeBGPopup from '@/components/popups/ChangeBGPopup.vue';
 import ChangeModePopup from '@/components/popups/ChangeModePopup.vue';
+import ChangeColorPopup from '@/components/popups/ChangeColorPopup.vue';
 
 const settings = useStoreSettings();
 const session = useStore();
@@ -34,6 +35,11 @@ function refreshCurrentBG() {
 
 function refreshCurrentMode() {
 	showPopupMode.value = false;
+	initColors();
+}
+
+function refreshCurrentColor() {
+	showPopupColor.value = false;
 	initColors();
 }
 
@@ -83,4 +89,5 @@ function refreshCurrentMode() {
 	</div>
 	<ChangeBGPopup v-if="showPopupBG" @close="refreshCurrentBG" />
 	<ChangeModePopup v-if="showPopupMode" @close="refreshCurrentMode" />
+	<ChangeColorPopup v-if="showPopupColor" @close="refreshCurrentColor" />
 </template>
