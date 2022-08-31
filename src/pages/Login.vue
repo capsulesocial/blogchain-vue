@@ -11,11 +11,27 @@ import { createSessionFromProfile, useStore } from '../store/session';
 import router from '@/router/index';
 import { toastError, toastWarning } from '@/plugins/toast';
 import { getUserInfoNEAR, getUsernameNEAR } from '@/backend/near';
-import { loginNearAccount } from '@/backend/auth';
+import { getAccountIdFromPrivateKey, login, loginNearAccount } from '@/backend/auth';
 import { getDecryptedPrivateKey } from '@/backend/privateKey';
-// import { walletLogin } from '@/backend/near';
+import DirectWebSdk, { UX_MODE } from '@toruslabs/customauth';
+import { domain, torusNetwork, torusVerifiers, TorusVerifiers } from '@/backend/utilities/config';
+import { revokeDiscordKey } from '@/backend/discordRevoke';
+
+interface ITorusResponse {
+	userInfo: { accessToken: string; typeOfLogin: `discord` | `google` };
+	privateKey: string;
+}
 
 // refs
+const torus = ref<DirectWebSdk>(
+	new DirectWebSdk({
+		baseUrl: `${domain}`,
+		redirectPathName: `login`,
+		network: torusNetwork, // details for test net
+		uxMode: UX_MODE.REDIRECT,
+	}),
+);
+const userInfo = ref<null | ITorusResponse>();
 const isLoading = ref<boolean>(false);
 const showInfo = ref<boolean>(false);
 const currentYear = ref<string>(new Date().getFullYear().toString());
@@ -29,6 +45,7 @@ const accountIdInput = ref<string>(``);
 const privateKey = ref<string>(``);
 const username = ref<string | null>(null);
 const keyFileTarget = ref<HTMLInputElement | null>(null);
+const accountId = ref<string | null>(null);
 
 // methods
 async function walletLogin(): Promise<void> {
@@ -132,14 +149,110 @@ function decryptKey() {
 		walletLogin();
 	});
 }
-function torusLogin(type: string) {}
+async function torusLogin(type: TorusVerifiers) {
+	try {
+		isLoading.value = true;
+		await torus.value.triggerLogin(torusVerifiers[type]);
+	} finally {
+		isLoading.value = false;
+	}
+}
+
+async function discordRevoke(accessToken: string) {
+	try {
+		await revokeDiscordKey(accessToken);
+	} catch (err) {
+		toastWarning(`We couldn't revoke the Discord key, this might hinder you to login for the next 30 minutes`);
+	}
+}
+
+async function verify() {
+	try {
+		if (!userInfo.value || accountId.value) {
+			throw new Error(`Unexpected condition!`);
+		}
+		isLoading.value = true;
+		if (!username.value) {
+			toastWarning(`Looks like you don't have an account`);
+			router.push(`/register`);
+		}
+		// Login
+		if (!accountId.value || !username.value) {
+			return;
+		}
+		const { profile, cid } = await login(username.value, userInfo.value.privateKey);
+		window.localStorage.setItem(`accountId`, accountId.value);
+		const account = createSessionFromProfile(cid, profile);
+		store.setCID(cid);
+		store.setID(account.id);
+		store.setName(account.name);
+		store.setEmail(account.email);
+		store.setAvatar(account.avatar);
+		store.setBio(account.bio);
+		store.setLocation(account.location);
+		store.setWebsite(account.website ? account.website : ``);
+		router.push(`/home`);
+	} catch (err: unknown) {
+		toastError(err as string);
+	}
+}
 
 // Lifecycle
 onMounted(async () => {
+	isLoading.value = true;
 	const accountIdLocalStorage = window.localStorage.getItem(`accountId`);
 	if (store.$state.id !== `` && accountIdLocalStorage) {
 		router.push(`/home`);
 		return;
+	}
+	try {
+		let res: ITorusResponse | null = null;
+		try {
+			const info = await torus.value.getRedirectResult();
+			res = info.result as ITorusResponse;
+		} catch (err) {
+			// the error here can be safely dismissed (it will also error out in nominal cases)
+		}
+		if (!res) {
+			await torus.value.init({ skipSw: true });
+			return;
+		}
+		if (!(`userInfo` in res)) {
+			throw new Error(`Malformed Torus response, please report this to Blogchain team`);
+		}
+		if (res.userInfo.typeOfLogin === `discord`) {
+			discordRevoke(res.userInfo.accessToken);
+		}
+		userInfo.value = res;
+		accountId.value = getAccountIdFromPrivateKey(res.privateKey);
+		username.value = await getUsernameNEAR(accountId.value);
+		if (!username.value) {
+			// If no username is found then register
+			toastWarning(`Looks like you don't have an account.`);
+			router.push(`/register`);
+			return;
+		}
+		if (!username.value) {
+			toastWarning(`Looks like you don't have an account`);
+			router.push(`/register`);
+			return;
+		}
+		const { blocked } = await getUserInfoNEAR(username.value);
+		if (blocked) {
+			// If account is blocked then send to register page...
+			toastError(`Your account has been deactivated or banned.`);
+			router.push(`/register`);
+			return;
+		}
+		await verify();
+	} catch (err: unknown) {
+		if (err instanceof Error) {
+			toastError(err.message);
+			return;
+		}
+		throw err;
+	} finally {
+		isLoading.value = false;
 	}
 });
 </script>
