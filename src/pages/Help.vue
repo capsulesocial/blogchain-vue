@@ -3,7 +3,9 @@ import { ref } from 'vue';
 
 import Plus from '@/components/icons/PlusIcon.vue';
 import Minus from '@/components/icons/MinusIcon.vue';
+import OnboardingWizard from '@/components/popups/OnboardingWizard.vue';
 
+const displayOnboarding = ref<boolean>(true);
 const questions = ref<{ id: number; title: string; question: string; isOpen: boolean }[]>([
 	{
 		id: 0,
@@ -301,6 +303,9 @@ const questions = ref<{ id: number; title: string; question: string; isOpen: boo
 function toggleAccordion(id: number) {
 	questions.value[id].isOpen = !questions.value[id].isOpen;
 }
+function openOnboarding() {
+	displayOnboarding.value = !displayOnboarding.value;
+}
 </script>
 
 <template>
@@ -331,6 +336,8 @@ function toggleAccordion(id: number) {
 				<p class="message-content text-gray5 dark:text-gray3 py-2 text-sm" v-html="question.question"></p>
 			</div>
 		</article>
+		<!-- Onboarding Wizard -->
+		<OnboardingWizard v-if="displayOnboarding" @close-popup="openOnboarding" />
 	</div>
 </template>
 

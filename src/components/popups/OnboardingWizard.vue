@@ -6,7 +6,7 @@ import { useStore } from '@/store/session';
 import { getPhotoFromIPFS } from '@/backend/getPhoto';
 import CloseIcon from '@/components/icons/XIcon.vue';
 import BrandedButton from '@/components/BrandedButton.vue';
-import EditProfile from '@/components/popups/Settings.vue';
+// import EditProfile from '@/components/popups/Settings.vue';
 
 const store = useStore();
 const route = useRoute();
