@@ -43,15 +43,6 @@ function refreshCurrentColor() {
 	initColors();
 }
 
-// function setColorMode(mode: 'Light' | 'Dark' | 'OS') {
-// 	settings.setMode(mode);
-// 	initColors();
-// }
-// function setColor(color: `Green` | `Orange` | `Blue` | `Pink` | `Yellow`) {
-// 	console.log(color);
-// 	settings.setColor(color);
-// }
-// function confirmColor() {}
 </script>
 
 <template>
