@@ -4,8 +4,10 @@ import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
 import { getBGImage } from '@/plugins/background';
 import { IBackground, backgrounds } from '@/config/backgrounds';
+import { initColors } from '@/plugins/colors';
 
 import ChangeBGPopup from '@/components/popups/ChangeBGPopup.vue';
+import ChangeModePopup from '@/components/popups/ChangeModePopup.vue';
 
 const settings = useStoreSettings();
 const session = useStore();
@@ -25,9 +27,14 @@ function getCurrentBG(id: string): IBackground {
 	return backgrounds[0];
 }
 
-function refreshCurrentName() {
+function refreshCurrentBG() {
 	showPopupBG.value = false;
 	currentBG.value = getCurrentBG(session.background);
+}
+
+function refreshCurrentMode() {
+	showPopupMode.value = false;
+	initColors();
 }
 
 // function setColorMode(mode: 'Light' | 'Dark' | 'OS') {
@@ -44,7 +51,6 @@ function refreshCurrentName() {
 <template>
 	<div id="scrollable_content" class="px-6 pt-4">
 		<h3 class="text-lightPrimaryText dark:text-darkPrimaryText pb-4 text-base font-semibold">Display</h3>
-		{{ showPopupBG }}
 		<div class="flex w-full items-center justify-between">
 			<h3 class="w-36 xl:w-56 font-semibold text-gray5 dark:text-gray3 text-sm">App Background</h3>
 			<button class="text-primary focus:outline-none flex flex-row items-center" @click="showPopupBG = true">
@@ -75,5 +81,6 @@ function refreshCurrentName() {
 			</button>
 		</div>
 	</div>
-	<ChangeBGPopup v-if="showPopupBG" @close="refreshCurrentName" />
+	<ChangeBGPopup v-if="showPopupBG" @close="refreshCurrentBG" />
+	<ChangeModePopup v-if="showPopupMode" @close="refreshCurrentMode" />
 </template>

@@ -34,7 +34,6 @@ function confirmBackgroundImage() {
 
 function scrollToCurrent() {
 	const view = document.getElementById(`selectedBG`);
-	console.log(view);
 	if (!view) {
 		return;
 	}
