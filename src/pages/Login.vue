@@ -12,6 +12,7 @@ import router from '@/router/index';
 import { toastError, toastWarning } from '@/plugins/toast';
 import { getUserInfoNEAR, getUsernameNEAR } from '@/backend/near';
 import { loginNearAccount } from '@/backend/auth';
+import { getDecryptedPrivateKey } from '@/backend/privateKey';
 // import { walletLogin } from '@/backend/near';
 
 // refs
@@ -21,7 +22,8 @@ const currentYear = ref<string>(new Date().getFullYear().toString());
 const noAccount = ref<boolean>(false);
 const key = ref<HTMLInputElement>();
 const showPasswordPopup = ref<boolean>(false);
-const password = ref<string>();
+const passwordInput = ref<HTMLInputElement>();
+const password = ref<string>(``);
 const store = useStore();
 const accountIdInput = ref<string>(``);
 const privateKey = ref<string>(``);
@@ -100,9 +102,7 @@ function handleKey(e: Event): void {
 					const key = JSON.parse(reader.result as string);
 					accountIdInput.value = key.accountId;
 					privateKey.value = key.privateKey;
-					console.log(key);
 					if (privateKey.value.startsWith(`encrypted:`)) {
-						console.log(`encrypted`);
 						showPasswordPopup.value = true;
 						return;
 					}
@@ -118,7 +118,16 @@ function handleKey(e: Event): void {
 		};
 	}
 }
-function decryptKey() {}
+function decryptKey() {
+	getDecryptedPrivateKey(password.value, accountIdInput.value, privateKey.value).then((pk) => {
+		if (!pk) {
+			toastError(`Password incorrect`);
+			return;
+		}
+		privateKey.value = pk;
+		walletLogin();
+	});
+}
 function torusLogin(type: string) {}
 
 // Lifecycle
@@ -130,6 +139,7 @@ onMounted(async () => {
 	}
 });
 </script>
+
 <template>
 	<main
 		class="bg-img-unauth m-0 h-screen overflow-y-hidden p-0 bg-lightBG dark:bg-darkBG"
@@ -239,7 +249,8 @@ onMounted(async () => {
 					account:
 				</p>
 				<input
-					ref="password"
+					ref="passwordInput"
+					v-model="password"
 					type="password"
 					class="w-full bg-gray2 dark:bg-gray7 mt-6 rounded-lg px-4 py-3 focus:outline-none"
 					placeholder="Enter password"
