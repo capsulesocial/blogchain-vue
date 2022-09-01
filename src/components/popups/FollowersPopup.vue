@@ -5,16 +5,21 @@ import { useProfilesStore } from '@/store/profiles';
 import { useRoute } from 'vue-router';
 import { useStore } from '@/store/session';
 import HorizontalProfilePreview from '@/components/HorizontalProfilePreview.vue';
+import CloseIcon from '@/components/icons/CloseIcon.vue';
 
 const profilesStore = useProfilesStore();
 const route = useRoute();
 const store = useStore();
+const emit = defineEmits([`close`]);
 
-if (typeof route.params.id !== 'string') {
-	throw new Error('Invalid param type for id');
+if (route.name !== `Home`) {
+	if (typeof route.params.id !== 'string') {
+		throw new Error('Invalid param type for id');
+	}
 }
-const authorID = route.name === `home` ? store.$state.id : route.params.id;
-const profile = computed(() => profilesStore.getProfile(authorID));
+
+const authorID = route.name === `Home` ? store.$state.id : route.params.id;
+const profile = computed(() => profilesStore.getProfile(authorID as string));
 // TODO: fetch followers from store / backend
 const followers = ref<Profile[]>([
 	{
@@ -42,6 +47,7 @@ const followers = ref<Profile[]>([
 <template>
 	<div
 		class="bg-darkBG dark:bg-gray5 modal-animation fixed top-0 bottom-0 left-0 right-0 z-30 flex h-screen w-full items-center justify-center bg-opacity-50 dark:bg-opacity-50"
+		@click.self="emit(`close`)"
 	>
 		<!-- Container -->
 		<section class="popup">
@@ -51,7 +57,7 @@ const followers = ref<Profile[]>([
 			>
 				<div class="sticky flex items-center justify-between mb-6">
 					<h2
-						v-if="$route.params.id === store.$state.id || $route.name === `home`"
+						v-if="$route.name === `Home` || $route.params.id === store.$state.id"
 						class="text-lightPrimaryText dark:text-darkPrimaryText text-3xl font-semibold"
 					>
 						Your followers
@@ -65,13 +71,13 @@ const followers = ref<Profile[]>([
 					<h2 v-else class="text-lightPrimaryText dark:text-darkPrimaryText text-3xl font-semibold">
 						{{ profile.id }}'s followers
 					</h2>
-					<button class="focus:outline-none bg-gray1 dark:bg-gray5 rounded-full p-1" @click="$emit(`close`)">
+					<button class="focus:outline-none bg-gray1 dark:bg-gray5 rounded-full p-1" @click="emit(`close`)">
 						<CloseIcon />
 					</button>
 				</div>
 				<article v-if="followers.length == 0" class="mt-24 grid justify-items-center px-10 xl:px-0">
 					<p class="text-gray5 dark:text-gray3 mb-5 text-center text-sm">
-						<span v-if="$route.params.id === store.$state.id || $route.name === `home`">
+						<span v-if="$route.name === `home` || $route.params.id === store.$state.id">
 							It seems you don't have any followers yet!
 						</span>
 						<span v-else-if="profile.name !== ``">
@@ -80,7 +86,7 @@ const followers = ref<Profile[]>([
 						<span v-else> It seems that {{ profile.id }} doesn't have any followers yet! </span>
 					</p>
 					<SecondaryButton
-						v-if="store.$state.id === $route.params.id || $route.name === `home`"
+						v-if="$route.name === `home` || store.$state.id === $route.params.id"
 						:text="`Discover new content`"
 					/>
 				</article>

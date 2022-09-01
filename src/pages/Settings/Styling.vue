@@ -77,7 +77,9 @@ function refreshCurrentColor() {
 			</button>
 		</div>
 	</div>
-	<ChangeBGPopup v-if="showPopupBG" @close="refreshCurrentBG" />
-	<ChangeModePopup v-if="showPopupMode" @close="refreshCurrentMode" />
-	<ChangeColorPopup v-if="showPopupColor" @close="refreshCurrentColor" />
+	<Teleport to="body">
+		<ChangeBGPopup v-if="showPopupBG" @close="refreshCurrentBG" />
+		<ChangeModePopup v-if="showPopupMode" @close="refreshCurrentMode" />
+		<ChangeColorPopup v-if="showPopupColor" @close="refreshCurrentColor" />
+	</Teleport>
 </template>

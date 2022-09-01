@@ -2,6 +2,9 @@
 import { ref } from 'vue';
 import type { Profile } from '@/backend/profile';
 import HorizontalProfilePreview from '@/components/HorizontalProfilePreview.vue';
+import FollowersPopup from '@/components/popups/FollowersPopup.vue';
+
+const openFollowersPopup = ref<boolean>(false);
 
 // TODO: fetch followers from store / backend
 const followers = ref<Profile[]>([
@@ -35,7 +38,10 @@ const followers = ref<Profile[]>([
 				<span> It seems no one is following you yet </span>
 			</p>
 			<HorizontalProfilePreview v-for="profile in followers" :key="profile.id" :profile="profile" />
-			<button class="text-primary text-sm mt-2">Show more</button>
+			<button class="text-primary text-sm mt-2" @click="openFollowersPopup = true">Show more</button>
 		</div>
 	</div>
+	<Teleport to="body">
+		<FollowersPopup v-if="openFollowersPopup" @close="openFollowersPopup = false" />
+	</Teleport>
 </template>
