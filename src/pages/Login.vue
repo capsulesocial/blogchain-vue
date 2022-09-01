@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, nextTick } from 'vue';
 import BrandedButton from '@/components/BrandedButton.vue';
 import CapsuleIcon from '@/components/icons/CapsuleIcon.vue';
 import DiscordIcon from '@/components/icons/brands/Discord.vue';
@@ -74,6 +74,7 @@ async function walletVerify() {
 		store.setLocation(account.location);
 		store.setWebsite(account.website ? account.website : ``);
 		router.push(`/home`);
+		location.reload();
 	} catch (err: unknown) {
 		isLoading.value = false;
 		toastError(err as string);
@@ -104,6 +105,9 @@ function handleKey(e: Event): void {
 					privateKey.value = key.privateKey;
 					if (privateKey.value.startsWith(`encrypted:`)) {
 						showPasswordPopup.value = true;
+						nextTick(() => {
+							passwordInput.value?.focus();
+						});
 						return;
 					}
 					// Login with non-encrypted key
@@ -254,6 +258,7 @@ onMounted(async () => {
 					type="password"
 					class="w-full bg-gray2 dark:bg-gray7 mt-6 rounded-lg px-4 py-3 focus:outline-none"
 					placeholder="Enter password"
+					@keyup.enter="decryptKey"
 				/>
 				<div class="flex justify-end mt-8">
 					<BrandedButton
