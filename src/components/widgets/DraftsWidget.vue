@@ -4,11 +4,14 @@ import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
 import { Post } from '@/backend/post';
 import HorizontalDraftPreview from '@/components/HorizontalDraftPreview.vue';
-import InfoIcon from '../../components/icons/Info.vue';
+import InfoIcon from '@/components/icons/Info.vue';
+import DraftsPopup from '@/components/popups/DraftsPopup.vue';
 
 const settings = useStoreSettings();
 const store = useStore();
 const showInfo = ref<boolean>(false);
+
+const openDraftPopup = ref<boolean>(false);
 
 type DraftPost = Omit<Post, `authorID`>;
 
@@ -56,7 +59,7 @@ const drafts = ref<DraftPost[]>([
 				</p>
 			</div>
 			<HorizontalDraftPreview v-for="draft in drafts" :key="draft.timestamp" :draft="draft" />
-			<button class="text-primary text-sm">Show more</button>
+			<button class="text-primary text-sm" @click="openDraftPopup = true">Show more</button>
 		</div>
 		<div v-else class="text-gray5 dark:text-gray3 pt-3 text-sm">
 			<button class="text-primary focus:outline-none" @click="$router.push(`/register`)">Sign up</button>
@@ -71,6 +74,9 @@ const drafts = ref<DraftPost[]>([
 			Note: drafts are stored in your browser's local storage and may be erased on actions such as clearing history
 		</div>
 	</div>
+	<Teleport to="body">
+		<DraftsPopup v-if="openDraftPopup" @close="openDraftPopup = false" />
+	</Teleport>
 </template>
 
 <style>

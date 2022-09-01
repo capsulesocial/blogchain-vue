@@ -10,6 +10,7 @@ import SecondaryButton from '@/components/SecondaryButton.vue';
 import FriendButton from '@/components/FriendButton.vue';
 import SubscribeButton from '@/components/SubscribeButton.vue';
 import Avatar from '@/components/Avatar.vue';
+import FollowersPopup from '@/components/popups/FollowersPopup.vue';
 import { getUserInfoNEAR } from '@/backend/near';
 import { handleError } from '@/plugins/toast';
 
@@ -56,6 +57,7 @@ const userIsFollowed = ref<boolean>(false);
 const activeSubscription = ref<boolean>(false);
 const longBio = ref<boolean>(profile.value.bio.length > 200);
 const expandBio = ref<boolean>(false);
+const openFollowersPopup = ref<boolean>(false);
 
 // Check if coming from external site
 router.beforeEach((to, from, next) => {
@@ -206,6 +208,7 @@ function getStyles(tab: string): string {
 							</div>
 							<button
 								class="pl-5 text-sm text-gray5 dark:text-gray3 hover:text-primary dark:hover:text-primary hover:font-bold"
+								@click="openFollowersPopup = true"
 							>
 								<span
 									class="text-lightPrimaryText dark:text-darkPrimaryText hover:text-primary dark:hover:text-primary font-bold"
@@ -290,4 +293,7 @@ function getStyles(tab: string): string {
 		</article>
 		<router-view></router-view>
 	</section>
+	<Teleport to="body">
+		<FollowersPopup v-if="openFollowersPopup" @close="openFollowersPopup = false" />
+	</Teleport>
 </template>
