@@ -39,7 +39,7 @@ function toggleDropdownDelete() {
 </script>
 
 <template>
-	<div class="my-4 flex flex-row items-center justify-between cursor-pointer">
+	<div class="my-2 w-full flex flex-row items-center justify-between cursor-pointer">
 		<!-- Title -->
 		<button class="flex flex-grow flex-col overflow-hidden focus:outline-none" @click="setActiveDraft(draft)">
 			<h6

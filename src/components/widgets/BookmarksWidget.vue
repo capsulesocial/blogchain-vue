@@ -51,7 +51,7 @@ const bookmarks = ref<Post[]>([
 					</p>
 				</article>
 				<HorizontalBookmarkPreview v-for="bookmark in bookmarks" :key="bookmark.timestamp" :bookmark="bookmark" />
-				<button class="text-primary text-sm">Show more</button>
+				<router-link to="/bookmarks" class="text-primary text-sm">Show more</router-link>
 			</div>
 		</div>
 		<div v-else class="text-gray5 dark:text-gray3 text-sm px-6 pb-4">
