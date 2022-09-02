@@ -1,16 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-
-const props = defineProps({
+defineProps({
 	enabled: Boolean,
 	onBG: Boolean,
 });
 const emit = defineEmits([`toggle`]);
 
-const active = ref<boolean>(props.enabled);
-
 function toggleSwitch() {
-	active.value = !active.value;
 	emit(`toggle`);
 }
 </script>
@@ -18,13 +13,13 @@ function toggleSwitch() {
 <template>
 	<div
 		class="relative w-12 h-6 transition duration-500 ease-in-out rounded-full cursor-pointer"
-		:class="[active ? 'bg-primary' : [onBG ? 'bg-gray3' : 'bg-gray1 dark:bg-gray7']]"
+		:class="[enabled ? 'bg-primary' : [onBG ? 'bg-gray3' : 'bg-gray1 dark:bg-gray7']]"
 		@click="toggleSwitch"
 	>
 		<label
 			class="absolute left-0 w-6 h-6 mb-2 transition duration-300 ease-in-out transform bg-white border-2 rounded-full"
 			:class="[
-				active
+				enabled
 					? 'translate-x-full border-primary'
 					: [onBG ? 'translate-x-0 border-gray3' : 'translate-x-0 border-gray1 dark:border-gray7'],
 			]"
