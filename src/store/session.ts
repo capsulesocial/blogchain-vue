@@ -95,8 +95,7 @@ export const useStore = defineStore(`session`, {
 		setLocation(location: string) {
 			this.location = location;
 		},
-		async updateProfile() {
-			console.log('working as expected');
+		async updateFromWizard() {
 			try {
 				const profileUpdated = await setProfile(this.getProfileFromSession);
 				if (profileUpdated) {

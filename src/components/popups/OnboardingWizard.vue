@@ -87,15 +87,14 @@ async function getMyProfile(update = false) {
 }
 function updateFromWizard(): void {
 	if (route.name !== `help`) {
-		if (!(`settings` in settings.value && settings.value)) {
+		if (!settings.value) {
 			throw new Error(`This shouldn't happen`);
 		}
 	}
-	store.updateProfile;
+	store.updateFromWizard();
 }
 function closeWizard(): void {
 	rootStore.setWelcome(false);
-	store.updateProfile();
 	emit(`closePopup`);
 }
 </script>

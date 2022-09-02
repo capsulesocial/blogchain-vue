@@ -23,13 +23,14 @@ const profilePic = ref<null | string | ArrayBuffer>(null);
 const bio = ref<string>(``);
 const maxCharBio = ref<number>(textLimits.bio.max);
 const newAvatarCID = ref<string>(``);
-const uploadedPic = ref<null | string | ArrayBuffer>();
+const uploadedPic = ref<HTMLElement>();
 const newEmail = ref<string>(``);
 const location = ref<string>(``);
 const website = ref<string>(``);
 const isError = (err: unknown): err is Error => err instanceof Error;
 
 const emit = defineEmits(['close', 'updateProfileMethod']);
+
 if (store.$state.avatar !== ``) {
 	getPhotoFromIPFS(store.$state.avatar).then((p) => {
 		profilePic.value = p;
@@ -58,7 +59,7 @@ if (store.$state.avatar !== ``) {
 }
 // methods
 function handleImageClick(): void {
-	const b = this.$refs.uploadedPic as HTMLElement;
+	const b = uploadedPic.value as HTMLElement;
 	b.click();
 }
 function hasChanged() {
