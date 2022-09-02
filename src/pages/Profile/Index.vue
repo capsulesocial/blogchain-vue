@@ -14,6 +14,7 @@ import FollowersPopup from '@/components/popups/FollowersPopup.vue';
 import FollowingPopup from '@/components/popups/FollowingPopup.vue';
 import { getUserInfoNEAR } from '@/backend/near';
 import { handleError } from '@/plugins/toast';
+import BioPopup from '@/components/popups/BioPopup.vue';
 
 useMeta({
 	title: `authorName - Blogchain`,
@@ -269,7 +270,7 @@ function getStyles(tab: string): string {
 				class="header-profile px-1 pt-4 dark:text-darkPrimaryText"
 				:style="expandBio ? `` : `max-height: 5.5rem; overflow: hidden`"
 			>
-				<p>{{ profile.bio.slice(0, 200) + (profile.bio.length > 200 ? '...' : '') }}<br /></p>
+				<p>{{ profile.bio.slice(0, 260) + (profile.bio.length > 260 ? '...' : '') }}<br /></p>
 			</div>
 			<button
 				v-show="longBio"
@@ -299,5 +300,6 @@ function getStyles(tab: string): string {
 	<Teleport to="body">
 		<FollowersPopup v-if="openFollowersPopup" @close="openFollowersPopup = false" />
 		<FollowingPopup v-if="openFollowingPopup" @close="openFollowingPopup = false" />
+		<BioPopup v-if="expandBio" @close="expandBio = false" />
 	</Teleport>
 </template>
