@@ -11,6 +11,7 @@ import BrandedButton from '@/components/BrandedButton.vue';
 import FileDownloadIcon from '@/components/icons/FileDownload.vue';
 import BasicSwitch from '@/components/BasicSwitch.vue';
 import PencilIcon from '@/components/icons/Pencil.vue';
+import EncryptKeyPopup from '@/components/popups/EncryptKeyPopup.vue';
 
 const router = useRouter();
 const store = useStore();
@@ -42,12 +43,25 @@ async function downloadPrivateKey(): Promise<void> {
 }
 
 function toggleEncrypted() {
-	if (encryptionKey.value !== ``) {
+	if (encrypted.value === true) {
 		encrypted.value = false;
-		// encryptedPassword.value = ``;
 		encryptionKey.value = ``;
 	} else {
-		showEncrypted.value = !showEncrypted.value;
+		encrypted.value = true;
+		showEncrypted.value = true;
+	}
+}
+
+function closeEncrypted() {
+	encrypted.value = false;
+	showEncrypted.value = false;
+}
+
+function handleEncrypted(input: string) {
+	if (input !== ``) {
+		encryptionKey.value = input;
+		encrypted.value = true;
+		showEncrypted.value = false;
 	}
 }
 
@@ -60,6 +74,7 @@ function redirectProfile() {
 	<div id="scrollable_content" class="px-6 pt-4">
 		<!-- Account Security -->
 		<h3 class="text-lightPrimaryText dark:text-darkPrimaryText pb-4 text-base font-semibold">Account Security</h3>
+		{{ encrypted }}
 		<!-- ID -->
 		<div class="mb-4 flex w-full flex-col sm:flex-row items-start sm:items-center">
 			<label for="id" class="w-48 font-semibold text-gray5 dark:text-gray3 text-sm mb-2 sm:mb-0">Identifier</label>
@@ -106,4 +121,7 @@ function redirectProfile() {
 			<SecondaryButton :text="`Edit Profile`" :action="redirectProfile" class="hidden xl:block" />
 		</div>
 	</div>
+	<Teleport to="body">
+		<EncryptKeyPopup v-if="showEncrypted" @close="closeEncrypted" @encrypt="handleEncrypted" />
+	</Teleport>
 </template>

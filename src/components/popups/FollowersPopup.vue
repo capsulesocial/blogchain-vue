@@ -54,6 +54,7 @@ const followers = ref<Profile[]>([
 			<div
 				v-if="followers !== null"
 				class="min-h-40 w-full lg:w-600 bg-lightBG dark:bg-darkBGStop card-animation max-h-90 z-10 overflow-y-auto rounded-lg px-6 pt-4 pb-2 shadow-lg"
+				@click.self="emit(`close`)"
 			>
 				<div class="sticky flex items-center justify-between mb-6">
 					<h2
