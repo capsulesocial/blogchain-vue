@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { nextTick, onMounted, ref } from 'vue';
 import BrandedButton from '@/components/BrandedButton.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
 import EyeIcon from '@/components/icons/PreviewIcon.vue';
@@ -8,10 +8,16 @@ const emit = defineEmits([`close`, `encrypt`]);
 
 const seePassword = ref<boolean>(false);
 const encryptedPassword = ref<string>(``);
+const passwordInput = ref<HTMLInputElement>();
 
 function handleEncryption() {
 	emit(`encrypt`, encryptedPassword.value);
 }
+onMounted(() => {
+	nextTick(() => {
+		passwordInput.value?.focus();
+	});
+});
 </script>
 
 <template>
@@ -37,10 +43,12 @@ function handleEncryption() {
 			</p>
 			<div class="relative w-full bg-gray2 dark:bg-gray7 rounded-lg px-4 py-3">
 				<input
+					ref="passwordInput"
 					v-model="encryptedPassword"
 					:type="seePassword ? `text` : `password`"
 					class="w-full focus:outline-none bg-transparent pr-6 text-lightPrimaryText dark:text-darkPrimaryText"
 					placeholder="Enter password"
+					@keyup.enter="handleEncryption"
 				/>
 				<button
 					class="absolute text-gray5 dark:text-gray3 w-4 h-4"
