@@ -6,6 +6,7 @@ import { useRoute } from 'vue-router';
 import { useStore } from '@/store/session';
 import HorizontalProfilePreview from '@/components/HorizontalProfilePreview.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
+import SecondaryButton from '@/components/SecondaryButton.vue';
 
 const profilesStore = useProfilesStore();
 const route = useRoute();
