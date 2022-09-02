@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia';
 import { watch } from 'vue';
-import { Profile } from '@/backend/profile';
 import { Profile, setProfile } from '@/backend/profile';
 import { toastSuccess } from '@/plugins/toast';
 // https://pinia.vuejs.org/core-concepts/
