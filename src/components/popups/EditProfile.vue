@@ -12,6 +12,7 @@ import { getProfile } from '@/backend/profile';
 import { URLRegex, qualityBio, qualityLocation, qualityEmail } from '@/plugins/quality';
 import { getPhotoFromIPFS } from '@/backend/getPhoto';
 import textLimits from '@/backend/utilities/text_limits';
+import { isError } from '@/plugins/helpers';
 import { toastError, toastWarning, toastSuccess } from '@/plugins/toast';
 
 const store = useStore();
@@ -27,7 +28,6 @@ const uploadedPic = ref<HTMLElement>();
 const newEmail = ref<string>(``);
 const location = ref<string>(``);
 const website = ref<string>(``);
-const isError = (err: unknown): err is Error => err instanceof Error;
 
 const emit = defineEmits(['close', 'updateProfileMethod']);
 
