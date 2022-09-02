@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia';
 import { watch } from 'vue';
 import { Profile } from '@/backend/profile';
+import { Profile, setProfile } from '@/backend/profile';
+import { toastSuccess } from '@/plugins/toast';
 // https://pinia.vuejs.org/core-concepts/
 
 export interface Session {
@@ -35,6 +37,7 @@ export const useStore = defineStore(`session`, {
 			avatar: ``,
 			email: ``,
 			location: ``,
+			socials: [],
 			website: ``,
 			cid: ``,
 			bio: ``,
@@ -55,6 +58,7 @@ export const useStore = defineStore(`session`, {
 				email: userData.email,
 				location: userData.location,
 				website: userData.website,
+				socials: userData.socials,
 				bio: userData.bio,
 			});
 			watch(
@@ -93,8 +97,38 @@ export const useStore = defineStore(`session`, {
 		setLocation(location: string) {
 			this.location = location;
 		},
+		async updateProfile() {
+			console.log('working as expected');
+			try {
+				const profileUpdated = await setProfile(this.getProfileFromSession);
+				if (profileUpdated) {
+					toastSuccess(`Your profile has been successfully updated`);
+				}
+			} catch (err) {
+				throw new Error(`${err}`);
+			}
+		},
+		async updateFromProfile() {
+			const cid = await setProfile(this.getProfileFromSession);
+			this.setCID(cid);
+			return true;
+		},
 	},
-	getters: {},
+	getters: {
+		getProfileFromSession(state: Profile) {
+			return {
+				id: state.id,
+				name: state.name,
+				email: state.email,
+				bio: state.bio,
+				location: state.location,
+				avatar: state.avatar,
+				socials: state.socials,
+				website: state.website,
+				background: state.background,
+			};
+		},
+	},
 });
 
 export function createSessionFromProfile(cid: string, p: Profile): Session {

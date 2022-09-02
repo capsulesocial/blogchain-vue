@@ -1,25 +1,31 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { createDefaultProfile, getProfile, Profile } from '@/backend/profile';
 import { useRoute } from 'vue-router';
 import { useStore } from '@/store/session';
+import { useRootStore } from '@/store/index';
 import { getPhotoFromIPFS } from '@/backend/getPhoto';
 import CloseIcon from '@/components/icons/XIcon.vue';
 import BrandedButton from '@/components/BrandedButton.vue';
-// import EditProfile from '@/components/popups/Settings.vue';
+import EditProfile from '@/components/popups/EditProfile.vue';
 
 const store = useStore();
 const route = useRoute();
+const rootStore = useRootStore();
 const step = ref<number>(0);
 const myProfile = ref<Profile>(createDefaultProfile(store.$state.id));
 const myAvatar = ref<string | ArrayBuffer | null>(null);
 const visitProfile = ref<Profile>(createDefaultProfile(route.params.id as string));
 const visitAvatar = ref<string | ArrayBuffer | null>(null);
-const settings = ref<InstanceType<typeof EditProfile> | null>(null);
+const settings = ref<HTMLInputElement | null>(null);
 
 const emit = defineEmits(['closePopup']);
 
 window.addEventListener(`click`, handleClose, false);
+
+onMounted(() => {
+	settings.value?.focus();
+});
 // methods
 function getTitle(): string {
 	switch (step.value) {
@@ -79,18 +85,17 @@ async function getMyProfile(update = false) {
 		visitAvatar.value = myAvatar.value;
 	}
 }
-function handleSettings(): void {
+function updateFromWizard(): void {
 	if (route.name !== `help`) {
 		if (!(`settings` in settings.value && settings.value)) {
 			throw new Error(`This shouldn't happen`);
 		}
-		const setting = settings.value as any;
-		setting.updateSettings();
 	}
+	store.updateProfile;
 }
 function closeWizard(): void {
-	// TODO: reference to pinia store
-	// this.$store.commit(`setWelcome`, false);
+	rootStore.setWelcome(false);
+	store.updateProfile();
 	emit(`closePopup`);
 }
 </script>
@@ -186,7 +191,7 @@ function closeWizard(): void {
 					<BrandedButton
 						:action="
 							() => {
-								handleSettings();
+								updateFromWizard();
 								closeWizard();
 							}
 						"

@@ -41,10 +41,6 @@ onMounted(async () => {
 		scrollContainer.value.addEventListener('scroll', scrollListener);
 	}
 });
-
-function toggleOnboarding() {
-	rootStore.setWelcome();
-}
 </script>
 
 <template>
@@ -118,5 +114,5 @@ function toggleOnboarding() {
 		</div>
 	</div>
 	<!-- Onboarding Wizard -->
-	<OnboardingWizard v-if="rootStore.$state.recentlyJoined" @close-popup="toggleOnboarding" />
+	<OnboardingWizard v-if="rootStore.$state.recentlyJoined" />
 </template>

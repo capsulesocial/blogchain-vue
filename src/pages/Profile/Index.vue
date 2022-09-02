@@ -9,6 +9,7 @@ import PencilIcon from '@/components/icons/Pencil.vue';
 import SecondaryButton from '@/components/SecondaryButton.vue';
 import FriendButton from '@/components/FriendButton.vue';
 import SubscribeButton from '@/components/SubscribeButton.vue';
+import EditProfile from '@/components/popups/EditProfile.vue';
 import Avatar from '@/components/Avatar.vue';
 import FollowersPopup from '@/components/popups/FollowersPopup.vue';
 import FollowingPopup from '@/components/popups/FollowingPopup.vue';
@@ -61,6 +62,7 @@ const longBio = ref<boolean>(profile.value.bio.length > 200);
 const expandBio = ref<boolean>(false);
 const openFollowersPopup = ref<boolean>(false);
 const openFollowingPopup = ref<boolean>(false);
+const showSettings = ref<boolean>(false);
 
 // Check if coming from external site
 router.beforeEach((to, from, next) => {
@@ -77,14 +79,17 @@ function handleBack() {
 	}
 	router.go(-1);
 }
-function toggleSettings() {
-	return;
-}
 function toggleFriend() {
 	return;
 }
 function toggleSubscription() {
 	return;
+}
+function toggleEdit() {
+	showSettings.value = !showSettings.value;
+}
+function updateProfileMethod() {
+	store.updateFromProfile();
 }
 function getStyles(tab: string): string {
 	let res = ``;
@@ -236,12 +241,12 @@ function getStyles(tab: string): string {
 				<div id="buttons" class="header-profile h-fit flex items-center xl:h-auto">
 					<!-- Edit profile button -->
 					<span v-if="selfView">
-						<button class="bg-darkBG focus:outline-none block rounded-lg xl:hidden" @click="toggleSettings">
+						<button class="bg-darkBG focus:outline-none block rounded-lg xl:hidden" @click="toggleEdit">
 							<PencilIcon class="m-2 h-5 w-5 text-white" />
 						</button>
 						<SecondaryButton
 							:text="`Edit Profile`"
-							:action="toggleSettings"
+							:action="toggleEdit"
 							class="hidden xl:block"
 							:class="!scrollingDown ? `cursor-pointer` : `cursor-default`"
 							:disabled="scrollingDown"
@@ -296,6 +301,17 @@ function getStyles(tab: string): string {
 			</div>
 		</article>
 		<router-view></router-view>
+		<!-- Settings popup -->
+		<div
+			v-if="showSettings"
+			class="bg-darkBG dark:bg-gray5 modal-animation fixed top-0 bottom-0 left-0 right-0 z-30 flex h-screen w-full items-center justify-center bg-opacity-50 dark:bg-opacity-50"
+		>
+			<EditProfile
+				class="overflow-y-auto min-h-40 max-h-90 w-full lg:w-600 bg-lightBG dark:bg-darkBGStop card-animation rounded-lg shadow-lg"
+				@update-profile-method="updateProfileMethod"
+				@close="toggleEdit"
+			/>
+		</div>
 	</section>
 	<Teleport to="body">
 		<FollowersPopup v-if="openFollowersPopup" @close="openFollowersPopup = false" />

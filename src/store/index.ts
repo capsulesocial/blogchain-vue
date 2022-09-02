@@ -16,8 +16,8 @@ export const useRootStore = defineStore(`rootStore`, {
 		};
 	},
 	actions: {
-		setWelcome() {
-			this.recentlyJoined = !this.recentlyJoined;
+		setWelcome(dec: boolean) {
+			this.recentlyJoined = dec;
 		},
 	},
 });
