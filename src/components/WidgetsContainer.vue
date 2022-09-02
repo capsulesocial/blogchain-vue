@@ -7,6 +7,7 @@ import HelpWidgets from '@/components/widgets/pages/HelpWidgets.vue';
 import SettingsWidgets from '@/components/widgets/pages/SettingsWidgets.vue';
 import Footer from '@/components/Footer.vue';
 import SubscriptionsWidgets from '@/components/widgets/pages/SubscriptionsWidgets.vue';
+import TagsWidgets from './widgets/pages/TagsWidgets.vue';
 </script>
 <template>
 	<aside class="w-5/12 -mr-5 -mt-4 hidden overflow-y-auto p-4 pb-32 lg:block min-h-61 h-61">
@@ -18,6 +19,7 @@ import SubscriptionsWidgets from '@/components/widgets/pages/SubscriptionsWidget
 		<SettingsWidgets v-if="$route.matched[0]?.path === `/settings`" />
 		<SubscriptionsWidgets v-if="$route.name === `Subscriptions`" />
 		<DiscoverWidgets v-if="$route.name === `Category`" />
+		<TagsWidgets v-if="$route.name === `Tag`" />
 		<Footer />
 	</aside>
 </template>
