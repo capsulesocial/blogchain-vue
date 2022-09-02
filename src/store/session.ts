@@ -36,10 +36,10 @@ export const useStore = defineStore(`session`, {
 			avatar: ``,
 			email: ``,
 			location: ``,
-			socials: [],
 			website: ``,
 			cid: ``,
 			bio: ``,
+			socials: [],
 		};
 	},
 	persist: true,
@@ -57,7 +57,6 @@ export const useStore = defineStore(`session`, {
 				email: userData.email,
 				location: userData.location,
 				website: userData.website,
-				socials: userData.socials,
 				bio: userData.bio,
 			});
 			watch(
@@ -114,17 +113,17 @@ export const useStore = defineStore(`session`, {
 		},
 	},
 	getters: {
-		getProfileFromSession(state: Profile) {
+		getProfileFromSession(): Profile {
 			return {
-				id: state.id,
-				name: state.name,
-				email: state.email,
-				bio: state.bio,
-				location: state.location,
-				avatar: state.avatar,
-				socials: state.socials,
-				website: state.website,
-				background: state.background,
+				id: this.id,
+				name: this.name,
+				email: this.email,
+				bio: this.bio,
+				location: this.location,
+				avatar: this.avatar,
+				socials: this.socials,
+				website: this.website,
+				background: this.background,
 			};
 		},
 	},
