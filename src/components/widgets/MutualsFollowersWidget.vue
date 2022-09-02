@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import type { Profile } from '@/backend/profile';
+import { useStore } from '@/store/session';
+import MutualsFollowersPopup from '../popups/MutualsFollowersPopup.vue';
 
+const store = useStore();
+
+const openMutualFollowersPopup = ref<boolean>(false);
 // TODO: fetch mutual followers from store / backend
 const mutuals = ref<Profile[]>([
 	{
@@ -55,7 +60,7 @@ function getText(): string {
 
 <template>
 	<article
-		v-if="mutuals.length > 0"
+		v-if="mutuals.length > 0 && $route.params.id !== store.$state.id"
 		class="mb-5 w-full rounded-lg bg-lightBG dark:bg-darkBGStop border-lightBorder px-6 py-4 shadow-lg"
 	>
 		<h6 class="text-lightPrimaryText dark:text-darkPrimaryText mb-2 font-semibold">Mutual Followers</h6>
@@ -81,6 +86,9 @@ function getText(): string {
 				</p>
 			</div>
 		</div>
-		<button class="text-primary text-sm">Show more</button>
+		<button class="text-primary text-sm" @click="openMutualFollowersPopup = true">Show more</button>
 	</article>
+	<Teleport to="body">
+		<MutualsFollowersPopup v-if="openMutualFollowersPopup" @close="openMutualFollowersPopup = false" />
+	</Teleport>
 </template>
