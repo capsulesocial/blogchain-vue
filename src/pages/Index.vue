@@ -1,4 +1,7 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import router from '@/router/index';
+router.push(`/home`);
+</script>
 <template>
 	<div
 		class="from-lightBGStart to-lightBGStop dark:from-darkBG dark:to-darkBG border-lightBorder modal-animation flex flex-col overflow-hidden rounded-lg border bg-gradient-to-r py-4 px-6 pb-2 shadow-lg"

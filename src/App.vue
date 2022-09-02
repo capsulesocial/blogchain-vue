@@ -44,11 +44,15 @@ onBeforeMount(() => {
 	getAvatar(store.$state.avatar);
 });
 
-watch(router.currentRoute, () => {
+const setScroll = () => {
 	// Scrolling event listener
 	document.removeEventListener('DOMContentLoaded', initScroll);
 	document.addEventListener('DOMContentLoaded', initScroll);
 	nextTick(setThumbHeight);
+};
+
+watch(router.currentRoute, () => {
+	setScroll();
 });
 </script>
 

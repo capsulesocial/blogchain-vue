@@ -50,6 +50,9 @@ export function wheel(event: any) {
 export const setThumbHeight = () => {
 	const thumb = document.getElementById('thumb') as HTMLElement;
 	const content = document.getElementById('scrollable_content') as HTMLElement;
+	if (!thumb || !content) {
+		return;
+	}
 
 	// Set the initial height for thumb
 	const scrollRatio = content.clientHeight / content.scrollHeight;
@@ -92,6 +95,9 @@ export const trackClickHandler = (e: any) => {
 	const content = document.getElementById('scrollable_content') as HTMLElement;
 	const track = document.getElementById('track') as HTMLElement;
 	const thumb = document.getElementById('thumb') as HTMLElement;
+	if (!content || !track || !thumb) {
+		return;
+	}
 	const bound = track.getBoundingClientRect();
 	const percentage = (e.clientY - bound.top) / bound.height;
 	content.scrollTop = percentage * (content.scrollHeight - content.clientHeight);
@@ -102,13 +108,14 @@ export const initScroll = () => {
 	// Query elements
 	const track = document.getElementById('track') as HTMLElement;
 	const thumb = document.getElementById('thumb') as HTMLElement;
+	if (!thumb || !track) {
+		return;
+	}
 
 	// Set the initial height for thumb
 	setThumbHeight();
 
 	const mouseDownThumbHandler = () => {
-		const thumb = document.getElementById('thumb') as HTMLElement;
-
 		thumb.classList.add('bg-gray5');
 		thumb.style.userSelect = `none`;
 		thumb.style.cursor = `grabbing`;
