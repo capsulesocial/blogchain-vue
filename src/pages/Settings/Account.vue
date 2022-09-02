@@ -43,8 +43,13 @@ async function downloadPrivateKey(): Promise<void> {
 }
 
 function toggleEncrypted() {
-	encrypted.value = true;
-	showEncrypted.value = true;
+	if (encrypted.value === true) {
+		encrypted.value = false;
+		encryptionKey.value = ``;
+	} else {
+		encrypted.value = true;
+		showEncrypted.value = true;
+	}
 }
 
 function closeEncrypted() {
