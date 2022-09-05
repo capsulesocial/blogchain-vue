@@ -16,7 +16,7 @@ const lastScroll = ref<number>(0);
 const isScrollingDown = ref<boolean>(false);
 
 useMeta({
-	title: `${route.params.category as string} category on Blogchain`,
+	title: `${category.value} category on Blogchain`,
 	htmlAttrs: { lang: 'en', amp: true },
 });
 
