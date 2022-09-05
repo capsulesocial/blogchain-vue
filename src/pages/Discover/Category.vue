@@ -7,11 +7,6 @@ import { usePostsStore } from '@/store/posts';
 import BackIcon from '@/components/icons/ChevronLeft.vue';
 import SimplePostCard from '@/components/post/SimpleCard.vue';
 
-useMeta({
-	title: `dynamicCategory category on Blogchain`,
-	htmlAttrs: { lang: 'en', amp: true },
-});
-
 const route = useRoute();
 const postsStore = usePostsStore();
 
@@ -19,6 +14,11 @@ const { posts } = storeToRefs(postsStore);
 const category = ref<string>(route.params.category as string);
 const lastScroll = ref<number>(0);
 const isScrollingDown = ref<boolean>(false);
+
+useMeta({
+	title: `${route.params.category as string} category on Blogchain`,
+	htmlAttrs: { lang: 'en', amp: true },
+});
 
 function collapse() {
 	const body = document.getElementById(`scrollable_content`);
