@@ -17,7 +17,7 @@ const myProfile = ref<Profile>(createDefaultProfile(store.$state.id));
 const myAvatar = ref<string | ArrayBuffer | null>(null);
 const visitProfile = ref<Profile>(createDefaultProfile(route.params.id as string));
 const visitAvatar = ref<string | ArrayBuffer | null>(null);
-const settings = ref<HTMLInputElement | null>(null);
+const settings = ref<any>();
 
 const emit = defineEmits(['closePopup']);
 
@@ -90,8 +90,8 @@ function updateFromWizard(): void {
 		if (!settings.value) {
 			throw new Error(`This shouldn't happen`);
 		}
+		settings.value.updateFromProfile();
 	}
-	store.updateFromWizard();
 }
 function closeWizard(): void {
 	rootStore.setWelcome(false);

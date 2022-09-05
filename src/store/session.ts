@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia';
 import { watch } from 'vue';
 import { Profile, setProfile } from '@/backend/profile';
-import { toastSuccess } from '@/plugins/toast';
 // https://pinia.vuejs.org/core-concepts/
 
 export interface Session {
@@ -94,16 +93,6 @@ export const useStore = defineStore(`session`, {
 		},
 		setLocation(location: string) {
 			this.location = location;
-		},
-		async updateFromWizard() {
-			try {
-				const profileUpdated = await setProfile(this.getProfileFromSession);
-				if (profileUpdated) {
-					toastSuccess(`Your profile has been successfully updated`);
-				}
-			} catch (err) {
-				throw new Error(`${err}`);
-			}
 		},
 		async updateFromProfile() {
 			const cid = await setProfile(this.getProfileFromSession);

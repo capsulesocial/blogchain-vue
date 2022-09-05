@@ -28,6 +28,7 @@ const uploadedPic = ref<HTMLElement>();
 const newEmail = ref<string>(``);
 const location = ref<string>(``);
 const website = ref<string>(``);
+const avatar = ref<string>(store.$state.avatar);
 
 const emit = defineEmits(['close', 'updateProfileMethod']);
 
@@ -41,9 +42,6 @@ if (store.$state.name !== ``) {
 }
 if (store.$state.bio !== ``) {
 	bio.value = store.$state.bio;
-}
-if (store.$state.avatar !== ``) {
-	newAvatarCID.value = store.$state.avatar;
 }
 if (store.$state.location !== ``) {
 	location.value = store.$state.location;
@@ -93,12 +91,6 @@ function checkBio() {
 	const charCount = bio.value.trim().length;
 	return maxCharBio.value - charCount;
 }
-
-async function updateProfile() {
-	store.updateFromProfile();
-	emit(`updateProfileMethod`);
-	return true;
-}
 async function updateFromProfile() {
 	if (hasChanged() === false) {
 		toastWarning(`Nothing to update`);
@@ -124,9 +116,9 @@ async function updateFromProfile() {
 	store.setBio(trimmedBio);
 	// Update email
 	if (trimmedEmail.length > 0) {
-		const qEmail = qualityEmail(trimmedEmail);
-		if (isError(qEmail)) {
-			toastError(qEmail.error);
+		const qlityEmail = qualityEmail(trimmedEmail);
+		if (isError(qlityEmail)) {
+			toastError(qlityEmail.error);
 			return;
 		}
 	}
@@ -150,16 +142,19 @@ async function updateFromProfile() {
 		getProfile(store.$state.id, true); // Update cached profile
 	}
 	try {
-		const profileUpdated = await updateProfile();
+		const profileUpdated = await store.updateFromProfile();
 		if (profileUpdated) {
 			emit(`close`);
 			// Use HTML DOM styles: https://www.w3schools.com/jsref/dom_obj_style.asp
 			toastSuccess(`Your profile has been successfully updated`);
 		}
+		emit(`updateProfileMethod`);
 	} catch (err) {
 		throw new Error(`${err}`);
 	}
 }
+
+defineExpose({ updateFromProfile });
 </script>
 
 <template>
@@ -175,7 +170,7 @@ async function updateFromProfile() {
 		<div class="mb-5 flex w-full justify-center">
 			<button class="focus:outline-none relative h-24 w-24" @click="handleImageClick">
 				<span class="absolute inline-flex w-24 h-24 top-0 left-0">
-					<Avatar :author-i-d="store.$state.id" :avatar="profilePic" :no-click="true" :size="`w-24 h-24`" />
+					<Avatar :author-i-d="store.$state.id" :avatar="avatar" :no-click="true" :size="`w-24 h-24`" />
 				</span>
 				<span
 					class="bg-darkOnPrimaryText text-lightOnPrimaryText absolute inline-flex h-24 w-24 top-0 left-0 items-center justify-center rounded-lg bg-opacity-25"
@@ -216,7 +211,7 @@ async function updateFromProfile() {
 					:value="bio"
 					:placeholder="`Display Blogchain Bio`"
 					class="bg-gray1 dark:bg-gray7 dark:text-darkPrimaryText placeholder-gray5 dark:placeholder-gray3 focus:outline-none w-full rounded-lg px-2 py-1 text-black"
-					@input="bio = $event.target.value"
+					@input="bio = ($event.target as HTMLInputElement).value"
 					@keyup="checkBio()"
 				></textarea>
 				<p class="text-right text-xs text-gray5 dark:text-gray3">{{ checkBio() }} Characters Remaining</p>
