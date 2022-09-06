@@ -10,7 +10,6 @@ import RepostIcon from '@/components/icons/RepostIcon.vue';
 import ShareIcon from '@/components/icons/ShareIcon.vue';
 import CrownIcon from '@/components/icons/Crown.vue';
 import StatsIcon from '@/components/icons/Stats.vue';
-import CloseIcon from '@/components/icons/CloseIcon.vue';
 
 import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
@@ -107,13 +106,6 @@ profilesStore.fetchProfile(props.fetchedPost.post.authorID);
 						<span class="text-negative self-center text-xs text-center w-full">Remove from feed</span>
 					</button>
 				</div>
-				<button
-					v-if="showComments"
-					class="bg-gray1 dark:bg-gray5 focus:outline-none right-0 top-0 ml-2 rounded-full p-1"
-					@click="emit(`toggle-comments`)"
-				>
-					<CloseIcon />
-				</button>
 			</div>
 		</div>
 		<!-- Content -->
@@ -138,7 +130,7 @@ profilesStore.fetchProfile(props.fetchedPost.post.authorID);
 					<TagCard v-for="t in fetchedPost.post.tags" :key="t.name" :tag="t.name" class="my-2 mr-4" />
 				</div>
 				<!-- Actions buttons (Desktop) -->
-				<div v-show="!hideActions" class="text-gray5 dark:text-gray3 mt-1 hidden xl:flex xl:items-center">
+				<div class="text-gray5 dark:text-gray3 mt-1 hidden xl:flex xl:items-center">
 					<!-- Comment -->
 					<button
 						class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary dark:hover:text-primary mr-4 flex items-center"
@@ -189,7 +181,7 @@ profilesStore.fetchProfile(props.fetchedPost.post.authorID);
 			<TagCard v-for="t in fetchedPost.post.tags" :key="t.name" :tag="t.name" class="my-2 mr-4" />
 		</div>
 		<!-- Comment and share (Mobile) -->
-		<div v-show="!hideActions" class="text-gray5 dark:text-gray3 mt-1 flex xl:hidden">
+		<div class="text-gray5 dark:text-gray3 mt-1 flex xl:hidden">
 			<button
 				class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary mr-4 hover:fill-primary flex items-center"
 				:class="activeAction === `comments` ? `text-primary` : ``"
