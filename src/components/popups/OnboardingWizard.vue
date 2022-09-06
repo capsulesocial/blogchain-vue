@@ -115,36 +115,21 @@ function closeWizard(): void {
 			</div>
 			<!-- Slide 1 -->
 			<article class="flex flex-col items-center text-center">
-				<img
-					v-show="step === 0"
-					loading="lazy"
-					src="@/assets/images/onboarding/slide1.webp"
-					class="mb-10 w-4/6 rounded-lg shadow-lg"
-				/>
-				<img
-					v-show="step === 1"
-					loading="lazy"
-					src="@/assets/images/onboarding/slide2.webp"
-					class="mb-10 w-4/6 rounded-lg shadow-lg"
-				/>
-				<img
-					v-show="step === 2"
-					loading="lazy"
-					src="@/assets/images/onboarding/slide3.webp"
-					class="mb-10 w-4/6 rounded-lg shadow-lg"
-				/>
-				<img
-					v-show="step === 3"
-					loading="lazy"
-					src="@/assets/images/onboarding/slide4.webp"
-					class="mb-10 w-4/6 rounded-lg shadow-lg"
-				/>
-				<img
-					v-show="step === 4"
-					loading="lazy"
-					src="@/assets/images/onboarding/slide5.webp"
-					class="mb-10 w-4/6 rounded-lg shadow-lg"
-				/>
+				<video v-show="step === 0" class="mb-10 w-4/6 rounded-lg shadow-lg" autoplay muted playsinline>
+					<source src="@/assets/images/onboarding/slide1.webm" type="video/webm" />
+				</video>
+				<video v-show="step === 1" class="mb-10 w-4/6 rounded-lg shadow-lg" autoplay muted playsinline>
+					<source src="@/assets/images/onboarding/slide2.webm" type="video/webm" />
+				</video>
+				<video v-show="step === 2" class="mb-10 w-4/6 rounded-lg shadow-lg" autoplay muted playsinline>
+					<source src="@/assets/images/onboarding/slide3.webm" type="video/webm" />
+				</video>
+				<video v-show="step === 3" class="mb-10 w-4/6 rounded-lg shadow-lg" autoplay muted playsinline>
+					<source src="@/assets/images/onboarding/slide4.webm" type="video/webm" />
+				</video>
+				<video v-show="step === 4" class="mb-10 w-4/6 rounded-lg shadow-lg" autoplay muted playsinline>
+					<source src="@/assets/images/onboarding/slide5.webm" type="video/webm" />
+				</video>
 				<h6 class="mb-5 text-xl font-bold dark:text-darkPrimaryText">{{ getTitle() }}</h6>
 				<EditProfile
 					v-if="$route.name != `help` && step === 5"
