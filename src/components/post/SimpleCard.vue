@@ -10,6 +10,7 @@ import RepostIcon from '@/components/icons/RepostIcon.vue';
 import ShareIcon from '@/components/icons/ShareIcon.vue';
 import CrownIcon from '@/components/icons/Crown.vue';
 import StatsIcon from '@/components/icons/Stats.vue';
+import CloseIcon from '@/components/icons/CloseIcon.vue';
 
 import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
@@ -23,7 +24,6 @@ const store = useStore();
 const settings = useStoreSettings();
 const profilesStore = useProfilesStore();
 const showDelete = ref<boolean>(false);
-const showComments = ref<boolean>(false);
 const showReposts = ref<boolean>(false);
 const showShare = ref<boolean>(false);
 const showStats = ref<boolean>(false);
@@ -31,7 +31,10 @@ const featuredPhoto = ref<string | null>(null);
 
 const props = defineProps({
 	fetchedPost: { type: Object as PropType<IGenericPostResponse>, required: true },
+	hideActions: { type: Boolean, default: false },
+	showComments: { type: Boolean, default: false },
 });
+const emit = defineEmits([`toggle-comments`]);
 
 // Get profile of authorID
 const author = computed(() => profilesStore.getProfile(props.fetchedPost.post.authorID));
@@ -51,9 +54,10 @@ profilesStore.fetchProfile(props.fetchedPost.post.authorID);
 
 <template>
 	<div
-		class="bg-lightBG dark:bg-darkBGStop border-b dark:border-darkBG dark:border-opacity-25 border-opacity-75 py-4 px-5 xl:py-5 xl:px-6 transition ease-in-out hover:bg-hoverPost dark:hover:bg-darkBG dark:hover:bg-opacity-25"
+		class="bg-lightBG dark:bg-darkBGStop dark:border-darkBG dark:border-opacity-25 border-opacity-75 py-4 px-5 xl:py-5 xl:px-6 transition ease-in-out hover:bg-hoverPost dark:hover:bg-darkBG dark:hover:bg-opacity-25"
+		:class="showComments ? `` : `border-b`"
 	>
-		<!-- Card profile header - this should be separated into a separate component -->
+		<!-- Card profile header -->
 		<div class="flex w-full justify-between">
 			<div class="flex">
 				<Avatar
@@ -107,6 +111,13 @@ profilesStore.fetchProfile(props.fetchedPost.post.authorID);
 						<span class="text-negative self-center text-xs text-center w-full">Remove from feed</span>
 					</button>
 				</div>
+				<button
+					v-if="showComments"
+					class="bg-gray1 dark:bg-gray5 focus:outline-none right-0 top-0 ml-2 rounded-full p-1"
+					@click="emit(`toggle-comments`)"
+				>
+					<CloseIcon />
+				</button>
 			</div>
 		</div>
 		<!-- Content -->
@@ -131,12 +142,12 @@ profilesStore.fetchProfile(props.fetchedPost.post.authorID);
 					<TagCard v-for="t in fetchedPost.post.tags" :key="t.name" :tag="t.name" class="my-2 mr-4" />
 				</div>
 				<!-- Actions buttons (Desktop) -->
-				<div class="text-gray5 dark:text-gray3 mt-1 hidden xl:flex xl:items-center">
+				<div v-show="!hideActions" class="text-gray5 dark:text-gray3 mt-1 hidden xl:flex xl:items-center">
 					<!-- Comment -->
 					<button
 						class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary dark:hover:text-primary mr-4 flex items-center"
 						:class="showComments ? `text-primary` : ``"
-						@click="showComments = !showComments"
+						@click="emit(`toggle-comments`)"
 					>
 						<CommentIcon :is-active="showComments" class="w-5 h-5" />
 						<span class="ml-1 text-sm">{{ fetchedPost.commentsCount }}</span>
@@ -182,11 +193,11 @@ profilesStore.fetchProfile(props.fetchedPost.post.authorID);
 			<TagCard v-for="t in fetchedPost.post.tags" :key="t.name" :tag="t.name" class="my-2 mr-4" />
 		</div>
 		<!-- Comment and share (Mobile) -->
-		<div class="text-gray5 dark:text-gray3 mt-1 flex xl:hidden">
+		<div v-show="!hideActions" class="text-gray5 dark:text-gray3 mt-1 flex xl:hidden">
 			<button
 				class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary mr-4 hover:fill-primary flex items-center"
 				:class="showComments ? `text-primary` : ``"
-				@click="showComments = !showComments"
+				@click="emit(`toggle-comments`)"
 			>
 				<CommentIcon :is-active="showComments" class="w-5 h-5" />
 				<span class="ml-1 text-sm">{{ fetchedPost.commentsCount }}</span>
