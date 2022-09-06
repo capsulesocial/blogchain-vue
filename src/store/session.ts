@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { watch } from 'vue';
-import { Profile } from '@/backend/profile';
+import { Profile, setProfile } from '@/backend/profile';
 // https://pinia.vuejs.org/core-concepts/
 
 export interface Session {
@@ -38,6 +38,7 @@ export const useStore = defineStore(`session`, {
 			website: ``,
 			cid: ``,
 			bio: ``,
+			socials: [],
 		};
 	},
 	persist: true,
@@ -93,8 +94,27 @@ export const useStore = defineStore(`session`, {
 		setLocation(location: string) {
 			this.location = location;
 		},
+		async updateFromProfile() {
+			const cid = await setProfile(this.getProfileFromSession);
+			this.setCID(cid);
+			return true;
+		},
 	},
-	getters: {},
+	getters: {
+		getProfileFromSession(): Profile {
+			return {
+				id: this.id,
+				name: this.name,
+				email: this.email,
+				bio: this.bio,
+				location: this.location,
+				avatar: this.avatar,
+				socials: this.socials,
+				website: this.website,
+				background: this.background,
+			};
+		},
+	},
 });
 
 export function createSessionFromProfile(cid: string, p: Profile): Session {

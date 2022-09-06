@@ -3,14 +3,16 @@ import { onMounted, ref } from 'vue';
 import ChevronUp from '@/components/icons/ChevronUp.vue';
 import ChevronDown from '@/components/icons/ChevronDown.vue';
 import { storeToRefs } from 'pinia';
-
 import { usePostsStore } from '@/store/posts';
+import { useRootStore } from '@/store/index';
 import { Algorithm, Timeframe, readableTimeframe } from '@/backend/post';
 import SimplePostCard from '@/components/post/SimpleCard.vue';
+import OnboardingWizard from '@/components/popups/OnboardingWizard.vue';
 
 // refs
 const showAlgorithmDropdown = ref<boolean>(false);
 const postsStore = usePostsStore();
+const rootStore = useRootStore();
 const { homeFeed, displayTimeframe, posts } = storeToRefs(postsStore);
 const scrollContainer = ref<HTMLElement | null>(null);
 
@@ -111,4 +113,6 @@ onMounted(async () => {
 			<SimplePostCard :fetched-post="post" />
 		</div>
 	</div>
+	<!-- Onboarding Wizard -->
+	<OnboardingWizard v-if="rootStore.$state.recentlyJoined" />
 </template>

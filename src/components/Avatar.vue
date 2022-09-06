@@ -32,7 +32,7 @@ const props = defineProps({
 
 onMounted(async () => {
 	if (props.avatar) {
-		imageSrc.value = props.avatar;
+		imageSrc.value = await getPhotoFromIPFS(props.avatar);
 	} else if (props.cid) {
 		imageSrc.value = await getPhotoFromIPFS(props.cid);
 	}
