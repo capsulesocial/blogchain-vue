@@ -16,7 +16,7 @@ const lastScroll = ref<number>(0);
 const isScrollingDown = ref<boolean>(false);
 
 useMeta({
-	title: `${category.value} category on Blogchain`,
+	title: `${category.value.charAt(0).toUpperCase() + category.value.slice(1)} category on Blogchain`,
 	htmlAttrs: { lang: 'en', amp: true },
 });
 
