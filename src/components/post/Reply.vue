@@ -41,16 +41,17 @@ function toggleDropdownDelete() {
 			<div class="flex flex-col sm:flex-row items-start sm:items-center">
 				<strong
 					v-if="replyAuthor.name !== ``"
-					class="bold mr-2 font-bold text-lightPrimaryText dark:text-darkPrimaryText"
+					class="bold mr-2 font-semibold text-lightPrimaryText dark:text-darkPrimaryText"
 				>
 					{{ replyAuthor.name }}
 				</strong>
-				<strong v-else class="bold mr-2 font-bold text-gray5 dark:text-gray3">
+				<strong v-else class="bold mr-2 font-semibold text-gray5 dark:text-gray3">
 					{{ replyAuthor.id }}
 				</strong>
-				<nuxt-link :to="`/id/` + replyAuthor.id" class="mr-4 text-sm text-gray5 dark:text-gray3">
+				<router-link :to="`/id/` + replyAuthor.id" class="mr-3 text-sm text-gray5 dark:text-gray3">
 					@{{ replyAuthor.id }}
-				</nuxt-link>
+				</router-link>
+				<div class="h-1 w-1 bg-gray5 mr-2 rounded-xl"></div>
 				<span v-if="timestamp" class="text-xs text-gray5 dark:text-gray3">
 					{{ formatDate(timestamp) }}
 				</span>

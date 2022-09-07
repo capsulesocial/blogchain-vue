@@ -83,7 +83,7 @@ function toggleDropdownDelete() {
 				size="w-12 h-12"
 				style="margin-top: 2px; margin-left: 2px; margin-right: 2px"
 			/> -->
-				<div class="w-12 h-12 rounded-lg bg-gray1 animate-pulse hidden lg:flex"></div>
+				<div class="w-10 h-10 rounded-lg bg-gray1 animate-pulse hidden lg:flex"></div>
 			</div>
 			<div class="flex flex-col w-full">
 				<!-- Comment -->
@@ -100,16 +100,14 @@ function toggleDropdownDelete() {
 					<div class="flex w-full flex-grow flex-col px-4 py-2">
 						<!-- Top row: name, id, timestamp -->
 						<div class="flex items-center flex-wrap">
-							<router-link :to="`/id/` + commentAuthor.id" class="mr-4 flex items-center lg:mb-0 mb-2">
+							<router-link :to="`/id/` + commentAuthor.id" class="mr-3 flex items-center lg:mb-0 mb-2">
 								<!-- <Avatar :avatar="avatar" :author-i-d="authorID" size="w-8 h-8" class="mr-2 flex-shrink-0 lg:hidden" /> -->
 								<div class="w-8 h-8 rounded-lg bg-gray1 animate-pulse lg:hidden mr-2"></div>
-								<span v-if="commentAuthor.name != ``" class="font-medium dark:text-darkPrimaryText">
+								<span v-if="commentAuthor.name != ``" class="font-semibold dark:text-darkPrimaryText">
 									{{ commentAuthor.name }}
 								</span>
-								<span v-else class="text-gray5 dark:text-gray3 font-medium">{{ commentAuthor.id }}</span>
-								<span class="text-lightPrimaryText dark:text-darkPrimaryText ml-2 text-sm lg:text-base">
-									@{{ commentAuthor.id }}
-								</span>
+								<span v-else class="text-gray5 dark:text-gray3 font-semibold">{{ commentAuthor.id }}</span>
+								<span class="text-gray5 dark:text-gray3 ml-2 text-sm"> @{{ commentAuthor.id }} </span>
 								<span
 									v-if="commentAuthor.id === postAuthor"
 									class="bg-gray1 dark:bg-lightBG dark:text-darkPrimaryText ml-2 rounded-2xl dark:bg-opacity-25 py-1 px-2 text-xs"
@@ -117,6 +115,7 @@ function toggleDropdownDelete() {
 									Author
 								</span>
 							</router-link>
+							<div class="h-1 w-1 bg-gray5 mr-2 rounded-xl"></div>
 							<span v-if="timestamp" class="self-center text-xs dark:text-gray3 mb-2 lg:mt-2">
 								{{ formatDate(timestamp) }}
 							</span>
@@ -129,7 +128,7 @@ function toggleDropdownDelete() {
 									<div class="flex float-right flex-shrink-0 items-center justify-center overflow-hidden">
 										<img
 											:src="settings.isDarkMode ? emotion.dark : emotion.light"
-											class="-mb-1 mt-2 h-32 w-32 bg-transparent"
+											class="-mb-1 mt-2 h-24 w-24 bg-transparent"
 											:class="emotion.label === `default` ? `animate-pulse` : ``"
 											:style="emotion.label === `default` ? `filter: blur(5px)` : ``"
 											@mouseover="showLabel = true"
@@ -197,7 +196,7 @@ function toggleDropdownDelete() {
 					</div>
 				</div>
 				<!-- Replies -->
-				<div v-if="showReplies" class="modal-animation mr-5 mt-4 border-l border-gray5 pl-2">
+				<div v-if="showReplies" class="modal-animation mr-5 mt-4 border-l border-gray3 pl-2">
 					<!-- Reply Input box -->
 					<div
 						v-if="store.$state.id !== ``"
