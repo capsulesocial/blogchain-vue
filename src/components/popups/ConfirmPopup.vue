@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref, onUnmounted } from 'vue';
+import { useStoreSettings } from '@/store/settings';
 import InfoIcon from '@/components/icons/Info.vue';
 import CloseIcon from '@/components/icons/XIcon.vue';
 
 const showInfoBubble = ref<boolean>(false);
 const isPosting = ref<boolean>(false);
 const emit = defineEmits(['close', 'post']);
+const settingsStore = useStoreSettings();
 
 window.addEventListener(`click`, handleCloseClick, false);
 
@@ -59,7 +61,7 @@ function handlePost(): void {
 					<div
 						v-show="showInfoBubble"
 						class="border-lightBorder modal-animation absolute z-10 flex flex-col rounded-lg border bg-lightBG dark:bg-darkBG p-2 shadow-lg mx-4"
-						:class="$colorMode.dark ? `dropdownInfoOpenDark` : `dropdownInfoOpen`"
+						:class="settingsStore.$state.darkMode ? `dropdownInfoOpenDark` : `dropdownInfoOpen`"
 						style="top: 120px; left: 0px"
 					>
 						<!-- Delete -->
