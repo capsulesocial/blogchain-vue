@@ -15,7 +15,7 @@ const settings = useStoreSettings();
 const store = useStore();
 
 // comment
-const emotion = ref<IFace>(faces.admiration);
+const emotion = ref<IFace>(faces.sad);
 const showLabel = ref<boolean>(false);
 const content = ref<string>(`this is a default comment`);
 const replies = ref<ICommentData[]>([
@@ -57,23 +57,6 @@ const commentDeleted = ref<boolean>(false);
 const reply = ref<string>(``);
 const replyInputHeight = ref<number>(64);
 
-function getStyle(prefix: string) {
-	let res = ``;
-	if (prefix === `border-`) {
-		res = `border-color: `;
-	} else if (prefix === `bg-`) {
-		res = `background-color: `;
-	}
-	if (feelings.positive.has(emotion.value.label)) {
-		res += `#1F7DAD`;
-	} else if (feelings.negative.has(emotion.value.label)) {
-		res += `#EE1F63`;
-	} else {
-		res += `#F0B785`;
-	}
-	return res;
-}
-
 function handleResize(e: any) {
 	if (e.srcElement.clientHeight !== e.srcElement.scrollHeight) {
 		replyInputHeight.value = e.srcElement.scrollHeight;
@@ -94,23 +77,27 @@ function toggleDropdownDelete() {
 		<div class="mt-2 flex w-full">
 			<!-- Desktop avatar -->
 			<div class="mr-4 hidden items-start justify-between lg:flex">
-				<span class="flex-shrink-0 rounded-lg p-1" :style="getStyle(`bg-`)">
-					<!-- <Avatar
+				<!-- <Avatar
 				:avatar="avatar"
 				:author-i-d="authorID"
 				size="w-12 h-12"
 				style="margin-top: 2px; margin-left: 2px; margin-right: 2px"
 			/> -->
-					<div class="w-12 h-12 rounded-lg bg-gray1 animate-pulse hidden lg:flex"></div>
-				</span>
+				<div class="w-12 h-12 rounded-lg bg-gray1 animate-pulse hidden lg:flex"></div>
 			</div>
 			<div class="flex flex-col w-full">
 				<!-- Comment -->
 				<div
-					class="relative flex flex-row w-full overflow-x-auto justify-between rounded-lg border border-dashed"
-					:style="getStyle(`border-`)"
+					class="relative flex flex-row w-full overflow-x-auto justify-between rounded-lg bg-opacity-5"
+					:class="
+						feelings.positive.has(emotion.label)
+							? `bg-positive`
+							: feelings.negative.has(emotion.label)
+							? `bg-negative`
+							: `bg-neutral`
+					"
 				>
-					<div class="flex w-full flex-grow flex-col px-3 py-1 pt-2">
+					<div class="flex w-full flex-grow flex-col px-4 py-2">
 						<!-- Top row: name, id, timestamp -->
 						<div class="flex items-center flex-wrap">
 							<router-link :to="`/id/` + commentAuthor.id" class="mr-4 flex items-center lg:mb-0 mb-2">
@@ -163,7 +150,7 @@ function toggleDropdownDelete() {
 									</p>
 
 									<!-- Reply button -->
-									<div class="flex flex-row items-center absolute bottom-0 pb-2">
+									<div class="flex flex-row items-center absolute bottom-0 pb-3">
 										<button
 											class="text-primary focus:outline-none text-left font-sans text-sm"
 											@click="showReplies = !showReplies"
