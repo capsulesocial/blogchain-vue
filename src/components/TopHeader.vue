@@ -158,11 +158,11 @@ function logout() {
 						class="bg-lightBorder dark:bg-darkBorder w-full rounded my-3"
 						style="height: 1px"
 					></div>
-					<a
+					<router-link
 						v-if="sessionStore.$state.id !== ``"
-						:href="url + `/id/` + sessionStore.$state.id"
+						:to="`/id/` + sessionStore.$state.id"
 						class="text-gray5 dark:text-gray3 mb-2 flex w-full flex-row items-center text-left"
-						><ProfileIcon class="mr-2 h-5 w-5 flex-shrink-0" />Profile</a
+						><ProfileIcon class="mr-2 h-5 w-5 flex-shrink-0" />Profile</router-link
 					>
 					<a
 						v-if="sessionStore.$state.id !== ``"
@@ -291,11 +291,11 @@ function logout() {
 						class="bg-lightBorder dark:bg-darkBorder w-full rounded my-3"
 						style="height: 1px"
 					></div>
-					<a
+					<router-link
 						v-if="sessionStore.$state.id !== ``"
-						:href="url + `/id/` + sessionStore.$state.id"
+						:to="`/id/` + sessionStore.$state.id"
 						class="text-gray5 dark:text-gray3 mb-2 flex w-full flex-row items-center text-left"
-						><ProfileIcon class="mr-2 h-5 w-5 flex-shrink-0" />Profile</a
+						><ProfileIcon class="mr-2 h-5 w-5 flex-shrink-0" />Profile</router-link
 					>
 					<a
 						v-if="sessionStore.$state.id !== ``"
