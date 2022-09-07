@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onUnmounted } from 'vue';
 import InfoIcon from '@/components/icons/Info.vue';
-import CloseIcon from '@/components/icons/X.vue';
+import CloseIcon from '@/components/icons/XIcon.vue';
 
 const showInfoBubble = ref<boolean>(false);
 const isPosting = ref<boolean>(false);
