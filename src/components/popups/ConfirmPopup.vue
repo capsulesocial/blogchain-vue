@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onUnmounted } from 'vue';
+import { ref } from 'vue';
 import { useStoreSettings } from '@/store/settings';
 import InfoIcon from '@/components/icons/Info.vue';
 import CloseIcon from '@/components/icons/XIcon.vue';
@@ -9,17 +9,6 @@ const isPosting = ref<boolean>(false);
 const emit = defineEmits(['close', 'post']);
 const settingsStore = useStoreSettings();
 
-window.addEventListener(`click`, handleCloseClick, false);
-
-onUnmounted(() => window.removeEventListener(`click`, handleCloseClick));
-function handleCloseClick(e: any): void {
-	if (!e.target || e.target.parentNode === null || e.target.parentNode.classList === undefined) {
-		return;
-	}
-	if (e.target.classList[0] === `popup`) {
-		emit(`close`);
-	}
-}
 function handlePost(): void {
 	if (isPosting.value) {
 		return;

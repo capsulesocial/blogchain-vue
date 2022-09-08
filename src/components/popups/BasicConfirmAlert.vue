@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onUnmounted } from 'vue';
+import { ref } from 'vue';
 import QuestionIcon from '@/components/icons/Question.vue';
 defineProps({
 	text: {
@@ -8,21 +8,8 @@ defineProps({
 	},
 });
 
-const emit = defineEmits(['close', 'confirm']);
+defineEmits(['close', 'confirm']);
 const showInfoBubble = ref<boolean>(false);
-
-window.addEventListener(`click`, handleCloseClick, false);
-
-onUnmounted(() => window.removeEventListener(`click`, handleCloseClick));
-// methods
-function handleCloseClick(e: any): void {
-	if (!e.target || e.target.parentNode === null || e.target.parentNode.classList === undefined) {
-		return;
-	}
-	if (e.target.classList[0] === `popup`) {
-		emit(`close`);
-	}
-}
 </script>
 
 <template>
