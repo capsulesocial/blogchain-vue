@@ -11,24 +11,25 @@ import ChevronDown from '../icons/ChevronDown.vue';
 import ChevronUp from '../icons/ChevronUp.vue';
 import { toastError, toastSuccess } from '../../plugins/toast';
 // import axios from 'axios'
-import { ref } from 'vue';
+import { IGenericPostResponse } from '@/backend/post';
+import { PropType, ref } from 'vue';
 // import { capsuleServer, baseUrl } from './../../backend/utilities/config'
 // import { handleError } from '@/plugins/toast'
 
+const emit = defineEmits([`close`]);
+
 const props = defineProps({
-	image: { type: String, required: true },
-	title: { type: String, required: true },
-	subtitle: { type: String, required: true },
-	cid: { type: String, required: true },
-	authorID: { type: String, required: true },
+	fetchedPost: { type: Object as PropType<IGenericPostResponse>, required: true },
 });
 
-const isOpen1 = ref<boolean>(false);
+console.log(props.fetchedPost);
 
+const image = ref<string>(``);
+
+const isOpen1 = ref<boolean>(false);
 const isLoading = ref<boolean>(false);
 
 const generatedDirectLink = ref<string>(``);
-
 const generatedBlogchainLink = ref<string>(``);
 
 function toggleAccordion1() {
@@ -67,7 +68,7 @@ function copyBlogchainLink() {
 
 async function generateLinks() {
 	// Might need backend investigation into error response on production
-	if (!props.cid) {
+	if (!props.fetchedPost.post._id) {
 		return;
 	}
 	// const cid: string = props.cid
@@ -87,7 +88,7 @@ function twitterShare() {
 	window.open(
 		`https://twitter.com/share?url=${encodeURIComponent(
 			generatedDirectLink.value.toString(),
-		)}&hashtags=blogchain&text=${props.title} by ${props.authorID}`,
+		)}&hashtags=blogchain&text=${props.fetchedPost.post.title} by ${props.fetchedPost.post.authorID}`,
 	);
 }
 
@@ -96,17 +97,19 @@ function facebookShare() {
 }
 
 function redditShare() {
-	window.open(`https://reddit.com/submit?url=${generatedDirectLink.value}&title=${props.title}`);
+	window.open(`https://reddit.com/submit?url=${generatedDirectLink.value}&title=${props.fetchedPost.post.title}`);
 }
 
 function linkedinShare() {
 	window.open(
-		`https://www.linkedin.com/shareArticle?url=${generatedDirectLink.value}&title=${props.title}&summary=${props.subtitle}&source=blogchain.app`,
+		`https://www.linkedin.com/shareArticle?url=${generatedDirectLink.value}&title=${props.fetchedPost.post.title}&summary=${props.fetchedPost.post.subtitle}&source=blogchain.app`,
 	);
 }
 
 function mailShare() {
-	window.open(`mailto:?subject=${props.title}&body=${props.subtitle}%0D%0A%0D%0A${generatedDirectLink.value}`);
+	window.open(
+		`mailto:?subject=${props.fetchedPost.post.title}&body=${props.fetchedPost.post.subtitle}%0D%0A%0D%0A${generatedDirectLink.value}`,
+	);
 }
 
 generateLinks();
@@ -115,17 +118,16 @@ generateLinks();
 <template>
 	<div
 		class="popup bg-darkBG dark:bg-gray5 modal-animation fixed top-0 bottom-0 left-0 right-0 z-30 flex h-screen w-full items-center justify-center bg-opacity-50 dark:bg-opacity-50"
-		@click.self="$emit(`close`)"
+		@click.self="emit(`close`)"
 	>
 		<!-- Container -->
 		<div
-			style="backdrop-filter: blur(10px)"
-			class="w-full lg:w-600 min-h-40 max-h-90 from-lightBGStart to-lightBGStop dark:from-darkBGStart dark:to-darkBGStop card-animation z-10 overflow-y-auto rounded-lg bg-gradient-to-r p-6 pt-5 shadow-lg"
+			class="w-full lg:w-600 min-h-40 max-h-90 bg-lightBG dark:bg-darkBGStop card-animation z-10 overflow-y-auto rounded-lg p-6 pt-4 shadow-lg"
 		>
 			<!-- popup title -->
-			<div class="sticky flex items-center justify-between mb-6">
-				<h2 class="text-lightPrimaryText dark:text-darkPrimaryText text-2xl font-semibold">Share this post</h2>
-				<button class="focus:outline-none bg-gray1 dark:bg-gray5 rounded-full p-1" @click="$emit(`close`)">
+			<div class="sticky flex items-center justify-between mb-4">
+				<h2 class="text-lightPrimaryText dark:text-darkPrimaryText text-xl font-semibold">Share this post</h2>
+				<button class="focus:outline-none bg-gray1 dark:bg-gray5 rounded-full p-1" @click="emit(`close`)">
 					<CloseIcon />
 				</button>
 			</div>
@@ -133,24 +135,31 @@ generateLinks();
 			<div
 				class="bg-lightInput dark:bg-darkInput p-4 rounded-lg w-full flex flex-col lg:flex-row items-start lg:items-center"
 			>
-				<img
-					v-if="image != ``"
-					v-lazy="{ src: image }"
-					class="h-48 w-full lg:w-48 flex-shrink-0 rounded-lg object-cover lg:h-32 mb-4 lg:mb-0 lg:mr-4"
-				/>
+				<div
+					v-if="fetchedPost.post.featuredPhotoCID !== `` && image === ``"
+					class="w-full lg:w-56 h-48 lg:h-32 bg-gray1 dark:bg-gray7 flex-shrink-0 animate-pulse rounded-lg mt-0 lg:mt-0 lg:mr-4 mb-4 lg:mb-0"
+				></div>
+				<div
+					v-if="fetchedPost.post.featuredPhotoCID !== `` && image !== ``"
+					class="mt-4 w-full flex-shrink-0 lg:mt-0 lg:w-56 modal-animation lg:mr-4"
+				>
+					<a class="cursor-pointer" href="#">
+						<img :src="image" class="h-48 w-full flex-shrink-0 rounded-lg object-cover xl:h-32" />
+					</a>
+				</div>
 				<div class="flex max-w-full flex-col overflow-hidden">
 					<p class="text-gray5 dark:text-gray3 text-sm mb-2">blogchain.app</p>
 					<h3 class="break-words mb-1 text-base font-semibold dark:text-darkPrimaryText">
-						{{ title }}
+						{{ fetchedPost.post.title }}
 					</h3>
 					<h6 v-if="image" class="max-w-420 break-words text-sm dark:text-darkSecondaryText">
-						{{ subtitle }}
+						{{ fetchedPost.post.subtitle }}
 					</h6>
 					<h6
 						v-if="!image"
 						class="max-w-mobileCard xl:max-w-700 break-words text-lightSecondaryText dark:text-darkSecondaryText"
 					>
-						{{ subtitle }}
+						{{ fetchedPost.post.subtitle }}
 					</h6>
 				</div>
 			</div>
