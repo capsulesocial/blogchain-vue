@@ -12,25 +12,33 @@ console.log(prop.featuredPhoto.photo);
 console.log(prop.featuredPhoto.caption);
 defineEmits(['close']);
 </script>
+
 <template>
-	<div
-		class="bg-darkBG dark:bg-lightBG fixed z-40 h-screen w-full overflow-auto bg-opacity-50 dark:bg-opacity-50 pt-16 flex flex-col justify-center items-center"
-		@click.stop="$emit(`close`)"
-	>
-		<button class="bg-gray1 dark:bg-gray5 focus:outline-none mb-5 rounded-full p-1" @click="$emit(`close`)">
-			<XIcon />
-		</button>
-		<img :src="prop.featuredPhoto.photo" class="modal-content max-w-3/5 h-auto rounded-lg" />
-		<div class="flex justify-center mt-5">
-			<p
-				v-if="featuredPhoto.caption"
-				id="caption"
-				class="text-lightPrimaryText dark:text-darkPrimaryText py-2 px-3 text-center bg-lightBG dark:bg-darkBG rounded-lg shadow-lg"
+	<Teleport to="#popup">
+		<div
+			class="popup bg-darkBG dark:bg-gray5 modal-animation fixed top-0 bottom-0 left-0 right-0 z-30 flex h-screen w-full items-center justify-center bg-opacity-50 dark:bg-opacity-50"
+			@click.stop="$emit(`close`)"
+		>
+			<!-- Container -->
+			<div
+				class="w-full lg:w-600 max-h-90 dark:bg-darkBGStop card-animation z-10 overflow-y-auto rounded-lg p-6 pt-4 shadow-lg"
 			>
-				{{ featuredPhoto.caption }}
-			</p>
+				<button class="bg-gray1 dark:bg-gray5 focus:outline-none mb-5 rounded-full p-1" @click="$emit(`close`)">
+					<XIcon />
+				</button>
+				<img :src="prop.featuredPhoto.photo" class="modal-content max-w-3/5 h-auto rounded-lg" />
+				<div class="flex justify-center mt-5">
+					<p
+						v-if="featuredPhoto.caption"
+						id="caption"
+						class="text-lightPrimaryText dark:text-darkPrimaryText py-2 px-3 text-center bg-lightBG dark:bg-darkBG rounded-lg shadow-lg"
+					>
+						{{ featuredPhoto.caption }}
+					</p>
+				</div>
+			</div>
 		</div>
-	</div>
+	</Teleport>
 </template>
 <style>
 .modal-content {

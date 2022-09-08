@@ -20,5 +20,9 @@ const featuredPhoto: FeaturedPhoto = {
 </script>
 
 <template>
-	<FeaturedPhoto v-if="toggleFeaturedPhoto" :featured-photo="featuredPhoto" @close="toggleFeaturedPhoto = false" />
+	<div id="scrollable_content">
+		<div v-if="toggleFeaturedPhoto">
+			<FeaturedPhoto :featured-photo="featuredPhoto" @close="toggleFeaturedPhoto = false" />
+		</div>
+	</div>
 </template>
