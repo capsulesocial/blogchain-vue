@@ -7,9 +7,6 @@ const prop = defineProps({
 		required: true,
 	},
 });
-
-console.log(prop.featuredPhoto.photo);
-console.log(prop.featuredPhoto.caption);
 defineEmits(['close']);
 </script>
 
