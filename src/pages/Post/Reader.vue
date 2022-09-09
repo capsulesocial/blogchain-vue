@@ -2,6 +2,9 @@
 import Avatar from '@/components/Avatar.vue';
 import XIcon from '@/components/icons/CloseIcon.vue';
 import ReaderView from '@/components/post/ReaderView.vue';
+import TagCard from '@/components/TagCard.vue';
+import LinkIcon from '@/components/icons/LinkIcon.vue';
+import ShareIcon from '@/components/icons/ShareIcon.vue';
 import { onBeforeMount, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from '@/store/session';
@@ -16,10 +19,10 @@ const store = useStore();
 // const storeSettings = useStoreSettings();
 const router = useRouter();
 const post = ref<Post>();
-const authorAvatar = ref<string | ArrayBuffer | undefined>();
+const authorAvatar = ref<string | undefined>();
 const author = ref<Profile>();
 const userIsFollowed = ref<boolean>(false);
-const isBookmarked = ref<boolean>(false);
+// const isBookmarked = ref<boolean>(false);
 const readingTime = ref<number | null>();
 const showPaywall = ref<boolean>(false);
 const featuredPhoto = ref<string | null>();
@@ -37,7 +40,7 @@ const showShare = ref<boolean>(false);
 // Functions
 const showPhoto = () => {};
 const toggleFriend = () => {};
-const getBookmarkStatus = () => {};
+// const getBookmarkStatus = () => {};
 const handleClose = () => {
 	router.go(-1);
 };
@@ -374,7 +377,7 @@ onBeforeMount(async () => {
 						</div>
 					</div>
 				</article>
-				<AuthorCard
+				<!-- <AuthorCard
 					:author-avatar="authorAvatar"
 					:author-name="author ? author.name : ``"
 					:author-id="post.authorID"
@@ -382,7 +385,7 @@ onBeforeMount(async () => {
 					:is-followed="userIsFollowed"
 					:toggle-friend="toggleFriend"
 					:class="showPaywall ? `mb-10` : ``"
-				/>
+				/> -->
 
 				<!-- Comments -->
 				<article v-if="post !== null && !showPaywall" class="pt-5 pb-14">
