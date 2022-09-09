@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { marked } from 'marked';
 import { markedRenderer, transformPostToHTML } from '@/helpers/readerExtensions';
-import ImagePopup from '@/components/popups/Image.vue';
+// import ImagePopup from '@/components/popups/Image.vue';
 import { decryptData } from '@/backend/crypto';
 import { IPostImageKey } from '@/backend/post';
 import { isValidPhoto, getPhotoFromIPFS } from '@/backend/getPhoto';
