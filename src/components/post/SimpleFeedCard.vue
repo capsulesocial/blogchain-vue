@@ -58,7 +58,8 @@ profilesStore.fetchProfile(props.fetchedPost.post.authorID);
 				<Avatar
 					:authorid="author.id"
 					:cid="author.avatar"
-					size="w-12 h-12 transition ease-in-out hover:opacity-75 modal-animation"
+					:size="`w-12 h-12`"
+					class="transition ease-in-out hover:opacity-75 modal-animation"
 				/>
 			</div>
 			<div class="ml-4 flex flex-grow flex-col">

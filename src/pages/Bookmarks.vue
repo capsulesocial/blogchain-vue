@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import SimplePostCard from '@/components/post/SimpleCard.vue';
+import SimpleFeedCard from '@/components/post/SimpleFeedCard.vue';
 import BookmarksFilter from '@/components/BookmarksFilter.vue';
 import { BookmarkSort } from '@/backend/bookmarks';
 import { storeToRefs } from 'pinia';
@@ -27,7 +27,7 @@ function setSort(sort: BookmarkSort) {
 		class="min-h-115 h-115 lg:min-h-210 lg:h-210 xl:min-h-220 xl:h-220 w-full overflow-y-auto lg:overflow-y-hidden relative"
 	>
 		<div v-for="post in posts" :key="`new_${post.post._id}`">
-			<SimplePostCard :fetched-post="post" />
+			<SimpleFeedCard :fetched-post="post" />
 		</div>
 	</article>
 </template>

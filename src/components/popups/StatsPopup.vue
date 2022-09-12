@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import { PropType } from 'vue';
 import { IGenericPostResponse } from '@/backend/post';
-import Comment from '@/components/post/Comment.vue';
-import SimplePopupCard from '../post/SimplePopupCard.vue';
+import SimplePopupCard from '@/components/post/SimplePopupCard.vue';
+import ChevronLeft from '@/components/icons/ChevronLeft.vue';
+import Stats from '@/components/post/Stats.vue';
 
 const emit = defineEmits([`close`]);
 
 const props = defineProps({
 	fetchedPost: { type: Object as PropType<IGenericPostResponse>, required: true },
 });
+console.log(props.fetchedPost);
 </script>
 
 <template>
@@ -22,10 +24,17 @@ const props = defineProps({
 		>
 			<!-- popup header with post summary -->
 			<SimplePopupCard :fetched-post="props.fetchedPost" @close="emit(`close`)" />
-			<!-- filters -->
-			<div class="px-6 py-4">Todo comments filters</div>
-			<!-- Comments -->
-			<div v-for="i in 20" :key="i"><Comment class="px-6 mb-4" /></div>
+			<!-- Back button -->
+			<div class="flex items-center p-6">
+				<button class="bg-gray1 dark:bg-gray5 focus:outline-none rounded-full">
+					<ChevronLeft />
+				</button>
+				<span class="pl-2 text-sm font-semibold dark:text-darkPrimaryText" style="margin-bottom: 2px"
+					>All comments</span
+				>
+			</div>
+			<!-- Stats -->
+			<Stats :fetched-post="props.fetchedPost" />
 		</div>
 	</div>
 </template>
