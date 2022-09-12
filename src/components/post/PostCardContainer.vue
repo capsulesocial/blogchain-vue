@@ -28,7 +28,7 @@ const activeAction = ref<`` | `comments` | `stats` | `share` | `quote`>(``);
 		</div>
 		<!-- show stats -->
 		<div v-if="activeAction === `stats`">
-			<StatsPopup :fetched-post="props.fetchedPost" @close="activeAction = ``" />
+			<StatsPopup :fetched-post="props.fetchedPost" @close="activeAction = ``" @comments="activeAction = `comments`" />
 		</div>
 		<!-- show quote -->
 		<div v-if="activeAction === `quote`">showing quote</div>

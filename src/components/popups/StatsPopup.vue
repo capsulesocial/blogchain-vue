@@ -5,7 +5,7 @@ import SimplePopupCard from '@/components/post/SimplePopupCard.vue';
 import ChevronLeft from '@/components/icons/ChevronLeft.vue';
 import Stats from '@/components/post/Stats.vue';
 
-const emit = defineEmits([`close`]);
+const emit = defineEmits([`close`, `comments`]);
 
 const props = defineProps({
 	fetchedPost: { type: Object as PropType<IGenericPostResponse>, required: true },
@@ -25,14 +25,14 @@ console.log(props.fetchedPost);
 			<!-- popup header with post summary -->
 			<SimplePopupCard :fetched-post="props.fetchedPost" @close="emit(`close`)" />
 			<!-- Back button -->
-			<div class="flex items-center p-6">
-				<button class="bg-gray1 dark:bg-gray5 focus:outline-none rounded-full">
+			<button class="flex items-center p-6" @click="emit(`comments`)">
+				<div class="bg-gray1 dark:bg-gray5 focus:outline-none rounded-full">
 					<ChevronLeft />
-				</button>
+				</div>
 				<span class="pl-2 text-sm font-semibold dark:text-darkPrimaryText" style="margin-bottom: 2px"
 					>All comments</span
 				>
-			</div>
+			</button>
 			<!-- Stats -->
 			<Stats :fetched-post="props.fetchedPost" />
 		</div>
