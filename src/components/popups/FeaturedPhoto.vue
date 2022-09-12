@@ -17,12 +17,13 @@ defineEmits(['close']);
 			@click.stop="$emit(`close`)"
 		>
 			<!-- Container -->
-			<div
-				class="w-full lg:w-600 max-h-90 dark:bg-darkBGStop card-animation z-10 overflow-y-auto rounded-lg p-6 pt-4 shadow-lg"
-			>
-				<button class="bg-gray1 dark:bg-gray5 focus:outline-none mb-5 rounded-full p-1" @click="$emit(`close`)">
-					<XIcon />
-				</button>
+			<div class="w-full lg:w-600 max-h-90 dark:bg-darkBGStop card-animation z-10 overflow-y-auto rounded-lg p-6 pt-4">
+				<div class="flex justify-center">
+					<button class="bg-gray1 dark:bg-gray5 focus:outline-none mb-5 rounded-full p-1" @click="$emit(`close`)">
+						<XIcon />
+					</button>
+				</div>
+
 				<img :src="prop.featuredPhoto.photo" class="modal-content max-w-3/5 h-auto rounded-lg" />
 				<div class="flex justify-center mt-5">
 					<p

@@ -14,7 +14,7 @@ const showInfoBubble = ref<boolean>(false);
 
 <template>
 	<div
-		class="popup bg-darkBG dark:bg-gray5 modal-animation fixed top-0 bottom-0 left-0 right-0 z-30 p-5 flex h-full w-full items-center justify-center bg-opacity-25 dark:bg-opacity-25"
+		class="popup w-full bg-darkBG dark:bg-gray5 modal-animation fixed top-0 bottom-0 left-0 right-0 z-30 p-5 flex h-full w-full items-center justify-center bg-opacity-25 dark:bg-opacity-25"
 		@click.stop="$emit(`close`)"
 	>
 		<!-- Container -->
