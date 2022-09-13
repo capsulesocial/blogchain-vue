@@ -17,11 +17,6 @@ import { getUserInfoNEAR } from '@/backend/near';
 import { handleError } from '@/plugins/toast';
 import BioPopup from '@/components/popups/BioPopup.vue';
 
-useMeta({
-	title: `authorName - Blogchain`,
-	htmlAttrs: { lang: 'en', amp: true },
-});
-
 const store = useStore();
 const router = useRouter();
 const route = useRoute();
@@ -34,6 +29,11 @@ const authorID = route.params.id;
 const profileExists = ref<boolean>(false);
 
 const profile = computed(() => profilesStore.getProfile(authorID));
+
+useMeta({
+	title: profile.value.name ? `${profile.value.name as string} -  Blogchain` : `${authorID as string} -  Blogchain`,
+	htmlAttrs: { lang: 'en', amp: true },
+});
 
 onMounted(async () => {
 	try {
