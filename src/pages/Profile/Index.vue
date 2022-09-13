@@ -31,7 +31,7 @@ const profileExists = ref<boolean>(false);
 const profile = computed(() => profilesStore.getProfile(authorID));
 
 useMeta({
-	title: profile.value.name ? `${profile.value.name as string} -  Blogchain` : `${authorID as string} -  Blogchain`,
+	title: profile.value.name ? `${profile.value.name as string} -  Blogchain` : `@${authorID as string} -  Blogchain`,
 	htmlAttrs: { lang: 'en', amp: true },
 });
 
