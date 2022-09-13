@@ -20,12 +20,13 @@ function handlePost(): void {
 
 <template>
 	<div
-		class="popup w-full bg-darkBG dark:bg-gray5 modal-animation fixed top-0 bottom-0 left-0 right-0 z-30 flex h-screen w-full items-center justify-center bg-opacity-50 dark:bg-opacity-50"
+		class="popup bg-darkBG dark:bg-gray5 modal-animation fixed top-0 bottom-0 left-0 right-0 z-30 flex h-screen w-full items-center justify-center bg-opacity-50 dark:bg-opacity-50"
+		@click.stop="$emit(`close`)"
 	>
 		<!-- Container -->
 		<section>
 			<div
-				class="relative bg-lightBG dark:bg-darkBGStop card-animation z-10 mr-5 overflow-y-auto rounded-lg p-6 pt-4 shadow-lg"
+				class="w-full lg:w-600 relative bg-lightBG dark:bg-darkBGStop card-animation z-10 mr-5 overflow-y-auto rounded-lg p-6 pt-4 shadow-lg"
 			>
 				<div class="sticky flex items-center justify-between">
 					<h2 class="text-lightPrimaryText dark:text-darkPrimaryText text-2xl font-semibold">All set?</h2>
