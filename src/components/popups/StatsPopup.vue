@@ -25,7 +25,7 @@ console.log(props.fetchedPost);
 			<!-- popup header with post summary -->
 			<SimplePopupCard :fetched-post="props.fetchedPost" @close="emit(`close`)" />
 			<!-- Back button -->
-			<button class="flex items-center p-6" @click="emit(`comments`)">
+			<button class="flex items-center px-6 py-5" @click="emit(`comments`)">
 				<div class="bg-gray1 dark:bg-gray5 focus:outline-none rounded-full">
 					<ChevronLeft />
 				</div>

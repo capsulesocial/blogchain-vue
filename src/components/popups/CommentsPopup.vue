@@ -1,14 +1,23 @@
 <script setup lang="ts">
-import { PropType } from 'vue';
+import { PropType, ref } from 'vue';
 import { IGenericPostResponse } from '@/backend/post';
 import Comment from '@/components/post/Comment.vue';
-import SimplePopupCard from '../post/SimplePopupCard.vue';
+import SimplePopupCard from '@/components/post/SimplePopupCard.vue';
+import StatsIcon from '@/components/icons/StatsIcon.vue';
+import CommentFilter from '@/components/post/CommentFilter.vue';
 
-const emit = defineEmits([`close`]);
+const emit = defineEmits([`close`, `stats`]);
 
 const props = defineProps({
 	fetchedPost: { type: Object as PropType<IGenericPostResponse>, required: true },
 });
+
+const filter = ref<string>(``);
+
+function setFilter(reaction: string): void {
+	filter.value = reaction;
+	// filter comments
+}
 </script>
 
 <template>
@@ -23,7 +32,15 @@ const props = defineProps({
 			<!-- popup header with post summary -->
 			<SimplePopupCard :fetched-post="props.fetchedPost" @close="emit(`close`)" />
 			<!-- filters -->
-			<div class="px-6 py-4">Todo comments filters</div>
+			<div class="flex w-full justify-between px-6 py-5">
+				<div class="flex flex-row items-center">
+					<span class="pr-2 font-semibold dark:text-darkPrimaryText"
+						>{{ fetchedPost.commentsCount }} {{ fetchedPost.commentsCount === 1 ? 'comment' : 'comments' }}</span
+					>
+					<button class="focus:outline-none ml-2" @click="emit(`stats`)"><StatsIcon /></button>
+				</div>
+				<CommentFilter :filter="filter" class="modal-animation" @clicked="setFilter" />
+			</div>
 			<!-- Comments -->
 			<div v-for="i in 20" :key="i"><Comment class="px-6 mb-4" /></div>
 		</div>

@@ -20,7 +20,7 @@ const activeAction = ref<`` | `comments` | `stats` | `share` | `quote`>(``);
 	<Teleport v-if="activeAction !== ``" to="body">
 		<!-- show comments -->
 		<div v-if="activeAction === `comments`">
-			<CommentsPopup :fetched-post="props.fetchedPost" @close="activeAction = ``" />
+			<CommentsPopup :fetched-post="props.fetchedPost" @close="activeAction = ``" @stats="activeAction = `stats`" />
 		</div>
 		<!-- show share -->
 		<div v-if="activeAction === `share`">
