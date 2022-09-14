@@ -25,7 +25,7 @@ function updateFilter(input: string) {
 	emit(`clicked`, input);
 	showFilter.value = false;
 }
-function clearFilter(input: string) {
+function clearFilter() {
 	emit(`clicked`, ``);
 	showFilter.value = false;
 }

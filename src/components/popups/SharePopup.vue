@@ -22,8 +22,6 @@ const props = defineProps({
 	fetchedPost: { type: Object as PropType<IGenericPostResponse>, required: true },
 });
 
-console.log(props.fetchedPost);
-
 const image = ref<string>(``);
 
 const isOpen1 = ref<boolean>(false);

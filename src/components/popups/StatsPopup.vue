@@ -10,7 +10,6 @@ const emit = defineEmits([`close`, `comments`]);
 const props = defineProps({
 	fetchedPost: { type: Object as PropType<IGenericPostResponse>, required: true },
 });
-console.log(props.fetchedPost);
 </script>
 
 <template>
