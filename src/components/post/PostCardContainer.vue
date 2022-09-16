@@ -5,6 +5,7 @@ import { PropType, ref } from 'vue';
 import CommentsPopup from '@/components/popups/CommentsPopup.vue';
 import SharePopup from '@/components/popups/SharePopup.vue';
 import StatsPopup from '@/components/popups/StatsPopup.vue';
+import QuotePopup from '../popups/QuotePopup.vue';
 
 const props = defineProps({
 	fetchedPost: { type: Object as PropType<IGenericPostResponse>, required: true },
@@ -31,6 +32,8 @@ const activeAction = ref<`` | `comments` | `stats` | `share` | `quote`>(``);
 			<StatsPopup :fetched-post="props.fetchedPost" @close="activeAction = ``" @comments="activeAction = `comments`" />
 		</div>
 		<!-- show quote -->
-		<div v-if="activeAction === `quote`">showing quote</div>
+		<div v-if="activeAction === `quote`">
+			<QuotePopup :fetched-post="props.fetchedPost" @close="activeAction = ``" />
+		</div>
 	</Teleport>
 </template>

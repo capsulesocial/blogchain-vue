@@ -41,6 +41,8 @@ function setFilter(reaction: string): void {
 				</div>
 				<CommentFilter :filter="filter" class="modal-animation" @clicked="setFilter" />
 			</div>
+			<!-- Comment editor -->
+			TODO Comment Editor
 			<!-- Comments -->
 			<div v-for="i in 20" :key="i"><Comment class="px-6 mb-4" /></div>
 		</div>

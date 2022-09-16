@@ -7,6 +7,7 @@ import BinIcon from '@/components/icons/BinIcon.vue';
 import TagCard from '@/components/TagCard.vue';
 import CommentIcon from '@/components/icons/CommentIcon.vue';
 import RepostIcon from '@/components/icons/RepostIcon.vue';
+import QuoteIcon from '@/components/icons/QuoteIcon.vue';
 import ShareIcon from '@/components/icons/ShareIcon.vue';
 import CrownIcon from '@/components/icons/Crown.vue';
 import StatsIcon from '@/components/icons/StatsIcon.vue';
@@ -45,7 +46,28 @@ function openDeleteDropdown() {
 	});
 }
 
+function isReposted() {
+	if (props.fetchedPost.reposted) {
+		if (props.fetchedPost.reposted !== ``) {
+			return true;
+		}
+	}
+	return false;
+}
+
+function simpleRepost() {
+	showReposts.value = false;
+	// todo : simple repost request
+}
+
+function quoteRepost() {
+	showReposts.value = false;
+	emit(`toggle-action`, `quote`);
+}
+
 profilesStore.fetchProfile(props.fetchedPost.post.authorID);
+
+console.log(props.fetchedPost);
 </script>
 
 <template>
@@ -131,7 +153,7 @@ profilesStore.fetchProfile(props.fetchedPost.post.authorID);
 					<TagCard v-for="t in fetchedPost.post.tags" :key="t.name" :tag="t.name" class="my-2 mr-4" />
 				</div>
 				<!-- Actions buttons (Desktop) -->
-				<div class="text-gray5 dark:text-gray3 mt-1 hidden xl:flex xl:items-center">
+				<div class="text-gray5 dark:text-gray3 mt-1 hidden xl:flex xl:items-center relative">
 					<!-- Comment -->
 					<button
 						class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary dark:hover:text-primary mr-4 flex items-center"
@@ -141,7 +163,7 @@ profilesStore.fetchProfile(props.fetchedPost.post.authorID);
 						<CommentIcon :is-active="activeAction === `comments`" class="w-5 h-5" />
 						<span class="ml-1 text-sm">{{ fetchedPost.commentsCount }}</span>
 					</button>
-					<!-- Repost popup -->
+					<!-- Repost -->
 					<button
 						class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary dark:hover:text-primary mr-4 flex items-center"
 						:class="showReposts ? `text-primary` : ``"
@@ -150,6 +172,30 @@ profilesStore.fetchProfile(props.fetchedPost.post.authorID);
 						<RepostIcon class="w-5 h-5" />
 						<span class="ml-1 text-sm">{{ fetchedPost.repostCount }}</span>
 					</button>
+					<div
+						v-show="showReposts"
+						class="bg-lightBG dark:bg-darkBG text-lightPrimaryText dark:text-darkPrimaryText border-lightBorder modal-animation absolute z-20 flex w-40 flex-col rounded-lg border p-2 shadow-lg"
+						:class="settings.isDarkMode ? `dropdownRepostOpenDark` : `dropdownRepostOpen`"
+						style="left: 95px; bottom: -2px"
+					>
+						<!-- Simple Repost -->
+						<button
+							class="hover:text-primary focus:outline-none text-gray5 dark:text-gray3 flex mr-4 items-center"
+							@click="simpleRepost()"
+						>
+							<RepostIcon :shrink="true" class="mr-2 p-1" :class="isReposted() ? `text-primary` : ``" />
+							<span v-if="isReposted()" class="self-center text-xs">Undo Repost</span>
+							<span v-else class="self-center text-xs">Repost to Feed</span>
+						</button>
+						<!-- Quote Repost -->
+						<button
+							class="hover:text-primary focus:outline-none text-gray5 dark:text-gray3 flex mr-4 items-center"
+							@click="quoteRepost()"
+						>
+							<QuoteIcon class="mr-2 p-1" />
+							<span class="self-center text-xs">Quote</span>
+						</button>
+					</div>
 					<!-- Share popup button -->
 					<button
 						class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary mr-4 dark:hover:text-primary flex items-center"
@@ -182,7 +228,7 @@ profilesStore.fetchProfile(props.fetchedPost.post.authorID);
 			<TagCard v-for="t in fetchedPost.post.tags" :key="t.name" :tag="t.name" class="my-2 mr-4" />
 		</div>
 		<!-- Comment and share (Mobile) -->
-		<div class="text-gray5 dark:text-gray3 mt-1 flex xl:hidden">
+		<div class="text-gray5 dark:text-gray3 mt-1 flex xl:hidden relative">
 			<button
 				class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary mr-4 hover:fill-primary flex items-center"
 				:class="activeAction === `comments` ? `text-primary` : ``"
@@ -200,6 +246,30 @@ profilesStore.fetchProfile(props.fetchedPost.post.authorID);
 				<RepostIcon class="w-5 h-5" />
 				<span class="ml-1 text-sm">{{ fetchedPost.repostCount }}</span>
 			</button>
+			<div
+				v-show="showReposts"
+				class="bg-lightBG dark:bg-darkBG text-lightPrimaryText dark:text-darkPrimaryText border-lightBorder modal-animation absolute z-20 flex w-40 flex-col rounded-lg border p-2 shadow-lg"
+				:class="settings.isDarkMode ? `dropdownRepostOpenDark` : `dropdownRepostOpen`"
+				style="left: 95px; bottom: -2px"
+			>
+				<!-- Simple Repost -->
+				<button
+					class="hover:text-primary focus:outline-none text-gray5 dark:text-gray3 flex mr-4 items-center"
+					@click="simpleRepost()"
+				>
+					<RepostIcon :shrink="true" class="mr-2 p-1" :class="isReposted() ? `text-primary` : ``" />
+					<span v-if="isReposted()" class="self-center text-xs">Undo Repost</span>
+					<span v-else class="self-center text-xs">Repost to Feed</span>
+				</button>
+				<!-- Quote Repost -->
+				<button
+					class="hover:text-primary focus:outline-none text-gray5 dark:text-gray3 flex mr-4 items-center"
+					@click="quoteRepost()"
+				>
+					<QuoteIcon class="mr-2 p-1" />
+					<span class="self-center text-xs">Quote</span>
+				</button>
+			</div>
 			<!-- Share popup button -->
 			<button
 				class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary mr-4 hover:fill-primary flex items-center"
@@ -232,6 +302,29 @@ profilesStore.fetchProfile(props.fetchedPost.post.authorID);
 	position: absolute;
 	top: -0.5rem;
 	right: 0.8rem;
+	transform: rotate(45deg);
+	width: 1rem;
+	height: 1rem;
+	background-color: #121212;
+	border-radius: 2px;
+}
+.dropdownRepostOpen::before {
+	content: '';
+	position: absolute;
+	top: 2.6rem;
+	left: -0.4rem;
+	transform: rotate(45deg);
+	width: 1rem;
+	height: 1rem;
+	background-color: #fff;
+	border-radius: 2px;
+}
+
+.dropdownRepostOpenDark::before {
+	content: '';
+	position: absolute;
+	top: 2.6rem;
+	left: -0.4rem;
 	transform: rotate(45deg);
 	width: 1rem;
 	height: 1rem;

@@ -88,7 +88,7 @@ updateCommentsStats();
 			<div v-if="props.fetchedPost.repostCount > 0" class="flex flex-col w-2/5 lg:w-1/5">
 				<!-- Show reposters and quotes -->
 				<button class="text-sm text-primary h-fit flex items-center">
-					<RepostIcon :is-active="true" :shrink="true" class="mr-2 p-1" />
+					<RepostIcon :shrink="true" class="mr-2 p-1" />
 					<p>See reposters</p>
 				</button>
 				<button class="text-sm text-primary h-fit flex items-center mt-2">
