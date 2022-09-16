@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import SimpleFeeCard from '@/components/post/SimpleFeedCard.vue';
+import SimpleFeedCard from '@/components/post/SimpleFeedCard.vue';
 import { IGenericPostResponse } from '@/backend/post';
 import { PropType, ref } from 'vue';
 import CommentsPopup from '@/components/popups/CommentsPopup.vue';
@@ -17,7 +17,7 @@ const toggleAction = (a: `` | `comments` | `stats` | `share` | `quote`) => {
 const activeAction = ref<`` | `comments` | `stats` | `share` | `quote`>(``);
 </script>
 <template>
-	<SimpleFeeCard :fetched-post="props.fetchedPost" :active-action="activeAction" @toggle-action="toggleAction" />
+	<SimpleFeedCard :fetched-post="props.fetchedPost" :active-action="activeAction" @toggle-action="toggleAction" />
 	<Teleport v-if="activeAction !== ``" to="body">
 		<!-- show comments -->
 		<div v-if="activeAction === `comments`">

@@ -218,9 +218,9 @@ console.log(props.fetchedPost);
 				v-if="fetchedPost.post.featuredPhotoCID !== `` && featuredPhoto !== null"
 				class="mt-4 w-full flex-shrink-0 xl:mt-0 xl:w-56 modal-animation"
 			>
-				<a class="cursor-pointer" href="#">
+				<router-link class="cursor-pointer" :to="`/post/` + fetchedPost.post._id">
 					<img :src="featuredPhoto" class="h-48 w-full flex-shrink-0 rounded-lg object-cover xl:h-32" />
-				</a>
+				</router-link>
 			</div>
 		</div>
 		<!-- Display tags (Mobile) -->

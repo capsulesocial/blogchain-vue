@@ -102,7 +102,7 @@ function openDeleteDropdown() {
 		<div class="mt-4 flex flex-col justify-between xl:flex-row">
 			<!-- Left side: Title, subtitle / preview, tags -->
 			<div class="mr-4 flex w-full flex-col justify-between">
-				<a class="cursor-pointer" href="#">
+				<router-link class="cursor-pointer" :to="`/post/` + fetchedPost.post._id">
 					<div class="flex max-w-full flex-col overflow-hidden pr-4">
 						<div class="flex flex-row w-full justify-between">
 							<h3 class="break-words pb-2 text-lg font-semibold dark:text-darkPrimaryText">
@@ -114,7 +114,7 @@ function openDeleteDropdown() {
 							{{ fetchedPost.post.subtitle ? fetchedPost.post.subtitle : createPostExcerpt(fetchedPost.post.excerpt) }}
 						</h6>
 					</div>
-				</a>
+				</router-link>
 				<!-- Display tags (Desktop) -->
 				<div class="my-2 hidden overflow-x-auto xl:flex xl:flex-wrap text-lg">
 					<TagCard v-for="t in fetchedPost.post.tags" :key="t.name" :tag="t.name" class="my-2 mr-4" />
@@ -129,9 +129,9 @@ function openDeleteDropdown() {
 				v-if="fetchedPost.post.featuredPhotoCID !== `` && featuredPhoto !== null"
 				class="mt-4 w-full flex-shrink-0 xl:mt-0 xl:w-56 modal-animation"
 			>
-				<a class="cursor-pointer" href="#">
+				<router-link class="cursor-pointer" :to="`/post/` + fetchedPost.post._id">
 					<img :src="featuredPhoto" class="h-48 w-full flex-shrink-0 rounded-lg object-cover xl:h-32" />
-				</a>
+				</router-link>
 			</div>
 		</div>
 	</div>
