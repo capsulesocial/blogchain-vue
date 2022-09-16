@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
 import { useSubscriptionStore, ISubscriptionWithProfile } from '@/store/subscriptions';
@@ -18,12 +18,10 @@ const toggleSubInfoPopup = ref<boolean>(false);
 const subscriptionInfo = ref();
 const showChangeTier = ref<boolean>(false);
 const subscriptionProfile = ref<Profile>(createDefaultProfile(store.$state.id));
-const subscriptionProfileAvatar = ref<null | string>();
-const authorPaymentProfile = ref<ISubscriptionWithProfile | undefined>(undefined);
+const subscriptionProfileAvatar = ref<string | undefined>();
+const authorPaymentProfile = ref<ISubscriptionWithProfile | null>(null);
 
-onMounted(async () => {
-	subscriptions.value = subStore.$state.active;
-});
+subscriptions.value = subStore.$state.active;
 
 function showSubInfoPopup(subscription: any): void {
 	toggleSubInfoPopup.value = true;
@@ -88,7 +86,7 @@ function toggleChangeTierPopup(author: { sub: ISubscriptionWithProfile; avatar: 
 			<ChangeTierPopup
 				:author="subscriptionProfile"
 				:author-avatar="subscriptionProfileAvatar"
-				:s="authorPaymentProfile"
+				:sub="authorPaymentProfile"
 				@close="showChangeTier = false"
 			/>
 		</div>
