@@ -5,6 +5,7 @@ import Comment from '@/components/post/Comment.vue';
 import SimplePopupCard from '@/components/post/SimplePopupCard.vue';
 import StatsIcon from '@/components/icons/StatsIcon.vue';
 import CommentFilter from '@/components/post/CommentFilter.vue';
+import CommentEditor from '../post/CommentEditor.vue';
 
 const emit = defineEmits([`close`, `stats`]);
 
@@ -42,7 +43,7 @@ function setFilter(reaction: string): void {
 				<CommentFilter :filter="filter" class="modal-animation" @clicked="setFilter" />
 			</div>
 			<!-- Comment editor -->
-			TODO Comment Editor
+			<CommentEditor :fetched-post="props.fetchedPost" />
 			<!-- Comments -->
 			<div v-for="i in 20" :key="i"><Comment class="px-6 mb-4" /></div>
 		</div>
