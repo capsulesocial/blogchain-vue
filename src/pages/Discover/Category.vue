@@ -5,7 +5,7 @@ import { useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { usePostsStore } from '@/store/posts';
 import BackIcon from '@/components/icons/ChevronLeft.vue';
-import SimplePostCard from '@/components/post/SimpleCard.vue';
+import SimpleFeedCard from '@/components/post/SimpleFeedCard.vue';
 
 const route = useRoute();
 const postsStore = usePostsStore();
@@ -128,7 +128,7 @@ onMounted(() => {
 		class="min-h-115 h-115 lg:min-h-150 lg:h-150 w-full overflow-y-auto lg:overflow-y-hidden relative"
 	>
 		<div v-for="post in posts" :key="`new_${post.post._id}`">
-			<SimplePostCard :fetched-post="post" />
+			<SimpleFeedCard :fetched-post="post" />
 		</div>
 	</article>
 </template>

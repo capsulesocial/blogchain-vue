@@ -24,7 +24,11 @@ export function handle(delta: number) {
 /** Event handler for mouse wheel event.
  */
 export function wheel(event: any) {
-	if (event.target.classList.contains(`popup`) || event.target.offsetParent.classList.contains(`popup`)) {
+	if (
+		event.target.classList.contains(`popup`) ||
+		event.target.offsetParent.classList.contains(`popup`) ||
+		event.target.closest('.popup') !== null
+	) {
 		return;
 	}
 	let delta = 0;

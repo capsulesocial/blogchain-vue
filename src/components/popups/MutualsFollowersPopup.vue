@@ -57,10 +57,10 @@ const mutualFollowers = ref<Profile[]>([
 				class="min-h-40 w-full lg:w-600 bg-lightBG dark:bg-darkBGStop card-animation max-h-90 overflow-y-auto rounded-lg px-6 pt-4 pb-2 shadow-lg"
 			>
 				<div class="sticky flex items-center justify-between mb-6">
-					<h2 v-if="profile.name !== ``" class="text-lightPrimaryText dark:text-darkPrimaryText text-3xl font-semibold">
+					<h2 v-if="profile.name !== ``" class="text-lightPrimaryText dark:text-darkPrimaryText text-xl font-semibold">
 						Mutual Followers with {{ profile.name }}
 					</h2>
-					<h2 v-else class="text-lightPrimaryText dark:text-darkPrimaryText text-3xl font-semibold">
+					<h2 v-else class="text-lightPrimaryText dark:text-darkPrimaryText text-xl font-semibold">
 						Mutual Followers with {{ profile.id }}
 					</h2>
 					<button class="focus:outline-none bg-gray1 dark:bg-gray5 rounded-full p-1" @click="emit(`close`)">

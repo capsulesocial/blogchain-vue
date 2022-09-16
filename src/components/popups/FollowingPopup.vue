@@ -58,17 +58,17 @@ const following = ref<Profile[]>([
 				<div class="sticky flex items-center justify-between mb-6">
 					<h2
 						v-if="$route.name === `Home` || $route.params.id === store.$state.id"
-						class="text-lightPrimaryText dark:text-darkPrimaryText text-3xl font-semibold"
+						class="text-lightPrimaryText dark:text-darkPrimaryText text-xl font-semibold"
 					>
 						Accounts you follow
 					</h2>
 					<h2
 						v-else-if="profile.name !== ``"
-						class="text-lightPrimaryText dark:text-darkPrimaryText text-3xl font-semibold"
+						class="text-lightPrimaryText dark:text-darkPrimaryText text-xl font-semibold"
 					>
 						{{ profile.name }} is following
 					</h2>
-					<h2 v-else class="text-lightPrimaryText dark:text-darkPrimaryText text-3xl font-semibold">
+					<h2 v-else class="text-lightPrimaryText dark:text-darkPrimaryText text-xl font-semibold">
 						{{ profile.id }} is following
 					</h2>
 					<button class="focus:outline-none bg-gray1 dark:bg-gray5 rounded-full p-1" @click="emit(`close`)">

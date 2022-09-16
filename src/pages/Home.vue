@@ -6,7 +6,7 @@ import { storeToRefs } from 'pinia';
 import { usePostsStore } from '@/store/posts';
 import { useRootStore } from '@/store/index';
 import { Algorithm, Timeframe, readableTimeframe } from '@/backend/post';
-import SimplePostCard from '@/components/post/SimpleCard.vue';
+import PostCardContainer from '@/components/post/PostCardContainer.vue';
 import OnboardingWizard from '@/components/popups/OnboardingWizard.vue';
 
 // refs
@@ -110,7 +110,7 @@ onMounted(async () => {
 		class="min-h-115 h-115 lg:min-h-210 lg:h-210 xl:min-h-220 xl:h-220 w-full overflow-y-auto lg:overflow-y-hidden relative"
 	>
 		<div v-for="post in posts" :key="`new_${post.post._id}`">
-			<SimplePostCard :fetched-post="post" />
+			<PostCardContainer :fetched-post="post" />
 		</div>
 	</div>
 	<!-- Onboarding Wizard -->
