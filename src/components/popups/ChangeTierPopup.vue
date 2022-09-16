@@ -16,6 +16,7 @@ import {
 	PaymentProfile,
 	createDefaultPaymentProfile,
 } from '@/store/paymentProfile';
+// canSwitchSubscription hasnt been aded on the backend folder yet
 import { canSwitchSubscription, getCurrencySymbol, switchSubscriptionTier } from '@/backend/payment';
 import { toastError, toastSuccess } from '@/plugins/toast';
 import { Profile } from '@/backend/profile';

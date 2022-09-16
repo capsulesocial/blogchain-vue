@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useMeta } from 'vue-meta';
 import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
 import { useSubscriptionStore, ISubscriptionWithProfile } from '@/store/subscriptions';
 import SubscriptionPreview from '@/components/SubscriptionPreview.vue';
 import SubInfosPopup from '@/components/popups/SubInfosPopup.vue';
 import ChangeTierPopup from '@/components/popups/ChangeTierPopup.vue';
+import SpinnerIcon from '@/components/icons/SpinnerIcon.vue';
 import { createDefaultProfile, Profile } from '@/backend/profile';
 
 const store = useStore();
@@ -22,6 +24,11 @@ const subscriptionProfileAvatar = ref<string | undefined>();
 const authorPaymentProfile = ref<ISubscriptionWithProfile | null>(null);
 
 subscriptions.value = subStore.$state.active;
+
+useMeta({
+	title: `Active Subscriptions - Blogchain`,
+	htmlAttrs: { lang: 'en', amp: true },
+});
 
 function showSubInfoPopup(subscription: any): void {
 	toggleSubInfoPopup.value = true;
@@ -40,7 +47,7 @@ function toggleChangeTierPopup(author: { sub: ISubscriptionWithProfile; avatar: 
 }
 </script>
 <template>
-	<div id="scrollable_content">
+	<div>
 		<div class="px-5 pt-3 pb-3 xl:px-6 xl:pt-4">
 			<h2 class="text-lightPrimaryText dark:text-darkPrimaryText text-lg font-semibold xl:text-xl">My subscriptions</h2>
 			<p class="text-gray5 dark:text-gray3">Here you can manage your active subscriptions to your favorite authors</p>
@@ -57,8 +64,11 @@ function toggleChangeTierPopup(author: { sub: ISubscriptionWithProfile; avatar: 
 					@sub-info-popup="showSubInfoPopup(subscription)"
 				/>
 			</div>
-			<div v-else>
-				<div v-if="store.$state.id !== ``" class="flex flex-col items-center">
+			<div v-else class="flex items-center justify-center py-20">
+				<SpinnerIcon class="w-6 h-6" />
+			</div>
+			<div v-if="subscriptions.length < 0 && store.$state.id !== ``">
+				<div class="flex flex-col items-center">
 					<p class="text-gray5 dark:text-gray3 align-end mb-1 mt-6 flex items-end text-sm w-3/4 text-center">
 						It seems like you don't currently have any active subscriptions. Browse Blogchain and subscribe to authors
 						to view them here

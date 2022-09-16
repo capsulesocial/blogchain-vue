@@ -16,11 +16,11 @@ const props = defineProps({
 	},
 });
 
-defineEmits(['subInfoPopup']);
-
 const settings = useStoreSettings();
 const showEdit = ref<boolean>(false);
 const currency = ref<string>(getCurrencySymbol(props.subscription.currency));
+
+defineEmits(['subInfoPopup']);
 </script>
 
 <template>
