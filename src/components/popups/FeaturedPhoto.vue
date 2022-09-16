@@ -39,7 +39,7 @@ defineEmits(['close']);
 	display: block;
 	max-width: 100%;
 	height: auto;
-	max-height: 88%;
+	max-height: 80%;
 }
 /* Add Animation */
 .modal-content,
