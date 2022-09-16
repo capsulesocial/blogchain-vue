@@ -91,9 +91,11 @@ function sendComment() {
 			<button
 				class="bg-gray1 dark:bg-gray5 focus:outline-none rounded-full p-1"
 				@click="
-					showEmotions = false;
-					selectedEmotionColor = `neutralLightest`;
-					selectedEmotion = { label: ``, light: null, dark: null };
+					() => {
+						showEmotions = false;
+						selectedEmotionColor = `neutralLightest`;
+						selectedEmotion = { label: ``, light: null, dark: null };
+					}
 				"
 			>
 				<CloseIcon />
