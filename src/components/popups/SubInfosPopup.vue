@@ -62,6 +62,7 @@ async function cancelSubscription() {
 	const cancelSub = await useSubscription.cancelSub(store.$state.id, props.sub.subscriptionId);
 	if (cancelSub) {
 		toastSuccess(`Subscription cancellation was successful`);
+		return;
 	}
 }
 </script>
