@@ -9,10 +9,13 @@ import SpinnerIcon from '@/components/icons/SpinnerIcon.vue';
 import SwitchPeriod from '@/components/ToggleSwitch.vue';
 import { useStore } from '@/store/session';
 import { useSubscriptionStore } from '@/store/subscriptions';
-import { usePaymentsStore } from '@/store/paymentProfile';
-import { useRoute } from 'vue-router';
 import { ISubscriptionWithProfile } from '@/store/subscriptions';
-import { SubscriptionTier, PaymentProfile } from '@/store/paymentProfile';
+import {
+	usePaymentsStore,
+	SubscriptionTier,
+	PaymentProfile,
+	createDefaultPaymentProfile,
+} from '@/store/paymentProfile';
 import { canSwitchSubscription, getCurrencySymbol, switchSubscriptionTier } from '@/backend/payment';
 import { toastError, toastSuccess } from '@/plugins/toast';
 import { Profile } from '@/backend/profile';
@@ -22,12 +25,12 @@ const props = defineProps({
 		type: Object as PropType<Profile>,
 		required: true,
 	},
-	s: {
+	sub: {
 		type: Object as PropType<ISubscriptionWithProfile>,
 		required: true,
 	},
 	authorAvatar: {
-		type: String as PropType<ArrayBuffer | string | null>,
+		type: String as PropType<string | undefined>,
 		default: null,
 	},
 	toPreSelectTier: {
@@ -45,26 +48,28 @@ const props = defineProps({
 const store = useStore();
 const useSubscription = useSubscriptionStore();
 const usePayment = usePaymentsStore();
-const route = useRoute();
 const step = ref<number>(0);
 const selectedTier = ref<SubscriptionTier | null>(null);
 const selectedPeriod = ref<string>(`month`);
-const paymentProfile = ref<PaymentProfile>();
+const paymentProfile = ref<PaymentProfile>(createDefaultPaymentProfile(store.$state.id));
 const isLoading = ref<boolean>(false);
 const canSwitchTier = ref<boolean>(false);
 
 const emit = defineEmits([`close`]);
 
 onMounted(async () => {
+	usePayment.getPaymentProfile(props.author.id);
 	// prefill selected tier
 	if (props.toPreSelectTier) {
 		selectedTier.value = props.toPreSelectTier;
 	}
 	try {
-		const canSwitchResponse = await canSwitchSubscription(route.params.id, props.s.subscriptionId);
+		console.log(canSwitchTier.value);
+		const canSwitchResponse = await canSwitchSubscription(store.$state.id, props.sub.subscriptionId);
+		console.log(canSwitchResponse);
 		canSwitchTier.value = canSwitchResponse;
-	} catch (err: any) {
-		throw new Error(err);
+	} catch (err) {
+		throw err;
 	}
 });
 
@@ -115,7 +120,7 @@ async function switchTier(): Promise<void> {
 		isLoading.value = true;
 		const response = await switchSubscriptionTier(
 			store.$state.id,
-			props.s.subscriptionId,
+			props.sub.subscriptionId,
 			selectedTier.value,
 			selectedPeriod.value,
 		);
@@ -132,20 +137,9 @@ async function switchTier(): Promise<void> {
 	}
 	isLoading.value = false;
 }
-function handleCloseClick(e: any): void {
-	if (!e.target || e.target.parentNode === null || e.target.firstChild?.classList === undefined) {
-		return;
-	}
-	if (e.target.firstChild.classList[0] === `popup`) {
-		closeDraftsPopup();
-	}
-}
-function closeDraftsPopup(): void {
-	emit(`close`);
-}
 function getStyles(DisplayedTier: SubscriptionTier): string {
 	let res = ``;
-	if (props.s.tier.id === DisplayedTier._id) {
+	if (props.sub.tier.id === DisplayedTier._id) {
 		// current tier
 		res = `opacity-75 cursor-not-allowed border-gray5`;
 	} else if (props.enabledTiers.length > 0 && !props.enabledTiers.includes(DisplayedTier._id)) {
@@ -166,6 +160,7 @@ initializeProfile();
 <template>
 	<div
 		class="bg-darkBG dark:bg-gray5 modal-animation fixed top-0 bottom-0 left-0 right-0 z-30 flex h-screen w-full items-center justify-center bg-opacity-50 dark:bg-opacity-50"
+		@click.stop="$emit(`close`)"
 	>
 		<!-- Container -->
 		<section class="popup">
@@ -241,13 +236,15 @@ initializeProfile();
 								"
 								class="flex flex-row items-center justify-between m-5 p-4 border shadow-sm rounded-lg bg-lightBG dark:bg-darkBG transition duration-500 ease-in-out"
 								:class="getStyles(tier)"
-								:disabled="s.tier.id === tier._id || (enabledTiers.length > 0 && !enabledTiers.includes(tier._id))"
+								:disabled="
+									props.sub.tier.id === tier._id || (enabledTiers.length > 0 && !enabledTiers.includes(tier._id))
+								"
 								@click="selectTier(tier)"
 							>
 								<!-- Check mark -->
 								<div class="w-12 flex justify-center">
 									<CheckCircleIcon
-										v-if="s.tier.id !== tier._id"
+										v-if="props.sub.tier.id !== tier._id"
 										:is-checked="selectedTier !== null && selectedTier._id === tier._id"
 										class="text-neutral w-6 h-6 flex items-center transition duration-500 ease-in-out"
 									/>
@@ -263,7 +260,7 @@ initializeProfile();
 										Get access to exclusive articles by subscribing to {{ tier.name }}
 									</p>
 								</div>
-								<div v-if="s.tier.id !== tier._id">
+								<div v-if="sub.tier.id !== tier._id">
 									<div
 										v-if="tier.monthlyEnabled && selectedPeriod === `month`"
 										class="font-semibold text-lg mr-2 dark:text-darkPrimaryText"
@@ -320,9 +317,9 @@ initializeProfile();
 							/>
 						</div>
 						<div class="flex flex-grow flex-col items-start ml-4 mr-2 w-2/5">
-							<h3 class="text-xl font-semibold dark:text-darkPrimaryText">{{ props.s.tier.name }}</h3>
+							<h3 class="text-xl font-semibold dark:text-darkPrimaryText">{{ props.sub.tier.name }}</h3>
 							<p class="text-gray5 dark:text-gray3 text-left text-sm pr-2">
-								Get access to exclusive articles by subscribing to {{ props.s.tier.name }}
+								Get access to exclusive articles by subscribing to {{ props.sub.tier.name }}
 							</p>
 						</div>
 						<div class="font-semibold text-lg mr-2 text-gray5">Current tier</div>
@@ -363,7 +360,7 @@ initializeProfile();
 						This change will be reflected on your next charge, using the same billing method previously setup on this
 						subscription. Please note you can only change tiers once every 30 days. You can always manage your
 						subscriptions on the
-						<nuxt-link to="/subscriptions" class="underline">subscriptions page</nuxt-link>.
+						<router-link to="/subscriptions" class="underline">subscriptions page</router-link>.
 					</p>
 					<div class="flex flex-row-reverse w-full">
 						<button
