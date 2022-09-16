@@ -16,6 +16,8 @@ const props = defineProps({
 	},
 });
 
+defineEmits(['subInfoPopup']);
+
 const settings = useStoreSettings();
 const showEdit = ref<boolean>(false);
 const currency = ref<string>(getCurrencySymbol(props.subscription.currency));
@@ -36,7 +38,10 @@ const currency = ref<string>(getCurrencySymbol(props.subscription.currency));
 					:class="settings.isDarkMode ? `dropdownSubOpenDark` : `dropdownSubOpen`"
 					style="top: 35px; right: -5px"
 				>
-					<button class="focus:outline-none text-primary flex justify-center items-center">
+					<button
+						class="focus:outline-none text-primary flex justify-center items-center"
+						@click="$emit(`subInfoPopup`, props.subscription), (showEdit = !showEdit)"
+					>
 						<PenIcon class="fill-current h-4 w-4" />
 						<span class="text-primary ml-2 self-center text-xs">Manage Subscription</span>
 					</button>
@@ -68,7 +73,7 @@ const currency = ref<string>(getCurrencySymbol(props.subscription.currency));
 			}}</span>
 		</div>
 		<div class="flex justify-center items-end mb-4 text-neutral">
-			<p class="font-semibold text-lg">{{ currency }}{{ subscription.amount }}</p>
+			<p class="font-semibold text-lg">{{ currency }}{{ subscription.amount.toLocaleString() }}</p>
 			<p>/</p>
 			<p>{{ subscription.period }}</p>
 		</div>
