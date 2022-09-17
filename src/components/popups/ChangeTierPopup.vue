@@ -16,8 +16,7 @@ import {
 	PaymentProfile,
 	createDefaultPaymentProfile,
 } from '@/store/paymentProfile';
-// canSwitchSubscription hasnt been aded on the backend folder yet
-import { canSwitchSubscription, getCurrencySymbol, switchSubscriptionTier } from '@/backend/payment';
+import { canSwitchSubscription, getCurrencySymbol } from '@/backend/payment';
 import { toastError, toastSuccess } from '@/plugins/toast';
 import { Profile } from '@/backend/profile';
 
@@ -54,7 +53,7 @@ const selectedTier = ref<SubscriptionTier | null>(null);
 const selectedPeriod = ref<string>(`month`);
 const paymentProfile = ref<PaymentProfile>(createDefaultPaymentProfile(store.$state.id));
 const isLoading = ref<boolean>(false);
-const canSwitchTier = ref<boolean>(false);
+const canSwitchTier = ref<boolean>(true);
 
 const emit = defineEmits([`close`]);
 
@@ -65,10 +64,9 @@ onMounted(async () => {
 		selectedTier.value = props.toPreSelectTier;
 	}
 	try {
-		console.log(canSwitchTier.value);
 		const canSwitchResponse = await canSwitchSubscription(store.$state.id, props.sub.subscriptionId);
-		console.log(canSwitchResponse);
 		canSwitchTier.value = canSwitchResponse;
+		return;
 	} catch (err) {
 		throw err;
 	}
@@ -119,13 +117,13 @@ async function switchTier(): Promise<void> {
 	}
 	try {
 		isLoading.value = true;
-		const response = await switchSubscriptionTier(
+		const res = await useSubscription.switchSubscriptionTier(
 			store.$state.id,
 			props.sub.subscriptionId,
 			selectedTier.value,
 			selectedPeriod.value,
 		);
-		if (response.status !== `succeeded`) {
+		if (res.status !== `succeeded`) {
 			toastError(`Switching tier failed`);
 			return;
 		} else {
@@ -161,7 +159,6 @@ initializeProfile();
 <template>
 	<div
 		class="bg-darkBG dark:bg-gray5 modal-animation fixed top-0 bottom-0 left-0 right-0 z-30 flex h-screen w-full items-center justify-center bg-opacity-50 dark:bg-opacity-50"
-		@click.stop="$emit(`close`)"
 	>
 		<!-- Container -->
 		<section class="popup">
@@ -266,14 +263,14 @@ initializeProfile();
 										v-if="tier.monthlyEnabled && selectedPeriod === `month`"
 										class="font-semibold text-lg mr-2 dark:text-darkPrimaryText"
 									>
-										{{ displayCurrency(paymentProfile.currency) }}{{ tier.monthlyPrice }}
+										{{ displayCurrency(paymentProfile.currency) }}{{ tier.monthlyPrice.toLocaleString() }}
 										<span class="text-gray5 dark:text-gray3">/month</span>
 									</div>
 									<div
 										v-if="tier.yearlyEnabled && selectedPeriod === `year`"
 										class="font-semibold text-lg mr-2 dark:text-darkPrimaryText"
 									>
-										{{ displayCurrency(paymentProfile.currency) }}{{ tier.yearlyPrice }}
+										{{ displayCurrency(paymentProfile.currency) }}{{ tier.yearlyPrice.toLocaleString() }}
 										<span class="text-gray5 dark:text-gray3">/year</span>
 									</div>
 								</div>
@@ -346,14 +343,14 @@ initializeProfile();
 							v-if="selectedTier && selectedPeriod === `month`"
 							class="font-semibold text-lg mr-2 dark:text-darkPrimaryText"
 						>
-							{{ displayCurrency(paymentProfile.currency) }}{{ selectedTier.monthlyPrice }}
+							{{ displayCurrency(paymentProfile.currency) }}{{ selectedTier.monthlyPrice.toLocaleString() }}
 							<span class="text-gray5 dark:text-gray3">/month</span>
 						</div>
 						<div
 							v-if="selectedTier && selectedPeriod === `year`"
 							class="font-semibold text-lg mr-2 dark:text-darkPrimaryText"
 						>
-							{{ displayCurrency(paymentProfile.currency) }}{{ selectedTier.yearlyPrice }}
+							{{ displayCurrency(paymentProfile.currency) }}{{ selectedTier.yearlyPrice.toLocaleString() }}
 							<span class="text-gray5 dark:text-gray3">/year</span>
 						</div>
 					</div>
