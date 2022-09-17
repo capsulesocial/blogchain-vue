@@ -7,6 +7,8 @@ import {
 	getUserSubscriptions,
 } from '@/backend/subscription';
 import { createDefaultProfile, getProfile } from '@/backend/profile';
+import { switchSubscriptionTier } from '@/backend/payment';
+import { SubscriptionTier } from '@/store/paymentProfile';
 
 export interface ISubscriptionWithProfile extends ISubscriptionResponse {
 	authorID: string;
@@ -63,6 +65,10 @@ export const useSubscriptionStore = defineStore(`subscriptions`, {
 			} catch (err) {
 				throw new Error(`Error when cancelling subscription`);
 			}
+		},
+		async switchSubscriptionTier(username: string, subscriptionId: string, newTier: SubscriptionTier, period: string) {
+			const response = await switchSubscriptionTier(username, subscriptionId, newTier, period);
+			return response;
 		},
 	},
 	getters: {},
