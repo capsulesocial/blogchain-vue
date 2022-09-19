@@ -14,6 +14,7 @@ import { getPost, IPostImageKey } from '@/backend/post';
 import type { Post } from '@/backend/post';
 import type { Profile } from '@/backend/profile';
 import { formatDate } from '@/helpers/helpers';
+import Comment from '@/components/post/Comment.vue';
 // import { calculateReadingTime } from '@/backend/utilities/helpers';
 
 const store = useStore();
@@ -414,6 +415,7 @@ function handleScroll() {
 						</div>
 					</div>
 				</article>
+				<!-- Author -->
 				<!-- <AuthorCard
 					:author-avatar="authorAvatar"
 					:author-name="author ? author.name : ``"
@@ -423,10 +425,8 @@ function handleScroll() {
 					:toggle-friend="toggleFriend"
 					:class="showPaywall ? `mb-10` : ``"
 				/> -->
-
-				<!-- Comments -->
+				<!-- post actions -->
 				<article v-if="post !== null && !showPaywall" class="pt-5 pb-14">
-					<!-- Choose reaction -->
 					<div class="flex flex-row justify-between">
 						<div class="flex items-center">
 							<!-- <BookmarkButton
@@ -454,14 +454,23 @@ function handleScroll() {
 							</button>
 						</div>
 					</div>
-					<!-- <PostActions
-						:post-c-i-d="router.currentRoute.value.params.post"
-						:bookmarks-count="bookmarksCount"
-						:reposts-count="repostCount"
-						:post-author="authorID"
-						@reposters="toggleReposters"
-						@openQuotes="toggleQuotes"
-					/> -->
+				</article>
+				<!-- Comments -->
+				<article v-if="post !== null && !showPaywall" class="pt-5 pb-14">
+					<!-- filters -->
+					<!-- <div class="flex w-full justify-between px-6 py-5">
+						<div class="flex flex-row items-center">
+							<span class="pr-2 font-semibold dark:text-darkPrimaryText"
+								>{{ fetchedPost.commentsCount }} {{ fetchedPost.commentsCount === 1 ? 'comment' : 'comments' }}</span
+							>
+							<button class="focus:outline-none ml-2" @click="emit(`stats`)"><StatsIcon /></button>
+						</div>
+						<CommentFilter :filter="filter" class="modal-animation" @clicked="setFilter" />
+					</div> -->
+					<!-- Comment editor -->
+					<!-- <CommentEditor :fetched-post="props.fetchedPost" /> -->
+					<!-- Comments -->
+					<div v-for="i in 20" :key="i"><Comment class="px-6 mb-4" /></div>
 				</article>
 			</section>
 		</div>
