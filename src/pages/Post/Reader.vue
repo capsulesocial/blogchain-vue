@@ -6,7 +6,7 @@ import TagCard from '@/components/TagCard.vue';
 import LinkIcon from '@/components/icons/LinkIcon.vue';
 import ShareIcon from '@/components/icons/ShareIcon.vue';
 import FriendButton from '@/components/FriendButton.vue';
-import { onBeforeMount, ref } from 'vue';
+import { onBeforeMount, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from '@/store/session';
 // import { useStoreSettings } from '@/store/settings';
@@ -37,6 +37,7 @@ const captionHeight = ref<number | undefined>(0);
 const subscriptionStatus = ref<`INSUFFICIENT_TIER` | `NOT_SUBSCRIBED` | ``>(``);
 // Local states
 const showShare = ref<boolean>(false);
+const lastScroll = ref<number>(0);
 
 // Functions
 const showPhoto = () => {};
@@ -59,11 +60,46 @@ onBeforeMount(async () => {
 		throw new Error(err as string);
 	}
 });
+
+onMounted(() => {
+	const container = document.getElementById(`scrollable_content`);
+	if (container) {
+		container.addEventListener(`scroll`, handleScroll);
+	}
+});
+
+function handleScroll() {
+	const body = document.getElementById(`scrollable_content`);
+	const header = document.getElementById(`header`);
+	const scrollUp = `scroll-up`;
+	const scrollDown = `scroll-down`;
+	if (!body) {
+		return;
+	}
+	const currentScroll = body.scrollTop;
+	if (!header) {
+		return;
+	}
+	if (body.scrollTop <= 0) {
+		header.classList.remove(scrollUp);
+		return;
+	}
+	if (currentScroll > lastScroll.value && !header.classList.contains(scrollDown)) {
+		// down
+		header.classList.remove(scrollUp);
+		header.classList.add(scrollDown);
+	} else if (currentScroll < lastScroll.value && header.classList.contains(scrollDown)) {
+		// up
+		header.classList.remove(scrollDown);
+		header.classList.add(scrollUp);
+	}
+	lastScroll.value = currentScroll;
+}
 </script>
 <template>
 	<div
 		id="scrollable_content"
-		class="w-full flex flex-col items-center py-10 h-screen max-h-screen overflow-y-auto lg:overflow-y-hidden"
+		class="w-full flex flex-col items-center pb-10 h-screen max-h-screen overflow-y-auto lg:overflow-y-hidden"
 	>
 		<!-- loader -->
 		<article v-if="post === undefined" class="modal-animation fixed mt-20 flex w-full justify-center">
@@ -125,7 +161,7 @@ onBeforeMount(async () => {
 					</div>
 				</div>
 			</header>
-			<section class="mb-5 p-5 lg:p-0 pb-16 pt-2 md:pb-5">
+			<section class="mb-5 mt-8 p-5 lg:p-0 pb-16 pt-2 md:pb-5">
 				<!-- Post content -->
 				<article class="relative">
 					<!-- Category and elipses -->
@@ -431,3 +467,19 @@ onBeforeMount(async () => {
 		</div>
 	</div>
 </template>
+<style>
+.page-header {
+	transition: all 0.3s ease-in-out;
+}
+.trigger-menu-wrapper {
+	transition: all 0.4s;
+}
+.scroll-down {
+	opacity: 0;
+	transform: translate3d(0, -20%, 0);
+}
+.scroll-up {
+	opacity: 1;
+	transform: none;
+}
+</style>
