@@ -6,11 +6,13 @@ import TagCard from '@/components/TagCard.vue';
 import LinkIcon from '@/components/icons/LinkIcon.vue';
 import ShareIcon from '@/components/icons/ShareIcon.vue';
 import FriendButton from '@/components/FriendButton.vue';
+import CommentFilter from '@/components/post/CommentFilter.vue';
+import StatsIcon from '@/components/icons/StatsIcon.vue';
 import { onBeforeMount, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from '@/store/session';
 // import { useStoreSettings } from '@/store/settings';
-import { getPost, IPostImageKey } from '@/backend/post';
+import { getOnePost, getPost, IPostImageKey, IPostResponseWithHidden } from '@/backend/post';
 import type { Post } from '@/backend/post';
 import type { Profile } from '@/backend/profile';
 import { formatDate } from '@/helpers/helpers';
@@ -21,6 +23,7 @@ const store = useStore();
 // const storeSettings = useStoreSettings();
 const router = useRouter();
 const post = ref<Post>();
+const postMetadata = ref<IPostResponseWithHidden>();
 const authorAvatar = ref<string | undefined>();
 const author = ref<Profile>();
 const userIsFollowed = ref<boolean>(false);
@@ -38,7 +41,9 @@ const captionHeight = ref<number | undefined>(0);
 const subscriptionStatus = ref<`INSUFFICIENT_TIER` | `NOT_SUBSCRIBED` | ``>(``);
 // Local states
 const showShare = ref<boolean>(false);
+const showStats = ref<boolean>(false);
 const lastScroll = ref<number>(0);
+const filter = ref<string>(``);
 
 // Functions
 const showPhoto = () => {};
@@ -47,16 +52,29 @@ const toggleFriend = () => {};
 const handleClose = () => {
 	router.go(-1);
 };
+const fetchPostMetadata = async (cid: string, currentUser?: string) => {
+	const u = currentUser ? currentUser : `x`;
+	try {
+		postMetadata.value = await getOnePost(cid, u);
+	} catch (err) {
+		throw new Error(err as string);
+	}
+};
+const setFilter = (f: string) => {
+	filter.value = f;
+};
 
 // Fetch post
 onBeforeMount(async () => {
 	const cid = ref<string>(router.currentRoute.value.params.post as string);
 	try {
+		// Fetching post object
 		const res = await (await getPost(cid.value)).data;
 		if (!res) {
 			return;
 		}
 		post.value = res;
+		await fetchPostMetadata(cid.value, store.id);
 	} catch (err) {
 		throw new Error(err as string);
 	}
@@ -458,15 +476,16 @@ function handleScroll() {
 				<!-- Comments -->
 				<article v-if="post !== null && !showPaywall" class="pt-5 pb-14">
 					<!-- filters -->
-					<!-- <div class="flex w-full justify-between px-6 py-5">
+					<div class="flex w-full justify-between px-6 py-5">
 						<div class="flex flex-row items-center">
 							<span class="pr-2 font-semibold dark:text-darkPrimaryText"
-								>{{ fetchedPost.commentsCount }} {{ fetchedPost.commentsCount === 1 ? 'comment' : 'comments' }}</span
+								>{{ postMetadata?.commentsCount }}
+								{{ postMetadata?.commentsCount === 1 ? 'comment' : 'comments' }}</span
 							>
-							<button class="focus:outline-none ml-2" @click="emit(`stats`)"><StatsIcon /></button>
+							<button class="focus:outline-none ml-2" @click="showStats = true"><StatsIcon /></button>
 						</div>
 						<CommentFilter :filter="filter" class="modal-animation" @clicked="setFilter" />
-					</div> -->
+					</div>
 					<!-- Comment editor -->
 					<!-- <CommentEditor :fetched-post="props.fetchedPost" /> -->
 					<!-- Comments -->
