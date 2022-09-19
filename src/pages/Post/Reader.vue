@@ -7,6 +7,7 @@ import LinkIcon from '@/components/icons/LinkIcon.vue';
 import ShareIcon from '@/components/icons/ShareIcon.vue';
 import FriendButton from '@/components/FriendButton.vue';
 import CommentFilter from '@/components/post/CommentFilter.vue';
+import CommentEditor from '@/components/post/CommentEditor.vue';
 import StatsIcon from '@/components/icons/StatsIcon.vue';
 import { onBeforeMount, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -487,7 +488,7 @@ function handleScroll() {
 						<CommentFilter :filter="filter" class="modal-animation" @clicked="setFilter" />
 					</div>
 					<!-- Comment editor -->
-					<!-- <CommentEditor :fetched-post="props.fetchedPost" /> -->
+					<CommentEditor :comments-count="postMetadata?.commentsCount ? postMetadata?.commentsCount : 0" />
 					<!-- Comments -->
 					<div v-for="i in 20" :key="i"><Comment class="px-6 mb-4" /></div>
 				</article>

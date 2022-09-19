@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { PropType, ref } from 'vue';
+import { ref } from 'vue';
 import { feelings } from '@/config/config';
 import { faceGroupings, IFace } from '@/config/faces';
-import { IGenericPostResponse } from '@/backend/post';
 import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
 import { toastWarning, toastError } from '@/plugins/toast';
@@ -15,7 +14,7 @@ const store = useStore();
 const settings = useStoreSettings();
 
 const props = defineProps({
-	fetchedPost: { type: Object as PropType<IGenericPostResponse>, required: true },
+	commentsCount: { type: Number, required: true },
 });
 
 const showEmotions = ref<boolean>(false);
@@ -30,7 +29,7 @@ function sleep(ms: any) {
 
 async function toggleShowEmotions() {
 	showEmotions.value = !showEmotions.value;
-	if (props.fetchedPost.commentsCount === 0) {
+	if (props.commentsCount === 0) {
 		await sleep(100);
 	}
 	const body = document.getElementById(`faceSelector`);
@@ -165,7 +164,7 @@ function sendComment() {
 								/></span>
 							</button>
 							<textarea
-								v-if="props.fetchedPost.commentsCount > 0"
+								v-if="props.commentsCount > 0"
 								v-model="comment"
 								class="focus:outline-none placeholder-gray5 dark:placeholder-gray3 dark:text-darkPrimaryText h-40 w-full resize-none overflow-y-auto mr-2 py-4 pl-2 leading-normal bg-transparent"
 								name="body"
