@@ -5,6 +5,7 @@ import ReaderView from '@/components/post/ReaderView.vue';
 import TagCard from '@/components/TagCard.vue';
 import LinkIcon from '@/components/icons/LinkIcon.vue';
 import ShareIcon from '@/components/icons/ShareIcon.vue';
+import FriendButton from '@/components/FriendButton.vue';
 import { onBeforeMount, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from '@/store/session';
@@ -99,12 +100,12 @@ onBeforeMount(async () => {
 									@{{ post.authorID }}</router-link
 								>
 							</div>
-							<!-- <FriendButton
+							<FriendButton
 								v-if="post.authorID !== store.id"
 								:toggle-friend="toggleFriend"
 								:user-is-followed="userIsFollowed"
 								class="hidden lg:block"
-							/> -->
+							/>
 							<!-- Timestamp and reading time -->
 							<div class="flex flex-col lg:flex-row items-center lg:ml-8">
 								<span class="text-sm text-gray5 dark:text-gray3">
