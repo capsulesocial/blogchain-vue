@@ -1,4 +1,5 @@
 import { avatars } from '@/config/avatars';
+import DOMPurify from 'dompurify';
 
 type dateString = (date: Date, hideYear?: boolean, preformattedDate?: string | null, onlyDate?: boolean) => string;
 
@@ -10,6 +11,41 @@ export function keyChecker(x: Array<string>, y?: string) {
 	}
 	return x.indexOf(y) > -1;
 }
+
+export const afterSanitizeAttrsHook = () => {
+	DOMPurify.addHook(`afterSanitizeAttributes`, (node) => {
+		if (node.getAttribute(`target`) || node.tagName === `A`) {
+			node.setAttribute(`target`, `_blank`);
+			node.setAttribute(`rel`, `noopener noreferrer`);
+		}
+	});
+};
+
+export const BASE_ALLOWED_ATTRS = [`class`, `id`, `href`];
+
+export const BASE_ALLOWED_TAGS = [
+	`pre`,
+	`p`,
+	`code`,
+	`ol`,
+	`li`,
+	`strong`,
+	`em`,
+	`u`,
+	`del`,
+	`blockquote`,
+	`h1`,
+	`h2`,
+	`h3`,
+	`h4`,
+	`h5`,
+	`a`,
+	`span`,
+];
+
+export const sanitizeHtml = (content: string, ALLOWED_TAGS: string[], ALLOWED_ATTR: string[]) => {
+	return DOMPurify.sanitize(content, { ALLOWED_TAGS, ALLOWED_ATTR });
+};
 
 export const lastMonthDate = () => {
 	// First and Last day Date of previous month

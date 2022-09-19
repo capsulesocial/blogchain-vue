@@ -20,7 +20,7 @@ const store = useStore();
 const settings = useStoreSettings();
 const avatar = ref<string>(``);
 const unauthRoutes = ref<string[]>([`Login`, `Register`]);
-const fullPageRoutes = ref<string[]>([`Payment Policy`, `Content Policy`, `Not Found`]);
+const fullPageRoutes = ref<string[]>([`Payment Policy`, `Content Policy`, `Not Found`, `Post Reader`]);
 const routesWithTitle = ref<string[]>([`Home`, `Discover`, `Bookmarks`]);
 
 // meta tags

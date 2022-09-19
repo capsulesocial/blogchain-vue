@@ -1,9 +1,10 @@
 import { createWebHistory, createRouter } from 'vue-router';
-import Index from '../pages/Index.vue';
-import Home from '../pages/Home.vue';
-import Discover from '../pages/Discover/Index.vue';
-import Bookmarks from '../pages/Bookmarks.vue';
-import Post from '../pages/Post.vue';
+import Index from '@/pages/Index.vue';
+import Home from '@/pages/Home.vue';
+import Discover from '@/pages/Discover/Index.vue';
+import Bookmarks from '@/pages/Bookmarks.vue';
+import PostEditor from '@/pages/Post/Editor.vue';
+import PostReader from '@/pages/Post/Reader.vue';
 import Login from '@/pages/Login.vue';
 import Register from '@/pages/Register.vue';
 import Category from '@/pages/Discover/Category.vue';
@@ -69,11 +70,20 @@ const routes = [
 	},
 	{
 		path: '/post',
-		name: 'Post',
-		component: Post,
+		name: 'Post Editor',
+		component: PostEditor,
 		meta: {
 			requiresAuth: false,
-			title: 'Posts - Blogchain',
+			title: 'Write a Post - Blogchain',
+		},
+	},
+	{
+		path: '/post/:post',
+		name: 'Post Reader',
+		component: PostReader,
+		meta: {
+			requiresAuth: false,
+			title: 'Viewing a Post - Blogchain',
 		},
 	},
 	{

@@ -135,7 +135,7 @@ console.log(props.fetchedPost);
 		<div class="mt-4 flex flex-col justify-between xl:flex-row">
 			<!-- Left side: Title, subtitle / preview, tags -->
 			<div class="mr-4 flex w-full flex-col justify-between">
-				<a class="cursor-pointer" href="#">
+				<router-link class="cursor-pointer" :to="`/post/` + fetchedPost.post._id">
 					<div class="flex max-w-full flex-col overflow-hidden pr-4">
 						<div class="flex flex-row w-full justify-between">
 							<h3 class="break-words pb-2 text-lg font-semibold dark:text-darkPrimaryText">
@@ -147,7 +147,7 @@ console.log(props.fetchedPost);
 							{{ fetchedPost.post.subtitle ? fetchedPost.post.subtitle : createPostExcerpt(fetchedPost.post.excerpt) }}
 						</h6>
 					</div>
-				</a>
+				</router-link>
 				<!-- Display tags (Desktop) -->
 				<div class="my-2 hidden overflow-x-auto xl:flex xl:flex-wrap text-lg">
 					<TagCard v-for="t in fetchedPost.post.tags" :key="t.name" :tag="t.name" class="my-2 mr-4" />
