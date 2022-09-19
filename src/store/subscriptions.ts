@@ -5,11 +5,12 @@ import {
 	cancelSubscription,
 	ISubscriptionResponse,
 	getUserSubscriptions,
+	SubsTransaction,
 } from '@/backend/subscription';
 import { createDefaultProfile, getProfile } from '@/backend/profile';
 import { switchSubscriptionTier } from '@/backend/payment';
 import { SubscriptionTier } from '@/store/paymentProfile';
-
+import { handleError } from '@/plugins/toast';
 export interface ISubscriptionWithProfile extends ISubscriptionResponse {
 	authorID: string;
 	name: string;
@@ -26,7 +27,10 @@ export const useSubscriptionStore = defineStore(`subscriptions`, {
 		};
 	},
 	actions: {
-		async fetchSubs(id: string) {
+		async fetchSubs(id: string): Promise<void> {
+			if (!id) {
+				return;
+			}
 			try {
 				const subs = await getUserSubscriptions(id);
 				const subsWithProfiles = [];
@@ -51,10 +55,10 @@ export const useSubscriptionStore = defineStore(`subscriptions`, {
 					this.$state.inActive.push(subWithProfile);
 				});
 			} catch (err) {
-				throw new Error(`Error when fetching subscriptions`);
+				handleError(`Error when fetching subscriptions`);
 			}
 		},
-		async getSubsTransactions(id: string, subscriptionId: string) {
+		async getSubsTransactions(id: string, subscriptionId: string): Promise<Array<SubsTransaction>> {
 			const transactions = await getSubscriptionTransactions(id, subscriptionId);
 			return transactions;
 		},
@@ -63,10 +67,15 @@ export const useSubscriptionStore = defineStore(`subscriptions`, {
 				await cancelSubscription(username, subid);
 				return true;
 			} catch (err) {
-				throw new Error(`Error when cancelling subscription`);
+				handleError(`Error when cancelling subscription`);
 			}
 		},
-		async switchSubscriptionTier(username: string, subscriptionId: string, newTier: SubscriptionTier, period: string) {
+		async switchSubscriptionTier(
+			username: string,
+			subscriptionId: string,
+			newTier: SubscriptionTier,
+			period: string,
+		): Promise<boolean> {
 			const response = await switchSubscriptionTier(username, subscriptionId, newTier, period);
 			return response;
 		},

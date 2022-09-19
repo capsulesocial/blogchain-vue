@@ -15,7 +15,7 @@ import { getBillingPortalUrl, getCurrencySymbol } from '@/backend/payment';
 import { SubsTransaction } from '@/backend/subscription';
 import { ISubscriptionWithProfile } from '@/store/subscriptions';
 import { PaymentProfile } from '@/store/paymentProfile';
-import { toastSuccess } from '@/plugins/toast';
+import { toastSuccess, handleError } from '@/plugins/toast';
 
 const props = defineProps({
 	sub: {
@@ -34,34 +34,35 @@ const currency = ref<string>(getCurrencySymbol(props.sub.currency));
 
 const emit = defineEmits(['close', 'switchPopup']);
 
-onMounted(async () => {
+onMounted(async (): Promise<void> => {
 	paymentProfile.value = await usePayment.getPaymentProfile(props.sub.authorID);
 	transactions.value = await useSubscription.getSubsTransactions(store.$state.id, props.sub.subscriptionId);
 });
 
 // methods
-function downloadReceipt(url: string) {
+function downloadReceipt(url: string): void {
 	window.open(url, `_blank`, `noopener,noreferrer`);
 }
 async function manageBilling(): Promise<void> {
 	try {
 		const portalUrl = await getBillingPortalUrl(store.$state.id, props.sub.subscriptionId);
 		window.open(portalUrl, `_blank`);
-	} catch (ex: any) {
-		throw new Error(ex);
+	} catch (err) {
+		handleError(err);
 	}
 }
-function toggleCancelAlert() {
+function toggleCancelAlert(): void {
 	showAlert.value = !showAlert.value;
 }
-function toggleSwitchPopup(subProfile: ISubscriptionWithProfile) {
+function toggleSwitchPopup(subProfile: ISubscriptionWithProfile): void {
 	emit(`switchPopup`, { sub: subProfile, avatar: subProfile.avatar });
 	emit(`close`);
 }
-async function cancelSubscription() {
+async function cancelSubscription(): Promise<void> {
 	const cancelSub = await useSubscription.cancelSub(store.$state.id, props.sub.subscriptionId);
 	if (cancelSub) {
 		toastSuccess(`Subscription cancellation was successful`);
+		emit(`close`);
 		return;
 	}
 }
