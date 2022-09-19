@@ -3,7 +3,7 @@ import { ref, PropType } from 'vue';
 import CrownIcon from '@/components/icons/Crown.vue';
 import CheckCircleIcon from '@/components/icons/CheckCircle.vue';
 import ChevronDownIcon from '@/components/icons/ChevronDown.vue';
-import SpinnerIcon from '@/components/icons/SpinnerIcon.vue';
+import TierSwitchButton from '@/components/TierSwitchButton.vue';
 import { useStore } from '@/store/session';
 import { useSubscriptionStore, ISubscriptionWithProfile } from '@/store/subscriptions';
 import { SubscriptionTier, PaymentProfile } from '@/store/paymentProfile';
@@ -37,6 +37,8 @@ const props = defineProps({
 const store = useStore();
 const useSubscription = useSubscriptionStore();
 const isLoading = ref<boolean>(false);
+const text = ref(`Confirm Change`);
+const toEmit = ref(`switchTier`);
 
 const emit = defineEmits([`close`]);
 
@@ -137,15 +139,12 @@ async function switchTier(): Promise<void> {
 		<router-link to="/subscriptions" class="underline">subscriptions page</router-link>.
 	</p>
 	<div class="flex flex-row-reverse w-full">
-		<button
-			:class="props.selectedTier !== null ? `` : `opacity-50 cursor-not-allowed`"
-			class="bg-darkBG text-lightButtonText focus:outline-none transform rounded-lg font-bold transition duration-500 ease-in-out hover:bg-opacity-75"
-			style="padding: 0.4rem 1.5rem"
-			:disabled="props.selectedTier === null"
-			@click="switchTier"
-		>
-			<SpinnerIcon v-if="isLoading" class="mx-2 p-1" />
-			<span v-else class="font-sans" style="font-size: 0.95rem"> Confirm change </span>
-		</button>
+		<TierSwitchButton
+			:selected-tier="props.selectedTier"
+			:is-loading="isLoading"
+			:text="text"
+			:to-emit="toEmit"
+			@switch-tier="switchTier"
+		/>
 	</div>
 </template>

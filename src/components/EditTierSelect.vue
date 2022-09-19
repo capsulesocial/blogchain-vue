@@ -3,6 +3,7 @@ import { ref, PropType } from 'vue';
 import SwitchPeriod from '@/components/ToggleSwitch.vue';
 import CrownIcon from '@/components/icons/Crown.vue';
 import CheckCircleIcon from '@/components/icons/CheckCircle.vue';
+import TierSwitchButton from '@/components/TierSwitchButton.vue';
 import { ISubscriptionWithProfile } from '@/store/subscriptions';
 import { SubscriptionTier, PaymentProfile } from '@/store/paymentProfile';
 import { Profile } from '@/backend/profile';
@@ -42,10 +43,11 @@ const props = defineProps({
 });
 
 const canSwitchTier = ref<boolean>(true);
-const selectedTier = ref<SubscriptionTier | null>(props.toPreSelectTier);
+const selectedTier = ref<SubscriptionTier>(props.toPreSelectTier);
 const selectedPeriod = ref<string>(`month`);
-
-defineEmits([`close`, 'nextStep']);
+const emit = defineEmits([`close`, 'nextStep']);
+const text = ref(`Next`);
+const toEmit = ref(`nextStep`);
 
 function selectTier(tier: SubscriptionTier): void {
 	selectedTier.value = tier;
@@ -76,6 +78,10 @@ function getStyles(DisplayedTier: SubscriptionTier): string {
 		res = `opacity-100 cursor-pointer border-lightBorder dark:border-darkBorder`;
 	}
 	return res;
+}
+
+function nextStep(): void {
+	emit(`nextStep`, selectedTier.value, selectedPeriod.value);
 }
 </script>
 <template>
@@ -161,15 +167,7 @@ function getStyles(DisplayedTier: SubscriptionTier): string {
 				</button>
 			</div>
 			<div class="flex flex-row-reverse">
-				<button
-					:class="selectedTier !== null ? `` : `opacity-50 cursor-not-allowed`"
-					class="bg-darkBG text-lightButtonText focus:outline-none transform rounded-lg font-bold transition duration-500 ease-in-out hover:bg-opacity-75"
-					style="padding: 0.4rem 1.5rem"
-					:disabled="selectedTier === null"
-					@click="$emit(`nextStep`, selectedTier, selectedPeriod)"
-				>
-					<span class="font-sans" style="font-size: 0.95rem"> Next </span>
-				</button>
+				<TierSwitchButton :selected-tier="selectedTier" :text="text" :to-emit="toEmit" @next-step="nextStep" />
 			</div>
 		</div>
 	</article>
