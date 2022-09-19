@@ -4,7 +4,6 @@ import { useStoreSettings } from '@/store/settings';
 import { formatDate } from '@/helpers/helpers';
 import { getCurrencySymbol } from '@/backend/payment';
 import Avatar from '@/components/Avatar.vue';
-
 import MoreIcon from '@/components/icons/MoreIcon.vue';
 import PenIcon from '@/components/icons/Pencil.vue';
 import CrownIcon from '@/components/icons/CrownIcon.vue';
@@ -27,9 +26,9 @@ defineEmits(['subInfoPopup']);
 	<div
 		class="w-full sm:w-56 mb-4 sm:mx-1 flex flex-col border border-lightBorder dark:border-darkBorder shadow-sm rounded-lg bg-lightBG dark:bg-darkBG items-center p-4"
 	>
-		<div class="w-full flex justify-end -mt-2">
+		<div class="w-full flex justify-end -mt-2" @click.stop="showEdit = !showEdit">
 			<div class="icon relative flex items-center">
-				<button class="focus:outline-none text-gray5 dark:text-gray3 ml-2" @click.stop="showEdit = !showEdit">
+				<button class="focus:outline-none text-gray5 dark:text-gray3 ml-2">
 					<MoreIcon />
 				</button>
 				<div

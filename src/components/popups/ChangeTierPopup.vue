@@ -17,7 +17,7 @@ import {
 	createDefaultPaymentProfile,
 } from '@/store/paymentProfile';
 import { canSwitchSubscription, getCurrencySymbol } from '@/backend/payment';
-import { toastError, toastSuccess } from '@/plugins/toast';
+import { toastError, toastSuccess, handleError } from '@/plugins/toast';
 import { Profile } from '@/backend/profile';
 
 const props = defineProps({
@@ -53,11 +53,12 @@ const selectedTier = ref<SubscriptionTier | null>(null);
 const selectedPeriod = ref<string>(`month`);
 const paymentProfile = ref<PaymentProfile>(createDefaultPaymentProfile(store.$state.id));
 const isLoading = ref<boolean>(false);
+// TODO:will update when canSwitchSubscription is available. set to true for testing
 const canSwitchTier = ref<boolean>(true);
 
 const emit = defineEmits([`close`]);
 
-onMounted(async () => {
+onMounted(async (): Promise<void> => {
 	usePayment.getPaymentProfile(props.author.id);
 	// prefill selected tier
 	if (props.toPreSelectTier) {
@@ -73,10 +74,10 @@ onMounted(async () => {
 });
 
 // methods
-function displayCurrency(currency: string) {
+function displayCurrency(currency: string): string {
 	return getCurrencySymbol(currency);
 }
-async function initializeProfile() {
+async function initializeProfile(): Promise<void> {
 	if (!props.author) {
 		toastError(`Author profile is missing`);
 		return;
@@ -98,10 +99,10 @@ async function initializeProfile() {
 		toastError(`Author hasn't set-up subscriptions`);
 	}
 }
-function selectTier(tier: SubscriptionTier) {
+function selectTier(tier: SubscriptionTier): void {
 	selectedTier.value = tier;
 }
-function switchPeriod() {
+function switchPeriod(): void {
 	if (selectedPeriod.value === `month`) {
 		selectedPeriod.value = `year`;
 	} else {
@@ -123,16 +124,15 @@ async function switchTier(): Promise<void> {
 			selectedTier.value,
 			selectedPeriod.value,
 		);
-		if (res.status !== `succeeded`) {
+		if (!res) {
 			toastError(`Switching tier failed`);
 			return;
 		} else {
 			toastSuccess(`Switched tiers successfully!`);
-			useSubscription.fetchSubs(store.$state.id);
 			emit(`close`);
 		}
 	} catch (err: any) {
-		throw new Error(err);
+		handleError(err);
 	}
 	isLoading.value = false;
 }
@@ -159,6 +159,7 @@ initializeProfile();
 <template>
 	<div
 		class="bg-darkBG dark:bg-gray5 modal-animation fixed top-0 bottom-0 left-0 right-0 z-30 flex h-screen w-full items-center justify-center bg-opacity-50 dark:bg-opacity-50"
+		@click.self="$emit(`close`)"
 	>
 		<!-- Container -->
 		<section class="popup">
@@ -197,7 +198,7 @@ initializeProfile();
 						<CrownIcon class="text-neutral stroke-neutral self-center w-12 h-12 mb-2" />
 						<h6 class="font-semibold text-neutral text-xl mb-2">Change Tier</h6>
 						<p v-if="canSwitchTier" class="text-base text-center text-gray5 dark:text-gray3 mb-4">
-							Easily change your Tier access to
+							Easily change your Tier access of
 							<span v-if="author.name !== ``" class="font-semibold text-primary dark:text-secondary">{{
 								author.name
 							}}</span>
@@ -296,7 +297,7 @@ initializeProfile();
 						<CrownIcon class="text-neutral stroke-neutral self-center w-12 h-12 mb-2" />
 						<h6 class="font-semibold text-neutral text-xl mb-2">Are you sure?</h6>
 						<p class="text-base text-center text-gray5 dark:text-gray3">
-							You are about to change the Tier of subscription to
+							You are about to change the Tier subscription of author
 							<span v-if="author.name !== ``" class="font-semibold text-primary dark:text-secondary">{{
 								author.name
 							}}</span>

@@ -21,7 +21,7 @@ const subscriptionInfo = ref();
 const showChangeTier = ref<boolean>(false);
 const subscriptionProfile = ref<Profile>(createDefaultProfile(store.$state.id));
 const subscriptionProfileAvatar = ref<string | undefined>();
-const authorPaymentProfile = ref<ISubscriptionWithProfile | null>(null);
+const authorPaymentProfile = ref<ISubscriptionWithProfile | undefined>();
 
 subscriptions.value = subStore.$state.active;
 
@@ -35,14 +35,10 @@ function showSubInfoPopup(subscription: any): void {
 	subscriptionInfo.value = subscription;
 }
 
-function toggleChangeTierPopup(author: { sub: ISubscriptionWithProfile; avatar: string }) {
+function toggleChangeTierPopup(author: { sub: ISubscriptionWithProfile; avatar: string }): void {
 	subscriptionProfile.value = createDefaultProfile(author.sub.authorID);
 	subscriptionProfileAvatar.value = author.avatar;
 	authorPaymentProfile.value = author.sub;
-	// Unauth
-	if (store.$state.id === ``) {
-		return;
-	}
 	showChangeTier.value = !showChangeTier.value;
 }
 </script>
@@ -95,8 +91,8 @@ function toggleChangeTierPopup(author: { sub: ISubscriptionWithProfile; avatar: 
 		<div v-if="showChangeTier">
 			<ChangeTierPopup
 				:author="subscriptionProfile"
-				:author-avatar="subscriptionProfileAvatar"
 				:sub="authorPaymentProfile"
+				:author-avatar="subscriptionProfileAvatar"
 				@close="showChangeTier = false"
 			/>
 		</div>
