@@ -9,11 +9,12 @@ import SubInfosPopup from '@/components/popups/SubInfosPopup.vue';
 import ChangeTierPopup from '@/components/popups/ChangeTierPopup.vue';
 import SpinnerIcon from '@/components/icons/SpinnerIcon.vue';
 import { createDefaultProfile, Profile } from '@/backend/profile';
-
+const isLoading = ref<boolean>(true);
 const store = useStore();
 const settings = useStoreSettings();
 const subStore = useSubscriptionStore();
 subStore.fetchSubs(store.$state.id);
+isLoading.value = false;
 
 const subscriptions = ref<ISubscriptionWithProfile[]>([]);
 const toggleSubInfoPopup = ref<boolean>(false);
@@ -52,7 +53,7 @@ function toggleChangeTierPopup(author: { sub: ISubscriptionWithProfile; avatar: 
 			id="scrollable_content"
 			class="min-h-115 h-115 lg:min-h-210 lg:h-210 xl:min-h-220 xl:h-220 w-full overflow-y-auto px-5 sm:px-4 xl:px-5 pt-2 lg:overflow-y-hidden relative"
 		>
-			<div v-if="subscriptions.length > 0" class="flex flex-wrap items-start">
+			<div v-if="subscriptions.length > 0 && store.$state.id !== ``" class="flex flex-wrap items-start">
 				<SubscriptionPreview
 					v-for="subscription in subscriptions"
 					:key="subscription.subscriptionId"
@@ -60,10 +61,10 @@ function toggleChangeTierPopup(author: { sub: ISubscriptionWithProfile; avatar: 
 					@sub-info-popup="showSubInfoPopup(subscription)"
 				/>
 			</div>
-			<div v-else class="flex items-center justify-center py-20">
+			<div v-if="isLoading" class="flex items-center justify-center py-20">
 				<SpinnerIcon class="w-6 h-6" />
 			</div>
-			<div v-if="subscriptions.length < 0 && store.$state.id !== ``">
+			<div v-if="subscriptions.length <= 0 && store.$state.id !== ``">
 				<div class="flex flex-col items-center">
 					<p class="text-gray5 dark:text-gray3 align-end mb-1 mt-6 flex items-end text-sm w-3/4 text-center">
 						It seems like you don't currently have any active subscriptions. Browse Blogchain and subscribe to authors
@@ -88,7 +89,7 @@ function toggleChangeTierPopup(author: { sub: ISubscriptionWithProfile; avatar: 
 				@close="toggleSubInfoPopup = false"
 			/>
 		</div>
-		<div v-if="showChangeTier">
+		<div v-if="showChangeTier && authorPaymentProfile">
 			<ChangeTierPopup
 				:author="subscriptionProfile"
 				:sub="authorPaymentProfile"
