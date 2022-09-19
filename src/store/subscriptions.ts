@@ -7,10 +7,10 @@ import {
 	getUserSubscriptions,
 	SubsTransaction,
 } from '@/backend/subscription';
-import { createDefaultProfile, getProfile } from '@/backend/profile';
 import { switchSubscriptionTier } from '@/backend/payment';
 import { SubscriptionTier } from '@/store/paymentProfile';
 import { handleError } from '@/plugins/toast';
+import { useProfilesStore } from '@/store/profiles';
 export interface ISubscriptionWithProfile extends ISubscriptionResponse {
 	authorID: string;
 	name: string;
@@ -35,13 +35,11 @@ export const useSubscriptionStore = defineStore(`subscriptions`, {
 				const subs = await getUserSubscriptions(id);
 				const subsWithProfiles = [];
 				for (const sub of subs) {
-					const fetchedProfile = await getProfile(sub.authorID);
-					const profile = fetchedProfile?.profile ?? createDefaultProfile(sub.authorID);
+					const profile = useProfilesStore().getProfile(sub.authorID);
 					const subWithProfile = {
 						...sub,
 						name: profile.name,
 						avatar: profile.avatar,
-						// TODO remove this when this value is provided by capsule-server
 						monthsSubbed: 0,
 					};
 					subsWithProfiles.push(subWithProfile);
