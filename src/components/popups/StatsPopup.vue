@@ -33,7 +33,12 @@ const props = defineProps({
 				>
 			</button>
 			<!-- Stats -->
-			<Stats :fetched-post="props.fetchedPost" />
+			<Stats
+				:id="props.fetchedPost.post._id"
+				:bookmarkscount="props.fetchedPost.bookmarksCount"
+				:repostcount="props.fetchedPost.repostCount"
+				class="px-6"
+			/>
 		</div>
 	</div>
 </template>

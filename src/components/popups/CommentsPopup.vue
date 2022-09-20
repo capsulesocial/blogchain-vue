@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { PropType, ref } from 'vue';
 import { IGenericPostResponse } from '@/backend/post';
-import Comment from '@/components/post/Comment.vue';
+import Comment from '@/components/post/comments/Comment.vue';
 import SimplePopupCard from '@/components/post/SimplePopupCard.vue';
 import StatsIcon from '@/components/icons/StatsIcon.vue';
-import CommentFilter from '@/components/post/CommentFilter.vue';
-import CommentEditor from '../post/CommentEditor.vue';
+import CommentFilter from '@/components/post/comments/CommentFilter.vue';
+import CommentEditor from '@/components/post/comments/CommentEditor.vue';
 
 const emit = defineEmits([`close`, `stats`]);
 
@@ -35,7 +35,7 @@ function setFilter(reaction: string): void {
 			<!-- filters -->
 			<div class="flex w-full justify-between px-6 py-5">
 				<div class="flex flex-row items-center">
-					<span class="pr-2 font-semibold dark:text-darkPrimaryText"
+					<span v-if="fetchedPost" class="pr-2 font-semibold dark:text-darkPrimaryText"
 						>{{ fetchedPost.commentsCount }} {{ fetchedPost.commentsCount === 1 ? 'comment' : 'comments' }}</span
 					>
 					<button class="focus:outline-none ml-2" @click="emit(`stats`)"><StatsIcon /></button>
@@ -43,7 +43,7 @@ function setFilter(reaction: string): void {
 				<CommentFilter :filter="filter" class="modal-animation" @clicked="setFilter" />
 			</div>
 			<!-- Comment editor -->
-			<CommentEditor :fetched-post="props.fetchedPost" />
+			<CommentEditor :comments-count="props.fetchedPost.commentsCount" class="px-6" />
 			<!-- Comments -->
 			<div v-for="i in 20" :key="i"><Comment class="px-6 mb-4" /></div>
 		</div>

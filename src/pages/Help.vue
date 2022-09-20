@@ -210,7 +210,7 @@ const questions = ref<{ id: number; title: string; question: string; isOpen: boo
 		title: `What type of moderation exists on Blogchain?`,
 		question: `Our plan is to instill community moderation. For now, we retain the ability to block users in order to
                     ensure our collective space is not compromised by those who seek to abuse our platform. We currently have
-                    a <nuxt-link to="/contentpolicy" class="text-primary">Content Moderation Policy</nuxt-link> that outlines
+                    a <router-link to="/contentpolicy" class="text-primary">Content Moderation Policy</router-link> that outlines
                     our motives and methods for such cases. This will eventually pivot towards a decentralized,
                     community-based governance model.`,
 		isOpen: false,

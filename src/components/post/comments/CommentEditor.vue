@@ -83,7 +83,7 @@ function sendComment() {
 </script>
 
 <template>
-	<div class="px-6 py-4">
+	<div class="py-4">
 		<!-- Top overlay with selector -->
 		<div v-show="showEmotions" class="relative flex w-full flex-row-reverse">
 			<div
@@ -115,7 +115,7 @@ function sendComment() {
 					:avatar="
 						store.$state.id === `` ? require(`@/assets/images/avatars/unauthenticated.webp`) : store.$state.avatar
 					"
-					:author-i-d="store.$state.id"
+					:authorid="store.$state.id"
 					class="flex-shrink-0"
 					:no-click="true"
 					:size="`h-12 w-12`"

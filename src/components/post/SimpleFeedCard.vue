@@ -66,8 +66,6 @@ function quoteRepost() {
 }
 
 profilesStore.fetchProfile(props.fetchedPost.post.authorID);
-
-console.log(props.fetchedPost);
 </script>
 
 <template>

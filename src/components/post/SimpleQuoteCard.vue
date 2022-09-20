@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { computed, PropType, ref } from 'vue';
-import { IGenericPostResponse } from '@/backend/post';
+import { computed, ref } from 'vue';
 import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
 import { useProfilesStore } from '@/store/profiles';
@@ -13,6 +12,7 @@ import TagCard from '@/components/TagCard.vue';
 import MoreIcon from '@/components/icons/MoreIcon.vue';
 import BinIcon from '@/components/icons/BinIcon.vue';
 import CrownIcon from '@/components/icons/Crown.vue';
+import { Tag } from '@/backend/post';
 
 const store = useStore();
 const settings = useStoreSettings();
@@ -21,11 +21,22 @@ const showDelete = ref<boolean>(false);
 const featuredPhoto = ref<string | null>(null);
 
 const props = defineProps({
-	fetchedPost: { type: Object as PropType<IGenericPostResponse>, required: true },
+	authorid: { type: String, required: true },
+	id: { type: String, required: true },
+	timestamp: { type: Number, required: true },
+	wordcount: { type: Number, required: true },
+	postimages: { type: Number, required: true },
+	bookmarked: { type: Boolean, required: true },
+	encrypted: { type: Boolean, required: true },
+	title: { type: String, required: true },
+	subtitle: { type: String, default: null },
+	excerpt: { type: String, required: true },
+	featuredphotocid: { type: String, required: true },
+	tags: { type: Array<Tag>, required: true },
 });
 
 // Get profile of authorID
-const author = computed(() => profilesStore.getProfile(props.fetchedPost.post.authorID));
+const author = computed(() => profilesStore.getProfile(props.authorid));
 
 function deletePost() {}
 function openDeleteDropdown() {
@@ -65,20 +76,20 @@ function openDeleteDropdown() {
 					<!-- Timestamp and reading time -->
 					<div class="flex flex-row mt-1 items-center">
 						<span class="text-xs text-gray5 dark:text-gray3">
-							{{ formatDate(fetchedPost.post.timestamp) }}
+							{{ formatDate(props.timestamp) }}
 						</span>
 						<div class="h-1 w-1 rounded-full bg-gray5 dark:bg-gray3 mx-2"></div>
 						<span class="text-xs text-gray5 dark:text-gray3">
-							{{ calculateReadingTime(fetchedPost.post.wordCount, fetchedPost.post.postImages?.length) }} min read
+							{{ calculateReadingTime(props.wordcount, props.postimages) }} min read
 						</span>
 					</div>
 				</div>
 			</div>
 			<div class="relative flex w-full items-center justify-center lg:w-1/5 lg:justify-end">
 				<!-- Bookmarks button -->
-				<BookmarkButton :has-bookmark="fetchedPost.bookmarked" />
+				<BookmarkButton :has-bookmark="props.bookmarked" />
 				<button
-					v-if="fetchedPost.post.authorID === store.$state.id"
+					v-if="author.id === store.$state.id"
 					class="focus:outline-none text-gray5 dark:text-gray3 ml-2"
 					@click.stop="openDeleteDropdown"
 				>
@@ -102,34 +113,33 @@ function openDeleteDropdown() {
 		<div class="mt-4 flex flex-col justify-between xl:flex-row">
 			<!-- Left side: Title, subtitle / preview, tags -->
 			<div class="mr-4 flex w-full flex-col justify-between">
-				<router-link class="cursor-pointer" :to="`/post/` + fetchedPost.post._id">
+				<router-link class="cursor-pointer" :to="`/post/` + props.id">
 					<div class="flex max-w-full flex-col overflow-hidden pr-4">
 						<div class="flex flex-row w-full justify-between">
 							<h3 class="break-words pb-2 text-lg font-semibold dark:text-darkPrimaryText">
-								{{ fetchedPost.post.title
-								}}<CrownIcon v-if="fetchedPost.post.encrypted" class="ml-2 inline text-neutral w-5 h-5 -mt-1" />
+								{{ props.title }}<CrownIcon v-if="props.encrypted" class="ml-2 inline text-neutral w-5 h-5 -mt-1" />
 							</h3>
 						</div>
 						<h6 class="break-words text-lightSecondaryText dark:text-darkSecondaryText">
-							{{ fetchedPost.post.subtitle ? fetchedPost.post.subtitle : createPostExcerpt(fetchedPost.post.excerpt) }}
+							{{ props.subtitle ? props.subtitle : createPostExcerpt(props.excerpt) }}
 						</h6>
 					</div>
 				</router-link>
 				<!-- Display tags (Desktop) -->
 				<div class="my-2 hidden overflow-x-auto xl:flex xl:flex-wrap text-lg">
-					<TagCard v-for="t in fetchedPost.post.tags" :key="t.name" :tag="t.name" class="my-2 mr-4" />
+					<TagCard v-for="t in props.tags" :key="t.name" :tag="t.name" class="my-2 mr-4" />
 				</div>
 			</div>
 			<!-- Right side: Image -->
 			<div
-				v-if="fetchedPost.post.featuredPhotoCID !== `` && featuredPhoto === null"
+				v-if="props.featuredphotocid !== `` && featuredPhoto === null"
 				class="w-full xl:w-56 h-48 xl:h-32 bg-gray1 dark:bg-gray7 flex-shrink-0 animate-pulse rounded-lg mt-4 xl:mt-0"
 			></div>
 			<div
-				v-if="fetchedPost.post.featuredPhotoCID !== `` && featuredPhoto !== null"
+				v-if="props.featuredphotocid !== `` && featuredPhoto !== null"
 				class="mt-4 w-full flex-shrink-0 xl:mt-0 xl:w-56 modal-animation"
 			>
-				<router-link class="cursor-pointer" :to="`/post/` + fetchedPost.post._id">
+				<router-link class="cursor-pointer" :to="`/post/` + props.id">
 					<img :src="featuredPhoto" class="h-48 w-full flex-shrink-0 rounded-lg object-cover xl:h-32" />
 				</router-link>
 			</div>

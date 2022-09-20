@@ -11,15 +11,20 @@ import ChevronDown from '../icons/ChevronDown.vue';
 import ChevronUp from '../icons/ChevronUp.vue';
 import { toastError, toastSuccess } from '../../plugins/toast';
 // import axios from 'axios'
-import { IGenericPostResponse } from '@/backend/post';
-import { PropType, ref } from 'vue';
+import { ref, PropType } from 'vue';
+import { createPostExcerpt } from '@/helpers/post';
 // import { capsuleServer, baseUrl } from './../../backend/utilities/config'
 // import { handleError } from '@/plugins/toast'
 
 const emit = defineEmits([`close`]);
 
 const props = defineProps({
-	fetchedPost: { type: Object as PropType<IGenericPostResponse>, required: true },
+	id: { type: String, required: true },
+	title: { type: String, required: true },
+	subtitle: { type: String as PropType<string | null>, required: true },
+	excerpt: { type: String, required: true },
+	featuredphotocid: { type: String, required: true },
+	authorid: { type: String, required: true },
 });
 
 const image = ref<string>(``);
@@ -66,7 +71,7 @@ function copyBlogchainLink() {
 
 async function generateLinks() {
 	// Might need backend investigation into error response on production
-	if (!props.fetchedPost.post._id) {
+	if (!props.id) {
 		return;
 	}
 	// const cid: string = props.cid
@@ -86,7 +91,7 @@ function twitterShare() {
 	window.open(
 		`https://twitter.com/share?url=${encodeURIComponent(
 			generatedDirectLink.value.toString(),
-		)}&hashtags=blogchain&text=${props.fetchedPost.post.title} by ${props.fetchedPost.post.authorID}`,
+		)}&hashtags=blogchain&text=${props.title} by ${props.authorid}`,
 	);
 }
 
@@ -95,18 +100,22 @@ function facebookShare() {
 }
 
 function redditShare() {
-	window.open(`https://reddit.com/submit?url=${generatedDirectLink.value}&title=${props.fetchedPost.post.title}`);
+	window.open(`https://reddit.com/submit?url=${generatedDirectLink.value}&title=${props.title}`);
 }
 
 function linkedinShare() {
 	window.open(
-		`https://www.linkedin.com/shareArticle?url=${generatedDirectLink.value}&title=${props.fetchedPost.post.title}&summary=${props.fetchedPost.post.subtitle}&source=blogchain.app`,
+		`https://www.linkedin.com/shareArticle?url=${generatedDirectLink.value}&title=${props.title}&summary=${
+			props.subtitle ? props.subtitle : createPostExcerpt(props.excerpt)
+		}&source=blogchain.app`,
 	);
 }
 
 function mailShare() {
 	window.open(
-		`mailto:?subject=${props.fetchedPost.post.title}&body=${props.fetchedPost.post.subtitle}%0D%0A%0D%0A${generatedDirectLink.value}`,
+		`mailto:?subject=${props.title}&body=${
+			props.subtitle ? props.subtitle : createPostExcerpt(props.excerpt)
+		}%0D%0A%0D%0A${generatedDirectLink.value}`,
 	);
 }
 
@@ -134,11 +143,11 @@ generateLinks();
 				class="bg-lightInput dark:bg-darkInput p-4 rounded-lg w-full flex flex-col lg:flex-row items-start lg:items-center"
 			>
 				<div
-					v-if="fetchedPost.post.featuredPhotoCID !== `` && image === ``"
+					v-if="props.featuredphotocid !== `` && image === ``"
 					class="w-full lg:w-56 h-48 lg:h-32 bg-gray1 dark:bg-gray7 flex-shrink-0 animate-pulse rounded-lg mt-0 lg:mt-0 lg:mr-4 mb-4 lg:mb-0"
 				></div>
 				<div
-					v-if="fetchedPost.post.featuredPhotoCID !== `` && image !== ``"
+					v-if="props.featuredphotocid !== `` && image !== ``"
 					class="mt-4 w-full flex-shrink-0 lg:mt-0 lg:w-56 modal-animation lg:mr-4"
 				>
 					<a class="cursor-pointer" href="#">
@@ -148,16 +157,16 @@ generateLinks();
 				<div class="flex max-w-full flex-col overflow-hidden">
 					<p class="text-gray5 dark:text-gray3 text-sm mb-2">blogchain.app</p>
 					<h3 class="break-words mb-1 text-base font-semibold dark:text-darkPrimaryText">
-						{{ fetchedPost.post.title }}
+						{{ props.title }}
 					</h3>
 					<h6 v-if="image" class="max-w-420 break-words text-sm dark:text-darkSecondaryText">
-						{{ fetchedPost.post.subtitle }}
+						{{ props.subtitle ? props.subtitle : createPostExcerpt(props.excerpt) }}
 					</h6>
 					<h6
 						v-if="!image"
 						class="max-w-mobileCard xl:max-w-700 break-words text-lightSecondaryText dark:text-darkSecondaryText"
 					>
-						{{ fetchedPost.post.subtitle }}
+						{{ props.subtitle ? props.subtitle : createPostExcerpt(props.excerpt) }}
 					</h6>
 				</div>
 			</div>

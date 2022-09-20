@@ -11,6 +11,7 @@ defineProps({
 <template>
 	<button
 		class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary dark:hover:text-primary w-5 h-5"
+		style="margin-top: 2px"
 		@click="() => {}"
 	>
 		<BookmarkIcon />

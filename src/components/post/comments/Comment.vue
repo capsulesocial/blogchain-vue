@@ -9,7 +9,7 @@ import { useStore } from '@/store/session';
 import { ICommentData } from '@/backend/comment';
 import MoreIcon from '@/components/icons/MoreIcon.vue';
 import BinIcon from '@/components/icons/BinIcon.vue';
-import Reply from '@/components/post/Reply.vue';
+import Reply from '@/components/post/comments/Reply.vue';
 
 const settings = useStoreSettings();
 const store = useStore();
@@ -79,7 +79,7 @@ function toggleDropdownDelete() {
 			<div class="mr-4 hidden items-start justify-between lg:flex">
 				<!-- <Avatar
 				:avatar="avatar"
-				:author-i-d="authorID"
+				:authorid="authorID"
 				size="w-12 h-12"
 				style="margin-top: 2px; margin-left: 2px; margin-right: 2px"
 			/> -->
@@ -229,7 +229,7 @@ function toggleDropdownDelete() {
 							v-for="r in filterReplies()"
 							:key="r._id"
 							:commenter-i-d="commentAuthor.id"
-							:author-i-d="r.authorID"
+							:authorid="r.authorID"
 							:cid="r._id"
 							:timestamp="r.timestamp"
 							class="pt-1 mt-2"
