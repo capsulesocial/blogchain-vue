@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useMeta } from 'vue-meta';
 import { useProfilesStore } from '@/store/profiles';
+import { useSubscriptionStore } from '@/store/subscriptions';
 import { useStore } from '@/store/session';
 import { useConnectionsStore } from '@/store/connections';
 import BackButton from '@/components/icons/ChevronLeft.vue';
@@ -19,10 +20,12 @@ import { handleError } from '@/plugins/toast';
 import BioPopup from '@/components/popups/BioPopup.vue';
 
 const store = useStore();
+const useSubscription = useSubscriptionStore();
 const router = useRouter();
 const route = useRoute();
 const profilesStore = useProfilesStore();
 const connectionsStore = useConnectionsStore();
+useSubscription.fetchSubs(store.$state.id);
 
 if (typeof route.params.id !== 'string') {
 	throw new Error('Invalid param type for id');
@@ -31,8 +34,8 @@ const profileExists = ref<boolean>(false);
 const authorID = computed(() => route.params.id as string);
 const profile = computed(() => profilesStore.getProfile(authorID.value));
 connectionsStore.fetchConnections(authorID.value);
-
 const connections = computed(() => connectionsStore.getConnections(authorID.value));
+const isActiveSub = ref<boolean>(false);
 
 useMeta({
 	title: profile.value.name
@@ -53,6 +56,15 @@ onMounted(async () => {
 	}
 	void profilesStore.fetchProfile(authorID.value);
 	void useConnectionsStore().fetchConnections(store.id);
+
+	const activeSubs = await useSubscription.$state.active;
+	activeSubs.forEach((activeSub) => {
+		if (activeSub.authorID !== authorID.value) {
+			isActiveSub.value = true;
+			return;
+		}
+		isActiveSub.value = false;
+	});
 });
 
 const fromExternalSite = ref<boolean>(false);
@@ -62,7 +74,6 @@ const scrollingDown = ref<boolean>(false);
 const paymentsEnabled = ref<boolean>(true);
 const totalPostsCount = ref<number>(0);
 const userIsFollowed = ref<boolean>(false);
-const activeSubscription = ref<boolean>(false);
 const longBio = ref<boolean>(profile.value.bio.length > 200);
 const expandBio = ref<boolean>(false);
 const openFollowersPopup = ref<boolean>(false);
@@ -77,6 +88,8 @@ router.beforeEach((to, from, next) => {
 		}
 	});
 });
+
+// methods
 function handleBack() {
 	if (fromExternalSite.value) {
 		router.push(`/home`);
@@ -85,9 +98,6 @@ function handleBack() {
 	router.go(-1);
 }
 function toggleFriend() {
-	return;
-}
-function toggleSubscription() {
 	return;
 }
 function toggleEdit() {
@@ -264,12 +274,9 @@ function getStyles(tab: string): string {
 						class="header-profile flex-shrink-0"
 					/>
 					<!-- Subscription button -->
-					<SubscribeButton
-						v-if="!selfView && paymentsEnabled"
-						:toggle-subscription="toggleSubscription"
-						:user-is-subscribed="activeSubscription"
-						class="header-profile flex-shrink-0 ml-2"
-					/>
+					<div v-if="!selfView && paymentsEnabled" class="header-profile flex-shrink-0 ml-2">
+						<SubscribeButton :user-is-subscribed="isActiveSub" />
+					</div>
 				</div>
 			</div>
 			<!-- Bio -->
