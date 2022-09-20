@@ -2,15 +2,15 @@ import { defineStore } from 'pinia';
 import { getFollowersAndFollowing } from '@/backend/following';
 
 export interface Connections {
-	followers: string[];
-	following: string[];
+	followers: Set<string>;
+	following: Set<string>;
 }
 
 export const useConnectionsStore = defineStore(`connections`, {
 	state: (): Connections => {
 		return {
-			followers: [],
-			following: [],
+			followers: new Set(),
+			following: new Set(),
 		};
 	},
 	persist: true,
@@ -24,10 +24,10 @@ export const useConnectionsStore = defineStore(`connections`, {
 		isFollowing:
 			(state: Connections) =>
 			(id: string): boolean => {
-				return state.following.indexOf(id) !== -1;
+				return state.following.has(id);
 			},
 		isFollowed: (state: Connections) => (id: string) => {
-			return state.followers.indexOf(id) !== -1;
+			return state.followers.has(id);
 		},
 	},
 	actions: {
@@ -36,8 +36,8 @@ export const useConnectionsStore = defineStore(`connections`, {
 				return;
 			}
 			const { followers, following } = await getFollowersAndFollowing(me);
-			this.followers = [...followers];
-			this.following = [...following];
+			this.followers = followers;
+			this.following = following;
 		},
 	},
 });
