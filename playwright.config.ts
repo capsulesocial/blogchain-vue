@@ -2,7 +2,7 @@ import type { PlaywrightTestConfig } from '@playwright/test';
 import { devices } from '@playwright/test';
 const config: PlaywrightTestConfig = {
 	testDir: './tests',
-	timeout: 30 * 1000,
+	timeout: 50 * 1000,
 	expect: {
 		timeout: 5000,
 	},
@@ -85,9 +85,9 @@ const config: PlaywrightTestConfig = {
 
 	/* Run your local dev server before starting the tests */
 	webServer: {
-		command: 'yarn dev',
+		command: 'yarn run dev',
 		port: 3000,
-		timeout: 120 * 1000,
+		timeout: 30 * 1000,
 	},
 };
 
