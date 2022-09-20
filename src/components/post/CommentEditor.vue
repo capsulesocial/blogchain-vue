@@ -83,7 +83,7 @@ function sendComment() {
 </script>
 
 <template>
-	<div class="px-6 py-4">
+	<div class="py-4">
 		<!-- Top overlay with selector -->
 		<div v-show="showEmotions" class="relative flex w-full flex-row-reverse">
 			<div

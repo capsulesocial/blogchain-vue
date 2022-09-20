@@ -12,16 +12,19 @@ import StatsIcon from '@/components/icons/StatsIcon.vue';
 import { onBeforeMount, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from '@/store/session';
-// import { useStoreSettings } from '@/store/settings';
+import { useStoreSettings } from '@/store/settings';
 import { getOnePost, getPost, IPostImageKey, IPostResponseWithHidden } from '@/backend/post';
 import type { Post } from '@/backend/post';
 import type { Profile } from '@/backend/profile';
 import { formatDate } from '@/helpers/helpers';
 import Comment from '@/components/post/Comment.vue';
+import BookmarkButton from '@/components/post/BookmarkButton.vue';
+import RepostIcon from '@/components/icons/RepostIcon.vue';
+import QuoteIcon from '@/components/icons/QuoteIcon.vue';
 // import { calculateReadingTime } from '@/backend/utilities/helpers';
 
 const store = useStore();
-// const storeSettings = useStoreSettings();
+const settings = useStoreSettings();
 const router = useRouter();
 const post = ref<Post>();
 const postMetadata = ref<IPostResponseWithHidden>();
@@ -43,6 +46,7 @@ const subscriptionStatus = ref<`INSUFFICIENT_TIER` | `NOT_SUBSCRIBED` | ``>(``);
 // Local states
 const showShare = ref<boolean>(false);
 const showStats = ref<boolean>(false);
+const showReposts = ref<boolean>(false);
 const lastScroll = ref<number>(0);
 const filter = ref<string>(``);
 
@@ -115,6 +119,15 @@ function handleScroll() {
 	}
 	lastScroll.value = currentScroll;
 }
+
+function isReposted() {
+	if (postMetadata.value?.reposted) {
+		if (postMetadata.value.reposted !== ``) {
+			return true;
+		}
+	}
+	return false;
+}
 </script>
 <template>
 	<div
@@ -181,32 +194,30 @@ function handleScroll() {
 					</div>
 				</div>
 			</header>
+			<!-- Reader -->
 			<section class="mb-5 mt-8 p-5 lg:p-0 pb-16 pt-2 md:pb-5">
 				<!-- Post content -->
 				<article class="relative">
-					<!-- Category and elipses -->
+					<!-- Category and actions -->
 					<article class="my-5 flex w-full justify-between">
 						<router-link :to="`/discover/` + post.category" class="text-primary capitalize">{{
 							post.category.replace(`-`, ` `)
 						}}</router-link>
-						<div class="flex">
-							<!-- <BookmarkButton
-								:post-i-d="$route.params.post"
-								:has-bookmark="isBookmarked"
-								class="pr-2"
-								@clicked="getBookmarkStatus"
-							/> -->
+						<div class="flex items-center">
+							<!-- Bookmark button -->
+							<BookmarkButton :has-bookmark="postMetadata?.bookmarked ? postMetadata?.bookmarked : false" />
 							<!-- Share popup button -->
-							<!-- <button
-								class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary hover:fill-primary flex items-center"
+							<button
+								class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary ml-2 hover:fill-primary flex items-center"
 								:class="showShare ? `text-primary` : ``"
 								style="margin-top: 2px"
 								@click="showShare = !showShare"
 							>
 								<ShareIcon :is-active="showShare" />
-							</button> -->
+							</button>
 						</div>
 					</article>
+					<!-- Title and subtitle -->
 					<article>
 						<h1
 							class="text-lightPrimaryText dark:text-darkPrimaryText text-h1 mb-3 break-words font-serif font-semibold"
@@ -220,8 +231,8 @@ function handleScroll() {
 							{{ post.subtitle }}
 						</h2>
 					</article>
+					<!-- IPFS loader -->
 					<div v-if="!post.content && !showPaywall && !featuredPhoto" class="lg:w-760 lg:max-w-760 h-fit w-full">
-						<!-- Featured Photo loader -->
 						<div
 							v-if="hasFeaturedPhoto"
 							class="h-72 w-full rounded-xl bg-gray1 dark:bg-gray7 animate-pulse mb-6 flex justify-center items-center mt-6"
@@ -264,6 +275,7 @@ function handleScroll() {
 							</div>
 						</div>
 					</div>
+					<!-- Post content-->
 					<div class="relative">
 						<!-- Featured Photo -->
 						<button
@@ -289,6 +301,7 @@ function handleScroll() {
 								{{ post.featuredPhotoCaption }}
 							</p>
 						</button>
+						<!-- Content loader -->
 						<div v-if="!post.content && !showPaywall" class="lg:w-760 lg:max-w-760 h-fit w-full mt-6">
 							<div v-if="initNodes && !loadingIPFS && !initIPFS && !startIPFS" class="mb-6">
 								<div class="flex items-center">
@@ -301,7 +314,6 @@ function handleScroll() {
 									</span>
 								</div>
 							</div>
-							<!-- Content loader -->
 							<div>
 								<div class="h-3 w-full rounded-xl bg-gray1 dark:bg-gray7 animate-pulse mb-2"></div>
 								<div class="h-3 w-full rounded-xl bg-gray1 dark:bg-gray7 animate-pulse mb-2"></div>
@@ -314,7 +326,7 @@ function handleScroll() {
 								<div class="h-3 w-2/5 rounded-xl bg-gray1 dark:bg-gray7 animate-pulse"></div>
 							</div>
 						</div>
-						<!-- Private sensitive content -->
+						<!-- If post is premium, add height to display the paywall -->
 						<div
 							v-else-if="showPaywall && (!hasFeaturedPhoto || (hasFeaturedPhoto && !featuredPhoto))"
 							class="h-64"
@@ -445,25 +457,42 @@ function handleScroll() {
 					:class="showPaywall ? `mb-10` : ``"
 				/> -->
 				<!-- post actions -->
-				<article v-if="post !== null && !showPaywall" class="pt-5 pb-14">
+				<article v-if="post !== null && !showPaywall" class="py-6">
 					<div class="flex flex-row justify-between">
-						<div class="flex items-center">
-							<!-- <BookmarkButton
-								:post-i-d="$route.params.post"
-								:has-bookmark="isBookmarked"
-								@clicked="getBookmarkStatus"
-							/> -->
-							<!-- <RepostButton
-								:post="post"
-								:cid="$route.params.post"
-								:has-repost="hasReposted"
-								:repost-count="repostCount"
-								class="ml-2 mr-3"
-								@toggleRepost="handleRepost"
-							/> -->
+						<div class="flex items-center relative">
+							<!-- Bookmark button -->
+							<BookmarkButton :has-bookmark="postMetadata?.bookmarked ? postMetadata?.bookmarked : false" />
+							<!-- Repost button -->
+							<button
+								class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary dark:hover:text-primary ml-4 flex items-center"
+								:class="showReposts ? `text-primary` : ``"
+								@click="showReposts = !showReposts"
+							>
+								<RepostIcon class="w-5 h-5" />
+								<span class="ml-1 text-sm">{{ postMetadata?.repostCount ? postMetadata?.repostCount : 0 }}</span>
+							</button>
+							<!-- Repost tooltip -->
+							<div
+								v-show="showReposts"
+								class="bg-lightBG dark:bg-darkBG text-lightPrimaryText dark:text-darkPrimaryText border-lightBorder modal-animation absolute z-20 flex w-40 flex-col rounded-lg border p-2 shadow-lg"
+								:class="settings.isDarkMode ? `dropdownRepostOpenDark` : `dropdownRepostOpen`"
+								style="left: 85px; bottom: -2px"
+							>
+								<!-- Simple Repost -->
+								<button class="hover:text-primary focus:outline-none text-gray5 dark:text-gray3 flex mr-4 items-center">
+									<RepostIcon :shrink="true" class="mr-2 p-1" :class="isReposted() ? `text-primary` : ``" />
+									<span v-if="isReposted()" class="self-center text-xs">Undo Repost</span>
+									<span v-else class="self-center text-xs">Repost to Feed</span>
+								</button>
+								<!-- Quote Repost -->
+								<button class="hover:text-primary focus:outline-none text-gray5 dark:text-gray3 flex mr-4 items-center">
+									<QuoteIcon class="mr-2 p-1" />
+									<span class="self-center text-xs">Quote</span>
+								</button>
+							</div>
 							<!-- Share popup button -->
 							<button
-								class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary mr-4 hover:fill-primary flex items-center"
+								class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary ml-4 hover:fill-primary flex items-center"
 								:class="showShare ? `text-primary` : ``"
 								style="margin-top: 2px"
 								@click="showShare = !showShare"
@@ -475,9 +504,9 @@ function handleScroll() {
 					</div>
 				</article>
 				<!-- Comments -->
-				<article v-if="post !== null && !showPaywall" class="pt-5 pb-14">
+				<article v-if="post !== null && !showPaywall" class="pb-14">
 					<!-- filters -->
-					<div class="flex w-full justify-between px-6 py-5">
+					<div class="flex w-full justify-between pb-5">
 						<div class="flex flex-row items-center">
 							<span class="pr-2 font-semibold dark:text-darkPrimaryText"
 								>{{ postMetadata?.commentsCount }}
@@ -490,7 +519,7 @@ function handleScroll() {
 					<!-- Comment editor -->
 					<CommentEditor :comments-count="postMetadata?.commentsCount ? postMetadata?.commentsCount : 0" />
 					<!-- Comments -->
-					<div v-for="i in 20" :key="i"><Comment class="px-6 mb-4" /></div>
+					<div v-for="i in 20" :key="i"><Comment class="mb-4" /></div>
 				</article>
 			</section>
 		</div>

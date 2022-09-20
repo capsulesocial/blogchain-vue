@@ -43,7 +43,7 @@ function setFilter(reaction: string): void {
 				<CommentFilter :filter="filter" class="modal-animation" @clicked="setFilter" />
 			</div>
 			<!-- Comment editor -->
-			<CommentEditor :fetched-post="props.fetchedPost" />
+			<CommentEditor :comments-count="props.fetchedPost.commentsCount" class="px-6" />
 			<!-- Comments -->
 			<div v-for="i in 20" :key="i"><Comment class="px-6 mb-4" /></div>
 		</div>
