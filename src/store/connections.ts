@@ -32,7 +32,7 @@ export const useConnectionsStore = defineStore(`connections`, {
 	},
 	actions: {
 		async fetchConnections(me: string) {
-			if (me) {
+			if (me === ``) {
 				return;
 			}
 			const { followers, following } = await getFollowersAndFollowing(me);

@@ -20,6 +20,8 @@ if (route.name !== `Home`) {
 }
 
 const authorID: string = route.name === `Home` ? store.$state.id : (route.params.id as string);
+profilesStore.fetchProfile(authorID);
+
 const profile = computed(() => profilesStore.getProfile(authorID as string));
 const followers = ref<Profile[]>([]);
 // TODO: fetch followers from store / backend
