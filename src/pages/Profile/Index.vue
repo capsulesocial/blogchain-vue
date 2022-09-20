@@ -16,6 +16,7 @@ import FollowingPopup from '@/components/popups/FollowingPopup.vue';
 import { getUserInfoNEAR } from '@/backend/near';
 import { handleError } from '@/plugins/toast';
 import BioPopup from '@/components/popups/BioPopup.vue';
+import { useConnectionsStore } from '@/store/connections';
 
 const store = useStore();
 const router = useRouter();
@@ -46,6 +47,7 @@ onMounted(async () => {
 		router.push(`/not-found`);
 	}
 	void profilesStore.fetchProfile(authorID);
+	void useConnectionsStore().fetchConnections(store.id);
 });
 
 const fromExternalSite = ref<boolean>(false);

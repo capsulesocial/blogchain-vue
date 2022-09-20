@@ -13,13 +13,13 @@ export const useConnectionsStore = defineStore(`connections`, {
 			following: new Set(),
 		};
 	},
-	persist: true,
+	persist: false,
 	getters: {
-		getFollowingList: (state: Connections) => {
-			return state.following;
+		followingList: (state: Connections) => {
+			return Array.from(state.following);
 		},
-		getFollowersList: (state: Connections) => {
-			return state.followers;
+		followersList: (state: Connections) => {
+			return Array.from(state.followers);
 		},
 		isFollowing:
 			(state: Connections) =>
