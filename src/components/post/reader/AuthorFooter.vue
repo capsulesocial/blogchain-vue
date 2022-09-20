@@ -26,7 +26,7 @@ onMounted(async () => {
 </script>
 
 <template>
-	<div class="my-5 border-t border-b py-5 dark:border-gray7">
+	<div class="mb-5 border-t border-b py-5 dark:border-gray7">
 		<div class="flex flex-col items-center justify-between lg:flex-row">
 			<div>
 				<h6 class="text-gray5 dark:text-gray3 mb-4 font-sans text-sm">Written By:</h6>

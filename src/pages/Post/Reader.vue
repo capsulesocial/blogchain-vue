@@ -403,13 +403,6 @@ function isReposted() {
 						</div>
 					</div>
 				</article>
-				<!-- Author -->
-				<AuthorFooter
-					:id="post.authorID"
-					:is-followed="userIsFollowed"
-					:toggle-friend="toggleFriend"
-					:class="showPaywall ? `mb-10` : ``"
-				/>
 				<!-- post actions -->
 				<article v-if="post !== null && !showPaywall" class="py-6">
 					<div class="flex flex-row justify-between">
@@ -460,6 +453,13 @@ function isReposted() {
 						</div>
 					</div>
 				</article>
+				<!-- Author -->
+				<AuthorFooter
+					:id="post.authorID"
+					:is-followed="userIsFollowed"
+					:toggle-friend="toggleFriend"
+					:class="showPaywall ? `mb-10` : ``"
+				/>
 				<!-- Comments -->
 				<article v-if="post !== null && !showPaywall && !showStats" class="pb-14">
 					<!-- filters -->
