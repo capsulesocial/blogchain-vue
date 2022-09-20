@@ -1,10 +1,5 @@
 <script setup lang="ts">
-import { useMeta } from 'vue-meta';
 import Comment from '@/components/post/comments/Comment.vue';
-useMeta({
-	title: `authorName - Blogchain`,
-	htmlAttrs: { lang: 'en', amp: true },
-});
 </script>
 
 <template>
