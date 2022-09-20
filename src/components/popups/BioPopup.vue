@@ -1,32 +1,26 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useProfilesStore } from '@/store/profiles';
-import { useRoute } from 'vue-router';
-import { useStore } from '@/store/session';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
 
 const profilesStore = useProfilesStore();
-const route = useRoute();
-const store = useStore();
 const emit = defineEmits([`close`]);
 
-if (route.name !== `Home`) {
-	if (typeof route.params.id !== 'string') {
-		throw new Error('Invalid param type for id');
-	}
-}
+const props = defineProps({
+	id: { type: String, required: true },
+});
 
-const authorID = route.name === `Home` ? store.$state.id : route.params.id;
+const authorID = props.id ? props.id : undefined;
 const profile = computed(() => profilesStore.getProfile(authorID as string));
 </script>
 <template>
 	<div
-		class="bg-darkBG dark:bg-gray5 modal-animation fixed top-0 bottom-0 left-0 right-0 z-30 flex h-screen w-full items-center justify-center bg-opacity-50 dark:bg-opacity-50"
+		class="popup bg-darkBG dark:bg-gray5 modal-animation fixed top-0 bottom-0 left-0 right-0 z-30 flex h-screen w-full items-center justify-center bg-opacity-50 dark:bg-opacity-50"
 		@click.self="emit(`close`)"
 	>
 		<!-- Container -->
 		<div
-			class="w-full lg:w-600 min-h-40 max-h-90 bg-lightBG dark:bg-darkBGStop card-animation z-10 overflow-y-auto rounded-lg p-6 pt-4 shadow-lg"
+			class="popup w-full lg:w-600 min-h-40 max-h-90 bg-lightBG dark:bg-darkBGStop card-animation z-10 overflow-y-auto rounded-lg p-6 pt-4 shadow-lg"
 		>
 			<div class="sticky flex items-center justify-between">
 				<h2 v-if="profile.name !== ``" class="text-lightPrimaryText dark:text-darkPrimaryText text-xl font-semibold">

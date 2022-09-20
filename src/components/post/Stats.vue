@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { PropType, ref } from 'vue';
-import { IGenericPostResponse } from '@/backend/post';
+import { ref } from 'vue';
 import { useStoreSettings } from '@/store/settings';
 import { ICommentsStats, getCommentsStats } from '@/backend/comment';
 import { IFace, faces } from '@/config/faces';
@@ -29,7 +28,9 @@ const page = ref<number>(0);
 // const emit = defineEmits([`close`]);
 
 const props = defineProps({
-	fetchedPost: { type: Object as PropType<IGenericPostResponse>, required: true },
+	id: { type: String, required: true },
+	bookmarkscount: { type: Number, required: true },
+	repostcount: { type: Number, required: true },
 });
 
 function getStyle(emotionType: string): string {
@@ -44,7 +45,7 @@ function getStyle(emotionType: string): string {
 }
 
 async function updateCommentsStats() {
-	commentsStats.value = await getCommentsStats(props.fetchedPost.post._id);
+	commentsStats.value = await getCommentsStats(props.id);
 	const { faceStats } = commentsStats.value;
 	const stats: Record<string, FaceStat> = {};
 
@@ -62,7 +63,7 @@ updateCommentsStats();
 </script>
 <template>
 	<!-- container -->
-	<div class="px-6 pb-6">
+	<div class="pb-6">
 		<!-- Global Activity -->
 		<div class="flex h-32 justify-between items-center border-b pt-5">
 			<!-- Stats image -->
@@ -75,17 +76,17 @@ updateCommentsStats();
 				<div class="flex flex-row">
 					<!-- Bookmarks Count -->
 					<div class="flex flex-col pr-5">
-						<h2 class="text-2xl font-semibold">{{ props.fetchedPost.bookmarksCount }}</h2>
+						<h2 class="text-2xl font-semibold">{{ props.bookmarkscount }}</h2>
 						<span class="text-sm">Bookmarks</span>
 					</div>
 					<!-- Reposts count -->
 					<div class="flex flex-col">
-						<h2 class="text-2xl font-semibold">{{ props.fetchedPost.repostCount }}</h2>
+						<h2 class="text-2xl font-semibold">{{ props.repostcount }}</h2>
 						<span class="text-sm">Reposts</span>
 					</div>
 				</div>
 			</div>
-			<div v-if="props.fetchedPost.repostCount > 0" class="flex flex-col w-2/5 lg:w-1/5">
+			<div v-if="props.repostcount > 0" class="flex flex-col w-2/5 lg:w-1/5">
 				<!-- Show reposters and quotes -->
 				<button class="text-sm text-primary h-fit flex items-center">
 					<RepostIcon :shrink="true" class="mr-2 p-1" />

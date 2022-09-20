@@ -280,7 +280,7 @@ function getStyles(tab: string): string {
 			<button
 				v-show="longBio"
 				id="readMore"
-				class="header-profile focus:outline-none text-xs text-primary px-1"
+				class="header-profile focus:outline-none text-xs text-primary py-1"
 				@click="expandBio = true"
 			>
 				Read more
@@ -316,6 +316,6 @@ function getStyles(tab: string): string {
 	<Teleport to="body">
 		<FollowersPopup v-if="openFollowersPopup" @close="openFollowersPopup = false" />
 		<FollowingPopup v-if="openFollowingPopup" @close="openFollowingPopup = false" />
-		<BioPopup v-if="expandBio" @close="expandBio = false" />
+		<BioPopup v-if="expandBio" :id="authorID" @close="expandBio = false" />
 	</Teleport>
 </template>

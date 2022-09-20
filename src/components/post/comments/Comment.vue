@@ -9,7 +9,7 @@ import { useStore } from '@/store/session';
 import { ICommentData } from '@/backend/comment';
 import MoreIcon from '@/components/icons/MoreIcon.vue';
 import BinIcon from '@/components/icons/BinIcon.vue';
-import Reply from '@/components/post/Reply.vue';
+import Reply from '@/components/post/comments/Reply.vue';
 
 const settings = useStoreSettings();
 const store = useStore();

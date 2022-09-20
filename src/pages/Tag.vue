@@ -72,7 +72,7 @@ isLoading.value = false;
 				It seems there are no posts under this topic yet
 			</p>
 			<SecondaryButton :text="`Back home`" :action="toggleHomeFeed" />
-			<!-- <nuxt-img src="/images/tag.webp" loading="lazy" class="top-0 mt-64 xl:mt-10" /> -->
+			<!-- <img src="/images/tag.webp" loading="lazy" class="top-0 mt-64 xl:mt-10" /> -->
 		</article>
 		<article v-for="p in posts" :key="p.id">
 			<!-- TODO: RENDER THE POST CARDS HERE  -->
