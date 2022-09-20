@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onBeforeMount } from 'vue';
+import HorizontalProfilePreview from '@/components/HorizontalProfilePreview.vue';
+import CloseIcon from '@/components/icons/CloseIcon.vue';
 import type { Profile } from '@/backend/profile';
 import { useProfilesStore } from '@/store/profiles';
 import { useRoute } from 'vue-router';
 import { useStore } from '@/store/session';
-import HorizontalProfilePreview from '@/components/HorizontalProfilePreview.vue';
-import CloseIcon from '@/components/icons/CloseIcon.vue';
+import { getFollowersAndFollowing } from '@/backend/following';
 
 const profilesStore = useProfilesStore();
 const route = useRoute();
@@ -18,31 +19,24 @@ if (route.name !== `Home`) {
 	}
 }
 
-const authorID = route.name === `Home` ? store.$state.id : route.params.id;
+const authorID: string = route.name === `Home` ? store.$state.id : (route.params.id as string);
 const profile = computed(() => profilesStore.getProfile(authorID as string));
+const followers = ref<Profile[]>([]);
 // TODO: fetch followers from store / backend
-const followers = ref<Profile[]>([
-	{
-		id: `oiahefoiheoafheaf`,
-		name: `Tom Brady`,
-		email: `tb12@gmail.com`,
-		bio: `6-time super bowl champion`,
-		location: `Tampa Bay`,
-		avatar: ``,
-		socials: [],
-		website: `tb12.com`,
-	},
-	{
-		id: `fziohogheabfhoeaof`,
-		name: `Tom Not Brady`,
-		email: `tb12@gmail.com`,
-		bio: `6-time super bowl champion`,
-		location: `Tampa Bay`,
-		avatar: ``,
-		socials: [],
-		website: `tb12.com`,
-	},
-]);
+onBeforeMount(async () => {
+	// Fetch followers list
+	const res = await getFollowersAndFollowing(authorID);
+	if (!res.followers) {
+		return;
+	}
+	res.followers.forEach((id) => {
+		const p = profilesStore.getProfile(id);
+		if (!p) {
+			return;
+		}
+		followers.value.push(p);
+	});
+});
 </script>
 <template>
 	<div
