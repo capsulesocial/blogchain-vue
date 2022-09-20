@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, PropType } from 'vue';
+import { ref } from 'vue';
 import { useStore } from '@/store/session';
 import { Tag } from '@/backend/post';
 import SimpleQuoteCard from '@/components/post/SimpleQuoteCard.vue';
@@ -21,7 +21,7 @@ const props = defineProps({
 	bookmarked: { type: Boolean, required: true },
 	encrypted: { type: Boolean, required: true },
 	title: { type: String, required: true },
-	subtitle: { type: String as PropType<string | null>, required: true },
+	subtitle: { type: String, default: null },
 	excerpt: { type: String, required: true },
 	featuredphotocid: { type: String, required: true },
 	tags: { type: Array<Tag>, required: true },

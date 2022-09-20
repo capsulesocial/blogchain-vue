@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, PropType } from 'vue';
+import { computed, ref } from 'vue';
 import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
 import { useProfilesStore } from '@/store/profiles';
@@ -29,7 +29,7 @@ const props = defineProps({
 	bookmarked: { type: Boolean, required: true },
 	encrypted: { type: Boolean, required: true },
 	title: { type: String, required: true },
-	subtitle: { type: String as PropType<string | null>, required: true },
+	subtitle: { type: String, default: null },
 	excerpt: { type: String, required: true },
 	featuredphotocid: { type: String, required: true },
 	tags: { type: Array<Tag>, required: true },
