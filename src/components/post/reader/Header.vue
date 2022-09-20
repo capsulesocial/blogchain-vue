@@ -54,7 +54,7 @@ const handleClose = () => {
 			<div class="flex w-full justify-between xl:min-w-max xl:max-w-3xl">
 				<!-- Left side: name, avatar, date -->
 				<div class="flex items-center">
-					<Avatar :avatar="profile.avatar" :author-id="props.id" size="w-10 h-10" class="mr-4 flex-shrink-0" />
+					<Avatar :avatar="profile.avatar" :authorid="props.id" size="w-10 h-10" class="mr-4 flex-shrink-0" />
 					<div class="pr-8 flex flex-col">
 						<router-link
 							v-if="profile && profile.name !== ``"

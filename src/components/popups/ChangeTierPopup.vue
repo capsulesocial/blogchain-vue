@@ -113,7 +113,7 @@ initializeProfile();
 					<div v-if="step !== 3" class="flex flex-row">
 						<Avatar
 							class="flex-shrink-0"
-							:author-i-d="author.id"
+							:authorid="author.id"
 							:avatar="props.authorAvatar"
 							:no-click="true"
 							:size="`w-14 h-14`"

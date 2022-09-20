@@ -41,7 +41,7 @@ const activeAction = ref<`` | `comments` | `stats` | `share` | `quote`>(``);
 		</div>
 		<!-- show quote -->
 		<div v-if="activeAction === `quote`">
-			<QuotePopup :fetched-post="props.fetchedPost" @close="activeAction = ``" />
+			<!-- <QuotePopup :fetched-post="props.fetchedPost" @close="activeAction = ``" /> -->
 		</div>
 	</Teleport>
 </template>

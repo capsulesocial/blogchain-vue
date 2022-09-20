@@ -115,7 +115,7 @@ function sendComment() {
 					:avatar="
 						store.$state.id === `` ? require(`@/assets/images/avatars/unauthenticated.webp`) : store.$state.avatar
 					"
-					:author-i-d="store.$state.id"
+					:authorid="store.$state.id"
 					class="flex-shrink-0"
 					:no-click="true"
 					:size="`h-12 w-12`"

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { PropType, ref } from 'vue';
-import { IGenericPostResponse } from '@/backend/post';
+import { ref, PropType } from 'vue';
 import { useStore } from '@/store/session';
+import { Tag } from '@/backend/post';
 import SimpleQuoteCard from '@/components/post/SimpleQuoteCard.vue';
 import Avatar from '@/components/Avatar.vue';
 import BrandedButton from '@/components/BrandedButton.vue';
@@ -13,7 +13,18 @@ const emit = defineEmits([`close`, `stats`]);
 const store = useStore();
 
 const props = defineProps({
-	fetchedPost: { type: Object as PropType<IGenericPostResponse>, required: true },
+	authorid: { type: String, required: true },
+	id: { type: String, required: true },
+	timestamp: { type: Number, required: true },
+	wordcount: { type: Number, required: true },
+	postimages: { type: Number, required: true },
+	bookmarked: { type: Boolean, required: true },
+	encrypted: { type: Boolean, required: true },
+	title: { type: String, required: true },
+	subtitle: { type: String as PropType<string | null>, required: true },
+	excerpt: { type: String, required: true },
+	featuredphotocid: { type: String, required: true },
+	tags: { type: Array<Tag>, required: true },
 });
 
 const quoteContent = ref<string>(``);
@@ -44,7 +55,7 @@ function handleResize(e: any) {
 		>
 			<!-- Quote input -->
 			<div class="flex items-start flex-row lg:pb-4">
-				<Avatar :author-i-d="store.$state.id" :avatar="store.$state.avatar" class="flex-shrink-0" />
+				<Avatar :authorid="store.$state.id" :avatar="store.$state.avatar" class="flex-shrink-0" />
 				<textarea
 					ref="repostText"
 					v-model="quoteContent"
@@ -62,7 +73,22 @@ function handleResize(e: any) {
 				</button>
 			</div>
 			<!-- Quoted post with post summary -->
-			<SimpleQuoteCard :fetched-post="props.fetchedPost" class="hidden lg:block" @close="emit(`close`)" />
+			<SimpleQuoteCard
+				:id="props.id"
+				:authorid="props.authorid"
+				:timestamp="props.timestamp"
+				:wordcount="props.wordcount"
+				:postimages="props.postimages"
+				:bookmarked="props.bookmarked"
+				:encrypted="props.encrypted"
+				:title="props.title"
+				:subtitle="props.subtitle"
+				:excerpt="props.excerpt"
+				:featuredphotocid="props.featuredphotocid"
+				:tags="props.tags"
+				class="hidden lg:block"
+				@close="emit(`close`)"
+			/>
 			<!-- Quote button -->
 			<div
 				class="flex flex-row-reverse pt-4"

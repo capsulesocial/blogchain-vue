@@ -15,6 +15,7 @@ import AuthorFooter from '@/components/post/reader/AuthorFooter.vue';
 import Header from '@/components/post/reader/Header.vue';
 import Stats from '@/components/post/Stats.vue';
 import SharePopup from '@/components/popups/SharePopup.vue';
+import QuotePopup from '@/components/popups/QuotePopup.vue';
 
 import RepostIcon from '@/components/icons/RepostIcon.vue';
 import QuoteIcon from '@/components/icons/QuoteIcon.vue';
@@ -43,6 +44,7 @@ const subscriptionStatus = ref<`INSUFFICIENT_TIER` | `NOT_SUBSCRIBED` | ``>(``);
 const showShare = ref<boolean>(false);
 const showStats = ref<boolean>(false);
 const showReposts = ref<boolean>(false);
+const showQuote = ref<boolean>(false);
 const lastScroll = ref<number>(0);
 const filter = ref<string>(``);
 
@@ -437,7 +439,10 @@ function isReposted() {
 									<span v-else class="self-center text-xs">Repost to Feed</span>
 								</button>
 								<!-- Quote Repost -->
-								<button class="hover:text-primary focus:outline-none text-gray5 dark:text-gray3 flex mr-4 items-center">
+								<button
+									class="hover:text-primary focus:outline-none text-gray5 dark:text-gray3 flex mr-4 items-center"
+									@click="showQuote = true"
+								>
 									<QuoteIcon class="mr-2 p-1" />
 									<span class="self-center text-xs">Quote</span>
 								</button>
@@ -501,6 +506,22 @@ function isReposted() {
 				:featuredphotocid="post?.featuredPhotoCID ? post?.featuredPhotoCID : ``"
 				:authorid="post?.authorID ? post?.authorID : ``"
 				@close="showShare = false"
+			/>
+			<QuotePopup
+				v-if="showQuote && post"
+				:id="postMetadata?.post._id ? postMetadata?.post._id : ``"
+				:authorid="post.authorID"
+				:timestamp="post.timestamp"
+				:wordcount="postMetadata?.post.wordCount ? postMetadata?.post.wordCount : 0"
+				:postimages="post.postImages ? post.postImages?.length : 0"
+				:bookmarked="postMetadata?.bookmarked ? postMetadata?.bookmarked : false"
+				:encrypted="post.encrypted ? post.encrypted : false"
+				:title="post.title"
+				:subtitle="post?.subtitle ? post?.subtitle : null"
+				:excerpt="postMetadata?.post.excerpt ? postMetadata?.post.excerpt : ``"
+				:featuredphotocid="post?.featuredPhotoCID ? post?.featuredPhotoCID : ``"
+				:tags="post.tags"
+				@close="showQuote = false"
 			/>
 		</Teleport>
 	</div>
