@@ -6,6 +6,7 @@ import TitleContainer from './components/TitleContainer.vue';
 
 import { useStore } from './store/session';
 import { useStoreSettings } from './store/settings';
+import { useConnectionsStore } from '@/store/connections';
 import { initColors } from './plugins/colors';
 import { getBGImage } from './plugins/background';
 import { onBeforeMount, ref } from 'vue';
@@ -18,6 +19,7 @@ import { nextTick } from 'process';
 const router = useRouter();
 const store = useStore();
 const settings = useStoreSettings();
+const connections = useConnectionsStore();
 const avatar = ref<string>(``);
 const unauthRoutes = ref<string[]>([`Login`, `Register`]);
 const fullPageRoutes = ref<string[]>([`Payment Policy`, `Content Policy`, `Not Found`, `Post Reader`]);
@@ -42,6 +44,9 @@ onBeforeMount(() => {
 	settings.sync();
 	initColors();
 	getAvatar(store.$state.avatar);
+	if (store.id !== ``) {
+		connections.fetchConnections(store.id);
+	}
 });
 
 const setScroll = () => {
