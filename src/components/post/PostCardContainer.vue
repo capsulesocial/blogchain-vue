@@ -25,7 +25,15 @@ const activeAction = ref<`` | `comments` | `stats` | `share` | `quote`>(``);
 		</div>
 		<!-- show share -->
 		<div v-if="activeAction === `share`">
-			<SharePopup :fetched-post="props.fetchedPost" @close="activeAction = ``" />
+			<SharePopup
+				:id="props.fetchedPost.post._id"
+				:title="props.fetchedPost.post.title"
+				:subtitle="props.fetchedPost.post.subtitle"
+				:excerpt="props.fetchedPost.post.excerpt"
+				:featuredphotocid="props.fetchedPost.post.featuredPhotoCID ? props.fetchedPost.post.featuredPhotoCID : ``"
+				:authorid="props.fetchedPost.post.authorID"
+				@close="activeAction = ``"
+			/>
 		</div>
 		<!-- show stats -->
 		<div v-if="activeAction === `stats`">

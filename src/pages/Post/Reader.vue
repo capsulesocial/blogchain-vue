@@ -14,6 +14,7 @@ import BookmarkButton from '@/components/post/BookmarkButton.vue';
 import AuthorFooter from '@/components/post/reader/AuthorFooter.vue';
 import Header from '@/components/post/reader/Header.vue';
 import Stats from '@/components/post/Stats.vue';
+import SharePopup from '@/components/popups/SharePopup.vue';
 
 import RepostIcon from '@/components/icons/RepostIcon.vue';
 import QuoteIcon from '@/components/icons/QuoteIcon.vue';
@@ -57,7 +58,6 @@ const fetchPostMetadata = async (cid: string, currentUser?: string) => {
 	} catch (err) {
 		throw new Error(err as string);
 	}
-	console.log(postMetadata.value);
 };
 const setFilter = (f: string) => {
 	filter.value = f;
@@ -447,7 +447,7 @@ function isReposted() {
 								class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary ml-4 hover:fill-primary flex items-center"
 								:class="showShare ? `text-primary` : ``"
 								style="margin-top: 2px"
-								@click="showShare = !showShare"
+								@click="showShare = true"
 							>
 								<ShareIcon :is-active="showShare" />
 								<p class="ml-1 text-sm">Share</p>
@@ -491,6 +491,18 @@ function isReposted() {
 				</article>
 			</section>
 		</div>
+		<Teleport to="body">
+			<SharePopup
+				v-if="showShare"
+				:id="postMetadata?.post._id ? postMetadata?.post._id : ``"
+				:title="post?.title ? post?.title : ``"
+				:subtitle="post?.subtitle ? post?.subtitle : null"
+				:excerpt="postMetadata?.post.excerpt ? postMetadata?.post.excerpt : ``"
+				:featuredphotocid="post?.featuredPhotoCID ? post?.featuredPhotoCID : ``"
+				:authorid="post?.authorID ? post?.authorID : ``"
+				@close="showShare = false"
+			/>
+		</Teleport>
 	</div>
 </template>
 <style>
