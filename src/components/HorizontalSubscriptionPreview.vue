@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import Avatar from '@/components/Avatar.vue';
 import SubscribeButton from '@/components/SubscribeButton.vue';
+import { ISubscriptionWithProfile } from '@/store/subscriptions';
+import { PropType } from 'vue';
 
 defineProps({
 	subscription: {
-		type: Object,
+		type: Object as PropType<ISubscriptionWithProfile>,
 		required: true,
 	},
 });
