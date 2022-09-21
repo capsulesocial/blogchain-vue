@@ -1,16 +1,47 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import ipfs from '@capsulesocial/ipfs-wrapper';
+import { onMounted, ref } from 'vue';
 import { useStoreSettings } from '../store/settings';
 
 import CapsuleIcon from './icons/CapsuleIcon.vue';
 
 const settings = useStoreSettings();
 const showInfo = ref<boolean>(false);
-const loadingIPFS = ref<boolean>(false);
+const loadingIPFS = ref<boolean>(true);
 const initIPFS = ref<boolean>(false);
 const startIPFS = ref<boolean>(false);
 const initNodes = ref<boolean>(false);
 const nodes = ref<number>(0);
+
+function updateLoop() {
+	setTimeout(async () => {
+		await update();
+		updateLoop();
+	}, 1000);
+}
+async function update() {
+	const nodesNumber = await ipfs().getNodes();
+	nodes.value = nodesNumber;
+	if (initNodes.value && nodesNumber !== 0) {
+		initNodes.value = false;
+	}
+}
+
+onMounted(async () => {
+	await ipfs().loadingResult;
+	loadingIPFS.value = false;
+	initIPFS.value = true;
+	await ipfs().initResult;
+	startIPFS.value = true;
+	initIPFS.value = false;
+	ipfs().startResult.then(async () => {
+		startIPFS.value = false;
+		initIPFS.value = false;
+		loadingIPFS.value = false;
+		await update();
+		updateLoop();
+	});
+});
 </script>
 
 <template>
