@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onBeforeMount } from 'vue';
+import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 import HorizontalProfilePreview from '@/components/HorizontalProfilePreview.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
@@ -23,13 +23,7 @@ const authorID: string = route.name === `Home` ? store.$state.id : (route.params
 profilesStore.fetchProfile(authorID);
 
 const profile = computed(() => profilesStore.getProfile(authorID as string));
-const followersList = ref<Set<string> | undefined>();
-// TODO: fetch followers from store / backend
-onBeforeMount(async () => {
-	// Fetch followers list
-	const c = await connections.fetchConnections(authorID);
-	followersList.value = c?.followers;
-});
+const followersList = computed(() => connections.getConnections(authorID)?.followers);
 </script>
 <template>
 	<div

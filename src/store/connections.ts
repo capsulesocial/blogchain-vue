@@ -12,7 +12,19 @@ export const useConnectionsStore = defineStore(`connections`, {
 		};
 	},
 	persist: false,
-	getters: {},
+	getters: {
+		getConnections: (state: Connections) => (id: string) => {
+			return state.profiles.get(id);
+		},
+		getMutualFollowers: (state: Connections) => (me: string, them: string) => {
+			const myC = state.profiles.get(me);
+			const theirC = state.profiles.get(them);
+			if (!theirC || !myC) {
+				return;
+			}
+			return new Set([...theirC.followers].filter((p) => myC.following.has(p)));
+		},
+	},
 	actions: {
 		async fetchConnections(id: string) {
 			if (id === ``) {

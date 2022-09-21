@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useStore } from '@/store/session';
 import MutualsFollowersPopup from '../popups/MutualsFollowersPopup.vue';
 import { useConnectionsStore } from '@/store/connections';
@@ -10,7 +10,6 @@ const connections = useConnectionsStore();
 const route = useRoute();
 
 const openMutualFollowersPopup = ref<boolean>(false);
-const mutuals = ref<Set<string> | undefined>();
 const authorID = route.params.id as string;
 
 function getText(): string {
@@ -27,33 +26,17 @@ function getText(): string {
 		case 0:
 			return `No mutual followers`;
 		case 1:
-			return `Followed by ` + first;
+			return `Followed by ${first}`;
 		case 2:
-			return `Followed by ` + first + ` and ` + second;
+			return `Followed by ${first} and ${second}`;
 		case 3:
-			return `Followed by ` + first + `, ` + second + `, and ` + [...mutuals.value][2];
+			return `Followed by ${first}, ${second}, and ${[...mutuals.value][2]}`;
 		default:
-			return (
-				`Followed by ` +
-				first +
-				`, ` +
-				second +
-				`, ` +
-				[...mutuals.value][2] +
-				`, and ` +
-				(len - 3) +
-				` others you follow`
-			);
+			return `Followed by ${first}, ${second}, ${[...mutuals.value][2]}, and ${len - 3} others you follow`;
 	}
 }
 
-onBeforeMount(async () => {
-	const myC = await connections.fetchConnections(store.id);
-	const theirC = await connections.fetchConnections(authorID);
-	if (myC && theirC) {
-		mutuals.value = new Set([...theirC.followers].filter((p) => myC.followers.has(p)));
-	}
-});
+const mutuals = computed(() => connections.getMutualFollowers(store.id, authorID));
 </script>
 
 <template>
