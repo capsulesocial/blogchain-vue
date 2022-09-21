@@ -1,19 +1,25 @@
 <script setup lang="ts">
-import type { PropType } from 'vue';
-import type { Profile } from '@/backend/profile';
 // import { ref } from 'vue'
 import { useStore } from '../store/session';
-// import Avatar from './Avatar.vue'
+import { useProfilesStore } from '@/store/profiles';
+import { computed, onMounted } from 'vue';
+import Avatar from '@/components/Avatar.vue';
 
 const store = useStore();
 // const userIsFollowed = ref<boolean>(false)
 // const visitAvatar = ref<string | ArrayBuffer>(``)
 
-defineProps({
-	profile: {
-		type: Object as PropType<Profile>,
+const props = defineProps({
+	id: {
+		type: String,
 		required: true,
 	},
+});
+
+const profile = computed(() => useProfilesStore().getProfile(props.id));
+
+onMounted(() => {
+	void useProfilesStore().fetchProfile(props.id);
 });
 
 // function toggleFriend() {
@@ -23,9 +29,8 @@ defineProps({
 
 <template>
 	<div v-if="profile !== null" class="flex items-center py-2">
-		<!-- TODO import Avatar component -->
-		<!-- <Avatar :author-i-d="profile.id" :avatar="visitAvatar" size="w-12 h-12" /> -->
-		<div class="w-12 h-12 rounded-lg bg-gray1 animate-pulse"></div>
+		<Avatar :author-i-d="profile.id" :avatar="profile.avatar" size="w-12 h-12" />
+		<!-- <div class="w-12 h-12 rounded-lg bg-gray1 animate-pulse"></div> -->
 		<div class="h-12 flex-grow px-4">
 			<router-link :to="`/id/` + profile.id" class="flex flex-col">
 				<span v-if="profile.name != ``" class="text-base font-medium dark:text-darkPrimaryText">

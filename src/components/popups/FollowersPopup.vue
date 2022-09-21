@@ -2,7 +2,6 @@
 import { ref, computed, onBeforeMount } from 'vue';
 import HorizontalProfilePreview from '@/components/HorizontalProfilePreview.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
-import type { Profile } from '@/backend/profile';
 import { useProfilesStore } from '@/store/profiles';
 import { useRoute } from 'vue-router';
 import { useStore } from '@/store/session';
@@ -23,7 +22,7 @@ const authorID: string = route.name === `Home` ? store.$state.id : (route.params
 profilesStore.fetchProfile(authorID);
 
 const profile = computed(() => profilesStore.getProfile(authorID as string));
-const followers = ref<Profile[]>([]);
+const followers = ref<string[]>([]);
 // TODO: fetch followers from store / backend
 onBeforeMount(async () => {
 	// Fetch followers list
@@ -32,11 +31,7 @@ onBeforeMount(async () => {
 		return;
 	}
 	res.followers.forEach((id) => {
-		const p = profilesStore.getProfile(id);
-		if (!p) {
-			return;
-		}
-		followers.value.push(p);
+		followers.value.push(id);
 	});
 });
 </script>
@@ -88,7 +83,7 @@ onBeforeMount(async () => {
 					/>
 				</article>
 				<article>
-					<HorizontalProfilePreview v-for="follower in followers" :key="follower.id" :profile="follower" />
+					<HorizontalProfilePreview v-for="follower in followers" :id="follower" :key="follower" />
 				</article>
 			</div>
 		</section>

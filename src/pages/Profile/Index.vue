@@ -4,6 +4,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { useMeta } from 'vue-meta';
 import { useProfilesStore } from '@/store/profiles';
 import { useStore } from '@/store/session';
+import { useConnectionsStore } from '@/store/connections';
 import BackButton from '@/components/icons/ChevronLeft.vue';
 import PencilIcon from '@/components/icons/Pencil.vue';
 import SecondaryButton from '@/components/SecondaryButton.vue';
@@ -46,6 +47,7 @@ onMounted(async () => {
 		router.push(`/not-found`);
 	}
 	void profilesStore.fetchProfile(authorID);
+	void useConnectionsStore().fetchConnections(store.id);
 });
 
 const fromExternalSite = ref<boolean>(false);
