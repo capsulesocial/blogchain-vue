@@ -25,7 +25,7 @@ onMounted(async () => {
 	if (props.cid) {
 		getPhotoFromIPFS(props.cid).then((dataUrl) => {
 			if (!isValidPhoto(dataUrl)) {
-				toastError(`invalid in-post image`);
+				toastError(`Invalid image with cid: ${props.cid}`);
 				return;
 			}
 			imageSrc.value = dataUrl;
