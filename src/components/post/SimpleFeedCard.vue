@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, PropType, ref } from 'vue';
+import { computed, onMounted, PropType, ref } from 'vue';
 import Avatar from '@/components/Avatar.vue';
 import BookmarkButton from '@/components/post/BookmarkButton.vue';
 import MoreIcon from '@/components/icons/MoreIcon.vue';
@@ -19,6 +19,7 @@ import type { IGenericPostResponse } from '@/backend/post';
 import { useProfilesStore } from '@/store/profiles';
 import { calculateReadingTime } from '@/backend/utilities/helpers';
 import { createPostExcerpt } from '@/helpers/post';
+import { getPhotoFromIPFS } from '@/backend/getPhoto';
 
 const store = useStore();
 const settings = useStoreSettings();
@@ -66,6 +67,15 @@ function quoteRepost() {
 }
 
 profilesStore.fetchProfile(props.fetchedPost.post.authorID);
+
+onMounted(() => {
+	const featuredPhotoCID = props.fetchedPost.post.featuredPhotoCID;
+	if (featuredPhotoCID) {
+		getPhotoFromIPFS(featuredPhotoCID).then((photo) => {
+			featuredPhoto.value = photo;
+		});
+	}
+});
 </script>
 
 <template>
@@ -209,11 +219,11 @@ profilesStore.fetchProfile(props.fetchedPost.post.authorID);
 			</div>
 			<!-- Right side: Image -->
 			<div
-				v-if="fetchedPost.post.featuredPhotoCID !== `` && featuredPhoto === null"
+				v-if="fetchedPost.post.featuredPhotoCID !== `` && fetchedPost.post.featuredPhotoCID && featuredPhoto === null"
 				class="w-full xl:w-56 h-48 xl:h-32 bg-gray1 dark:bg-gray7 flex-shrink-0 animate-pulse rounded-lg mt-4 xl:mt-0"
 			></div>
 			<div
-				v-if="fetchedPost.post.featuredPhotoCID !== `` && featuredPhoto !== null"
+				v-if="fetchedPost.post.featuredPhotoCID !== `` && fetchedPost.post.featuredPhotoCID && featuredPhoto !== null"
 				class="mt-4 w-full flex-shrink-0 xl:mt-0 xl:w-56 modal-animation"
 			>
 				<router-link class="cursor-pointer" :to="`/post/` + fetchedPost.post._id">
