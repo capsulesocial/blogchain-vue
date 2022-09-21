@@ -12,6 +12,7 @@ const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);
 const metaManager = createMetaManager();
 
+// Here if it errors out, we need to expose the error, maybe render a dedicated error page?
 initBackend().then(() => {
 	createApp(App).use(pinia).use(router).use(metaManager).use(VueLazyLoad).mount('#app');
 });

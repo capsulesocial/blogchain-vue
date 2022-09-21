@@ -5,6 +5,7 @@ import { nearNetwork, bootstrapNodes } from '@/backend/utilities/config';
 import { toastError } from './toast';
 
 export async function initBackend() {
+	console.log('Backend running!');
 	try {
 		for (let i = 0; i < localStorage.length && nearNetwork === `mainnet`; i++) {
 			const key = localStorage.key(i);
@@ -17,7 +18,6 @@ export async function initBackend() {
 				}
 			}
 		}
-		await initNear();
 		const libsodium = initLibSodium();
 		libsodium.initResult.catch((err: unknown) => {
 			if (err instanceof Error) {
@@ -34,6 +34,7 @@ export async function initBackend() {
 
 			throw err;
 		});
+		await initNear();
 		initWalletConnection();
 
 		const accountId = window.localStorage.getItem(`accountId`);
