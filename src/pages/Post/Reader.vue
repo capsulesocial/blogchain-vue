@@ -3,7 +3,17 @@ import { onBeforeMount, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
-import { getOnePost, getPost, IPostImageKey, IPostResponseWithHidden, Post } from '@/backend/post';
+import { AxiosError } from 'axios';
+import { toastError } from '@/plugins/toast';
+import {
+	getOnePost,
+	getPost,
+	IPostImageKey,
+	IPostResponseWithHidden,
+	Post,
+	isEncryptedPost,
+	getDecryptedContent,
+} from '@/backend/post';
 
 import ReaderView from '@/components/post/reader/ReaderView.vue';
 import TagCard from '@/components/TagCard.vue';
@@ -23,16 +33,20 @@ import StatsIcon from '@/components/icons/StatsIcon.vue';
 import LinkIcon from '@/components/icons/LinkIcon.vue';
 import ShareIcon from '@/components/icons/ShareIcon.vue';
 import ChevronLeft from '@/components/icons/ChevronLeft.vue';
+import PayWall from '../../components/post/reader/PayWall.vue';
 
 const store = useStore();
 const settings = useStoreSettings();
 const router = useRouter();
+const cid = ref<string>(router.currentRoute.value.params.post as string);
 const post = ref<Post>();
 const postMetadata = ref<IPostResponseWithHidden>();
 const userIsFollowed = ref<boolean>(false);
 const showPaywall = ref<boolean>(false);
-const featuredPhoto = ref<string | null>(null);
+const content = ref<string>(``);
+const excerpt = ref<string>(``);
 const hasFeaturedPhoto = ref<boolean>(false);
+const enabledTiers = ref<Array<string>>();
 const initNodes = ref<boolean>(true);
 const loadingIPFS = ref<boolean>(true);
 const initIPFS = ref<boolean>(false);
@@ -57,6 +71,12 @@ const fetchPostMetadata = async (cid: string, currentUser?: string) => {
 	const u = currentUser ? currentUser : `x`;
 	try {
 		postMetadata.value = await getOnePost(cid, u);
+		if (postMetadata.value.hidden) {
+			// deleted.value = true;
+			// toastError(`This post has been hidden by the author`);
+			// emit(`showWarning`)
+		}
+		hasFeaturedPhoto.value = postMetadata.value.post.featuredPhotoCID ? true : false;
 	} catch (err) {
 		throw new Error(err as string);
 	}
@@ -65,9 +85,54 @@ const setFilter = (f: string) => {
 	filter.value = f;
 };
 
+async function checkEncryption() {
+	if (post.value) {
+		if (isEncryptedPost(post.value)) {
+			if (store.$state.id === ``) {
+				showPaywall.value = true;
+			} else {
+				try {
+					const decrypted = await getDecryptedContent(cid.value, post.value.content, store.$state.id);
+					if (`content` in decrypted) {
+						content.value = decrypted.content;
+						excerpt.value = decrypted.content.slice(0, 100); // TODO refine
+						postImageKeys.value = decrypted.postImageKeys;
+					} else {
+						// show proper error message according to retrieval status
+						// decrypted.status is of type `INSUFFICIENT_TIER` | `NOT_SUBSCRIBED`
+						enabledTiers.value = decrypted.enabledTiers;
+						subscriptionStatus.value = decrypted.status;
+						// Display premium post paywall
+						showPaywall.value = true;
+					}
+				} catch (err) {
+					showPaywall.value = true;
+					if (err instanceof AxiosError && err.response && err.response.data.error) {
+						toastError(err.response.data.error);
+					} else {
+						throw err;
+					}
+				}
+			}
+		} else {
+			content.value = post.value.content;
+			excerpt.value = post.value.content.slice(0, 100); // TODO refine
+		}
+	}
+}
+
+function checkAuthenticity() {
+	// verifyPostAuthenticity(post.value.data, post.value.sig, post.value.public_key).then((verified) => {
+	// 	if (!verified) {
+	// 		this.$toastError(`Post not verified!`);
+	// 	}
+	// });
+}
+
 // Fetch post
 onBeforeMount(async () => {
-	const cid = ref<string>(router.currentRoute.value.params.post as string);
+	await fetchPostMetadata(cid.value, store.id);
+	checkAuthenticity();
 	try {
 		// Fetching post object
 		const res = await (await getPost(cid.value)).data;
@@ -75,11 +140,10 @@ onBeforeMount(async () => {
 			return;
 		}
 		post.value = res;
-		await fetchPostMetadata(cid.value, store.id);
+		checkEncryption();
 	} catch (err) {
 		throw new Error(err as string);
 	}
-	// TODO Fetch featuredPhoto
 });
 
 onMounted(() => {
@@ -189,7 +253,7 @@ function isReposted() {
 						</h2>
 					</article>
 					<!-- IPFS loader -->
-					<div v-if="!post.content && !showPaywall && !featuredPhoto" class="lg:w-760 lg:max-w-760 h-fit w-full">
+					<div v-if="!post.content && !showPaywall && !hasFeaturedPhoto" class="lg:w-760 lg:max-w-760 h-fit w-full">
 						<div
 							v-if="hasFeaturedPhoto"
 							class="h-72 w-full rounded-xl bg-gray1 dark:bg-gray7 animate-pulse mb-6 flex justify-center items-center mt-6"
@@ -236,7 +300,7 @@ function isReposted() {
 					<div class="relative">
 						<!-- Featured Photo -->
 						<button
-							v-if="featuredPhoto !== null"
+							v-if="hasFeaturedPhoto"
 							class="relative mb-5 mt-5 flex cursor-pointer flex-col justify-end"
 							@click="showPhoto"
 						>
@@ -248,7 +312,7 @@ function isReposted() {
 								"
 								style="background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.8) 100%)"
 							></div>
-							<img :src="featuredPhoto" class="w-full rounded-lg object-cover shadow-lg" />
+							<!-- <IpfsImage class="w-full rounded-lg object-cover shadow-lg" :cid="post.featuredPhotoCID" /> -->
 							<p
 								v-if="post && post.featuredPhotoCaption"
 								ref="photoCaption"
@@ -284,95 +348,15 @@ function isReposted() {
 							</div>
 						</div>
 						<!-- If post is premium, add height to display the paywall -->
-						<div
-							v-else-if="showPaywall && (!hasFeaturedPhoto || (hasFeaturedPhoto && !featuredPhoto))"
-							class="h-64"
-						></div>
+						<div v-else-if="showPaywall && !hasFeaturedPhoto" class="h-64"></div>
 						<!-- Post paywall -->
-						<article
-							v-if="showPaywall"
-							class="from-lightBGStart to-transparent dark:from-darkBGStart dark:to-transparent bg-gradient-to-t z-10 absolute top-0 w-full h-full flex"
-						>
-							<div
-								class="w-full shadow-lg flex flex-col items-center py-10 px-16 bg-lightBG dark:bg-darkBGStop rounded-lg h-min"
-								:class="featuredPhoto !== null ? `sm:mt-36` : `mt-0`"
-							>
-								<!-- Not a subscriber -->
-								<div v-if="subscriptionStatus === `NOT_SUBSCRIBED` || !store.id">
-									<h4 class="text-2xl font-semibold text-neutral mb-4 text-center">
-										This post is for Paid subscribers
-									</h4>
-									<!-- <p class="my-4 text-center text-gray5 dark:text-gray3">
-										Become a subscriber of
-										<span v-if="author && author.name !== ``" class="font-semibold text-primary">{{
-											author.name
-										}}</span>
-										<span v-else class="font-semibold text-primary">@{{ post.authorID }}</span> to access
-										<br class="hidden lg:block" />
-										this post and other subscriber-only content
-									</p> -->
-									<div class="flex items-center justify-center">
-										<!-- <SubscribeButton
-											:toggle-subscription="toggleSubscription"
-											:user-is-subscribed="false"
-											:enabled-tiers="enabledTiers"
-											class="header-profile my-4"
-											style="transform: scale(1.2)"
-										/> -->
-									</div>
-									<p v-if="store.id" class="text-sm mt-8 text-center text-gray5 dark:text-gray3">
-										Manage my <router-link to="/subscriptions" class="text-neutral text">subscriptions</router-link>
-									</p>
-								</div>
-
-								<!-- Subscribed, but to a different tier -->
-								<div v-if="subscriptionStatus === `INSUFFICIENT_TIER`">
-									<h4 class="text-2xl font-semibold text-neutral mb-4 text-center">
-										Your subscription tier does not include this post
-									</h4>
-									<!-- <p class="my-4 text-center text-gray5 dark:text-gray3">
-										Subscribe to the
-										<span
-											v-for="(tier, index) in enabledTierNames.slice(0, 1)"
-											:key="index"
-											class="text-neutral font-semibold"
-											>{{ tier }}</span
-										>
-										tier of
-										<span v-if="author && author.name !== ``" class="font-semibold text-primary">{{
-											author.name
-										}}</span>
-										<span v-else class="font-semibold text-primary">@{{ post.authorID }}</span> to access
-										<br class="hidden lg:block" />
-										this post and other posts of this tier.
-									</p> -->
-									<!-- change tier -->
-									<div class="flex items-center justify-center">
-										<!-- <button
-											class="flex flex-row items-center px-6 py-2 mt-4 bg-neutral text-center text-lightButtonText dark:from-darkBG dark:to-darkBG focus:outline-none transform rounded-lg font-bold transition duration-500 ease-in-out hover:shadow-lg"
-											@click.prevent="switchTierPopup()"
-										>
-											<CheckCircleStaticIcon class="h-5 w-5 mr-2" />
-											<p class="focus:outline-none">Change Tier</p>
-										</button> -->
-									</div>
-									<p v-if="store.id" class="text-sm mt-8 text-center text-gray5 dark:text-gray3">
-										Manage my <router-link to="/subscriptions" class="text-neutral text">subscriptions</router-link>
-									</p>
-									<!-- change tier popup -->
-									<!-- <portal to="postPage">
-										<ChangeTierPopup
-											v-if="showChangeTier"
-											:author="author"
-											:author-avatar="subscriptionProfileAvatar"
-											:s="authorPaymentProfile"
-											:to-pre-select-tier="toPreSelectTiers[0]"
-											:enabled-tiers="enabledTiers"
-											@close="showChangeTier = false"
-										/>
-									</portal> -->
-								</div>
-							</div>
+						<article v-if="showPaywall">
+							<PayWall
+								:id="post.authorID"
+								:hasfeaturedphoto="hasFeaturedPhoto"
+								:subscriptionstatus="subscriptionStatus"
+								:enabledtiers="enabledTiers ? enabledTiers : []"
+							/>
 						</article>
 						<!-- Content -->
 						<article v-else-if="post !== null" class="mt-5">
