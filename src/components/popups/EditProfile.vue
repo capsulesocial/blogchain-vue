@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { HTMLInputEvent } from '@/interfaces/HTMLInputEvent';
 import CloseIcon from '@/components/icons/XIcon.vue';
 import Avatar from '@/components/Avatar.vue';
 import { useStore } from '@/store/session';
@@ -10,7 +9,6 @@ import BrandedButton from '../BrandedButton.vue';
 import { preUploadPhoto, uploadPhoto } from '@/backend/photos';
 import { getProfile } from '@/backend/profile';
 import { URLRegex, qualityBio, qualityLocation, qualityEmail } from '@/plugins/quality';
-import { getPhotoFromIPFS } from '@/backend/getPhoto';
 import textLimits from '@/backend/utilities/text_limits';
 import { isError } from '@/plugins/helpers';
 import { toastError, toastWarning, toastSuccess } from '@/plugins/toast';
@@ -23,20 +21,14 @@ const newName = ref<string>(``);
 const profilePic = ref<null | string | ArrayBuffer>(null);
 const bio = ref<string>(``);
 const maxCharBio = ref<number>(textLimits.bio.max);
-const newAvatarCID = ref<string>(``);
+const newAvatarCID = ref<string>(store.$state.avatar);
 const uploadedPic = ref<HTMLElement>();
 const newEmail = ref<string>(``);
 const location = ref<string>(``);
 const website = ref<string>(``);
-const avatar = ref<string>(store.$state.avatar);
 
 const emit = defineEmits(['close', 'updateProfileMethod']);
 
-if (store.$state.avatar !== ``) {
-	getPhotoFromIPFS(store.$state.avatar).then((p) => {
-		profilePic.value = p;
-	});
-}
 if (store.$state.name !== ``) {
 	newName.value = store.$state.name;
 }
@@ -51,9 +43,6 @@ if (store.$state.website !== ``) {
 }
 if (store.$state.email !== ``) {
 	newEmail.value = store.$state.email;
-}
-if (store.$state.avatar !== ``) {
-	newAvatarCID.value = store.$state.avatar;
 }
 // methods
 function handleImageClick(): void {
@@ -70,12 +59,16 @@ function hasChanged() {
 		bio.value.trim() !== store.$state.bio
 	);
 }
-async function handleImage(e: HTMLInputEvent) {
-	if (!e.target.files) {
+async function handleImage(e: Event) {
+	if (!e.target) {
+		return;
+	}
+	const target = e.target as HTMLInputElement;
+	if (!target.files) {
 		toastError(`No image selected`);
 		return;
 	}
-	const img = e.target.files[0];
+	const img = target.files[0];
 	if (img) {
 		try {
 			const { cid, url, image, imageName } = await uploadPhoto(img);
@@ -170,7 +163,13 @@ defineExpose({ updateFromProfile });
 		<div class="mb-5 flex w-full justify-center">
 			<button class="focus:outline-none relative h-24 w-24" @click="handleImageClick">
 				<span class="absolute inline-flex w-24 h-24 top-0 left-0">
-					<Avatar :author-i-d="store.$state.id" :avatar="avatar" :no-click="true" :size="`w-24 h-24`" />
+					<Avatar
+						:author-i-d="store.$state.id"
+						:avatar="profilePic"
+						:cid="newAvatarCID"
+						:no-click="true"
+						:size="`w-24 h-24`"
+					/>
 				</span>
 				<span
 					class="bg-darkOnPrimaryText text-lightOnPrimaryText absolute inline-flex h-24 w-24 top-0 left-0 items-center justify-center rounded-lg bg-opacity-25"
