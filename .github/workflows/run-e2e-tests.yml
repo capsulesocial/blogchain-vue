@@ -24,8 +24,14 @@ jobs:
       run: yarn
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps chromium
+    - name: Build App
+      run: yarn build
     - name: Run Playwright tests
-      run: yarn playwright test
+      run: |
+        yarn preview &
+        sleep 5 &&
+        curl http://localhost:3000 &&
+        yarn test
     - uses: actions/upload-artifact@v2
       if: always()
       with:
