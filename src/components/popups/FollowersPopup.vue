@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import { ref, computed, onBeforeMount } from 'vue';
+import { useRoute } from 'vue-router';
 import HorizontalProfilePreview from '@/components/HorizontalProfilePreview.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
 import { useProfilesStore } from '@/store/profiles';
-import { useRoute } from 'vue-router';
 import { useStore } from '@/store/session';
-import { getFollowersAndFollowing } from '@/backend/following';
+import { useConnectionsStore } from '@/store/connections';
 
 const profilesStore = useProfilesStore();
 const route = useRoute();
 const store = useStore();
 const emit = defineEmits([`close`]);
+const connections = useConnectionsStore();
 
 if (route.name !== `Home`) {
 	if (typeof route.params.id !== 'string') {
@@ -22,17 +23,12 @@ const authorID: string = route.name === `Home` ? store.$state.id : (route.params
 profilesStore.fetchProfile(authorID);
 
 const profile = computed(() => profilesStore.getProfile(authorID as string));
-const followers = ref<string[]>([]);
+const followersList = ref<Set<string> | undefined>();
 // TODO: fetch followers from store / backend
 onBeforeMount(async () => {
 	// Fetch followers list
-	const res = await getFollowersAndFollowing(authorID);
-	if (!res.followers) {
-		return;
-	}
-	res.followers.forEach((id) => {
-		followers.value.push(id);
-	});
+	const c = await connections.fetchConnections(authorID);
+	followersList.value = c?.followers;
 });
 </script>
 <template>
@@ -43,7 +39,7 @@ onBeforeMount(async () => {
 		<!-- Container -->
 		<section class="popup">
 			<div
-				v-if="followers !== null"
+				v-if="followersList"
 				class="min-h-40 w-full lg:w-600 bg-lightBG dark:bg-darkBGStop card-animation max-h-90 z-10 overflow-y-auto rounded-lg px-6 pt-4 pb-2 shadow-lg"
 				@click.self="emit(`close`)"
 			>
@@ -67,7 +63,7 @@ onBeforeMount(async () => {
 						<CloseIcon />
 					</button>
 				</div>
-				<article v-if="followers.length == 0" class="mt-24 grid justify-items-center px-10 xl:px-0">
+				<article v-if="followersList.size == 0" class="mt-24 grid justify-items-center px-10 xl:px-0">
 					<p class="text-gray5 dark:text-gray3 mb-5 text-center text-sm">
 						<span v-if="$route.name === `home` || $route.params.id === store.$state.id">
 							It seems you don't have any followers yet!
@@ -83,7 +79,7 @@ onBeforeMount(async () => {
 					/>
 				</article>
 				<article>
-					<HorizontalProfilePreview v-for="follower in followers" :id="follower" :key="follower" />
+					<HorizontalProfilePreview v-for="follower in followersList" :id="follower" :key="follower" />
 				</article>
 			</div>
 		</section>

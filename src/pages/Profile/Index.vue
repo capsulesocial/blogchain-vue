@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onBeforeMount } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useMeta } from 'vue-meta';
 import { useProfilesStore } from '@/store/profiles';
@@ -28,12 +28,21 @@ if (typeof route.params.id !== 'string') {
 }
 const authorID = route.params.id;
 const profileExists = ref<boolean>(false);
-
+const numFollowers = ref<number>(0);
+const numFollowing = ref<number>(0);
 const profile = computed(() => profilesStore.getProfile(authorID));
 
 useMeta({
 	title: profile.value.name ? `${profile.value.name as string} -  Blogchain` : `@${authorID as string} -  Blogchain`,
 	htmlAttrs: { lang: 'en', amp: true },
+});
+
+onBeforeMount(async () => {
+	const c = await useConnectionsStore().fetchConnections(authorID);
+	if (c) {
+		numFollowers.value = c?.followers.size;
+		numFollowing.value = c?.following.size;
+	}
 });
 
 onMounted(async () => {
@@ -54,8 +63,6 @@ const fromExternalSite = ref<boolean>(false);
 const selfView = ref<boolean>(authorID === store.$state.id);
 const showAvatarPopup = ref<boolean>(false);
 const scrollingDown = ref<boolean>(false);
-const followers = ref<[]>([]);
-const following = ref<[]>([]);
 const paymentsEnabled = ref<boolean>(true);
 const totalPostsCount = ref<number>(0);
 const userIsFollowed = ref<boolean>(false);
@@ -222,7 +229,7 @@ function getStyles(tab: string): string {
 							>
 								<span
 									class="text-lightPrimaryText dark:text-darkPrimaryText hover:text-primary dark:hover:text-primary font-bold"
-									>{{ followers.length }}</span
+									>{{ numFollowers }}</span
 								>
 								Followers
 							</button>
@@ -232,7 +239,7 @@ function getStyles(tab: string): string {
 							>
 								<span
 									class="text-lightPrimaryText dark:text-darkPrimaryText hover:text-primary dark:hover:text-primary font-bold"
-									>{{ following.length }}</span
+									>{{ numFollowing }}</span
 								>
 								Following
 							</button>

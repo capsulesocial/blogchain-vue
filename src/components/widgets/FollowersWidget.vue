@@ -1,20 +1,25 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onBeforeMount, ref } from 'vue';
 import { useConnectionsStore } from '@/store/connections';
+import { useStore } from '@/store/session';
 import HorizontalProfilePreview from '@/components/HorizontalProfilePreview.vue';
 import FollowersPopup from '@/components/popups/FollowersPopup.vue';
-import { storeToRefs } from 'pinia';
 
-const connectionsStore = useConnectionsStore();
-const { followersList } = storeToRefs(connectionsStore);
-
+const connections = useConnectionsStore();
+const session = useStore();
+const followersList = ref<Set<string> | undefined>();
 const openFollowersPopup = ref<boolean>(false);
+
+onBeforeMount(async () => {
+	const c = await connections.fetchConnections(session.id);
+	followersList.value = c?.followers;
+});
 </script>
 <template>
 	<div class="bg-lightBG dark:bg-darkBGStop mb-5 rounded-lg border border-lightBorder shadow-lg px-6 py-4">
 		<h3 class="text-lightPrimaryText dark:text-darkPrimaryText text-base font-semibold mb-2">Recent Followers</h3>
-		<div>
-			<p v-if="followersList.length === 0" class="text-gray5 dark:text-gray3 mb-4 mt-3 text-sm">
+		<div v-if="followersList">
+			<p v-if="followersList.size === 0" class="text-gray5 dark:text-gray3 mb-4 mt-3 text-sm">
 				<span> It seems no one is following you yet </span>
 			</p>
 			<div v-else>

@@ -29,10 +29,10 @@ onMounted(() => {
 
 <template>
 	<div v-if="profile !== null" class="flex items-center py-2">
-		<Avatar :author-i-d="profile.id" :avatar="profile.avatar" size="w-12 h-12" />
+		<Avatar :authorid="props.id" :avatar="profile.avatar" size="w-12 h-12" />
 		<!-- <div class="w-12 h-12 rounded-lg bg-gray1 animate-pulse"></div> -->
 		<div class="h-12 flex-grow px-4">
-			<router-link :to="`/id/` + profile.id" class="flex flex-col">
+			<router-link :to="`/id/` + props.id" class="flex flex-col">
 				<span v-if="profile.name != ``" class="text-base font-medium dark:text-darkPrimaryText">
 					{{ profile.name }}
 				</span>
