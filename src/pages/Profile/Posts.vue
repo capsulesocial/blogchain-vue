@@ -1,13 +1,7 @@
 <script setup lang="ts">
-import { useMeta } from 'vue-meta';
 import PostCardContainer from '@/components/post/PostCardContainer.vue';
 import { storeToRefs } from 'pinia';
 import { usePostsStore } from '@/store/posts';
-
-useMeta({
-	title: `authorName - Blogchain`,
-	htmlAttrs: { lang: 'en', amp: true },
-});
 
 const postsStore = usePostsStore();
 const posts = storeToRefs(postsStore).posts;
