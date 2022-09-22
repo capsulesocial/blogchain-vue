@@ -11,6 +11,7 @@ import QuoteIcon from '@/components/icons/QuoteIcon.vue';
 import ShareIcon from '@/components/icons/ShareIcon.vue';
 import CrownIcon from '@/components/icons/Crown.vue';
 import StatsIcon from '@/components/icons/StatsIcon.vue';
+import IpfsImage from '../IpfsImage.vue';
 
 import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
@@ -25,7 +26,6 @@ const settings = useStoreSettings();
 const profilesStore = useProfilesStore();
 const showDelete = ref<boolean>(false);
 const showReposts = ref<boolean>(false);
-const featuredPhoto = ref<string | null>(null);
 
 const props = defineProps({
 	fetchedPost: { type: Object as PropType<IGenericPostResponse>, required: true },
@@ -208,18 +208,17 @@ profilesStore.fetchProfile(props.fetchedPost.post.authorID);
 				</div>
 			</div>
 			<!-- Right side: Image -->
-			<div
-				v-if="fetchedPost.post.featuredPhotoCID !== `` && featuredPhoto === null"
-				class="w-full xl:w-56 h-48 xl:h-32 bg-gray1 dark:bg-gray7 flex-shrink-0 animate-pulse rounded-lg mt-4 xl:mt-0"
-			></div>
-			<div
-				v-if="fetchedPost.post.featuredPhotoCID !== `` && featuredPhoto !== null"
-				class="mt-4 w-full flex-shrink-0 xl:mt-0 xl:w-56 modal-animation"
+			<router-link
+				v-if="fetchedPost.post.featuredPhotoCID !== `` && fetchedPost.post.featuredPhotoCID"
+				class="cursor-pointer"
+				:to="`/post/` + fetchedPost.post._id"
 			>
-				<router-link class="cursor-pointer" :to="`/post/` + fetchedPost.post._id">
-					<img :src="featuredPhoto" class="h-48 w-full flex-shrink-0 rounded-lg object-cover xl:h-32" />
-				</router-link>
-			</div>
+				<IpfsImage
+					class="mt-4 w-full flex-shrink-0 xl:mt-0 xl:w-56 h-48 xl:h-32 rounded-lg"
+					:img-class="'h-48 w-full flex-shrink-0 rounded-lg xl:h-32'"
+					:cid="fetchedPost.post.featuredPhotoCID"
+				/>
+			</router-link>
 		</div>
 		<!-- Display tags (Mobile) -->
 		<div class="my-2 flex flex-wrap overflow-x-auto xl:hidden">

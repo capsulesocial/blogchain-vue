@@ -1,41 +1,45 @@
 <template>
 	<button v-if="!props.noClick" class="focus:outline-none" @click="$router.push('/id/' + props.authorid)">
 		<img
-			v-lazy="{ src: imageSrc ?? avatarList[usernameToPicture(props.authorid)] }"
-			class="border border-lightBorder dark:border-darkBorder rounded-lg object-cover"
+			v-if="override"
+			v-lazy="override"
+			class="border border-lightBorder dark:border-darkBorder rounded-lg"
 			:class="props.size"
+		/>
+		<IpfsImage
+			v-else
+			:cid="cid"
+			:default-image="avatarList[usernameToPicture(props.authorid)]"
+			:img-class="'border border-lightBorder dark:border-darkBorder rounded-lg ' + props.size"
 		/>
 	</button>
 	<span v-else>
 		<img
-			v-lazy="{ src: imageSrc ?? avatarList[usernameToPicture(props.authorid)] }"
-			class="border border-lightBorder dark:border-darkBorder rounded-lg object-cover"
+			v-if="override"
+			v-lazy="override"
+			class="border border-lightBorder dark:border-darkBorder rounded-lg"
 			:class="props.size"
+		/>
+		<IpfsImage
+			v-else
+			:cid="cid"
+			:default-image="avatarList[usernameToPicture(props.authorid)]"
+			:img-class="'border border-lightBorder dark:border-darkBorder rounded-lg ' + props.size"
 		/>
 	</span>
 </template>
 
 <script setup lang="ts">
-import { getPhotoFromIPFS } from '@/backend/getPhoto';
-import { onMounted, PropType, ref } from 'vue';
+import { PropType, ref } from 'vue';
 import { avatars } from './../config/avatars';
-
-const imageSrc = ref<string>();
+import IpfsImage from './IpfsImage.vue';
 
 const props = defineProps({
-	avatar: { type: String as PropType<string | undefined>, default: undefined },
-	cid: { type: String as PropType<string | undefined>, default: undefined },
+	override: { type: String as PropType<string | null | ArrayBuffer>, default: null },
+	cid: { type: String as PropType<string | null>, default: null },
 	authorid: { type: String, default: `` },
 	size: { type: String, default: `w-10 h-10` },
 	noClick: { type: Boolean, default: false },
-});
-
-onMounted(async () => {
-	if (props.avatar) {
-		imageSrc.value = await getPhotoFromIPFS(props.avatar);
-	} else if (props.cid) {
-		imageSrc.value = await getPhotoFromIPFS(props.cid);
-	}
 });
 
 const avatarList = ref<Array<undefined>>(avatars);

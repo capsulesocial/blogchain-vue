@@ -97,6 +97,7 @@ onMounted(() => {
 </script>
 <template>
 	<div ref="el">
+		<!-- eslint-disable-next-line vue/no-v-html -->
 		<div v-html="htmlContent"></div>
 		<Teleport to="body">
 			<!-- <ImagePopup v-if="displayImagePopup" :image="clickedImage" @close="displayImagePopup = false" /> -->
