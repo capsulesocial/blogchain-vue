@@ -78,8 +78,13 @@ const fetchPostMetadata = async (cid: string, currentUser?: string) => {
 			// emit(`showWarning`)
 		}
 		hasFeaturedPhoto.value = postMetadata.value.post.featuredPhotoCID ? true : false;
-	} catch (err) {
-		throw new Error(err as string);
+	} catch (err: unknown) {
+		if (err instanceof Error) {
+			toastError(`Error loading post: ${err.message}`);
+			return;
+		}
+
+		toastError(`Unknown error loading post`);
 	}
 };
 const setFilter = (f: string) => {
