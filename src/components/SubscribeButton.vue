@@ -30,14 +30,7 @@ const authorPaymentProfile = ref<ISubscriptionWithProfile>();
 const isActiveSub = ref<boolean>(false);
 
 onMounted(async (): Promise<void> => {
-	const activeSubs: ISubscriptionWithProfile[] = await useSubscription.$state.active;
-	activeSubs.forEach((activeSub: ISubscriptionWithProfile): void => {
-		if (activeSub.authorID === (route.params.id as string)) {
-			subscriptionInfo.value = activeSub;
-			isActiveSub.value = true;
-			return;
-		}
-	});
+	await updateSubscriptionInfo();
 });
 
 // methods
@@ -46,7 +39,8 @@ async function subscribeAuthor(): Promise<void> {
 	subscriptionProfile.value = createDefaultProfile(route.params.id as string);
 	subscriptionProfileAvatar.value = subscriptionProfile.value.avatar;
 }
-function toggleSubinfo(): void {
+async function toggleSubinfo(): Promise<void> {
+	await updateSubscriptionInfo();
 	toggleSub.value = !toggleSub.value;
 }
 async function toggleChangeTierPopup(author: { sub: ISubscriptionWithProfile; avatar: string }): Promise<void> {
@@ -54,6 +48,16 @@ async function toggleChangeTierPopup(author: { sub: ISubscriptionWithProfile; av
 	subscriptionProfileAvatar.value = author.avatar;
 	authorPaymentProfile.value = author.sub;
 	toggleChangeTier.value = !toggleChangeTier.value;
+}
+async function updateSubscriptionInfo(): Promise<void> {
+	const activeSubs: ISubscriptionWithProfile[] = await useSubscription.$state.active;
+	activeSubs.forEach((activeSub: ISubscriptionWithProfile): void => {
+		if (activeSub.authorID === (route.params.id as string)) {
+			subscriptionInfo.value = activeSub;
+			isActiveSub.value = true;
+			return;
+		}
+	});
 }
 </script>
 <template>
