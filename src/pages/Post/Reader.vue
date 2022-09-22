@@ -74,7 +74,7 @@ const fetchPostMetadata = async (cid: string, currentUser?: string) => {
 		postMetadata.value = await getOnePost(cid, u);
 		if (postMetadata.value.hidden) {
 			// deleted.value = true;
-			// toastError(`This post has been hidden by the author`);
+			toastError(`This post has been hidden by the author`);
 			// emit(`showWarning`)
 		}
 		hasFeaturedPhoto.value = postMetadata.value.post.featuredPhotoCID ? true : false;
