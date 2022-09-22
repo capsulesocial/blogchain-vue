@@ -2,13 +2,9 @@
 const props = defineProps({
 	text: { type: String, default: `Text` },
 	thin: { type: Boolean, default: false },
-	action: {
-		type: Function,
-		default: () => {
-			return null;
-		},
-	},
 });
+
+defineEmits([`submitPayment`]);
 
 function getStyles(): string {
 	let res = ``;
@@ -26,7 +22,7 @@ function getStyles(): string {
 		style="padding: 0.4rem 1.5rem"
 		:class="getStyles()"
 		class="bg-darkBG text-lightButtonText focus:outline-none transform rounded-lg font-bold transition duration-500 ease-in-out hover:bg-opacity-75"
-		@click="action()"
+		@click.stop="$emit(`submitPayment`)"
 	>
 		<span class="font-sans" style="font-size: 0.95rem">
 			{{ text }}

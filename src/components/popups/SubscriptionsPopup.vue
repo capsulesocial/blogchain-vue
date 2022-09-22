@@ -1,13 +1,6 @@
 <script setup lang="ts">
-import { ref, PropType, onMounted } from 'vue';
-import {
-	Stripe,
-	loadStripe,
-	StripeElements,
-	PaymentRequest,
-	StripeCardElement,
-	PaymentMethod,
-} from '@stripe/stripe-js';
+import { ref, PropType, onMounted, computed } from 'vue';
+import { StripeElements, PaymentRequest, StripeCardElement } from '@stripe/stripe-js';
 import { useStore } from '@/store/session';
 import { useRoute } from 'vue-router';
 import Avatar from '@/components/Avatar.vue';
@@ -24,20 +17,11 @@ import BasicSwitch from '@/components/BasicSwitch.vue';
 import FriendButton from '@/components/FriendButton.vue';
 import { useSubscriptionStore } from '@/store/subscriptions';
 import { Profile } from '@/backend/profile';
-import {
-	confirmSubscriptionPayment,
-	getAmountFromTier,
-	getCurrencySymbol,
-	getZeroDecimalAmount,
-	retrieveReaderProfile,
-	startSubscriptionPayment,
-} from '@/backend/payment';
-import { usePaymentsStore, PaymentProfile } from '@/store/paymentProfile';
+import { getAmountFromTier, getCurrencySymbol, getZeroDecimalAmount, retrieveReaderProfile } from '@/backend/payment';
+import { usePaymentsStore, PaymentProfile, createDefaultPaymentProfile } from '@/store/paymentProfile';
 import { toastError, toastSuccess, handleError } from '@/plugins/toast';
-import { SubscriptionTier } from '@/store/paymentProfile';
 import { followChange, getFollowersAndFollowing } from '@/backend/following';
 import { HTMLInputEvent } from '@/interfaces/HTMLInputEvent';
-import { stripePublishableKey } from '@/backend/utilities/config';
 import { darkMode } from '@/plugins/colors';
 
 const props = defineProps({
@@ -65,12 +49,12 @@ const store = useStore();
 const route = useRoute();
 const useSubscription = useSubscriptionStore();
 const usePayments = usePaymentsStore();
-const step = ref<number>(0);
-const paymentType = ref<string>(``);
-const selectedTier = ref<SubscriptionTier | null>(null);
-const selectedPeriod = ref<string>(`month`);
-const paymentProfile = ref<PaymentProfile>(usePayments.getPaymentProfile(props.author.id));
-const cardErrorMessage = ref<string | null>(null);
+const step = computed(() => useSubscription.getStep);
+const selectedTier = computed(() => useSubscription.$state.selectedTier);
+const selectedPeriod = computed(() => useSubscription.$state.selectedPeriod);
+const paymentProfile = ref<PaymentProfile>(createDefaultPaymentProfile(route.params.id as string));
+const cardErrorMessage = computed(() => useSubscription.$state.cardErrorMessage);
+const saveEmail = computed(() => useSubscription.$state.saveEmail);
 const customerEmail = ref<string>(``);
 const displayButtons = ref({
 	applePay: false,
@@ -79,16 +63,14 @@ const displayButtons = ref({
 const isLoading = ref<boolean>(false);
 const userIsFollowed = ref<boolean>(false);
 const following = ref<Set<string>>(new Set());
-const saveEmail = ref<boolean>(true);
-let _stripe: Stripe | null = null;
 let paymentRequest: PaymentRequest | null = null;
 let elements: StripeElements | null = null;
 let cardElement: StripeCardElement | null = null;
+
 const emit = defineEmits([`close`]);
 
 onMounted(async (): Promise<void> => {
 	paymentProfile.value = await usePayments.getPaymentProfile(props.author.id);
-	console.log(paymentProfile.value);
 	void getFollowersAndFollowing(store.$state.id).then((data) => {
 		following.value = data.following;
 		userIsFollowed.value = data.following.has(props.author.id);
@@ -116,24 +98,6 @@ function startReading() {
 function displayCurrency(currency: string) {
 	return getCurrencySymbol(currency);
 }
-async function stripeClient(connectId?: string): Promise<Stripe> {
-	// Either connectId should be passed or Stripe should already be initialized
-	if (!connectId && !_stripe) {
-		throw new Error(`Stripe not initialized`);
-	}
-	// Always create a new instance if connectId is passed.
-	if (connectId) {
-		_stripe = await loadStripe(stripePublishableKey, {
-			stripeAccount: connectId,
-			apiVersion: `2022-08-01`,
-		});
-	}
-	// If stripe is still not initialized at this point, throw an error.
-	if (!_stripe) {
-		throw new Error(`Network error: Could not initiate stripe`);
-	}
-	return _stripe;
-}
 function initializeProfile() {
 	if (!props.author) {
 		toastError(`Author profile is missing`);
@@ -155,14 +119,11 @@ function initializeProfile() {
 		toastError(`Author hasn't set-up subscriptions`);
 	}
 }
-function selectTier(tier: SubscriptionTier) {
-	selectedTier.value = tier;
-}
 function switchPeriod(): void {
 	if (selectedPeriod.value === `month`) {
-		selectedPeriod.value = `year`;
+		useSubscription.updateSelectedPeriod(`year`);
 	} else {
-		selectedPeriod.value = `month`;
+		useSubscription.updateSelectedPeriod(`month`);
 	}
 }
 function showPaymentButtons(period: string) {
@@ -172,21 +133,21 @@ function showPaymentButtons(period: string) {
 }
 async function _showPaymentButtons(period: string) {
 	nextStep();
-	selectedPeriod.value = period;
-	if (!selectedTier.value || !period) {
-		cardErrorMessage.value = `Invalid tier selected`;
+	useSubscription.updateSelectedPeriod(period);
+	if (!useSubscription.$state.selectedTier || !period) {
+		useSubscription.updateCardMessage(`Invalid tier selected`);
 		return;
 	}
-	const selectedAmount = getAmountFromTier(period, selectedTier.value);
+	const selectedAmount = getAmountFromTier(period, useSubscription.$state.selectedTier);
 	const amount = getZeroDecimalAmount(paymentProfile.value.currency, selectedAmount);
 	isLoading.value = true;
-	const stripe = await stripeClient(paymentProfile.value.stripeAccountId);
+	const stripe = await useSubscription.stripeClient(paymentProfile.value.stripeAccountId);
 	const currency = paymentProfile.value.currency;
 	paymentRequest = stripe.paymentRequest({
 		country: `US`,
 		currency,
 		total: {
-			label: `Subscription to ${selectedTier.value.name}`,
+			label: `Subscription to ${useSubscription.$state.selectedTier.name}`,
 			amount,
 		},
 		requestPayerName: true,
@@ -220,130 +181,58 @@ async function _showPaymentButtons(period: string) {
 	});
 	cardElement.on(`change`, (event) => {
 		if (event.error) {
-			cardErrorMessage.value = event.error.message;
+			useSubscription.updateCardMessage(event.error.message);
 			return;
 		}
-		cardErrorMessage.value = null;
+		useSubscription.updateCardMessage(`null`);
 	});
 }
 function selectPaymentType(paymentType: string) {
 	if (!paymentRequest) {
-		cardErrorMessage.value = `Unexpected error with payment request`;
+		useSubscription.updateCardMessage(`Unexpected error with payment request`);
 		return;
 	}
 	if (paymentType !== `card`) {
 		paymentRequest.show();
 		paymentRequest.on(`paymentmethod`, async (ev) => {
 			if (!ev.paymentMethod.id) {
-				cardErrorMessage.value = `Invalid payment method`;
+				useSubscription.updateCardMessage(`Invalid payment method`);
 				ev.complete(`success`);
 				return;
 			}
 			if (!ev.payerEmail) {
-				cardErrorMessage.value = `Please provide your email`;
+				useSubscription.updateCardMessage(`Please provide your email`);
 				ev.complete(`success`);
 				return;
 			}
-			await submitPayment(ev.paymentMethod, ev.payerEmail);
+			await useSubscription.submitPayment(ev.paymentMethod, ev.payerEmail);
 			isLoading.value = false;
 			ev.complete(`success`);
 		});
 		return;
 	}
 	if (!cardElement) {
-		cardErrorMessage.value = `Couldn't load Stripe Card`;
+		useSubscription.updateCardMessage(`Couldn't load Stripe Card`);
 		return;
 	}
 	cardElement.mount(`#card-element`);
 	nextStep();
 }
 function nextStep(): void {
-	step.value += 1;
+	useSubscription.nextStep();
 }
 function previousStep(): void {
-	step.value -= 1;
-}
-async function submitPayment(paymentMethod: PaymentMethod, email: string): Promise<boolean> {
-	if (!selectedTier.value) {
-		throw new Error(`Tier not selected. Invalid state`);
-	}
-	const storeEmail = saveEmail.value;
-	const username = store.$state.id;
-	isLoading.value = true;
-	try {
-		cardErrorMessage.value = null;
-		const { error, status, clientSecret, paymentAttemptId } = await startSubscriptionPayment(
-			username,
-			selectedTier.value,
-			selectedPeriod.value,
-			paymentMethod.id,
-			email,
-			storeEmail,
-		);
-		if (error) {
-			cardErrorMessage.value = error.message;
-			isLoading.value = false;
-			return false;
-		}
-		if (status === `requires_action`) {
-			isLoading.value = true;
-			const res = handleAuthenticatedPayment(paymentAttemptId, clientSecret);
-			isLoading.value = false;
-			return res;
-		} else if (status !== `succeeded`) {
-			cardErrorMessage.value = `Payment is in invalid state`;
-			isLoading.value = false;
-			return false;
-		}
-		step.value = 4;
-		return true;
-	} catch (err) {
-		cardErrorMessage.value = (err as Error).message ?? `Unknown error`;
-		return false;
-	}
-}
-async function handleAuthenticatedPayment(paymentAttemptId: string, clientSecret: string): Promise<boolean> {
-	const stripe = await stripeClient();
-	const { paymentIntent, error } = await stripe.confirmCardPayment(clientSecret);
-	if (error) {
-		cardErrorMessage.value = error.message ?? `Unknown error when confirming payment`;
-		return false;
-	}
-	if (!paymentIntent?.id) {
-		cardErrorMessage.value = `Invalid payment intent`;
-		return false;
-	}
-	return confirmAuthenticatedPayment(paymentAttemptId, paymentIntent.id);
-}
-async function confirmAuthenticatedPayment(paymentAttemptId: string, paymentIntentId: string): Promise<boolean> {
-	try {
-		cardErrorMessage.value = null;
-		const { error, status } = await confirmSubscriptionPayment(store.$state.id, paymentAttemptId, paymentIntentId);
-		if (error) {
-			cardErrorMessage.value = error.message ?? `Subscription failed`;
-			return false;
-		}
-		if (status !== `succeeded`) {
-			cardErrorMessage.value = `This subscription payment failed with an unknown error`;
-			return false;
-		}
-		step.value = 4;
-		return true;
-	} catch (err) {
-		cardErrorMessage.value = (err as Error).message ?? `Unkwon error`;
-		return false;
-	}
+	useSubscription.previousStep();
 }
 async function submitCardPayment(e: HTMLInputEvent): Promise<void> {
 	isLoading.value = true;
-	e.preventDefault();
-	const stripe = await stripeClient();
+	const stripe = await useSubscription.stripeClient();
 	if (!cardElement) {
 		isLoading.value = false;
 		throw new Error(`Card elements is not initialized`);
 	}
 	if (!customerEmail.value) {
-		cardErrorMessage.value = `Invalid email address`;
+		useSubscription.updateCardMessage(`Invalid email address`);
 		isLoading.value = false;
 		return;
 	}
@@ -355,16 +244,16 @@ async function submitCardPayment(e: HTMLInputEvent): Promise<void> {
 		},
 	});
 	if (error) {
-		cardErrorMessage.value = error.message ?? `An unknown error happened`;
+		useSubscription.updateCardMessage(error.message ?? `An unknown error happened`);
 		isLoading.value = false;
 		return;
 	}
 	if (!paymentMethod) {
-		cardErrorMessage.value = `Invalid payment method`;
+		useSubscription.updateCardMessage(`Invalid payment method`);
 		isLoading.value = false;
 		return;
 	}
-	await submitPayment(paymentMethod, customerEmail.value);
+	await useSubscription.submitPayment(paymentMethod, customerEmail.value);
 	isLoading.value = false;
 }
 async function toggleFriend(): Promise<void> {
@@ -378,7 +267,7 @@ async function toggleFriend(): Promise<void> {
 	}
 }
 function toggleSaveEmail(): void {
-	saveEmail.value = !saveEmail.value;
+	useSubscription.updateEmail(!useSubscription.$state.saveEmail);
 }
 </script>
 <template>
@@ -414,7 +303,7 @@ function toggleSaveEmail(): void {
 							</div>
 						</div>
 						<div v-else></div>
-						<button class="focus:outline-none bg-gray1 dark:bg-gray5 rounded-full p-1" @click="$emit(`close`)">
+						<button class="focus:outline-none bg-gray1 dark:bg-gray5 rounded-full p-1" @click.stop="$emit(`close`)">
 							<CloseIcon />
 						</button>
 					</div>
@@ -453,7 +342,7 @@ function toggleSaveEmail(): void {
 										: `opacity-50 cursor-not-allowed border-lightBorder dark:border-darkBorder`
 								"
 								:disabled="!(enabledTiers.includes(tier._id) || enabledTiers.length === 0)"
-								@click.stop="selectTier(tier)"
+								@click.stop="useSubscription.updateSelectedTier(tier)"
 							>
 								<!-- Check mark -->
 								<div class="w-12 flex justify-center">
@@ -521,7 +410,7 @@ function toggleSaveEmail(): void {
 							<button
 								v-show="displayButtons.applePay"
 								class="w-full my-2 p-4 bg-black items-center rounded-lg flex justify-center"
-								@click="selectPaymentType(`applePay`)"
+								@click.stop="selectPaymentType(`applePay`)"
 							>
 								<AppleIcon class="text-white w-6 h-6" />
 								<h6 class="text-white ml-2">Pay</h6>
@@ -530,7 +419,7 @@ function toggleSaveEmail(): void {
 							<button
 								v-show="displayButtons.googlePay"
 								class="w-full my-2 p-4 border border-black bg-white items-center rounded-lg flex justify-center"
-								@click="selectPaymentType(`googlePay`)"
+								@click.stop="selectPaymentType(`googlePay`)"
 							>
 								<GoogleIcon class="w-6 h-6" />
 								<h6 class="text-gray5 ml-2">Pay</h6>
@@ -561,7 +450,7 @@ function toggleSaveEmail(): void {
 					<article v-show="step === 2" class="modal-animation">
 						<!-- Back button -->
 						<div class="flex justify-between w-full mb-8 mt-8">
-							<button class="flex items-center" @click="previousStep">
+							<button class="flex items-center" @click.stop="previousStep">
 								<div class="bg-gray1 dark:bg-gray5 focus:outline-none rounded-full">
 									<ChevronLeft />
 								</div>
@@ -629,9 +518,9 @@ function toggleSaveEmail(): void {
 								cardErrorMessage
 							}}</small>
 							<div class="flex flex-row-reverse items-center mt-4">
-								<SecondaryButton v-if="!isLoading" :text="`Pay`" :action="submitCardPayment" />
+								<SecondaryButton v-if="!isLoading" :text="`Pay`" @submit-payment="submitCardPayment" />
 								<div class="w-full">
-									<button class="text-primary self-center text-sm" @click="step = 5">Payment policy</button>
+									<button class="text-primary self-center text-sm" @click.stop="step = 5">Payment policy</button>
 								</div>
 							</div>
 						</div>
@@ -706,7 +595,7 @@ function toggleSaveEmail(): void {
 						</div>
 						<img
 							loading="lazy"
-							:src="darkMode ? `/images/dark/subscriptions.webp` : `/images/light/subscriptions.webp`"
+							:src="darkMode ? `@/assets/brand/dark/subscriptions.webp` : `@/assets/brand/light/subscriptions.webp`"
 							class="h-auto rounded-lg"
 						/>
 					</article>

@@ -11,12 +11,19 @@ import { switchSubscriptionTier } from '@/backend/payment';
 import { SubscriptionTier } from '@/store/paymentProfile';
 import { handleError } from '@/plugins/toast';
 import { useProfilesStore } from '@/store/profiles';
+import { useStore } from './session';
+import { Stripe, loadStripe, PaymentMethod } from '@stripe/stripe-js';
+import { confirmSubscriptionPayment, startSubscriptionPayment } from '@/backend/payment';
+import { stripePublishableKey } from '@/backend/utilities/config';
 export interface ISubscriptionWithProfile extends ISubscriptionResponse {
 	authorID: string;
 	name: string;
 	avatar: string;
 	monthsSubbed: number;
 }
+
+let _stripe: Stripe | null = null;
+
 export const useSubscriptionStore = defineStore(`subscriptions`, {
 	state: () => {
 		const active = ref<ISubscriptionWithProfile[]>([]);
@@ -24,6 +31,20 @@ export const useSubscriptionStore = defineStore(`subscriptions`, {
 		return {
 			active,
 			inActive,
+			selectedTier: {
+				_id: ``,
+				username: ``,
+				name: ``,
+				monthlyEnabled: true,
+				monthlyPrice: 0,
+				yearlyEnabled: false,
+				yearlyPrice: 10,
+			},
+			selectedPeriod: ``,
+			saveEmail: true,
+			cardErrorMessage: ``,
+			isLoading: false,
+			step: 0,
 		};
 	},
 	actions: {
@@ -77,6 +98,119 @@ export const useSubscriptionStore = defineStore(`subscriptions`, {
 			const response = await switchSubscriptionTier(username, subscriptionId, newTier, period);
 			return response;
 		},
+		nextStep(): void {
+			this.step += 1;
+		},
+		previousStep(): void {
+			this.step -= 1;
+		},
+		updateSelectedTier(tier: SubscriptionTier): void {
+			this.selectedTier = tier;
+		},
+		updateSelectedPeriod(period: string): void {
+			this.selectedPeriod = period;
+		},
+		updateEmail(toSave: boolean): void {
+			this.saveEmail = toSave;
+		},
+		updateCardMessage(message: string): void {
+			this.cardErrorMessage = message;
+		},
+		async submitPayment(paymentMethod: PaymentMethod, email: string): Promise<boolean> {
+			if (!this.selectedTier) {
+				throw new Error(`Tier not selected. Invalid state`);
+			}
+			this.isLoading = true;
+			try {
+				this.cardErrorMessage = ``;
+				const { error, status, clientSecret, paymentAttemptId } = await startSubscriptionPayment(
+					useStore().$state.id,
+					this.selectedTier,
+					this.selectedPeriod,
+					paymentMethod.id,
+					email,
+					this.saveEmail,
+				);
+				if (error) {
+					this.cardErrorMessage = error.message;
+					this.isLoading = false;
+					return false;
+				}
+				if (status === `requires_action`) {
+					this.isLoading = true;
+					const res = this.handleAuthenticatedPayment(paymentAttemptId, clientSecret);
+					this.isLoading = false;
+					return res;
+				} else if (status !== `succeeded`) {
+					this.cardErrorMessage = `Payment is in invalid state`;
+					this.isLoading = false;
+					return false;
+				}
+				this.step = 4;
+				return true;
+			} catch (err) {
+				this.cardErrorMessage = (err as Error).message ?? `Unknown error`;
+				return false;
+			}
+		},
+		async handleAuthenticatedPayment(paymentAttemptId: string, clientSecret: string): Promise<boolean> {
+			const stripe = await this.stripeClient();
+			const { paymentIntent, error } = await stripe.confirmCardPayment(clientSecret);
+			if (error) {
+				this.cardErrorMessage = error.message ?? `Unknown error when confirming payment`;
+				return false;
+			}
+			if (!paymentIntent?.id) {
+				this.cardErrorMessage = `Invalid payment intent`;
+				return false;
+			}
+			return this.confirmAuthenticatedPayment(paymentAttemptId, paymentIntent.id);
+		},
+		async confirmAuthenticatedPayment(paymentAttemptId: string, paymentIntentId: string): Promise<boolean> {
+			try {
+				this.cardErrorMessage = ``;
+				const { error, status } = await confirmSubscriptionPayment(
+					useStore().$state.id,
+					paymentAttemptId,
+					paymentIntentId,
+				);
+				if (error) {
+					this.cardErrorMessage = error.message ?? `Subscription failed`;
+					return false;
+				}
+				if (status !== `succeeded`) {
+					this.cardErrorMessage = `This subscription payment failed with an unknown error`;
+					return false;
+				}
+				this.step = 4;
+				return true;
+			} catch (err) {
+				this.cardErrorMessage = (err as Error).message ?? `Unkwon error`;
+				return false;
+			}
+		},
+		async stripeClient(connectId?: string): Promise<Stripe> {
+			// Either connectId should be passed or Stripe should already be initialized
+			if (!connectId && !_stripe) {
+				throw new Error(`Stripe not initialized`);
+			}
+			// Always create a new instance if connectId is passed.
+			if (connectId) {
+				_stripe = await loadStripe(stripePublishableKey, {
+					stripeAccount: connectId,
+					apiVersion: `2022-08-01`,
+				});
+			}
+			// If stripe is still not initialized at this point, throw an error.
+			if (!_stripe) {
+				throw new Error(`Network error: Could not initiate stripe`);
+			}
+			return _stripe;
+		},
 	},
-	getters: {},
+	getters: {
+		getStep: (state): number => {
+			return state.step;
+		},
+	},
 });
