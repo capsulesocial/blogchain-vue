@@ -14,8 +14,8 @@
 	"dependencies": {
 		"@capsulesocial/capsule-config": "^1.2.7",
 		"@capsulesocial/ipfs-wrapper": "1.1.0",
+		"@stripe/stripe-js": "^1.37.0",
 		"@toruslabs/customauth": "^10.1.1",
-		"@stripe/stripe-js": "^1.36.0",
 		"@toruslabs/openlogin-ed25519": "^2.0.0",
 		"axios": "^0.27.2",
 		"browser-image-compression": "^2.0.0",
