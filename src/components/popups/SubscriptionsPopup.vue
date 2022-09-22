@@ -14,7 +14,8 @@ import AppleIcon from '@/components/icons/brands/Apple.vue';
 import GoogleIcon from '@/components/icons/brands/Google.vue';
 import SwitchPeriod from '@/components/ToggleSwitch.vue';
 import BasicSwitch from '@/components/BasicSwitch.vue';
-import FriendButton from '@/components/FriendButton.vue';
+import PaymentPolicy from '@/components/subscriptions/PaymentPolicy.vue';
+import SubConfirmation from '@/components/subscriptions/SubConfirmation.vue';
 import { useSubscriptionStore } from '@/store/subscriptions';
 import { Profile } from '@/backend/profile';
 import { getAmountFromTier, getCurrencySymbol, getZeroDecimalAmount, retrieveReaderProfile } from '@/backend/payment';
@@ -22,7 +23,6 @@ import { usePaymentsStore, PaymentProfile, createDefaultPaymentProfile } from '@
 import { toastError, toastSuccess, handleError } from '@/plugins/toast';
 import { followChange, getFollowersAndFollowing } from '@/backend/following';
 import { HTMLInputEvent } from '@/interfaces/HTMLInputEvent';
-import { darkMode } from '@/plugins/colors';
 
 const props = defineProps({
 	isSubscribed: {
@@ -539,115 +539,17 @@ function toggleSaveEmail(): void {
 					</article>
 					<!-- Step 4: Confirmation page -->
 					<article v-show="step === 4" class="flex flex-col items-center modal-animation">
-						<div class="w-full flex flex-col justify-center text-center px-10">
-							<CrownIcon class="text-neutral stroke-neutral self-center w-12 h-12 mb-2" />
-							<h6 class="font-semibold text-neutral text-xl mb-2">Congrats!</h6>
-							<p class="text-base text-center text-gray5 dark:text-gray3 mb-4">You are now subscribed to:</p>
-						</div>
-						<!-- Premium profile preview -->
-						<div class="flex flex-row items-center p-4 border border-neutral rounded-lg w-2/3">
-							<Avatar
-								class="flex-shrink-0"
-								:author-i-d="author.id"
-								:avatar="props.author.avatar"
-								:no-click="true"
-								:size="`w-14 h-14`"
-							/>
-							<div class="flex flex-col ml-4 flex-grow w-3/5">
-								<h4 v-if="author.name !== ``" class="text-xl font-semibold dark:text-darkPrimaryText">
-									{{ author.name }}
-								</h4>
-								<h4 v-else class="text-xl font-semibold text-gray5 dark:text-gray3">
-									{{ author.id }}
-								</h4>
-								<h5
-									class="text-lg text-primary dark:text-secondary w-full overflow-hidden"
-									style="text-overflow: ellipsis"
-								>
-									@{{ author.id }}
-								</h5>
-							</div>
-							<div
-								class="bg-neutral bg-opacity-25 rounded-3xl border border-neutral px-3 py-2 text-neutral text-xs mt-2 truncate pl-2"
-							>
-								{{ selectedTier ? selectedTier.name : `` }}
-							</div>
-						</div>
-						<div class="w-full flex flex-col justify-center items-center text-center px-10 mt-5">
-							<p class="text-base text-center text-gray5 dark:text-gray3 mb-4 max-w-md">
-								All premium articles under {{ selectedTier ? selectedTier.name : `` }} tier<br />
-								are now unlocked for your account.
-							</p>
-							<button
-								v-if="userIsFollowed"
-								class="px-5 py-2 rounded-lg bg-neutral focus:outline-none text-white mt-6 font-semibold"
-								@click.stop="startReading"
-							>
-								Start reading
-							</button>
-							<div v-else class="flex flex-col items-center">
-								<p class="text-base text-center text-gray5 dark:text-gray3 mb-4 max-w-md">
-									Don't forget to follow this author to see<br />
-									their latest posts on your home feed:
-								</p>
-								<FriendButton :toggle-friend="toggleFriend" :user-is-followed="userIsFollowed" />
-							</div>
-						</div>
-						<img
-							loading="lazy"
-							:src="darkMode ? `@/assets/brand/dark/subscriptions.webp` : `@/assets/brand/light/subscriptions.webp`"
-							class="h-auto rounded-lg"
+						<SubConfirmation
+							:author="props.author"
+							:user-is-followed="userIsFollowed"
+							:toggle-friend="toggleFriend"
+							:selected-tier="selectedTier"
+							@star-reading="startReading"
 						/>
 					</article>
 					<!-- Step 5: Payment policy page -->
 					<article v-show="step === 5" class="modal-animation">
-						<!-- back button -->
-						<button class="flex items-center mb-4" @click="step = 2">
-							<div class="bg-gray1 dark:bg-gray5 focus:outline-none rounded-full">
-								<ChevronLeft />
-							</div>
-							<span class="pl-2 text-sm font-semibold dark:text-darkPrimaryText" style="margin-bottom: 2px"
-								>Payments</span
-							>
-						</button>
-						<!-- Page title -->
-						<h1 class="text-lightPrimaryText dark:text-darkPrimaryText text-2xl xl:text-3xl font-semibold">
-							Renewal, Refund &amp; Cancellation Policy
-						</h1>
-						<h2 class="text-primary mb-2 mt-4 text-lg font-semibold">
-							Blogchain provides a platform for authors to be paid directly by readers. Blogchain will not refund on
-							behalf of authors. Authors can issue refunds to readers at their discretion.
-						</h2>
-						<article class="message w-full">
-							<h2 class="text-lightPrimaryText dark:text-darkPrimaryText text-xl font-semibold py-2">
-								How do I request a refund on my subscription?
-							</h2>
-							<p class="message-content text-gray5 dark:text-gray3 py-2 text-sm text-justify">
-								Refunds are issued at the discretion of the Author. Please contact them directly.
-							</p>
-							<h2 class="text-lightPrimaryText dark:text-darkPrimaryText text-lg font-semibold py-2">
-								Important note:
-							</h2>
-							<p class="message-content text-gray5 dark:text-gray3 py-2 text-sm text-justify">
-								Subscription refunds from the author will not revoke access to your “subscribers only” posts for the
-								current month.
-							</p>
-							<h2 class="text-lightPrimaryText dark:text-darkPrimaryText text-xl font-semibold py-2">
-								Cancellation Policy
-							</h2>
-							<p class="message-content text-gray5 dark:text-gray3 py-2 text-sm text-justify">
-								In the event of a subscription cancellation by the author or subscribed reader, the subscription will
-								cancel at the period's end. Subscription cancellation will stop the auto-renewal of readers'
-								subscriptions. The reader will still have access to content under that subscription until the end of the
-								month of the cancellation.
-							</p>
-							<h2 class="text-lightPrimaryText dark:text-darkPrimaryText text-xl font-semibold py-2">Renewal Policy</h2>
-							<p class="message-content text-gray5 dark:text-gray3 py-2 text-sm text-justify">
-								Reader’s subscription will auto-renew with existing price plans based on monthly or yearly subscription
-								dates. Subscribed reader’s will receive an email notification from Stripe for each subscription
-								immediately after the renewal payment has been fully processed.
-							</p>
-						</article>
+						<PaymentPolicy />
 					</article>
 					<div v-show="isLoading" class="modal-animation flex w-full justify-center z-20 mt-5">
 						<div
