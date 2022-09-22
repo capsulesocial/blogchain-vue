@@ -1,16 +1,19 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { useStore } from '@/store/session';
+import Avatar from '@/components/Avatar.vue';
 import MutualsFollowersPopup from '../popups/MutualsFollowersPopup.vue';
+import { useStore } from '@/store/session';
+import { useProfilesStore } from '@/store/profiles';
 import { useConnectionsStore } from '@/store/connections';
 import { useRoute } from 'vue-router';
 
 const store = useStore();
 const connections = useConnectionsStore();
 const route = useRoute();
+const profileStore = useProfilesStore();
 
 const openMutualFollowersPopup = ref<boolean>(false);
-const authorID = route.params.id as string;
+const authorID = computed(() => route.params.id as string);
 
 function getText(): string {
 	if (!mutuals.value) {
@@ -36,7 +39,11 @@ function getText(): string {
 	}
 }
 
-const mutuals = computed(() => connections.getMutualFollowers(store.id, authorID));
+const mutuals = computed(() => connections.getMutualFollowers(store.id, authorID.value));
+
+function getAvatar(id: string) {
+	return profileStore.getProfile(id).avatar;
+}
 </script>
 
 <template>
@@ -48,17 +55,17 @@ const mutuals = computed(() => connections.getMutualFollowers(store.id, authorID
 		<div>
 			<!-- Profile photos -->
 			<div class="flex flex-row flex-wrap pl-4">
-				<!-- <Avatar
+				<Avatar
 					v-for="f in mutuals"
-					:key="f.id"
-					:author-id="f.id"
-					:avatar="f.avatar"
+					:key="f"
+					:authorid="f"
+					:avatar="getAvatar(f)"
 					:size="`w-10 h-10`"
 					class="-ml-4 rounded-xl bg-white dark:bg-transparent p-1"
-				/> -->
-				<div v-for="f in mutuals" :key="f" class="w-12 h-12 -ml-4 rounded-xl bg-white dark:bg-transparent p-1">
+				/>
+				<!-- <div v-for="f in mutuals" :key="f" class="w-12 h-12 -ml-4 rounded-xl bg-white dark:bg-transparent p-1">
 					<div class="bg-gray1 w-full h-full rounded-lg"></div>
-				</div>
+				</div> -->
 			</div>
 			<!-- Names -->
 			<div v-if="mutuals">

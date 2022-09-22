@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeMount } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useMeta } from 'vue-meta';
 import { useProfilesStore } from '@/store/profiles';
@@ -22,32 +22,28 @@ const store = useStore();
 const router = useRouter();
 const route = useRoute();
 const profilesStore = useProfilesStore();
+const connectionsStore = useConnectionsStore();
 
 if (typeof route.params.id !== 'string') {
 	throw new Error('Invalid param type for id');
 }
-const authorID = route.params.id;
 const profileExists = ref<boolean>(false);
-const numFollowers = ref<number>(0);
-const numFollowing = ref<number>(0);
-const profile = computed(() => profilesStore.getProfile(authorID));
+const authorID = computed(() => route.params.id as string);
+const profile = computed(() => profilesStore.getProfile(authorID.value));
+connectionsStore.fetchConnections(authorID.value);
+
+const connections = computed(() => connectionsStore.getConnections(authorID.value));
 
 useMeta({
-	title: profile.value.name ? `${profile.value.name as string} -  Blogchain` : `@${authorID as string} -  Blogchain`,
+	title: profile.value.name
+		? `${profile.value.name as string} -  Blogchain`
+		: `@${authorID.value as string} -  Blogchain`,
 	htmlAttrs: { lang: 'en', amp: true },
-});
-
-onBeforeMount(async () => {
-	const c = await useConnectionsStore().fetchConnections(authorID);
-	if (c) {
-		numFollowers.value = c?.followers.size;
-		numFollowing.value = c?.following.size;
-	}
 });
 
 onMounted(async () => {
 	try {
-		const nearUserInfo = await getUserInfoNEAR(authorID);
+		const nearUserInfo = await getUserInfoNEAR(authorID.value);
 		if (nearUserInfo.publicKey) {
 			profileExists.value = true;
 		}
@@ -55,12 +51,12 @@ onMounted(async () => {
 		handleError(err);
 		router.push(`/not-found`);
 	}
-	void profilesStore.fetchProfile(authorID);
+	void profilesStore.fetchProfile(authorID.value);
 	void useConnectionsStore().fetchConnections(store.id);
 });
 
 const fromExternalSite = ref<boolean>(false);
-const selfView = ref<boolean>(authorID === store.$state.id);
+const selfView = ref<boolean>(authorID.value === store.$state.id);
 const showAvatarPopup = ref<boolean>(false);
 const scrollingDown = ref<boolean>(false);
 const paymentsEnabled = ref<boolean>(true);
@@ -229,7 +225,7 @@ function getStyles(tab: string): string {
 							>
 								<span
 									class="text-lightPrimaryText dark:text-darkPrimaryText hover:text-primary dark:hover:text-primary font-bold"
-									>{{ numFollowers }}</span
+									>{{ connections?.followers.size }}</span
 								>
 								Followers
 							</button>
@@ -239,7 +235,7 @@ function getStyles(tab: string): string {
 							>
 								<span
 									class="text-lightPrimaryText dark:text-darkPrimaryText hover:text-primary dark:hover:text-primary font-bold"
-									>{{ numFollowing }}</span
+									>{{ connections?.following.size }}</span
 								>
 								Following
 							</button>

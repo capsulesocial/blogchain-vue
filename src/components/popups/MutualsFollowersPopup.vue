@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onBeforeMount } from 'vue';
+import { computed } from 'vue';
 import { useProfilesStore } from '@/store/profiles';
 import { useRoute } from 'vue-router';
 import HorizontalProfilePreview from '@/components/HorizontalProfilePreview.vue';
@@ -23,15 +23,7 @@ if (route.name !== `Home`) {
 const authorID = route.name === `Home` ? store.$state.id : (route.params.id as string);
 const profile = computed(() => profilesStore.getProfile(authorID as string));
 // TODO: fetch following from store / backend
-const mutuals = ref<Set<string> | undefined>();
-
-onBeforeMount(async () => {
-	const myC = await connections.fetchConnections(store.id);
-	const theirC = await connections.fetchConnections(authorID);
-	if (myC && theirC) {
-		mutuals.value = new Set([...theirC.followers].filter((p) => myC.followers.has(p)));
-	}
-});
+const mutuals = computed(() => connections.getMutualFollowers(store.id, authorID));
 </script>
 <template>
 	<div class="popup">
@@ -41,7 +33,7 @@ onBeforeMount(async () => {
 			@click.self="emit(`close`)"
 		>
 			<div
-				v-if="profile !== null && mutuals"
+				v-if="profile !== null"
 				class="min-h-40 w-full lg:w-600 bg-lightBG dark:bg-darkBGStop card-animation max-h-90 overflow-y-auto rounded-lg px-6 pt-4 pb-2 shadow-lg"
 			>
 				<div class="sticky flex items-center justify-between mb-6">
@@ -55,7 +47,7 @@ onBeforeMount(async () => {
 						<CloseIcon />
 					</button>
 				</div>
-				<article v-if="mutuals.size == 0" class="mt-24 grid justify-items-center px-10 xl:px-0">
+				<article v-if="mutuals && mutuals.size == 0" class="mt-24 grid justify-items-center px-10 xl:px-0">
 					<p class="text-gray5 dark:text-gray3 mb-5 text-center text-sm">
 						<span v-if="profile.name !== ``">
 							It seems you don't have any mutual followers with {{ profile.name }}
