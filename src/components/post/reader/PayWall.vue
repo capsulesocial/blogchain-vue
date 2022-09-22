@@ -13,6 +13,7 @@ const paymentStore = usePaymentsStore();
 
 const props = defineProps({
 	id: { type: String, required: true },
+	hasfeaturedphoto: { type: Boolean, required: true },
 	subscriptionstatus: { type: String, required: true },
 	enabledtiers: { type: Array<string>, required: true },
 });
@@ -45,9 +46,12 @@ async function getTiers() {
 
 <template>
 	<article
-		class="from-lightBGStart to-transparent dark:from-darkBGStart dark:to-transparent bg-gradient-to-t z-10 absolute top-0 w-full h-full flex"
+		class="from-lightBGStart to-transparent dark:from-darkBGStart dark:to-transparent bg-gradient-to-t z-10 absolute top-0 w-full h-full flex overflow-hidden"
 	>
-		<div class="w-full shadow-lg flex flex-col items-center py-10 px-16 bg-lightBG dark:bg-darkBGStop rounded-lg h-min">
+		<div
+			class="w-full shadow-lg flex flex-col items-center py-10 px-16 bg-lightBG dark:bg-darkBGStop rounded-lg h-full"
+			:class="hasfeaturedphoto ? `sm:mt-36` : `mt-0`"
+		>
 			<!-- Not a subscriber -->
 			<div v-if="props.subscriptionstatus === `NOT_SUBSCRIBED` || !store.$state.id">
 				<h4 class="text-2xl font-semibold text-neutral mb-4 text-center">This post is for Paid subscribers</h4>

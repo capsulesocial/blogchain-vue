@@ -26,6 +26,7 @@ import Header from '@/components/post/reader/Header.vue';
 import Stats from '@/components/post/Stats.vue';
 import SharePopup from '@/components/popups/SharePopup.vue';
 import QuotePopup from '@/components/popups/QuotePopup.vue';
+import IpfsImage from '@/components/IpfsImage.vue';
 
 import RepostIcon from '@/components/icons/RepostIcon.vue';
 import QuoteIcon from '@/components/icons/QuoteIcon.vue';
@@ -353,6 +354,7 @@ function isReposted() {
 						<article v-if="showPaywall">
 							<PayWall
 								:id="post.authorID"
+								:hasfeaturedphoto="hasFeaturedPhoto"
 								:subscriptionstatus="subscriptionStatus"
 								:enabledtiers="enabledTiers ? enabledTiers : []"
 							/>
@@ -441,7 +443,7 @@ function isReposted() {
 					:id="post.authorID"
 					:is-followed="userIsFollowed"
 					:toggle-friend="toggleFriend"
-					:class="showPaywall ? `mb-10` : ``"
+					:class="showPaywall ? `mb-20` : ``"
 				/>
 				<!-- Comments -->
 				<article v-if="post !== null && !showPaywall && !showStats" class="pb-14">
