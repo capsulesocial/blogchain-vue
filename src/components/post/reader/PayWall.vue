@@ -2,50 +2,52 @@
 import { computed, onMounted, ref } from 'vue';
 import { useStore } from '@/store/session';
 import { useProfilesStore } from '@/store/profiles';
-// import { SubscriptionTier } from '@/store/paymentProfile';
-// import { getPaymentProfile } from '@/store/paymentProfile';
+import { usePaymentsStore } from '@/store/paymentProfile';
+import { SubscriptionTier } from '@/store/paymentProfile';
+
+import CheckCircleStaticIcon from '@/components/icons/CheckCircleStaticIcon.vue';
 
 const store = useStore();
 const profilesStore = useProfilesStore();
+const paymentStore = usePaymentsStore();
 
 const props = defineProps({
 	id: { type: String, required: true },
-	hasfeaturedphoto: { type: Boolean, required: true },
 	subscriptionstatus: { type: String, required: true },
 	enabledtiers: { type: Array<string>, required: true },
 });
 
 const profile = computed(() => profilesStore.getProfile(props.id));
-const enabledTierNames = ref<Array<string>>([``]);
-// const toPreSelectTiers = ref<Array<SubscriptionTier>>([]);
+const enabledTierNames = ref<Array<string>>([]);
+const toPreSelectTiers = ref<Array<SubscriptionTier>>([]);
 
 onMounted(async () => {
 	void profilesStore.fetchProfile(props.id);
-	console.log(props);
-	// getTiers();
+	getTiers();
 });
 
-// function getTiers() {
-// 	//how to access payment profile?
-// 	const { tiers } = getPaymentProfile(profile.value.id);
-// 	props.enabledtiers.forEach((tId: any) => {
-// 		const foundTier = tiers.find((tier: SubscriptionTier) => tier._id === tId);
-// 		if (foundTier) {
-// 			enabledTierNames.value.push(foundTier.name);
-// 			toPreSelectTiers.value.push(foundTier);
-// 		}
-// 	});
-// }
+async function getTiers() {
+	//how to access get payment profile in this file?
+	const paymentProfile = await paymentStore.getPaymentProfile(profile.value.id);
+	const availableTiers = ref<SubscriptionTier[]>([]);
+	if (paymentProfile) {
+		availableTiers.value = paymentProfile.tiers;
+	}
+	props.enabledtiers.forEach((tId: any) => {
+		const foundTier = availableTiers.value.find((tier: SubscriptionTier) => tier._id === tId);
+		if (foundTier) {
+			enabledTierNames.value.push(foundTier.name);
+			toPreSelectTiers.value.push(foundTier);
+		}
+	});
+}
 </script>
 
 <template>
 	<article
 		class="from-lightBGStart to-transparent dark:from-darkBGStart dark:to-transparent bg-gradient-to-t z-10 absolute top-0 w-full h-full flex"
 	>
-		<div
-			class="w-full shadow-lg flex flex-col items-center py-10 px-16 bg-lightBG dark:bg-darkBGStop rounded-lg h-min"
-			:class="props.hasfeaturedphoto ? `sm:mt-36` : `mt-0`"
-		>
+		<div class="w-full shadow-lg flex flex-col items-center py-10 px-16 bg-lightBG dark:bg-darkBGStop rounded-lg h-min">
 			<!-- Not a subscriber -->
 			<div v-if="props.subscriptionstatus === `NOT_SUBSCRIBED` || !store.$state.id">
 				<h4 class="text-2xl font-semibold text-neutral mb-4 text-center">This post is for Paid subscribers</h4>
@@ -98,18 +100,6 @@ onMounted(async () => {
 				<p v-if="store.$state.id" class="text-sm mt-8 text-center text-gray5 dark:text-gray3">
 					Manage my <router-link to="/subscriptions" class="text-neutral text">subscriptions</router-link>
 				</p>
-				<!-- change tier popup -->
-				<!-- <portal to="postPage">
-										<ChangeTierPopup
-											v-if="showChangeTier"
-											:author="author"
-											:author-avatar="subscriptionProfileAvatar"
-											:s="authorPaymentProfile"
-											:to-pre-select-tier="toPreSelectTiers[0]"
-											:enabled-tiers="enabledTiers"
-											@close="showChangeTier = false"
-										/>
-									</portal> -->
 			</div>
 		</div>
 	</article>

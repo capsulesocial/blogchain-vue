@@ -312,7 +312,7 @@ function isReposted() {
 								"
 								style="background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.8) 100%)"
 							></div>
-							<!-- <IpfsImage class="w-full rounded-lg object-cover shadow-lg" :cid="post.featuredPhotoCID" /> -->
+							<IpfsImage class="w-full rounded-lg object-cover shadow-lg" :cid="post.featuredPhotoCID" />
 							<p
 								v-if="post && post.featuredPhotoCaption"
 								ref="photoCaption"
@@ -347,13 +347,12 @@ function isReposted() {
 								<div class="h-3 w-2/5 rounded-xl bg-gray1 dark:bg-gray7 animate-pulse"></div>
 							</div>
 						</div>
-						<!-- If post is premium, add height to display the paywall -->
+						<!-- If post is premium without photo, add height to display the paywall -->
 						<div v-else-if="showPaywall && !hasFeaturedPhoto" class="h-64"></div>
 						<!-- Post paywall -->
 						<article v-if="showPaywall">
 							<PayWall
 								:id="post.authorID"
-								:hasfeaturedphoto="hasFeaturedPhoto"
 								:subscriptionstatus="subscriptionStatus"
 								:enabledtiers="enabledTiers ? enabledTiers : []"
 							/>
@@ -501,7 +500,7 @@ function isReposted() {
 				:bookmarked="postMetadata?.bookmarked ? postMetadata?.bookmarked : false"
 				:encrypted="post.encrypted ? post.encrypted : false"
 				:title="post.title"
-				:subtitle="post?.subtitle ? post?.subtitle : null"
+				:subtitle="post?.subtitle ? post?.subtitle : undefined"
 				:excerpt="postMetadata?.post.excerpt ? postMetadata?.post.excerpt : ``"
 				:featuredphotocid="post?.featuredPhotoCID ? post?.featuredPhotoCID : ``"
 				:tags="post.tags"
