@@ -4,6 +4,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { useMeta } from 'vue-meta';
 import { useProfilesStore } from '@/store/profiles';
 import { useStore } from '@/store/session';
+import { useConnectionsStore } from '@/store/connections';
 import BackButton from '@/components/icons/ChevronLeft.vue';
 import PencilIcon from '@/components/icons/Pencil.vue';
 import SecondaryButton from '@/components/SecondaryButton.vue';
@@ -21,23 +22,28 @@ const store = useStore();
 const router = useRouter();
 const route = useRoute();
 const profilesStore = useProfilesStore();
+const connectionsStore = useConnectionsStore();
 
 if (typeof route.params.id !== 'string') {
 	throw new Error('Invalid param type for id');
 }
-const authorID = route.params.id;
 const profileExists = ref<boolean>(false);
+const authorID = computed(() => route.params.id as string);
+const profile = computed(() => profilesStore.getProfile(authorID.value));
+connectionsStore.fetchConnections(authorID.value);
 
-const profile = computed(() => profilesStore.getProfile(authorID));
+const connections = computed(() => connectionsStore.getConnections(authorID.value));
 
 useMeta({
-	title: profile.value.name ? `${profile.value.name as string} -  Blogchain` : `@${authorID as string} -  Blogchain`,
+	title: profile.value.name
+		? `${profile.value.name as string} -  Blogchain`
+		: `@${authorID.value as string} -  Blogchain`,
 	htmlAttrs: { lang: 'en', amp: true },
 });
 
 onMounted(async () => {
 	try {
-		const nearUserInfo = await getUserInfoNEAR(authorID);
+		const nearUserInfo = await getUserInfoNEAR(authorID.value);
 		if (nearUserInfo.publicKey) {
 			profileExists.value = true;
 		}
@@ -45,15 +51,14 @@ onMounted(async () => {
 		handleError(err);
 		router.push(`/not-found`);
 	}
-	void profilesStore.fetchProfile(authorID);
+	void profilesStore.fetchProfile(authorID.value);
+	void useConnectionsStore().fetchConnections(store.id);
 });
 
 const fromExternalSite = ref<boolean>(false);
-const selfView = ref<boolean>(authorID === store.$state.id);
+const selfView = ref<boolean>(authorID.value === store.$state.id);
 const showAvatarPopup = ref<boolean>(false);
 const scrollingDown = ref<boolean>(false);
-const followers = ref<[]>([]);
-const following = ref<[]>([]);
 const paymentsEnabled = ref<boolean>(true);
 const totalPostsCount = ref<number>(0);
 const userIsFollowed = ref<boolean>(false);
@@ -220,7 +225,7 @@ function getStyles(tab: string): string {
 							>
 								<span
 									class="text-lightPrimaryText dark:text-darkPrimaryText hover:text-primary dark:hover:text-primary font-bold"
-									>{{ followers.length }}</span
+									>{{ connections?.followers.size }}</span
 								>
 								Followers
 							</button>
@@ -230,7 +235,7 @@ function getStyles(tab: string): string {
 							>
 								<span
 									class="text-lightPrimaryText dark:text-darkPrimaryText hover:text-primary dark:hover:text-primary font-bold"
-									>{{ following.length }}</span
+									>{{ connections?.following.size }}</span
 								>
 								Following
 							</button>

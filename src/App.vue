@@ -6,6 +6,7 @@ import TitleContainer from './components/TitleContainer.vue';
 
 import { useStore } from './store/session';
 import { useStoreSettings } from './store/settings';
+import { useConnectionsStore } from '@/store/connections';
 import { initColors } from './plugins/colors';
 import { getBGImage } from './plugins/background';
 import { onBeforeMount, ref } from 'vue';
@@ -14,10 +15,14 @@ import { setThumbHeight, initScroll } from '@/helpers/scrolling';
 import { useRouter } from 'vue-router';
 import { watch } from 'vue';
 import { nextTick } from 'process';
+import { useProfilesStore } from '@/store/profiles';
 
 const router = useRouter();
 const store = useStore();
 const settings = useStoreSettings();
+const connections = useConnectionsStore();
+const profile = useProfilesStore();
+
 const avatar = ref<string>(``);
 const unauthRoutes = ref<string[]>([`Login`, `Register`]);
 const fullPageRoutes = ref<string[]>([`Payment Policy`, `Content Policy`, `Not Found`, `Post Reader`]);
@@ -42,6 +47,8 @@ onBeforeMount(() => {
 	settings.sync();
 	initColors();
 	getAvatar(store.$state.avatar);
+	connections.fetchConnections(store.id);
+	profile.fetchProfile(store.id);
 });
 
 const setScroll = () => {

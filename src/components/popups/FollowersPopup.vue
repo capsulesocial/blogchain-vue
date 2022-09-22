@@ -1,16 +1,17 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import type { Profile } from '@/backend/profile';
-import { useProfilesStore } from '@/store/profiles';
+import { computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { useStore } from '@/store/session';
 import HorizontalProfilePreview from '@/components/HorizontalProfilePreview.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
+import { useProfilesStore } from '@/store/profiles';
+import { useStore } from '@/store/session';
+import { useConnectionsStore } from '@/store/connections';
 
 const profilesStore = useProfilesStore();
 const route = useRoute();
 const store = useStore();
 const emit = defineEmits([`close`]);
+const connections = useConnectionsStore();
 
 if (route.name !== `Home`) {
 	if (typeof route.params.id !== 'string') {
@@ -18,31 +19,11 @@ if (route.name !== `Home`) {
 	}
 }
 
-const authorID = route.name === `Home` ? store.$state.id : route.params.id;
+const authorID: string = route.name === `Home` ? store.$state.id : (route.params.id as string);
+profilesStore.fetchProfile(authorID);
+
 const profile = computed(() => profilesStore.getProfile(authorID as string));
-// TODO: fetch followers from store / backend
-const followers = ref<Profile[]>([
-	{
-		id: `oiahefoiheoafheaf`,
-		name: `Tom Brady`,
-		email: `tb12@gmail.com`,
-		bio: `6-time super bowl champion`,
-		location: `Tampa Bay`,
-		avatar: ``,
-		socials: [],
-		website: `tb12.com`,
-	},
-	{
-		id: `fziohogheabfhoeaof`,
-		name: `Tom Not Brady`,
-		email: `tb12@gmail.com`,
-		bio: `6-time super bowl champion`,
-		location: `Tampa Bay`,
-		avatar: ``,
-		socials: [],
-		website: `tb12.com`,
-	},
-]);
+const followersList = computed(() => connections.getConnections(authorID)?.followers);
 </script>
 <template>
 	<div
@@ -52,7 +33,7 @@ const followers = ref<Profile[]>([
 		<!-- Container -->
 		<section class="popup">
 			<div
-				v-if="followers !== null"
+				v-if="followersList"
 				class="min-h-40 w-full lg:w-600 bg-lightBG dark:bg-darkBGStop card-animation max-h-90 z-10 overflow-y-auto rounded-lg px-6 pt-4 pb-2 shadow-lg"
 				@click.self="emit(`close`)"
 			>
@@ -76,7 +57,7 @@ const followers = ref<Profile[]>([
 						<CloseIcon />
 					</button>
 				</div>
-				<article v-if="followers.length == 0" class="mt-24 grid justify-items-center px-10 xl:px-0">
+				<article v-if="followersList.size == 0" class="mt-24 grid justify-items-center px-10 xl:px-0">
 					<p class="text-gray5 dark:text-gray3 mb-5 text-center text-sm">
 						<span v-if="$route.name === `home` || $route.params.id === store.$state.id">
 							It seems you don't have any followers yet!
@@ -92,7 +73,7 @@ const followers = ref<Profile[]>([
 					/>
 				</article>
 				<article>
-					<HorizontalProfilePreview v-for="follower in followers" :key="follower.id" :profile="follower" />
+					<HorizontalProfilePreview v-for="follower in followersList" :id="follower" :key="follower" />
 				</article>
 			</div>
 		</section>

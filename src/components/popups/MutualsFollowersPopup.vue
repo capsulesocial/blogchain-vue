@@ -1,16 +1,17 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import type { Profile } from '@/backend/profile';
+import { computed } from 'vue';
 import { useProfilesStore } from '@/store/profiles';
 import { useRoute } from 'vue-router';
-import { useStore } from '@/store/session';
 import HorizontalProfilePreview from '@/components/HorizontalProfilePreview.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
 import SecondaryButton from '@/components/SecondaryButton.vue';
+import { useStore } from '@/store/session';
+import { useConnectionsStore } from '@/store/connections';
 
-const profilesStore = useProfilesStore();
 const route = useRoute();
+const profilesStore = useProfilesStore();
 const store = useStore();
+const connections = useConnectionsStore();
 const emit = defineEmits([`close`]);
 
 if (route.name !== `Home`) {
@@ -19,31 +20,10 @@ if (route.name !== `Home`) {
 	}
 }
 
-const authorID = route.name === `Home` ? store.$state.id : route.params.id;
+const authorID = route.name === `Home` ? store.$state.id : (route.params.id as string);
 const profile = computed(() => profilesStore.getProfile(authorID as string));
 // TODO: fetch following from store / backend
-const mutualFollowers = ref<Profile[]>([
-	{
-		id: `oiahefoiheoafheaf`,
-		name: `Tom Brady`,
-		email: `tb12@gmail.com`,
-		bio: `6-time super bowl champion`,
-		location: `Tampa Bay`,
-		avatar: ``,
-		socials: [],
-		website: `tb12.com`,
-	},
-	{
-		id: `fziohogheabfhoeaof`,
-		name: `Tom Not Brady`,
-		email: `tb12@gmail.com`,
-		bio: `6-time super bowl champion`,
-		location: `Tampa Bay`,
-		avatar: ``,
-		socials: [],
-		website: `tb12.com`,
-	},
-]);
+const mutuals = computed(() => connections.getMutualFollowers(store.id, authorID));
 </script>
 <template>
 	<div class="popup">
@@ -67,7 +47,7 @@ const mutualFollowers = ref<Profile[]>([
 						<CloseIcon />
 					</button>
 				</div>
-				<article v-if="mutualFollowers.length == 0" class="mt-24 grid justify-items-center px-10 xl:px-0">
+				<article v-if="mutuals && mutuals.size == 0" class="mt-24 grid justify-items-center px-10 xl:px-0">
 					<p class="text-gray5 dark:text-gray3 mb-5 text-center text-sm">
 						<span v-if="profile.name !== ``">
 							It seems you don't have any mutual followers with {{ profile.name }}
@@ -84,7 +64,7 @@ const mutualFollowers = ref<Profile[]>([
 					/>
 				</article>
 				<article>
-					<HorizontalProfilePreview v-for="follower in mutualFollowers" :key="follower.id" :profile="follower" />
+					<HorizontalProfilePreview v-for="follower in mutuals" :id="follower" :key="follower" />
 				</article>
 			</div>
 		</section>
