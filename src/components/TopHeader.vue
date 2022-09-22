@@ -7,7 +7,7 @@ import BookmarksIcon from './icons/BookmarkIcon.vue';
 import DashboardIcon from './icons/OverviewIcon.vue';
 import Crown2Icon from './icons/CrownEmptyIcon.vue';
 import Avatar from './../components/Avatar.vue';
-import { onMounted, PropType, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from '../store/session';
 import { useStoreSettings } from '@/store/settings';
@@ -18,11 +18,6 @@ import LogoutIcon from './icons/LogoutIcon.vue';
 const sessionStore = useStore();
 const settings = useStoreSettings();
 const router = useRouter();
-
-const props = defineProps({
-	name: { type: String, required: true },
-	avatar: { type: String as PropType<string | ArrayBuffer>, required: true },
-});
 
 const showMobileMenu = ref<boolean>(false);
 const showDropdown = ref<boolean>(false);
@@ -120,6 +115,9 @@ function logout() {
 								: sessionStore.$state.avatar
 						"
 						:authorid="sessionStore.$state.id"
+						:override="
+							sessionStore.$state.id === `` ? require(`./../assets/images/avatars/unauthenticated.webp`) : null
+						"
 						:no-click="true"
 						:size="`w-10 h-10 xl:w-12 xl:h-12`"
 					/>
@@ -250,9 +248,14 @@ function logout() {
 					<Avatar
 						class="dropdown"
 						:avatar="
-							sessionStore.$state.id === `` ? require(`./../assets/images/avatars/unauthenticated.webp`) : props.avatar
+							sessionStore.$state.id === ``
+								? require(`./../assets/images/avatars/unauthenticated.webp`)
+								: sessionStore.$state.avatar
 						"
 						:authorid="sessionStore.$state.id"
+						:override="
+							sessionStore.$state.id === `` ? require(`./../assets/images/avatars/unauthenticated.webp`) : null
+						"
 						:no-click="true"
 						:size="`w-10 h-10 xl:w-12 xl:h-12`"
 					/>
