@@ -155,7 +155,7 @@ async function _showPaymentButtons(period: string) {
 	});
 	isLoading.value = false;
 	elements = stripe.elements();
-	paymentRequest.canMakePayment().then((result) => {
+	paymentRequest.canMakePayment().then((result: any) => {
 		if (!result) {
 			return;
 		}
@@ -179,7 +179,7 @@ async function _showPaymentButtons(period: string) {
 			},
 		},
 	});
-	cardElement.on(`change`, (event) => {
+	cardElement.on(`change`, (event: any) => {
 		if (event.error) {
 			useSubscription.updateCardMessage(event.error.message);
 			return;
@@ -194,7 +194,7 @@ function selectPaymentType(paymentType: string) {
 	}
 	if (paymentType !== `card`) {
 		paymentRequest.show();
-		paymentRequest.on(`paymentmethod`, async (ev) => {
+		paymentRequest.on(`paymentmethod`, async (ev: any) => {
 			if (!ev.paymentMethod.id) {
 				useSubscription.updateCardMessage(`Invalid payment method`);
 				ev.complete(`success`);
@@ -274,7 +274,7 @@ function toggleSaveEmail(): void {
 	<Teleport to="#subPopup">
 		<div
 			class="popup bg-darkBG dark:bg-gray5 modal-animation fixed top-0 bottom-0 left-0 right-0 z-30 flex h-screen w-full items-center justify-center bg-opacity-50 dark:bg-opacity-50"
-			@click.stop="$emit(`close`)"
+			@click.self="$emit(`close`)"
 		>
 			<!-- Container -->
 			<section class="popup">
@@ -334,14 +334,14 @@ function toggleSaveEmail(): void {
 								class="flex flex-row items-center justify-between m-5 p-4 border shadow-sm rounded-lg bg-lightBG dark:bg-darkBG transition duration-500 ease-in-out"
 								:class="
 									selectedTier !== null && selectedTier._id === tier._id
-										? enabledTiers.includes(tier._id) || enabledTiers.length === 0
+										? props.enabledTiers.includes(tier._id) || props.enabledTiers.length === 0
 											? `opacity-100 cursor-pointer border-neutral`
 											: `opacity-50 cursor-not-allowed border-neutral`
-										: enabledTiers.includes(tier._id) || enabledTiers.length === 0
+										: props.enabledTiers.includes(tier._id) || props.enabledTiers.length === 0
 										? `opacity-100 cursor-pointer border-lightBorder dark:border-darkBorder`
 										: `opacity-50 cursor-not-allowed border-lightBorder dark:border-darkBorder`
 								"
-								:disabled="!(enabledTiers.includes(tier._id) || enabledTiers.length === 0)"
+								:disabled="!(props.enabledTiers.includes(tier._id) || props.enabledTiers.length === 0)"
 								@click.stop="useSubscription.updateSelectedTier(tier)"
 							>
 								<!-- Check mark -->
@@ -375,7 +375,7 @@ function toggleSaveEmail(): void {
 						</div>
 						<div class="flex flex-row-reverse">
 							<button
-								:class="selectedTier !== null ? `` : `opacity-50 cursor-not-allowed`"
+								:class="selectedTier._id !== `` ? `` : `opacity-50 cursor-not-allowed`"
 								class="bg-darkBG text-lightButtonText focus:outline-none transform rounded-lg font-bold transition duration-500 ease-in-out hover:bg-opacity-75"
 								style="padding: 0.4rem 1.5rem"
 								@click.stop="showPaymentButtons(selectedPeriod)"
@@ -424,7 +424,7 @@ function toggleSaveEmail(): void {
 								<GoogleIcon class="w-6 h-6" />
 								<h6 class="text-gray5 ml-2">Pay</h6>
 							</button>
-							<small v-show="cardErrorMessage !== null" style="color: #eb1c26" class="mb-5 modal-animation">{{
+							<small v-show="cardErrorMessage !== ``" style="color: #eb1c26" class="mb-5 modal-animation">{{
 								cardErrorMessage
 							}}</small>
 							<div

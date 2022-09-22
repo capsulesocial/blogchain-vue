@@ -117,7 +117,8 @@ async function updateSubscriptionInfo(): Promise<void> {
 			:author="subscriptionProfile"
 			:is-subscribed="isActiveSub"
 			:author-avatar="subscriptionProfileAvatar"
-			@close="showSubscriptionPopup = false"
+			:enabled-tiers="[]"
+			@close="(showSubscriptionPopup = false), useSubscription.$reset()"
 		/>
 	</div>
 </template>

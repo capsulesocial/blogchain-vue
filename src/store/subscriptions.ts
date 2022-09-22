@@ -40,7 +40,7 @@ export const useSubscriptionStore = defineStore(`subscriptions`, {
 				yearlyEnabled: false,
 				yearlyPrice: 10,
 			},
-			selectedPeriod: ``,
+			selectedPeriod: `month`,
 			saveEmail: true,
 			cardErrorMessage: ``,
 			isLoading: false,
