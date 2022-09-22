@@ -13,6 +13,7 @@ import {
 	Post,
 	isEncryptedPost,
 	getDecryptedContent,
+	verifyPostAuthenticity,
 } from '@/backend/post';
 
 import ReaderView from '@/components/post/reader/ReaderView.vue';
@@ -35,12 +36,13 @@ import LinkIcon from '@/components/icons/LinkIcon.vue';
 import ShareIcon from '@/components/icons/ShareIcon.vue';
 import ChevronLeft from '@/components/icons/ChevronLeft.vue';
 import PayWall from '../../components/post/reader/PayWall.vue';
+import { ISignedIPFSObject } from '@/backend/utilities/helpers';
 
 const store = useStore();
 const settings = useStoreSettings();
 const router = useRouter();
 const cid = ref<string>(router.currentRoute.value.params.post as string);
-const post = ref<Post>();
+const post = ref<ISignedIPFSObject<Post>>();
 const postMetadata = ref<IPostResponseWithHidden>();
 const userIsFollowed = ref<boolean>(false);
 const showPaywall = ref<boolean>(false);
@@ -88,12 +90,12 @@ const setFilter = (f: string) => {
 
 async function checkEncryption() {
 	if (post.value) {
-		if (isEncryptedPost(post.value)) {
+		if (isEncryptedPost(post.value.data)) {
 			if (store.$state.id === ``) {
 				showPaywall.value = true;
 			} else {
 				try {
-					const decrypted = await getDecryptedContent(cid.value, post.value.content, store.$state.id);
+					const decrypted = await getDecryptedContent(cid.value, post.value.data.content, store.$state.id);
 					if (`content` in decrypted) {
 						content.value = decrypted.content;
 						excerpt.value = decrypted.content.slice(0, 100); // TODO refine
@@ -116,18 +118,20 @@ async function checkEncryption() {
 				}
 			}
 		} else {
-			content.value = post.value.content;
-			excerpt.value = post.value.content.slice(0, 100); // TODO refine
+			content.value = post.value.data.content;
+			excerpt.value = post.value.data.content.slice(0, 100); // TODO refine
 		}
 	}
 }
 
 function checkAuthenticity() {
-	// verifyPostAuthenticity(post.value.data, post.value.sig, post.value.public_key).then((verified) => {
-	// 	if (!verified) {
-	// 		this.$toastError(`Post not verified!`);
-	// 	}
-	// });
+	if (post.value) {
+		verifyPostAuthenticity(post.value.data, post.value.sig, post.value.public_key).then((verified) => {
+			if (!verified) {
+				toastError(`Post not verified!`);
+			}
+		});
+	}
 }
 
 // Fetch post
@@ -136,7 +140,7 @@ onBeforeMount(async () => {
 	checkAuthenticity();
 	try {
 		// Fetching post object
-		const res = await (await getPost(cid.value)).data;
+		const res = await getPost(cid.value);
 		if (!res) {
 			return;
 		}
@@ -209,10 +213,10 @@ function isReposted() {
 		<div v-else class="lg:w-760 lg:max-w-760 h-fit w-full">
 			<!-- Magic header that disappears on scroll down -->
 			<Header
-				:id="post.authorID"
-				:timestamp="post.timestamp"
-				:content="post.content"
-				:postimages="post.postImages?.length ? post.postImages?.length : 0"
+				:id="post.data.authorID"
+				:timestamp="post.data.timestamp"
+				:content="post.data.content"
+				:postimages="post.data.postImages?.length ? post.data.postImages?.length : 0"
 				:is-followed="userIsFollowed"
 				:toggle-friend="toggleFriend"
 			/>
@@ -222,8 +226,8 @@ function isReposted() {
 				<article class="relative">
 					<!-- Category and actions -->
 					<article class="my-5 flex w-full justify-between">
-						<router-link :to="`/discover/` + post.category" class="text-primary capitalize">{{
-							post.category.replace(`-`, ` `)
+						<router-link :to="`/discover/` + post.data.category" class="text-primary capitalize">{{
+							post.data.category.replace(`-`, ` `)
 						}}</router-link>
 						<div class="flex items-center">
 							<!-- Bookmark button -->
@@ -244,17 +248,20 @@ function isReposted() {
 						<h1
 							class="text-lightPrimaryText dark:text-darkPrimaryText text-h1 mb-3 break-words font-serif font-semibold"
 						>
-							{{ post.title }}
+							{{ post.data.title }}
 						</h1>
 						<h2
-							v-if="post.subtitle"
+							v-if="post.data.subtitle"
 							class="text-lightSecondaryText dark:text-gray3 text-h2 mb-3 break-words font-serif font-medium"
 						>
-							{{ post.subtitle }}
+							{{ post.data.subtitle }}
 						</h2>
 					</article>
 					<!-- IPFS loader -->
-					<div v-if="!post.content && !showPaywall && !hasFeaturedPhoto" class="lg:w-760 lg:max-w-760 h-fit w-full">
+					<div
+						v-if="!post.data.content && !showPaywall && !hasFeaturedPhoto"
+						class="lg:w-760 lg:max-w-760 h-fit w-full"
+					>
 						<div
 							v-if="hasFeaturedPhoto"
 							class="h-72 w-full rounded-xl bg-gray1 dark:bg-gray7 animate-pulse mb-6 flex justify-center items-center mt-6"
@@ -306,25 +313,25 @@ function isReposted() {
 							@click="showPhoto"
 						>
 							<div
-								v-if="post && post.featuredPhotoCaption && captionHeight !== undefined"
+								v-if="post && post.data.featuredPhotoCaption && captionHeight !== undefined"
 								class="absolute w-full rounded-b-lg"
 								:class="
 									captionHeight > 72 ? `h-48` : captionHeight > 52 ? `h-40` : captionHeight > 32 ? `h-32` : `h-24`
 								"
 								style="background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.8) 100%)"
 							></div>
-							<IpfsImage class="w-full rounded-lg object-cover shadow-lg" :cid="post.featuredPhotoCID" />
+							<IpfsImage class="w-full rounded-lg object-cover shadow-lg" :cid="post.data.featuredPhotoCID" />
 							<p
-								v-if="post && post.featuredPhotoCaption"
+								v-if="post && post.data.featuredPhotoCaption"
 								ref="photoCaption"
 								class="text-lightOnPrimaryText absolute px-4 pb-3 text-sm drop-shadow-lg break-words max-w-full"
 								style="text-shadow: 0 0 10px #000"
 							>
-								{{ post.featuredPhotoCaption }}
+								{{ post.data.featuredPhotoCaption }}
 							</p>
 						</button>
 						<!-- Content loader -->
-						<div v-if="!post.content && !showPaywall" class="lg:w-760 lg:max-w-760 h-fit w-full mt-6">
+						<div v-if="!post.data.content && !showPaywall" class="lg:w-760 lg:max-w-760 h-fit w-full mt-6">
 							<div v-if="initNodes && !loadingIPFS && !initIPFS && !startIPFS" class="mb-6">
 								<div class="flex items-center">
 									<span class="text-gray5 dark:text-gray1 mr-1 text-sm modal-animation">Connecting to peers...</span>
@@ -353,7 +360,7 @@ function isReposted() {
 						<!-- Post paywall -->
 						<article v-if="showPaywall">
 							<PayWall
-								:id="post.authorID"
+								:id="post.data.authorID"
 								:hasfeaturedphoto="hasFeaturedPhoto"
 								:subscriptionstatus="subscriptionStatus"
 								:enabledtiers="enabledTiers ? enabledTiers : []"
@@ -363,16 +370,16 @@ function isReposted() {
 						<article v-else-if="post !== null" class="mt-5">
 							<div class="text-lightPrimaryText dark:text-darkSecondaryText editable content max-w-none break-words">
 								<ReaderView
-									:content="post.content"
-									:post-images="post.postImages"
-									:encrypted="post.encrypted"
+									:content="post.data.content"
+									:post-images="post.data.postImages"
+									:encrypted="post.data.encrypted"
 									:post-image-keys="postImageKeys"
 								/>
 							</div>
 						</article>
 						<!-- Tags -->
 						<article class="mt-5 text-lg">
-							<TagCard v-for="t in post.tags" :key="t.name" class="mr-2 mb-2" :tag="t.name" />
+							<TagCard v-for="t in post.data.tags" :key="t.name" class="mr-2 mb-2" :tag="t.name" />
 						</article>
 						<!-- IPFS CID -->
 						<div class="mt-3">
@@ -440,7 +447,7 @@ function isReposted() {
 				</article>
 				<!-- Author -->
 				<AuthorFooter
-					:id="post.authorID"
+					:id="post.data.authorID"
 					:is-followed="userIsFollowed"
 					:toggle-friend="toggleFriend"
 					:class="showPaywall ? `mb-20` : ``"
@@ -484,28 +491,28 @@ function isReposted() {
 		<Teleport to="body">
 			<SharePopup
 				v-if="showShare"
-				:id="postMetadata?.post._id ? postMetadata?.post._id : ``"
-				:title="post?.title ? post?.title : ``"
-				:subtitle="post?.subtitle ? post?.subtitle : null"
-				:excerpt="postMetadata?.post.excerpt ? postMetadata?.post.excerpt : ``"
-				:featuredphotocid="post?.featuredPhotoCID ? post?.featuredPhotoCID : ``"
-				:authorid="post?.authorID ? post?.authorID : ``"
+				:id="postMetadata?.post._id ?? ``"
+				:title="post?.data.title ?? ``"
+				:subtitle="post?.data.subtitle ?? null"
+				:excerpt="postMetadata?.post.excerpt ?? ``"
+				:featuredphotocid="post?.data.featuredPhotoCID ?? ``"
+				:authorid="post?.data.authorID ?? ``"
 				@close="showShare = false"
 			/>
 			<QuotePopup
 				v-if="showQuote && post"
-				:id="postMetadata?.post._id ? postMetadata?.post._id : ``"
-				:authorid="post.authorID"
-				:timestamp="post.timestamp"
+				:id="postMetadata?.post._id ?? ``"
+				:authorid="post.data.authorID"
+				:timestamp="post.data.timestamp"
 				:wordcount="postMetadata?.post.wordCount ? postMetadata?.post.wordCount : 0"
-				:postimages="post.postImages ? post.postImages?.length : 0"
-				:bookmarked="postMetadata?.bookmarked ? postMetadata?.bookmarked : false"
-				:encrypted="post.encrypted ? post.encrypted : false"
-				:title="post.title"
-				:subtitle="post?.subtitle ? post?.subtitle : undefined"
-				:excerpt="postMetadata?.post.excerpt ? postMetadata?.post.excerpt : ``"
-				:featuredphotocid="post?.featuredPhotoCID ? post?.featuredPhotoCID : ``"
-				:tags="post.tags"
+				:postimages="post.data.postImages ? post.data.postImages.length : 0"
+				:bookmarked="postMetadata?.bookmarked ?? false"
+				:encrypted="post.data.encrypted ?? false"
+				:title="post.data.title"
+				:subtitle="post?.data.subtitle ?? undefined"
+				:excerpt="postMetadata?.post.excerpt ?? ``"
+				:featuredphotocid="post?.data.featuredPhotoCID ?? ``"
+				:tags="post.data.tags"
 				@close="showQuote = false"
 			/>
 		</Teleport>
