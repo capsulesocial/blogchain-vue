@@ -52,9 +52,9 @@ const usePayments = usePaymentsStore();
 const step = computed(() => useSubscription.getStep);
 const selectedTier = computed(() => useSubscription.$state.selectedTier);
 const selectedPeriod = computed(() => useSubscription.$state.selectedPeriod);
-const paymentProfile = ref<PaymentProfile>(createDefaultPaymentProfile(route.params.id as string));
 const cardErrorMessage = computed(() => useSubscription.$state.cardErrorMessage);
 const saveEmail = computed(() => useSubscription.$state.saveEmail);
+const paymentProfile = ref<PaymentProfile>(createDefaultPaymentProfile(route.params.id as string));
 const customerEmail = ref<string>(``);
 const displayButtons = ref({
 	applePay: false,
@@ -95,10 +95,10 @@ function startReading() {
 		}, 4000);
 	}
 }
-function displayCurrency(currency: string) {
+function displayCurrency(currency: string): string {
 	return getCurrencySymbol(currency);
 }
-function initializeProfile() {
+function initializeProfile(): void {
 	if (!props.author) {
 		toastError(`Author profile is missing`);
 		return;
@@ -126,12 +126,12 @@ function switchPeriod(): void {
 		useSubscription.updateSelectedPeriod(`month`);
 	}
 }
-function showPaymentButtons(period: string) {
+function showPaymentButtons(period: string): void {
 	if (selectedTier.value !== null) {
 		_showPaymentButtons(period);
 	}
 }
-async function _showPaymentButtons(period: string) {
+async function _showPaymentButtons(period: string): Promise<void> {
 	nextStep();
 	useSubscription.updateSelectedPeriod(period);
 	if (!useSubscription.$state.selectedTier || !period) {
@@ -187,7 +187,7 @@ async function _showPaymentButtons(period: string) {
 		useSubscription.updateCardMessage(`null`);
 	});
 }
-function selectPaymentType(paymentType: string) {
+function selectPaymentType(paymentType: string): void {
 	if (!paymentRequest) {
 		useSubscription.updateCardMessage(`Unexpected error with payment request`);
 		return;
@@ -378,7 +378,7 @@ function toggleSaveEmail(): void {
 								:class="selectedTier._id !== `` ? `` : `opacity-50 cursor-not-allowed`"
 								class="bg-darkBG text-lightButtonText focus:outline-none transform rounded-lg font-bold transition duration-500 ease-in-out hover:bg-opacity-75"
 								style="padding: 0.4rem 1.5rem"
-								@click.stop="showPaymentButtons(selectedPeriod)"
+								@click.stop="showPaymentButtons(selectedPeriod), nextStep"
 							>
 								<span class="font-sans" style="font-size: 0.95rem"> Next </span>
 							</button>
@@ -392,7 +392,9 @@ function toggleSaveEmail(): void {
 							<p class="text-base text-center text-gray5 dark:text-gray3 mb-2">
 								{{ selectedTier ? selectedTier.name : `` }}
 								{{ selectedPeriod === `month` ? 'monthly' : 'yearly' }} subscription plan to
-								<span class="font-semibold text-primary dark:text-secondary">{{ author.name }}</span>
+								<span class="font-semibold text-primary dark:text-secondary">{{
+									author.name ? author.name : `@${author.id}`
+								}}</span>
 							</p>
 							<div v-if="selectedTier !== null" class="font-semibold text-lg mb-4 dark:text-darkPrimaryText">
 								{{ displayCurrency(paymentProfile.currency)
@@ -520,7 +522,9 @@ function toggleSaveEmail(): void {
 							<div class="flex flex-row-reverse items-center mt-4">
 								<SecondaryButton v-if="!isLoading" :text="`Pay`" @submit-payment="submitCardPayment" />
 								<div class="w-full">
-									<button class="text-primary self-center text-sm" @click.stop="step = 5">Payment policy</button>
+									<button class="text-primary self-center text-sm" @click.stop="useSubscription.$state.step = 5">
+										Payment policy
+									</button>
 								</div>
 							</div>
 						</div>
