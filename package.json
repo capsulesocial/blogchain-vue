@@ -37,9 +37,9 @@
     "vue3-lazyload": "^0.3.6"
   },
   "devDependencies": {
-<<<<<<< HEAD
     "@babel/core": "^7.19.1",
     "@babel/eslint-parser": "^7.19.1",
+<<<<<<< HEAD
 <<<<<<< HEAD
     "@playwright/test": "^1.25.2",
 =======
@@ -48,6 +48,8 @@
     "@babel/eslint-parser": "^7.18.9",
 >>>>>>> 22abf89 (fix: initial subscirption setup)
 >>>>>>> 0d7ea51 (fix: initial subscirption setup)
+=======
+>>>>>>> 31d7b65 (fix: conflicts)
     "@types/dompurify": "^2.3.4",
     "@types/json-stable-stringify": "^1.0.34",
     "@types/libsodium-wrappers": "^0.7.9",
