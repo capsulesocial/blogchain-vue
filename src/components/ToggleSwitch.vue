@@ -20,7 +20,7 @@ function toggleSwitch() {
 <template>
 	<div
 		class="relative w-48 h-8 transition duration-500 ease-in-out rounded-full cursor-pointer bg-neutral flex justify-between items-center"
-		@click="toggleSwitch"
+		@click.stop.prevent="toggleSwitch"
 	>
 		<div class="absolute left-0 z-10 flex justify-between items-center w-full">
 			<p

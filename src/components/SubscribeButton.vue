@@ -5,6 +5,7 @@ import CrownIcon from '@/components/icons/Crown.vue';
 import PenIcon from '@/components/icons/Pencil.vue';
 import SubInfosPopup from '@/components/popups/SubInfosPopup.vue';
 import ChangeTierPopup from '@/components/popups/ChangeTierPopup.vue';
+import SubscriptionsPopup from '@/components/popups/SubscriptionsPopup.vue';
 import { useStore } from '@/store/session';
 import { useSubscriptionStore, ISubscriptionWithProfile } from '@/store/subscriptions';
 import { createDefaultProfile, Profile } from '@/backend/profile';
@@ -22,23 +23,28 @@ const useSubscription = useSubscriptionStore();
 const subscriptionInfo = ref();
 const toggleSub = ref<boolean>(false);
 const toggleChangeTier = ref<boolean>(false);
+const showSubscriptionPopup = ref<boolean>(false);
 const subscriptionProfile = ref<Profile>(createDefaultProfile(store.$state.id));
 const subscriptionProfileAvatar = ref<string | undefined>();
 const authorPaymentProfile = ref<ISubscriptionWithProfile>();
+const isActiveSub = ref<boolean>(false);
 
 onMounted(async (): Promise<void> => {
-	const activeSubs = await useSubscription.$state.active;
-	activeSubs.forEach((asub) => {
-		if (asub.authorID === route.params.id) {
-			subscriptionInfo.value = asub;
+	const activeSubs: ISubscriptionWithProfile[] = await useSubscription.$state.active;
+	activeSubs.forEach((activeSub: ISubscriptionWithProfile): void => {
+		if (activeSub.authorID === (route.params.id as string)) {
+			subscriptionInfo.value = activeSub;
+			isActiveSub.value = true;
 			return;
 		}
 	});
 });
 
 // methods
-async function subscribeAuthor() {
-	return;
+async function subscribeAuthor(): Promise<void> {
+	showSubscriptionPopup.value = !showSubscriptionPopup.value;
+	subscriptionProfile.value = createDefaultProfile(route.params.id as string);
+	subscriptionProfileAvatar.value = subscriptionProfile.value.avatar;
 }
 function toggleSubinfo(): void {
 	toggleSub.value = !toggleSub.value;
@@ -100,6 +106,14 @@ async function toggleChangeTierPopup(author: { sub: ISubscriptionWithProfile; av
 			:sub="authorPaymentProfile"
 			:author-avatar="subscriptionProfileAvatar"
 			@close="toggleChangeTier = false"
+		/>
+	</div>
+	<div v-if="showSubscriptionPopup">
+		<SubscriptionsPopup
+			:author="subscriptionProfile"
+			:is-subscribed="isActiveSub"
+			:author-avatar="subscriptionProfileAvatar"
+			@close="showSubscriptionPopup = false"
 		/>
 	</div>
 </template>
