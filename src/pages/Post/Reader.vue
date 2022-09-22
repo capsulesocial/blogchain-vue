@@ -409,7 +409,7 @@ function isReposted() {
 					:class="showPaywall ? `mb-20` : ``"
 				/>
 				<!-- Comments -->
-				<article v-if="post !== null && !showPaywall && !showStats" class="pb-14">
+				<article v-if="postMetadata && !showPaywall && !showStats" class="pb-14">
 					<!-- filters -->
 					<div class="flex w-full justify-between pb-5">
 						<div class="flex flex-row items-center">
@@ -422,12 +422,12 @@ function isReposted() {
 						<CommentFilter :filter="filter" class="modal-animation" @clicked="setFilter" />
 					</div>
 					<!-- Comment editor -->
-					<CommentEditor :comments-count="postMetadata?.commentsCount ? postMetadata?.commentsCount : 0" />
+					<CommentEditor :comments-count="postMetadata.commentsCount ?? 0" />
 					<!-- Comments -->
 					<div v-for="i in 20" :key="i"><Comment class="mb-4" /></div>
 				</article>
 				<!-- Stats -->
-				<article v-if="post !== null && !showPaywall && showStats" class="pb-14">
+				<article v-if="postMetadata && !showPaywall && showStats" class="pb-14">
 					<button class="flex items-center pb-5" @click="showStats = false">
 						<div class="bg-gray1 dark:bg-gray5 focus:outline-none rounded-full">
 							<ChevronLeft />
@@ -437,38 +437,38 @@ function isReposted() {
 						>
 					</button>
 					<Stats
-						:id="postMetadata?.post._id ? postMetadata?.post._id : ``"
-						:bookmarkscount="postMetadata?.bookmarksCount ? postMetadata?.bookmarksCount : 0"
-						:repostcount="postMetadata?.repostCount ? postMetadata?.repostCount : 0"
+						:id="postMetadata.post._id"
+						:bookmarkscount="postMetadata.bookmarksCount"
+						:repostcount="postMetadata.repostCount"
 					/>
 				</article>
 			</section>
 		</div>
 		<Teleport to="body">
 			<SharePopup
-				v-if="showShare"
-				:id="postMetadata?.post._id ?? ``"
-				:title="post?.data.title ?? ``"
-				:subtitle="post?.data.subtitle ?? null"
-				:excerpt="postMetadata?.post.excerpt ?? ``"
-				:featuredphotocid="post?.data.featuredPhotoCID ?? ``"
-				:authorid="post?.data.authorID ?? ``"
+				v-if="showShare && postMetadata"
+				:id="postMetadata.post._id"
+				:title="postMetadata.post.title"
+				:subtitle="postMetadata.post.subtitle"
+				:excerpt="postMetadata.post.excerpt"
+				:featuredphotocid="postMetadata.post.featuredPhotoCID ?? ``"
+				:authorid="postMetadata.post.authorID"
 				@close="showShare = false"
 			/>
 			<QuotePopup
-				v-if="showQuote && post"
+				v-if="showQuote && postMetadata"
 				:id="postMetadata?.post._id ?? ``"
-				:authorid="post.data.authorID"
-				:timestamp="post.data.timestamp"
-				:wordcount="postMetadata?.post.wordCount ? postMetadata?.post.wordCount : 0"
-				:postimages="post.data.postImages ? post.data.postImages.length : 0"
-				:bookmarked="postMetadata?.bookmarked ?? false"
-				:encrypted="post.data.encrypted ?? false"
-				:title="post.data.title"
-				:subtitle="post?.data.subtitle ?? undefined"
-				:excerpt="postMetadata?.post.excerpt ?? ``"
-				:featuredphotocid="post?.data.featuredPhotoCID ?? ``"
-				:tags="post.data.tags"
+				:authorid="postMetadata.post.authorID"
+				:timestamp="postMetadata.post.timestamp"
+				:wordcount="postMetadata.post.wordCount"
+				:postimages="postMetadata.post.postImages ? postMetadata.post.postImages.length : 0"
+				:bookmarked="postMetadata.bookmarked"
+				:encrypted="postMetadata.post.encrypted"
+				:title="postMetadata.post.title"
+				:subtitle="postMetadata.post.subtitle"
+				:excerpt="postMetadata.post.excerpt"
+				:featuredphotocid="postMetadata.post.featuredPhotoCID ?? ``"
+				:tags="postMetadata.post.tags"
 				@close="showQuote = false"
 			/>
 		</Teleport>
