@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { PropType, computed, onMounted, ref } from 'vue';
+import { computed, onMounted, withDefaults } from 'vue';
 import { useStore } from '@/store/session';
 import { useProfilesStore } from '@/store/profiles';
 import { formatDate } from '@/helpers/helpers';
 import { useRouter } from 'vue-router';
-import { calculateReadingTime } from '@/backend/utilities/helpers';
 
 import Avatar from '@/components/Avatar.vue';
 import FriendButton from '@/components/FriendButton.vue';
@@ -14,31 +13,24 @@ const store = useStore();
 const profilesStore = useProfilesStore();
 const router = useRouter();
 
-const props = defineProps({
-	id: { type: String, required: true },
-	timestamp: { type: Number, required: true },
-	content: { type: String, required: true },
-	postimages: { type: Number, required: true },
-	isFollowed: { type: Boolean, required: true },
-	toggleFriend: { type: Function as PropType<() => void>, required: true },
-});
+const props = withDefaults(
+	defineProps<{
+		id: string;
+		timestamp: number;
+		readingTime?: number | null;
+		postimages: number;
+		isFollowed: boolean;
+		toggleFriend: () => void;
+	}>(),
+	{
+		readingTime: null,
+	},
+);
 
 const profile = computed(() => profilesStore.getProfile(props.id));
-const wordcount = ref<number>(0);
-const readingTime = ref<number | null>(null);
 
 onMounted(async () => {
-	void profilesStore.fetchProfile(props.id);
-	if (props.content) {
-		wordcount.value = props.content.split(/\s+/).length;
-	}
-	if (!wordcount.value) {
-		return;
-	}
-	if (wordcount.value <= 0) {
-		throw new Error(`Word count can't be equal or less than zero`);
-	}
-	readingTime.value = calculateReadingTime(wordcount.value, props.postimages);
+	profilesStore.fetchProfile(props.id);
 });
 
 const handleClose = () => {
@@ -80,8 +72,8 @@ const handleClose = () => {
 						<span class="text-sm text-gray5 dark:text-gray3">
 							{{ formatDate(props.timestamp) }}
 						</span>
-						<div v-if="readingTime" class="hidden lg:block h-1 w-1 rounded bg-gray5 dark:bg-gray3 mx-2"></div>
-						<span v-if="readingTime" class="text-xs lg:text-sm text-gray5 dark:text-gray3">
+						<div v-if="readingTime !== null" class="hidden lg:block h-1 w-1 rounded bg-gray5 dark:bg-gray3 mx-2"></div>
+						<span v-if="readingTime !== null" class="text-xs lg:text-sm text-gray5 dark:text-gray3">
 							{{ readingTime }} min read
 						</span>
 					</div>

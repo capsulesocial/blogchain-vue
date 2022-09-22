@@ -26,7 +26,30 @@ export async function initBackend() {
 
 			throw err;
 		});
-		const ipfs = initIPFS(bootstrapNodes);
+		const ipfs = initIPFS(bootstrapNodes, {
+			start: false,
+			libp2p: {
+				peerStore: { persistence: false } as any,
+			},
+			init: { algorithm: `RSA` },
+			preload: {
+				enabled: false,
+			},
+			config: {
+				Discovery: {
+					MDNS: {
+						Enabled: false,
+					},
+					webRTCStar: {
+						Enabled: false,
+					},
+				},
+				Addresses: {
+					Delegates: [`/dns4/alpha.capsule.social/tcp/443/https`],
+				},
+				Bootstrap: undefined,
+			},
+		});
 		ipfs.initResult.catch((err: unknown) => {
 			if (err instanceof Error) {
 				toastError(err.message);
