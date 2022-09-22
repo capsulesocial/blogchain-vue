@@ -13,8 +13,9 @@
   },
   "dependencies": {
     "@capsulesocial/capsule-config": "^1.2.7",
-    "@capsulesocial/ipfs-wrapper": "1.1.0",
     "@toruslabs/customauth": "^10.1.1",
+    "@capsulesocial/ipfs-wrapper": "1.0.1",
+    "@stripe/stripe-js": "^1.36.0",
     "@toruslabs/openlogin-ed25519": "^2.0.0",
     "axios": "^0.27.2",
     "browser-image-compression": "^2.0.0",
@@ -36,9 +37,17 @@
     "vue3-lazyload": "^0.3.6"
   },
   "devDependencies": {
+<<<<<<< HEAD
     "@babel/core": "^7.19.1",
     "@babel/eslint-parser": "^7.19.1",
+<<<<<<< HEAD
     "@playwright/test": "^1.25.2",
+=======
+=======
+    "@babel/core": "^7.18.10",
+    "@babel/eslint-parser": "^7.18.9",
+>>>>>>> 22abf89 (fix: initial subscirption setup)
+>>>>>>> 0d7ea51 (fix: initial subscirption setup)
     "@types/dompurify": "^2.3.4",
     "@types/json-stable-stringify": "^1.0.34",
     "@types/libsodium-wrappers": "^0.7.9",

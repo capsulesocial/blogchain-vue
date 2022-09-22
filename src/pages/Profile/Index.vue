@@ -3,7 +3,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useMeta } from 'vue-meta';
 import { useProfilesStore } from '@/store/profiles';
-import { useSubscriptionStore } from '@/store/subscriptions';
+import { useSubscriptionStore, ISubscriptionWithProfile } from '@/store/subscriptions';
 import { useStore } from '@/store/session';
 import { useConnectionsStore } from '@/store/connections';
 import BackButton from '@/components/icons/ChevronLeft.vue';
@@ -24,18 +24,26 @@ const useSubscription = useSubscriptionStore();
 const router = useRouter();
 const route = useRoute();
 const profilesStore = useProfilesStore();
+<<<<<<< HEAD
 const connectionsStore = useConnectionsStore();
 useSubscription.fetchSubs(store.$state.id);
+=======
+>>>>>>> 0d7ea51 (fix: initial subscirption setup)
 
 if (typeof route.params.id !== 'string') {
 	throw new Error('Invalid param type for id');
 }
+<<<<<<< HEAD
+=======
+const authorID = route.params.id as string;
+>>>>>>> 0d7ea51 (fix: initial subscirption setup)
 const profileExists = ref<boolean>(false);
 const authorID = computed(() => route.params.id as string);
 const profile = computed(() => profilesStore.getProfile(authorID.value));
 connectionsStore.fetchConnections(authorID.value);
 const connections = computed(() => connectionsStore.getConnections(authorID.value));
 const isActiveSub = ref<boolean>(false);
+void useSubscription.fetchSubs(store.$state.id);
 
 useMeta({
 	title: profile.value.name
@@ -44,7 +52,7 @@ useMeta({
 	htmlAttrs: { lang: 'en', amp: true },
 });
 
-onMounted(async () => {
+onMounted(async (): Promise<void> => {
 	try {
 		const nearUserInfo = await getUserInfoNEAR(authorID.value);
 		if (nearUserInfo.publicKey) {
@@ -54,16 +62,21 @@ onMounted(async () => {
 		handleError(err);
 		router.push(`/not-found`);
 	}
+<<<<<<< HEAD
 	void profilesStore.fetchProfile(authorID.value);
 	void useConnectionsStore().fetchConnections(store.id);
 
 	const activeSubs = await useSubscription.$state.active;
 	activeSubs.forEach((activeSub) => {
 		if (activeSub.authorID !== authorID.value) {
+=======
+	void profilesStore.fetchProfile(authorID);
+	const activeSubs = await useSubscription.$state.active;
+	activeSubs.forEach((sub: ISubscriptionWithProfile): void => {
+		if (sub.authorID === authorID) {
+>>>>>>> 0d7ea51 (fix: initial subscirption setup)
 			isActiveSub.value = true;
-			return;
 		}
-		isActiveSub.value = false;
 	});
 });
 
@@ -121,7 +134,7 @@ function getStyles(tab: string): string {
 </script>
 
 <template>
-	<section class="w-full">
+	<section id="subPopup" class="w-full">
 		<!-- top -->
 		<article id="header" ref="topContainer" class="min-h-fit header-profile z-20 w-full px-4 pt-3 xl:px-6 xl:pt-4">
 			<!-- Back button -->
