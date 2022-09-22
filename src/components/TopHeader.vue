@@ -1,33 +1,44 @@
 <script setup lang="ts">
-import Logo from './icons/CapsuleLogo.vue';
-import MobileNav from './icons/MobileNav.vue';
-import HomeIcon from './icons/Home.vue';
-import DiscoverIcon from './icons/Discover.vue';
-import BookmarksIcon from './icons/BookmarkIcon.vue';
-import DashboardIcon from './icons/OverviewIcon.vue';
-import Crown2Icon from './icons/CrownEmptyIcon.vue';
-import Avatar from './../components/Avatar.vue';
-import { onMounted, PropType, ref } from 'vue';
+import Logo from '@/components/icons/CapsuleLogo.vue';
+import MobileNav from '@/components/icons/MobileNav.vue';
+import HomeIcon from '@/components/icons/Home.vue';
+import DiscoverIcon from '@/components/icons/Discover.vue';
+import BookmarksIcon from '@/components/icons/BookmarkIcon.vue';
+import DashboardIcon from '@/components/icons/OverviewIcon.vue';
+import Crown2Icon from '@/components/icons/CrownEmptyIcon.vue';
+import Avatar from '@/components/Avatar.vue';
+import ProfileIcon from '@/components/icons/ProfileIcon.vue';
+import SettingsIcon from '@/components/icons/SettingsIcon.vue';
+import LogoutIcon from '@/components/icons/LogoutIcon.vue';
+import { onBeforeMount, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useStore } from '../store/session';
+import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
-import ProfileIcon from './icons/ProfileIcon.vue';
-import SettingsIcon from './icons/SettingsIcon.vue';
-import LogoutIcon from './icons/LogoutIcon.vue';
+import { useProfilesStore } from '@/store/profiles';
 
 const sessionStore = useStore();
 const settings = useStoreSettings();
+const profiles = useProfilesStore();
 const router = useRouter();
-
-const props = defineProps({
-	name: { type: String, required: true },
-	avatar: { type: String as PropType<string | ArrayBuffer>, required: true },
-});
 
 const showMobileMenu = ref<boolean>(false);
 const showDropdown = ref<boolean>(false);
 const url = ref<string>(window.location.origin);
 
+const getAvatar = () => {
+	if (sessionStore.id === ``) {
+		return require(`@/assets/images/avatars/unauthenticated.webp`);
+	}
+	if (sessionStore.avatar === ``) {
+		return null;
+	}
+	return profiles.getProfile(sessionStore.id).avatar;
+};
+const avatar = ref<null | string | ArrayBuffer>();
+
+onBeforeMount(() => {
+	avatar.value = getAvatar();
+});
 // Auto-close event listener (only works with @click.stop to prevent bubbling)
 onMounted(() => {
 	window.addEventListener(`click`, (e) => {
@@ -114,14 +125,13 @@ function logout() {
 				<button class="dropdown focus:outline-none" @click.stop="toggleDropdown()">
 					<Avatar
 						class="dropdown"
-						:cid="
-							sessionStore.$state.id === ``
-								? require(`./../assets/images/avatars/unauthenticated.webp`)
-								: sessionStore.$state.avatar
-						"
-						:authorid="sessionStore.$state.id"
+						:cid="profiles.getProfile(sessionStore.id).avatar"
+						:authorid="sessionStore.id"
 						:no-click="true"
 						:size="`w-10 h-10 xl:w-12 xl:h-12`"
+						:override="
+							avatar === null || avatar === require(`@/assets/images/avatars/unauthenticated.webp`) ? avatar : null
+						"
 					/>
 				</button>
 				<!-- Dropdown: Profile, settings, disconnect -->
@@ -249,11 +259,12 @@ function logout() {
 				<button class="dropdown focus:outline-none" @click.stop="toggleDropdown()">
 					<Avatar
 						class="dropdown"
-						:avatar="
-							sessionStore.$state.id === `` ? require(`./../assets/images/avatars/unauthenticated.webp`) : props.avatar
-						"
-						:authorid="sessionStore.$state.id"
+						:avatar="profiles.getProfile(sessionStore.id).avatar"
+						:authorid="sessionStore.id"
 						:no-click="true"
+						:override="
+							avatar === null || avatar === require(`@/assets/images/avatars/unauthenticated.webp`) ? avatar : null
+						"
 						:size="`w-10 h-10 xl:w-12 xl:h-12`"
 					/>
 				</button>

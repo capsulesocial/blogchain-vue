@@ -23,7 +23,6 @@ const settings = useStoreSettings();
 const connections = useConnectionsStore();
 const profile = useProfilesStore();
 
-const avatar = ref<string>(``);
 const unauthRoutes = ref<string[]>([`Login`, `Register`]);
 const fullPageRoutes = ref<string[]>([`Payment Policy`, `Content Policy`, `Not Found`, `Post Reader`]);
 const routesWithTitle = ref<string[]>([`Home`, `Discover`, `Bookmarks`]);
@@ -34,19 +33,14 @@ useMeta({
 	htmlAttrs: { lang: 'en', amp: true },
 });
 
-// Methods
-function getAvatar(cid: string) {
-	if (cid === ``) {
-		return;
-	}
-}
-
 // Run init methods
 onBeforeMount(() => {
-	store.login();
 	settings.sync();
 	initColors();
-	getAvatar(store.$state.avatar);
+	if (store.id === ``) {
+		return;
+	}
+	store.login();
 	connections.fetchConnections(store.id);
 	profile.fetchProfile(store.id);
 });
@@ -93,7 +87,7 @@ watch(router.currentRoute, () => {
 		<!-- Wrapper -->
 		<div class="flex w-full justify-center">
 			<div class="flex flex-col w-full lg:w-11/12 xl:w-10/12 max-w-1220">
-				<TopHeader :name="store.name" :avatar="avatar" />
+				<TopHeader />
 				<!-- Body -->
 				<TitleContainer v-if="routesWithTitle.includes($route.name as string)" />
 				<section class="modal-animation flex flex-row">
