@@ -24,19 +24,12 @@ const useSubscription = useSubscriptionStore();
 const router = useRouter();
 const route = useRoute();
 const profilesStore = useProfilesStore();
-<<<<<<< HEAD
 const connectionsStore = useConnectionsStore();
 useSubscription.fetchSubs(store.$state.id);
-=======
->>>>>>> 0d7ea51 (fix: initial subscirption setup)
 
 if (typeof route.params.id !== 'string') {
 	throw new Error('Invalid param type for id');
 }
-<<<<<<< HEAD
-=======
-const authorID = route.params.id as string;
->>>>>>> 0d7ea51 (fix: initial subscirption setup)
 const profileExists = ref<boolean>(false);
 const authorID = computed(() => route.params.id as string);
 const profile = computed(() => profilesStore.getProfile(authorID.value));
@@ -62,19 +55,12 @@ onMounted(async (): Promise<void> => {
 		handleError(err);
 		router.push(`/not-found`);
 	}
-<<<<<<< HEAD
 	void profilesStore.fetchProfile(authorID.value);
 	void useConnectionsStore().fetchConnections(store.id);
 
 	const activeSubs = await useSubscription.$state.active;
-	activeSubs.forEach((activeSub) => {
-		if (activeSub.authorID !== authorID.value) {
-=======
-	void profilesStore.fetchProfile(authorID);
-	const activeSubs = await useSubscription.$state.active;
 	activeSubs.forEach((sub: ISubscriptionWithProfile): void => {
-		if (sub.authorID === authorID) {
->>>>>>> 0d7ea51 (fix: initial subscirption setup)
+		if (sub.authorID === authorID.value) {
 			isActiveSub.value = true;
 		}
 	});
