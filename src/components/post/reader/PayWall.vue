@@ -13,28 +13,28 @@ const paymentStore = usePaymentsStore();
 
 const props = defineProps({
 	id: { type: String, required: true },
-	hasfeaturedphoto: { type: Boolean, required: true },
-	subscriptionstatus: { type: String, required: true },
-	enabledtiers: { type: Array<string>, required: true },
+	hasFeaturedPhoto: { type: Boolean, required: true },
+	subscriptionStatus: { type: String, required: true },
+	enabledTiers: { type: Array<string>, required: true },
 });
 
 const profile = computed(() => profilesStore.getProfile(props.id));
 const enabledTierNames = ref<Array<string>>([]);
 const toPreSelectTiers = ref<Array<SubscriptionTier>>([]);
+const availableTiers = ref<SubscriptionTier[]>([]);
 
 onMounted(async () => {
 	void profilesStore.fetchProfile(props.id);
-	getTiers();
+	await getTiers();
 });
 
 async function getTiers() {
 	//how to access get payment profile in this file?
 	const paymentProfile = await paymentStore.getPaymentProfile(profile.value.id);
-	const availableTiers = ref<SubscriptionTier[]>([]);
 	if (paymentProfile) {
 		availableTiers.value = paymentProfile.tiers;
 	}
-	props.enabledtiers.forEach((tId: any) => {
+	props.enabledTiers.forEach((tId: any) => {
 		const foundTier = availableTiers.value.find((tier: SubscriptionTier) => tier._id === tId);
 		if (foundTier) {
 			enabledTierNames.value.push(foundTier.name);
@@ -50,10 +50,10 @@ async function getTiers() {
 	>
 		<div
 			class="w-full shadow-lg flex flex-col items-center py-10 px-16 bg-lightBG dark:bg-darkBGStop rounded-lg h-full"
-			:class="hasfeaturedphoto ? `sm:mt-36` : `mt-0`"
+			:class="hasFeaturedPhoto ? `sm:mt-36` : `mt-0`"
 		>
 			<!-- Not a subscriber -->
-			<div v-if="props.subscriptionstatus === `NOT_SUBSCRIBED` || !store.$state.id">
+			<div v-if="props.subscriptionStatus === `NOT_SUBSCRIBED` || !store.$state.id">
 				<h4 class="text-2xl font-semibold text-neutral mb-4 text-center">This post is for Paid subscribers</h4>
 				<p class="my-4 text-center text-gray5 dark:text-gray3">
 					Become a subscriber of
@@ -77,7 +77,7 @@ async function getTiers() {
 			</div>
 
 			<!-- Subscribed, but to a different tier -->
-			<div v-if="props.subscriptionstatus === `INSUFFICIENT_TIER`">
+			<div v-if="props.subscriptionStatus === `INSUFFICIENT_TIER`">
 				<h4 class="text-2xl font-semibold text-neutral mb-4 text-center">
 					Your subscription tier does not include this post
 				</h4>

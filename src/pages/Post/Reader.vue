@@ -361,9 +361,9 @@ function isReposted() {
 						<article v-if="showPaywall">
 							<PayWall
 								:id="post.data.authorID"
-								:hasfeaturedphoto="hasFeaturedPhoto"
-								:subscriptionstatus="subscriptionStatus"
-								:enabledtiers="enabledTiers ? enabledTiers : []"
+								:has-featured-photo="hasFeaturedPhoto"
+								:subscription-status="subscriptionStatus"
+								:enabled-tiers="enabledTiers ? enabledTiers : []"
 							/>
 						</article>
 						<!-- Content -->
