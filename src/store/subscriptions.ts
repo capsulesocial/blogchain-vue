@@ -77,11 +77,11 @@ export const useSubscriptionStore = defineStore(`subscriptions`, {
 				handleError(`Error when fetching subscriptions`);
 			}
 		},
-		async getSubsTransactions(id: string, subscriptionId: string): Promise<Array<SubsTransaction>> {
+		async getSubsTransactions(id: string, subscriptionId: string): Promise<SubsTransaction[]> {
 			const transactions = await getSubscriptionTransactions(id, subscriptionId);
 			return transactions;
 		},
-		async cancelSub(username: string, subid: string) {
+		async cancelSub(username: string, subid: string): Promise<true | void> {
 			try {
 				await cancelSubscription(username, subid);
 				return true;
