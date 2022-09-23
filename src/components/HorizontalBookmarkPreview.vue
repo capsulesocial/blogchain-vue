@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import type { PropType } from 'vue';
 import { ref } from 'vue';
 import { Post } from '@/backend/post';
 
-defineProps({
-	bookmark: {
-		type: Object as PropType<Post>,
-		required: true,
-	},
-});
+withDefaults(
+	defineProps<{
+		bookmark: Post;
+	}>(),
+	{},
+);
 
 const cid = ref<string>(``);
 const featuredPhoto = ref<any>();

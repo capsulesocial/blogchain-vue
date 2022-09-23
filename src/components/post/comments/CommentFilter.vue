@@ -8,12 +8,14 @@ import ChevronDown from '@/components/icons/ChevronDown.vue';
 
 const emit = defineEmits([`clicked`]);
 
-const props = defineProps({
-	filter: { type: String, required: true },
-});
+const props = withDefaults(
+	defineProps<{
+		filter: string;
+	}>(),
+	{},
+);
 
 const settings = useStoreSettings();
-
 const showFilter = ref<boolean>(false);
 const feeling = ref<`positive` | `negative` | `neutral`>(`positive`);
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, PropType, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import Avatar from '@/components/Avatar.vue';
 import CloseIcon from '@/components/icons/XIcon.vue';
 import EditTierSelect from '@/components/EditTierSelect.vue';
@@ -16,30 +16,22 @@ import { canSwitchSubscription } from '@/backend/payment';
 import { toastError, handleError } from '@/plugins/toast';
 import { Profile } from '@/backend/profile';
 
-const props = defineProps({
-	author: {
-		type: Object as PropType<Profile>,
-		required: true,
-	},
-	sub: {
-		type: Object as PropType<ISubscriptionWithProfile>,
-		required: true,
-	},
-	authorAvatar: {
-		type: String as PropType<string | undefined>,
-		default: null,
-	},
-	toPreSelectTier: {
-		type: Object as PropType<SubscriptionTier>,
-		default: null,
-	},
-	enabledTiers: {
-		type: Array as PropType<string[]>,
-		default: () => {
+const props = withDefaults(
+	defineProps<{
+		author: Profile;
+		sub: ISubscriptionWithProfile;
+		authorAvatar?: string | undefined;
+		toPreSelectTier?: SubscriptionTier;
+		enabledTiers?: string[];
+	}>(),
+	{
+		authorAvatar: null,
+		toPreSelectTier: null,
+		enabledTiers: () => {
 			return [];
 		},
 	},
-});
+);
 
 const store = useStore();
 const usePayment = usePaymentsStore();

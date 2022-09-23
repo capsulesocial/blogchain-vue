@@ -1,15 +1,18 @@
 <script setup lang="ts">
 import SimpleFeedCard from '@/components/post/SimpleFeedCard.vue';
 import { IGenericPostResponse } from '@/backend/post';
-import { PropType, ref } from 'vue';
+import { ref } from 'vue';
 import CommentsPopup from '@/components/popups/CommentsPopup.vue';
 import SharePopup from '@/components/popups/SharePopup.vue';
 import StatsPopup from '@/components/popups/StatsPopup.vue';
 import QuotePopup from '../popups/QuotePopup.vue';
 
-const props = defineProps({
-	fetchedPost: { type: Object as PropType<IGenericPostResponse>, required: true },
-});
+const props = withDefaults(
+	defineProps<{
+		fetchedPost: IGenericPostResponse;
+	}>(),
+	{},
+);
 
 const toggleAction = (a: `` | `comments` | `stats` | `share` | `quote`) => {
 	activeAction.value = a;

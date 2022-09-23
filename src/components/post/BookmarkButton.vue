@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import BookmarkIcon from '@/components/icons/BookmarkIcon.vue';
-defineProps({
-	hasBookmark: {
-		type: Boolean,
-		required: true,
-	},
-});
+withDefaults(
+	defineProps<{
+		hasBookmark: boolean;
+	}>(),
+	{},
+);
 </script>
 
 <template>

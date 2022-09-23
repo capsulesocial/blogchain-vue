@@ -1,26 +1,16 @@
 <script setup lang="ts">
-import { PropType } from 'vue';
 import SpinnerIcon from '@/components/icons/SpinnerIcon.vue';
 import { SubscriptionTier } from '@/store/paymentProfile';
 
-const props = defineProps({
-	selectedTier: {
-		type: Object as PropType<SubscriptionTier>,
-		required: true,
-	},
-	isLoading: {
-		type: Boolean,
-		required: false,
-	},
-	text: {
-		type: String,
-		required: true,
-	},
-	toEmit: {
-		type: String,
-		required: true,
-	},
-});
+const props = withDefaults(
+	defineProps<{
+		selectedTier: SubscriptionTier;
+		isLoading?: boolean;
+		text: string;
+		toEmit: string;
+	}>(),
+	{},
+);
 </script>
 <template>
 	<div>

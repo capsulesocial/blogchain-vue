@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import CloseIcon from '../icons/CloseIcon.vue';
 // import CheckedIcon from '../icons/CheckCircleIcon.vue'
 import TwitterIcon from '../icons/brands/solid/Twitter.vue';
@@ -11,21 +12,23 @@ import ChevronDown from '../icons/ChevronDown.vue';
 import ChevronUp from '../icons/ChevronUp.vue';
 import { toastError, toastSuccess } from '../../plugins/toast';
 // import axios from 'axios'
-import { ref, PropType } from 'vue';
 import { createPostExcerpt } from '@/helpers/post';
 // import { capsuleServer, baseUrl } from './../../backend/utilities/config'
 // import { handleError } from '@/plugins/toast'
 
 const emit = defineEmits([`close`]);
 
-const props = defineProps({
-	id: { type: String, required: true },
-	title: { type: String, required: true },
-	subtitle: { type: String as PropType<string | null>, required: true },
-	excerpt: { type: String, required: true },
-	featuredphotocid: { type: String, required: true },
-	authorid: { type: String, required: true },
-});
+const props = withDefaults(
+	defineProps<{
+		id: string;
+		title: string;
+		subtitle: string | null;
+		excerpt: string;
+		featuredphotocid: string;
+		authorid: string;
+	}>(),
+	{},
+);
 
 const image = ref<string>(``);
 

@@ -20,20 +20,25 @@ const profilesStore = useProfilesStore();
 const showDelete = ref<boolean>(false);
 const featuredPhoto = ref<string | null>(null);
 
-const props = defineProps({
-	authorid: { type: String, required: true },
-	id: { type: String, required: true },
-	timestamp: { type: Number, required: true },
-	wordcount: { type: Number, required: true },
-	postimages: { type: Number, required: true },
-	bookmarked: { type: Boolean, required: true },
-	encrypted: { type: Boolean, required: true },
-	title: { type: String, required: true },
-	subtitle: { type: String, default: null },
-	excerpt: { type: String, required: true },
-	featuredphotocid: { type: String, required: true },
-	tags: { type: Array<Tag>, required: true },
-});
+const props = withDefaults(
+	defineProps<{
+		authorid: string;
+		id: string;
+		timestamp: number;
+		wordcount: number;
+		postimages: number;
+		bookmarked: boolean;
+		encrypted: boolean;
+		title: string;
+		subtitle?: string;
+		excerpt: string;
+		featuredphotocid: string;
+		tags: Tag[];
+	}>(),
+	{
+		subtitle: null,
+	},
+);
 
 // Get profile of authorID
 const author = computed(() => profilesStore.getProfile(props.authorid));

@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import { PropType } from 'vue';
 import { IGenericPostResponse } from '@/backend/post';
 import SimplePopupCard from '@/components/post/SimplePopupCard.vue';
 import ChevronLeft from '@/components/icons/ChevronLeft.vue';
 import Stats from '@/components/post/Stats.vue';
 
 const emit = defineEmits([`close`, `comments`]);
-
-const props = defineProps({
-	fetchedPost: { type: Object as PropType<IGenericPostResponse>, required: true },
-});
+const props = withDefaults(
+	defineProps<{
+		fetchedPost: IGenericPostResponse;
+	}>(),
+	{},
+);
 </script>
 
 <template>

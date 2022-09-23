@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, PropType } from 'vue';
+import { ref } from 'vue';
 import SwitchPeriod from '@/components/ToggleSwitch.vue';
 import CrownIcon from '@/components/icons/Crown.vue';
 import CheckCircleIcon from '@/components/icons/CheckCircle.vue';
@@ -9,38 +9,25 @@ import { SubscriptionTier, PaymentProfile } from '@/store/paymentProfile';
 import { Profile } from '@/backend/profile';
 import { getCurrencySymbol } from '@/backend/payment';
 
-const props = defineProps({
-	author: {
-		type: Object as PropType<Profile>,
-		required: true,
-	},
-	sub: {
-		type: Object as PropType<ISubscriptionWithProfile>,
-		required: true,
-	},
-	authorAvatar: {
-		type: String as PropType<string | undefined>,
-		default: null,
-	},
-	toPreSelectTier: {
-		type: Object as PropType<SubscriptionTier>,
-		default: null,
-	},
-	enabledTiers: {
-		type: Array as PropType<string[]>,
-		default: () => {
+const props = withDefaults(
+	defineProps<{
+		author: Profile;
+		sub: ISubscriptionWithProfile;
+		authorAvatar?: string | undefined;
+		toPreSelectTier?: SubscriptionTier;
+		enabledTiers?: string[];
+		canSwitchTier?: boolean;
+		paymentProfile: PaymentProfile;
+	}>(),
+	{
+		authorAvatar: null,
+		toPreSelectTier: null,
+		enabledTiers: () => {
 			return [];
 		},
+		canSwitchTier: false,
 	},
-	canSwitchTier: {
-		type: Boolean as PropType<boolean>,
-		default: false,
-	},
-	paymentProfile: {
-		type: Object as PropType<PaymentProfile>,
-		required: true,
-	},
-});
+);
 
 const canSwitchTier = ref<boolean>(true);
 const selectedTier = ref<SubscriptionTier>(props.toPreSelectTier);

@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import QuestionIcon from '@/components/icons/Question.vue';
-defineProps({
-	text: {
-		type: String,
-		required: true,
-	},
-});
+withDefaults(
+	defineProps<{
+		text: string;
+	}>(),
+	{},
+);
 
 defineEmits(['close', 'confirm']);
 const showInfoBubble = ref<boolean>(false);

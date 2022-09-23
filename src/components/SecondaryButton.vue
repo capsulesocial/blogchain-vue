@@ -1,14 +1,18 @@
 <script setup lang="ts">
-const props = defineProps({
-	text: { type: String, default: `Text` },
-	thin: { type: Boolean, default: false },
-	action: {
-		type: Function,
-		default: () => {
+const props = withDefaults(
+	defineProps<{
+		text?: string;
+		thin?: boolean;
+		action?: () => void;
+	}>(),
+	{
+		text: `Text`,
+		thin: false,
+		action: () => {
 			return null;
 		},
 	},
-});
+);
 
 function getStyles(): string {
 	let res = ``;

@@ -6,9 +6,14 @@ import ChevronDown from './icons/ChevronDown.vue';
 
 const showFilter = ref<boolean>(false);
 
-const props = defineProps({
-	filter: { type: String, default: `BOOKMARK_DESC` },
-});
+const props = withDefaults(
+	defineProps<{
+		filter: string;
+	}>(),
+	{
+		filter: `BOOKMARK_DESC`,
+	},
+);
 
 const emit = defineEmits([`clicked`]);
 

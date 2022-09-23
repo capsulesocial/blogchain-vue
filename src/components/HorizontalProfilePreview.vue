@@ -8,13 +8,12 @@ import Avatar from '@/components/Avatar.vue';
 const store = useStore();
 // const userIsFollowed = ref<boolean>(false)
 // const visitAvatar = ref<string | ArrayBuffer>(``)
-
-const props = defineProps({
-	id: {
-		type: String,
-		required: true,
-	},
-});
+const props = withDefaults(
+	defineProps<{
+		id: string;
+	}>(),
+	{},
+);
 
 const profile = computed(() => useProfilesStore().getProfile(props.id));
 

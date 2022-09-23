@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { ISubscriptionWithProfile } from '@/store/subscriptions';
 import { useStoreSettings } from '@/store/settings';
 import { formatDate } from '@/helpers/helpers';
 import { getCurrencySymbol } from '@/backend/payment';
@@ -8,12 +9,12 @@ import MoreIcon from '@/components/icons/MoreIcon.vue';
 import PenIcon from '@/components/icons/Pencil.vue';
 import CrownIcon from '@/components/icons/CrownIcon.vue';
 
-const props = defineProps({
-	subscription: {
-		type: Object,
-		required: true,
-	},
-});
+const props = withDefaults(
+	defineProps<{
+		subscription: ISubscriptionWithProfile;
+	}>(),
+	{},
+);
 
 const settings = useStoreSettings();
 const showEdit = ref<boolean>(false);

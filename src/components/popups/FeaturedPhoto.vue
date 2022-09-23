@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import XIcon from '@/components/icons/XIcon.vue';
+const prop = withDefaults(
+	defineProps<{
+		featuredPhoto: {
+			photo: string;
+			caption: string;
+		};
+	}>(),
+	{},
+);
 
-const prop = defineProps({
-	featuredPhoto: {
-		type: Object,
-		required: true,
-	},
-});
 defineEmits(['close']);
 </script>
 

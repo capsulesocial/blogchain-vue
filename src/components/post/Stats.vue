@@ -26,12 +26,14 @@ const faceStats = ref<FaceStat[]>([]);
 const page = ref<number>(0);
 
 // const emit = defineEmits([`close`]);
-
-const props = defineProps({
-	id: { type: String, required: true },
-	bookmarkscount: { type: Number, required: true },
-	repostcount: { type: Number, required: true },
-});
+const props = withDefaults(
+	defineProps<{
+		id: string;
+		bookmarkscount: number;
+		repostcount: number;
+	}>(),
+	{},
+);
 
 function getStyle(emotionType: string): string {
 	if (feelings.positive.has(emotionType)) {

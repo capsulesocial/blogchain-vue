@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { PropType } from 'vue';
 import { ref } from 'vue';
 import { useStoreSettings } from '@/store/settings';
 import { Post } from '@/backend/post';
@@ -11,12 +10,12 @@ import BinIcon from '@/components/icons/BinIcon.vue';
 
 type DraftPost = Omit<Post, `authorID`>;
 
-defineProps({
-	draft: {
-		type: Object as PropType<DraftPost>,
-		required: true,
-	},
-});
+withDefaults(
+	defineProps<{
+		draft: DraftPost;
+	}>(),
+	{},
+);
 
 const settings = useStoreSettings();
 const featuredPhoto = ref<any>();
