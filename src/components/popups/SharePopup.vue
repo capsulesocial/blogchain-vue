@@ -1,5 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { toastError, toastSuccess } from '../../plugins/toast';
+// import axios from 'axios'
+import { ref, PropType } from 'vue';
+import { createPostExcerpt } from '@/helpers/post';
+// import { capsuleServer, baseUrl } from './../../backend/utilities/config'
+// import { handleError } from '@/plugins/toast'
+import IpfsImage from '@/components/IpfsImage.vue';
+
 import CloseIcon from '../icons/CloseIcon.vue';
 // import CheckedIcon from '../icons/CheckCircleIcon.vue'
 import TwitterIcon from '../icons/brands/solid/Twitter.vue';
@@ -10,11 +17,6 @@ import MailIcon from '../icons/brands/solid/Mail.vue';
 import CopyIcon from '../icons/Copy.vue';
 import ChevronDown from '../icons/ChevronDown.vue';
 import ChevronUp from '../icons/ChevronUp.vue';
-import { toastError, toastSuccess } from '../../plugins/toast';
-// import axios from 'axios'
-import { createPostExcerpt } from '@/helpers/post';
-// import { capsuleServer, baseUrl } from './../../backend/utilities/config'
-// import { handleError } from '@/plugins/toast'
 
 const emit = defineEmits([`close`]);
 
@@ -145,18 +147,12 @@ generateLinks();
 			<div
 				class="bg-lightInput dark:bg-darkInput p-4 rounded-lg w-full flex flex-col lg:flex-row items-start lg:items-center"
 			>
-				<div
-					v-if="props.featuredphotocid !== `` && image === ``"
-					class="w-full lg:w-56 h-48 lg:h-32 bg-gray1 dark:bg-gray7 flex-shrink-0 animate-pulse rounded-lg mt-0 lg:mt-0 lg:mr-4 mb-4 lg:mb-0"
-				></div>
-				<div
-					v-if="props.featuredphotocid !== `` && image !== ``"
+				<IpfsImage
+					v-if="props.featuredphotocid !== ``"
 					class="mt-4 w-full flex-shrink-0 lg:mt-0 lg:w-56 modal-animation lg:mr-4"
-				>
-					<a class="cursor-pointer" href="#">
-						<img :src="image" class="h-48 w-full flex-shrink-0 rounded-lg object-cover xl:h-32" />
-					</a>
-				</div>
+					:img-class="'h-48 w-full flex-shrink-0 rounded-lg xl:h-32'"
+					:cid="props.featuredphotocid"
+				/>
 				<div class="flex max-w-full flex-col overflow-hidden">
 					<p class="text-gray5 dark:text-gray3 text-sm mb-2">blogchain.app</p>
 					<h3 class="break-words mb-1 text-base font-semibold dark:text-darkPrimaryText">
