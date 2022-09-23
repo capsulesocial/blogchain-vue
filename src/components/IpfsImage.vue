@@ -5,8 +5,6 @@ import { getPhotoFromIPFS, isValidPhoto } from '@/backend/getPhoto';
 
 import { toastError } from '@/plugins/toast';
 
-const imageSrc = ref<string | null>(null);
-
 const props = withDefaults(
 	defineProps<{
 		cid?: string | null;
@@ -19,6 +17,8 @@ const props = withDefaults(
 		defaultImage: null,
 	},
 );
+
+const imageSrc = ref<string | ArrayBuffer | null>(null);
 
 onMounted(async () => {
 	if (props.defaultImage) {
