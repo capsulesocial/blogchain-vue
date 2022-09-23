@@ -1,9 +1,9 @@
 <script setup lang="ts">
 const props = withDefaults(
 	defineProps<{
-		text: string;
-		thin: boolean;
-		action: () => void;
+		text?: string;
+		thin?: boolean;
+		action?: () => void;
 	}>(),
 	{
 		text: `Text`,

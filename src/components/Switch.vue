@@ -3,7 +3,7 @@ import { ref } from 'vue';
 
 const props = withDefaults(
 	defineProps<{
-		enabled: boolean;
+		enabled?: boolean;
 	}>(),
 	{},
 );

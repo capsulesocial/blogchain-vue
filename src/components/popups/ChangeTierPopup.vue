@@ -20,9 +20,9 @@ const props = withDefaults(
 	defineProps<{
 		author: Profile;
 		sub: ISubscriptionWithProfile;
-		authorAvatar: string | undefined;
-		toPreSelectTier: SubscriptionTier;
-		enabledTiers: string[];
+		authorAvatar?: string | undefined;
+		toPreSelectTier?: SubscriptionTier;
+		enabledTiers?: string[];
 	}>(),
 	{
 		authorAvatar: null,

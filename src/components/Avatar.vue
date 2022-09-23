@@ -5,11 +5,11 @@ import IpfsImage from './IpfsImage.vue';
 
 const props = withDefaults(
 	defineProps<{
-		override: string | null | ArrayBuffer;
-		cid: string | null;
-		authorid: string;
-		size: string;
-		noClick: boolean;
+		override?: string | null | ArrayBuffer;
+		cid?: string | null;
+		authorid?: string;
+		size?: string;
+		noClick?: boolean;
 	}>(),
 	{
 		override: null,

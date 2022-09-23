@@ -13,10 +13,10 @@ const props = withDefaults(
 	defineProps<{
 		author: Profile;
 		sub: ISubscriptionWithProfile;
-		authorAvatar: string | undefined;
-		toPreSelectTier: SubscriptionTier;
-		enabledTiers: string[];
-		canSwitchTier: boolean;
+		authorAvatar?: string | undefined;
+		toPreSelectTier?: SubscriptionTier;
+		enabledTiers?: string[];
+		canSwitchTier?: boolean;
 		paymentProfile: PaymentProfile;
 	}>(),
 	{

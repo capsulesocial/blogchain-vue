@@ -30,7 +30,7 @@ const props = withDefaults(
 		bookmarked: boolean;
 		encrypted: boolean;
 		title: string;
-		subtitle: string;
+		subtitle?: string;
 		excerpt: string;
 		featuredphotocid: string;
 		tags: Tag[];

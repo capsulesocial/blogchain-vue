@@ -9,9 +9,9 @@ const imageSrc = ref<string | null>(null);
 
 const props = withDefaults(
 	defineProps<{
-		cid: string | null;
-		imgClass: string;
-		defaultImage: string | null | ArrayBuffer;
+		cid?: string | null;
+		imgClass?: string;
+		defaultImage?: string | null | ArrayBuffer;
 	}>(),
 	{
 		cid: null,

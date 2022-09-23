@@ -15,9 +15,9 @@ const ALLOWED_ATTR = [...BASE_ALLOWED_ATTRS, `cid`, `alt`];
 const props = withDefaults(
 	defineProps<{
 		content: string;
-		postImages: string[];
-		encrypted: boolean;
-		postImageKeys: IPostImageKey[];
+		postImages?: string[];
+		encrypted?: boolean;
+		postImageKeys?: IPostImageKey[];
 	}>(),
 	{
 		postImages: () => [],

@@ -5,7 +5,7 @@ import { SubscriptionTier } from '@/store/paymentProfile';
 const props = withDefaults(
 	defineProps<{
 		selectedTier: SubscriptionTier;
-		isLoading: boolean;
+		isLoading?: boolean;
 		text: string;
 		toEmit: string;
 	}>(),

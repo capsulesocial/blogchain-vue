@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, withDefaults } from 'vue';
 import Avatar from '@/components/Avatar.vue';
 import BookmarkButton from '@/components/post/BookmarkButton.vue';
 import MoreIcon from '@/components/icons/MoreIcon.vue';
@@ -30,7 +30,7 @@ const showReposts = ref<boolean>(false);
 const props = withDefaults(
 	defineProps<{
 		fetchedPost: IGenericPostResponse;
-		activeAction: string;
+		activeAction?: string;
 	}>(),
 	{
 		activeAction: ``,

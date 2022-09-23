@@ -5,8 +5,8 @@ import SpinnerIcon from './icons/SpinnerIcon.vue';
 const props = withDefaults(
 	defineProps<{
 		text: string;
-		action: () => void;
-		loading: boolean;
+		action?: () => void;
+		loading?: boolean;
 	}>(),
 	{
 		action: () => console.log(`button clicked with no action passed as prop!`),

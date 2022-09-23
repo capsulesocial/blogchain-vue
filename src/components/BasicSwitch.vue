@@ -1,8 +1,8 @@
 <script setup lang="ts">
 withDefaults(
 	defineProps<{
-		enabled: boolean;
-		onBG: boolean;
+		enabled?: boolean;
+		onBG?: boolean;
 	}>(),
 	{},
 );
