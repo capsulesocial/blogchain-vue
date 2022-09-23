@@ -366,7 +366,7 @@ function isReposted() {
 								@click="showReposts = !showReposts"
 							>
 								<RepostIcon class="w-5 h-5" />
-								<span class="ml-1 text-sm">{{ postMetadata?.repostCount ? postMetadata?.repostCount : 0 }}</span>
+								<span class="ml-1 text-sm">{{ postMetadata.repostCount }}</span>
 							</button>
 							<!-- Repost tooltip -->
 							<div
@@ -416,15 +416,14 @@ function isReposted() {
 					<div class="flex w-full justify-between pb-5">
 						<div class="flex flex-row items-center">
 							<span v-if="postMetadata" class="pr-2 font-semibold dark:text-darkPrimaryText"
-								>{{ postMetadata?.commentsCount }}
-								{{ postMetadata?.commentsCount === 1 ? 'comment' : 'comments' }}</span
+								>{{ postMetadata.commentsCount }} {{ postMetadata.commentsCount === 1 ? 'comment' : 'comments' }}</span
 							>
 							<button class="focus:outline-none ml-2" @click="showStats = true"><StatsIcon /></button>
 						</div>
 						<CommentFilter :filter="filter" class="modal-animation" @clicked="setFilter" />
 					</div>
 					<!-- Comment editor -->
-					<CommentEditor :comments-count="postMetadata.commentsCount ?? 0" />
+					<CommentEditor :comments-count="postMetadata.commentsCount" />
 					<!-- Comments -->
 					<div v-for="i in 20" :key="i"><Comment class="mb-4" /></div>
 				</article>
@@ -459,7 +458,7 @@ function isReposted() {
 			/>
 			<QuotePopup
 				v-if="showQuote && postMetadata"
-				:id="postMetadata?.post._id ?? ``"
+				:id="postMetadata.post._id"
 				:authorid="postMetadata.post.authorID"
 				:timestamp="postMetadata.post.timestamp"
 				:wordcount="postMetadata.post.wordCount ?? 0"
