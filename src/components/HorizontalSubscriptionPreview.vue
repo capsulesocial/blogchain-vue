@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Avatar from '@/components/Avatar.vue';
-import SubscribeButton from '@/components/SubscribeButton.vue';
+import SubscribeButton from '@/components/subscriptions/SubscribeButton.vue';
 import { ISubscriptionWithProfile } from '@/store/subscriptions';
 import { PropType } from 'vue';
 
@@ -32,6 +32,6 @@ defineProps({
 			</div>
 		</div>
 		<!-- Renew button -->
-		<SubscribeButton class="self-center" :user-is-subscribed="false" />
+		<SubscribeButton class="self-center" :is-subscribed="false" />
 	</div>
 </template>

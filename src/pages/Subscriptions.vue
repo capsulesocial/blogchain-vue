@@ -4,9 +4,9 @@ import { useMeta } from 'vue-meta';
 import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
 import { useSubscriptionStore, ISubscriptionWithProfile } from '@/store/subscriptions';
-import SubscriptionPreview from '@/components/SubscriptionPreview.vue';
+import SubscriptionPreview from '@/components/subscriptions/SubscriptionPreview.vue';
 import SubInfosPopup from '@/components/popups/SubInfosPopup.vue';
-import ChangeTierPopup from '@/components/popups/ChangeTierPopup.vue';
+// import ChangeTierPopup from '@/components/popups/ChangeTierPopup.vue';
 import SpinnerIcon from '@/components/icons/SpinnerIcon.vue';
 import { createDefaultProfile, Profile } from '@/backend/profile';
 const isLoading = ref<boolean>(true);
@@ -90,12 +90,12 @@ function toggleChangeTierPopup(author: { sub: ISubscriptionWithProfile; avatar: 
 			/>
 		</div>
 		<div v-if="showChangeTier && authorPaymentProfile">
-			<ChangeTierPopup
+			<!-- <ChangeTierPopup
 				:author="subscriptionProfile"
 				:sub="authorPaymentProfile"
 				:author-avatar="subscriptionProfileAvatar"
 				@close="showChangeTier = false"
-			/>
+			/> -->
 		</div>
 	</div>
 </template>

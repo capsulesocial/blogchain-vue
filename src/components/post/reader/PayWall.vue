@@ -6,6 +6,8 @@ import { usePaymentsStore } from '@/store/paymentProfile';
 import { SubscriptionTier } from '@/store/paymentProfile';
 
 import CheckCircleStaticIcon from '@/components/icons/CheckCircleStaticIcon.vue';
+import SubscribeButton from '@/components/subscriptions/SubscribeButton.vue';
+import SubscriptionsPopup from '@/components/popups/SubscriptionsPopup.vue';
 
 const store = useStore();
 const profilesStore = useProfilesStore();
@@ -22,6 +24,7 @@ const profile = computed(() => profilesStore.getProfile(props.id));
 const enabledTierNames = ref<Array<string>>([]);
 const toPreSelectTiers = ref<Array<SubscriptionTier>>([]);
 const availableTiers = ref<SubscriptionTier[]>([]);
+const showSubscription = ref<boolean>(false);
 
 onMounted(async () => {
 	void profilesStore.fetchProfile(props.id);
@@ -30,7 +33,7 @@ onMounted(async () => {
 
 async function getTiers() {
 	//how to access get payment profile in this file?
-	const paymentProfile = await paymentStore.getPaymentProfile(profile.value.id);
+	const paymentProfile = await paymentStore.fetchPaymentProfile(profile.value.id);
 	if (paymentProfile) {
 		availableTiers.value = paymentProfile.tiers;
 	}
@@ -62,14 +65,8 @@ async function getTiers() {
 					<br class="hidden lg:block" />
 					this post and other subscriber-only content
 				</p>
-				<div class="flex items-center justify-center">
-					<!-- <SubscribeButton
-											:toggle-subscription="toggleSubscription"
-											:user-is-subscribed="false"
-											:enabled-tiers="enabledTiers"
-											class="header-profile my-4"
-											style="transform: scale(1.2)"
-										/> -->
+				<div class="flex items-center justify-center header-profile my-4" style="transform: scale(1.2)">
+					<SubscribeButton :is-subscribed="false" :action="() => (showSubscription = !showSubscription)" />
 				</div>
 				<p v-if="store.$state.id" class="text-sm mt-8 text-center text-gray5 dark:text-gray3">
 					Manage my <router-link to="/subscriptions" class="text-neutral text">subscriptions</router-link>
@@ -107,4 +104,14 @@ async function getTiers() {
 			</div>
 		</div>
 	</article>
+	<Teleport to="body">
+		<SubscriptionsPopup
+			v-if="showSubscription"
+			:is-subscribed="false"
+			:author="profile"
+			:author-avatar="profile.avatar"
+			:enabled-tiers="props.enabledTiers"
+			@close="showSubscription = false"
+		/>
+	</Teleport>
 </template>

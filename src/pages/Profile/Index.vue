@@ -1,26 +1,31 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onBeforeMount } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useMeta } from 'vue-meta';
-import { useProfilesStore } from '@/store/profiles';
-import { useSubscriptionStore, ISubscriptionWithProfile } from '@/store/subscriptions';
-import { useStore } from '@/store/session';
-import { useConnectionsStore } from '@/store/connections';
+import { getUserInfoNEAR } from '@/backend/near';
+import { handleError } from '@/plugins/toast';
 import BackButton from '@/components/icons/ChevronLeft.vue';
 import PencilIcon from '@/components/icons/Pencil.vue';
 import SecondaryButton from '@/components/SecondaryButton.vue';
 import FriendButton from '@/components/FriendButton.vue';
-import SubscribeButton from '@/components/SubscribeButton.vue';
+import SubscribeButton from '@/components/subscriptions/SubscribeButton.vue';
+import SubscriptionsPopup from '@/components/popups/SubscriptionsPopup.vue';
+import ChangeTierPopup from '@/components/popups/ChangeTierPopup.vue';
+import SubInfosPopup from '@/components/popups/SubInfosPopup.vue';
 import EditProfile from '@/components/popups/EditProfile.vue';
 import Avatar from '@/components/Avatar.vue';
 import FollowersPopup from '@/components/popups/FollowersPopup.vue';
 import FollowingPopup from '@/components/popups/FollowingPopup.vue';
-import { getUserInfoNEAR } from '@/backend/near';
-import { handleError } from '@/plugins/toast';
 import BioPopup from '@/components/popups/BioPopup.vue';
+import { useProfilesStore } from '@/store/profiles';
+import { useSubscriptionStore, ISubscriptionWithProfile } from '@/store/subscriptions';
+import { useStore } from '@/store/session';
+import { useConnectionsStore } from '@/store/connections';
+import { PaymentProfile, usePaymentsStore } from '@/store/paymentProfile';
 
 const store = useStore();
 const useSubscription = useSubscriptionStore();
+const paymentStore = usePaymentsStore();
 const router = useRouter();
 const route = useRoute();
 const profilesStore = useProfilesStore();
@@ -34,14 +39,23 @@ const authorID = computed(() => route.params.id as string);
 const profile = computed(() => profilesStore.getProfile(authorID.value));
 connectionsStore.fetchConnections(authorID.value);
 const connections = computed(() => connectionsStore.getConnections(authorID.value));
+const paymentsProfile = ref<PaymentProfile>(paymentStore.paymentProfile(authorID.value));
+
 const isActiveSub = ref<boolean>(false);
+const activeSub = ref<ISubscriptionWithProfile>();
 void useSubscription.fetchSubs(store.$state.id);
+// Check if payments are enabled
 
 useMeta({
 	title: profile.value.name
 		? `${profile.value.name as string} -  Blogchain`
 		: `@${authorID.value as string} -  Blogchain`,
 	htmlAttrs: { lang: 'en', amp: true },
+});
+
+onBeforeMount(async () => {
+	const res = await paymentStore.fetchPaymentProfile(authorID.value);
+	paymentsProfile.value = res;
 });
 
 onMounted(async (): Promise<void> => {
@@ -61,6 +75,7 @@ onMounted(async (): Promise<void> => {
 	activeSubs.forEach((sub: ISubscriptionWithProfile): void => {
 		if (sub.authorID === authorID.value) {
 			isActiveSub.value = true;
+			activeSub.value = sub;
 		}
 	});
 });
@@ -69,7 +84,6 @@ const fromExternalSite = ref<boolean>(false);
 const selfView = ref<boolean>(authorID.value === store.$state.id);
 const showAvatarPopup = ref<boolean>(false);
 const scrollingDown = ref<boolean>(false);
-const paymentsEnabled = ref<boolean>(true);
 const totalPostsCount = ref<number>(0);
 const userIsFollowed = ref<boolean>(false);
 const longBio = ref<boolean>(profile.value.bio.length > 200);
@@ -77,6 +91,8 @@ const expandBio = ref<boolean>(false);
 const openFollowersPopup = ref<boolean>(false);
 const openFollowingPopup = ref<boolean>(false);
 const showSettings = ref<boolean>(false);
+const showSubscription = ref<boolean>(false);
+const showChangeTier = ref<boolean>(false);
 
 // Check if coming from external site
 router.beforeEach((to, from, next) => {
@@ -186,7 +202,7 @@ function getStyles(tab: string): string {
 						/>
 						<SubscribeButton
 							v-if="selfView && paymentsEnabled"
-							:toggle-subscription="toggleSubscription"
+							:toggle-subscription="showSubscription"
 							:user-is-subscribed="activeSubscription"
 							class="header-profile ml-2"
 							:class="scrollingDown ? `cursor-pointer` : `cursor-default`"
@@ -272,8 +288,8 @@ function getStyles(tab: string): string {
 						class="header-profile flex-shrink-0"
 					/>
 					<!-- Subscription button -->
-					<div v-if="!selfView && paymentsEnabled" class="header-profile flex-shrink-0 ml-2">
-						<SubscribeButton :user-is-subscribed="isActiveSub" />
+					<div v-if="!selfView && paymentsProfile.paymentsEnabled" class="header-profile flex-shrink-0 ml-2">
+						<SubscribeButton :is-subscribed="isActiveSub" :action="() => (showSubscription = !showSubscription)" />
 					</div>
 				</div>
 			</div>
@@ -324,6 +340,24 @@ function getStyles(tab: string): string {
 		</div>
 	</section>
 	<Teleport to="body">
+		<SubscriptionsPopup
+			v-if="showSubscription && paymentsProfile.paymentsEnabled && !isActiveSub"
+			:is-subscribed="false"
+			:author="profile"
+			:author-avatar="profile.avatar"
+			:enabled-tiers="[]"
+			@close="showSubscription = false"
+		/>
+		<div v-if="showSubscription && activeSub">
+			<ChangeTierPopup
+				v-if="showChangeTier"
+				:author="profile"
+				:sub="activeSub"
+				:author-avatar="profile.avatar"
+				:enabled-tiers="[]"
+			/>
+			<SubInfosPopup v-else :sub="activeSub" />
+		</div>
 		<FollowersPopup v-if="openFollowersPopup" @close="openFollowersPopup = false" />
 		<FollowingPopup v-if="openFollowingPopup" @close="openFollowingPopup = false" />
 		<BioPopup v-if="expandBio" :id="authorID" @close="expandBio = false" />
