@@ -1,29 +1,15 @@
 <script setup lang="ts">
-import { PropType } from 'vue';
 import FriendButton from '@/components/FriendButton.vue';
 import Avatar from '@/components/Avatar.vue';
 import CrownIcon from '@/components/icons/Crown.vue';
 import { SubscriptionTier } from '@/store/paymentProfile';
 import { Profile } from '@/backend/profile';
 import { darkMode } from '@/plugins/colors';
-const props = defineProps({
-	author: {
-		type: Object as PropType<Profile>,
-		required: true,
-	},
-	selectedTier: {
-		type: Object as PropType<SubscriptionTier>,
-		required: true,
-	},
-	userIsFollowed: {
-		type: Boolean,
-		required: true,
-	},
-	toggleFriend: {
-		type: Function as PropType<() => void>,
-		required: true,
-	},
-});
+
+const props = withDefaults(
+	defineProps<{ author: Profile; selectedTier: SubscriptionTier; userIsFollowed: boolean; toggleFriend: () => void }>(),
+	{},
+);
 
 defineEmits([`startReading`]);
 </script>

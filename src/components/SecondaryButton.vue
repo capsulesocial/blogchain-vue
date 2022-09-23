@@ -1,8 +1,14 @@
 <script setup lang="ts">
-const props = defineProps({
-	text: { type: String, default: `Text` },
-	thin: { type: Boolean, default: false },
-});
+const props = withDefaults(
+	defineProps<{
+		text: string;
+		thin: boolean;
+	}>(),
+	{
+		text: `Text`,
+		thin: false,
+	},
+);
 
 defineEmits([`submitPayment`]);
 

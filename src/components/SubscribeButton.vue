@@ -10,13 +10,12 @@ import { useStore } from '@/store/session';
 import { useSubscriptionStore, ISubscriptionWithProfile } from '@/store/subscriptions';
 import { createDefaultProfile, Profile } from '@/backend/profile';
 
-defineProps({
-	userIsSubscribed: {
-		type: Boolean,
-		required: true,
-	},
-});
-
+withDefaults(
+	defineProps<{
+		userIsSubscribed: boolean;
+	}>(),
+	{},
+);
 const store = useStore();
 const route = useRoute();
 const useSubscription = useSubscriptionStore();
