@@ -515,7 +515,7 @@ function toggleSaveEmail(): void {
 								cardErrorMessage
 							}}</small>
 							<div class="flex flex-row-reverse items-center mt-4">
-								<SecondaryButton v-if="!isLoading" :text="`Pay`" @submit-payment="submitCardPayment" />
+								<SecondaryButton v-if="!isLoading" :text="`Pay`" :action="submitCardPayment" />
 								<div class="w-full">
 									<button class="text-primary self-center text-sm" @click.stop="useSubscription.$state.step = 5">
 										Payment policy
