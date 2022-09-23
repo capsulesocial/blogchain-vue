@@ -25,8 +25,8 @@ const props = withDefaults(
 		enabledTiers: string[];
 	}>(),
 	{
-		authorAvatar: undefined,
-		toPreSelectTier: undefined,
+		authorAvatar: null,
+		toPreSelectTier: null,
 		enabledTiers: () => {
 			return [];
 		},

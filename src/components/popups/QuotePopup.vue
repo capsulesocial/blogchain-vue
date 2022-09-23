@@ -28,7 +28,7 @@ const props = withDefaults(
 		tags: Tag[];
 	}>(),
 	{
-		subtitle: undefined,
+		subtitle: null,
 	},
 );
 const quoteContent = ref<string>(``);

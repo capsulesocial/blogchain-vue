@@ -14,9 +14,9 @@ const props = withDefaults(
 		defaultImage: string | null | ArrayBuffer;
 	}>(),
 	{
-		cid: undefined,
+		cid: null,
 		imgClass: ``,
-		defaultImage: undefined,
+		defaultImage: null,
 	},
 );
 

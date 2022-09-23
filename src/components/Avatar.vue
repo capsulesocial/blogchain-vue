@@ -12,8 +12,8 @@ const props = withDefaults(
 		noClick: boolean;
 	}>(),
 	{
-		override: undefined,
-		cid: undefined,
+		override: null,
+		cid: null,
 		authorid: ``,
 		size: `w-10 h-10`,
 		noClick: false,

@@ -36,7 +36,7 @@ const props = withDefaults(
 		tags: Tag[];
 	}>(),
 	{
-		subtitle: undefined,
+		subtitle: null,
 	},
 );
 

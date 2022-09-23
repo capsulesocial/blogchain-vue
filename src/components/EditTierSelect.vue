@@ -20,8 +20,8 @@ const props = withDefaults(
 		paymentProfile: PaymentProfile;
 	}>(),
 	{
-		authorAvatar: undefined,
-		toPreSelectTier: undefined,
+		authorAvatar: null,
+		toPreSelectTier: null,
 		enabledTiers: () => {
 			return [];
 		},
