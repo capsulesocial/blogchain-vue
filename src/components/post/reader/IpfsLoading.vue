@@ -7,10 +7,7 @@ const initIPFS = ref(false);
 const startIPFS = ref(false);
 const initNodes = ref(false);
 
-defineProps({
-	hasFeaturedPhoto: { type: Boolean, default: false },
-	contentLoader: { type: Boolean, required: true },
-});
+withDefaults(defineProps<{ hasFeaturedPhoto?: boolean; contentLoader: boolean }>(), { hasFeaturedPhoto: false });
 
 function updateLoop() {
 	setTimeout(async () => {
