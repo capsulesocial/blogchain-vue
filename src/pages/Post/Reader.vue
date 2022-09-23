@@ -277,7 +277,7 @@ function isReposted() {
 						<!-- Featured Photo -->
 						<button
 							v-if="hasFeaturedPhoto"
-							class="relative mb-5 mt-5 flex cursor-pointer flex-col justify-end"
+							class="relative mb-5 mt-5 flex cursor-pointer flex-col justify-end w-full"
 							@click="showPhoto"
 						>
 							<div
@@ -288,7 +288,10 @@ function isReposted() {
 								"
 								style="background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.8) 100%)"
 							></div>
-							<IpfsImage class="w-full rounded-lg object-cover shadow-lg" :cid="postMetadata.post.featuredPhotoCID" />
+							<IpfsImage
+								class="w-full rounded-lg object-cover shadow-lg overflow-hidden"
+								:cid="postMetadata.post.featuredPhotoCID"
+							/>
 							<p
 								v-if="post && post.data.featuredPhotoCaption"
 								ref="photoCaption"

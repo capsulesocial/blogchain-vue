@@ -2,7 +2,7 @@
 	<div v-if="imageSrc !== null" class="modal-animation">
 		<img :src="imageSrc" :class="imgClass + ' object-cover'" />
 	</div>
-	<div v-else class="animate-pulse bg-gray1 dark:bg-gray7"></div>
+	<div v-else class="animate-pulse bg-gray1 dark:bg-gray7 h-72 w-full"></div>
 </template>
 
 <script setup lang="ts">
