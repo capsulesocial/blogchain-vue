@@ -13,9 +13,12 @@ import BrandedButton from '@/components/BrandedButton.vue';
 const store = useStore();
 const settings = useStoreSettings();
 
-const props = defineProps({
-	commentsCount: { type: Number, required: true },
-});
+const props = withDefaults(
+	defineProps<{
+		commentsCount: number;
+	}>(),
+	{},
+);
 
 const showEmotions = ref<boolean>(false);
 const selectedEmotionColor = ref<`positive` | `neutral` | `negative` | `neutralLightest`>(`neutralLightest`);

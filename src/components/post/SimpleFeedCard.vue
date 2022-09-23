@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, PropType, ref } from 'vue';
+import { computed, ref } from 'vue';
 import Avatar from '@/components/Avatar.vue';
 import BookmarkButton from '@/components/post/BookmarkButton.vue';
 import MoreIcon from '@/components/icons/MoreIcon.vue';
@@ -27,10 +27,16 @@ const profilesStore = useProfilesStore();
 const showDelete = ref<boolean>(false);
 const showReposts = ref<boolean>(false);
 
-const props = defineProps({
-	fetchedPost: { type: Object as PropType<IGenericPostResponse>, required: true },
-	activeAction: { type: String, default: `` },
-});
+const props = withDefaults(
+	defineProps<{
+		fetchedPost: IGenericPostResponse;
+		activeAction: string;
+	}>(),
+	{
+		activeAction: ``,
+	},
+);
+
 const emit = defineEmits([`toggle-comments`, `toggle-action`]);
 
 // Get profile of authorID

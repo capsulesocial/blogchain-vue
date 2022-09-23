@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, PropType } from 'vue';
+import { ref } from 'vue';
 import CrownIcon from '@/components/icons/Crown.vue';
 import CheckCircleIcon from '@/components/icons/CheckCircle.vue';
 import ChevronDownIcon from '@/components/icons/ChevronDown.vue';
@@ -11,28 +11,16 @@ import { toastError, toastSuccess, handleError } from '@/plugins/toast';
 import { getCurrencySymbol } from '@/backend/payment';
 import { Profile } from '@/backend/profile';
 
-const props = defineProps({
-	author: {
-		type: Object as PropType<Profile>,
-		required: true,
-	},
-	sub: {
-		type: Object as PropType<ISubscriptionWithProfile>,
-		required: true,
-	},
-	selectedTier: {
-		type: Object as PropType<SubscriptionTier>,
-		required: true,
-	},
-	selectedPeriod: {
-		type: String as PropType<string>,
-		required: true,
-	},
-	paymentProfile: {
-		type: Object as PropType<PaymentProfile>,
-		required: true,
-	},
-});
+const props = withDefaults(
+	defineProps<{
+		author: Profile;
+		sub: ISubscriptionWithProfile;
+		selectedTier: SubscriptionTier;
+		selectedPeriod: string;
+		paymentProfile: PaymentProfile;
+	}>(),
+	{},
+);
 
 const store = useStore();
 const useSubscription = useSubscriptionStore();

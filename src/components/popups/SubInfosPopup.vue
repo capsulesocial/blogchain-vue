@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, PropType, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import Avatar from '@/components/Avatar.vue';
 import CancelIcon from '@/components/icons/CancelIcon.vue';
 import CardIcon from '@/components/icons/CardIcon.vue';
@@ -17,12 +17,12 @@ import { ISubscriptionWithProfile } from '@/store/subscriptions';
 import { PaymentProfile } from '@/store/paymentProfile';
 import { toastSuccess, handleError } from '@/plugins/toast';
 
-const props = defineProps({
-	sub: {
-		type: Object as PropType<ISubscriptionWithProfile>,
-		required: true,
-	},
-});
+const props = withDefaults(
+	defineProps<{
+		sub: ISubscriptionWithProfile;
+	}>(),
+	{},
+);
 
 const store = useStore();
 const useSubscription = useSubscriptionStore();

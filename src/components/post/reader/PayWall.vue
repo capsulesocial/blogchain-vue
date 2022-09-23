@@ -11,12 +11,15 @@ const store = useStore();
 const profilesStore = useProfilesStore();
 const paymentStore = usePaymentsStore();
 
-const props = defineProps({
-	id: { type: String, required: true },
-	hasFeaturedPhoto: { type: Boolean, required: true },
-	subscriptionStatus: { type: String, required: true },
-	enabledTiers: { type: Array<string>, required: true },
-});
+const props = withDefaults(
+	defineProps<{
+		id: string;
+		hasFeaturedPhoto: boolean;
+		subscriptionStatus: string;
+		enabledTiers: string[];
+	}>(),
+	{},
+);
 
 const profile = computed(() => profilesStore.getProfile(props.id));
 const enabledTierNames = ref<Array<string>>([]);

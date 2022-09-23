@@ -1,14 +1,11 @@
 <script setup lang="ts">
-defineProps({
-	text: {
-		type: String,
-		required: true,
-	},
-	bgImage: {
-		type: String,
-		required: true,
-	},
-});
+withDefaults(
+	defineProps<{
+		text: string;
+		bgImage: string;
+	}>(),
+	{},
+);
 </script>
 
 <template>

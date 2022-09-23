@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PropType, ref } from 'vue';
+import { ref } from 'vue';
 import { IGenericPostResponse } from '@/backend/post';
 import Comment from '@/components/post/comments/Comment.vue';
 import SimplePopupCard from '@/components/post/SimplePopupCard.vue';
@@ -9,9 +9,12 @@ import CommentEditor from '@/components/post/comments/CommentEditor.vue';
 
 const emit = defineEmits([`close`, `stats`]);
 
-const props = defineProps({
-	fetchedPost: { type: Object as PropType<IGenericPostResponse>, required: true },
-});
+const props = withDefaults(
+	defineProps<{
+		fetchedPost: IGenericPostResponse;
+	}>(),
+	{},
+);
 
 const filter = ref<string>(``);
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PropType, ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useStore } from '@/store/session';
 import { useProfilesStore } from '@/store/profiles';
 import Avatar from '@/components/Avatar.vue';
@@ -9,14 +9,16 @@ import FriendButton from '@/components/FriendButton.vue';
 const store = useStore();
 const profilesStore = useProfilesStore();
 
-const props = defineProps({
-	id: { type: String, required: true },
-	isFollowed: { type: Boolean, required: true },
-	toggleFriend: { type: Function as PropType<() => void>, required: true },
-});
+const props = withDefaults(
+	defineProps<{
+		id: string;
+		isFollowed: boolean;
+		toggleFriend: () => void;
+	}>(),
+	{},
+);
 
 const profile = computed(() => profilesStore.getProfile(props.id));
-
 const longBio = ref<boolean>(profile.value.bio.length > 200);
 const expandBio = ref<boolean>(false);
 

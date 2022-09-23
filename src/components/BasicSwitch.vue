@@ -1,8 +1,12 @@
 <script setup lang="ts">
-defineProps({
-	enabled: Boolean,
-	onBG: Boolean,
-});
+withDefaults(
+	defineProps<{
+		enabled: boolean;
+		onBG: boolean;
+	}>(),
+	{},
+);
+
 const emit = defineEmits([`toggle`]);
 
 function toggleSwitch() {

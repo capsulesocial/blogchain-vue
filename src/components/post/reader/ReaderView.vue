@@ -12,24 +12,19 @@ import { toastError } from '@/plugins/toast';
 const ALLOWED_TAGS = [...BASE_ALLOWED_TAGS, `ipfsimage`];
 const ALLOWED_ATTR = [...BASE_ALLOWED_ATTRS, `cid`, `alt`];
 
-const props = defineProps({
-	content: {
-		type: String,
-		required: true,
+const props = withDefaults(
+	defineProps<{
+		content: string;
+		postImages: string[];
+		encrypted: boolean;
+		postImageKeys: IPostImageKey[];
+	}>(),
+	{
+		postImages: () => [],
+		encrypted: false,
+		postImageKeys: () => [],
 	},
-	postImages: {
-		type: Array<string>,
-		default: [],
-	},
-	encrypted: {
-		type: Boolean,
-		default: false,
-	},
-	postImageKeys: {
-		type: Array<IPostImageKey>,
-		default: [],
-	},
-});
+);
 
 const clickedImage = ref<string | null>();
 const imageError = ref<string | null>();

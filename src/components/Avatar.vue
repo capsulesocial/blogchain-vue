@@ -1,15 +1,24 @@
 <script setup lang="ts">
-import { PropType, ref } from 'vue';
+import { ref } from 'vue';
 import { avatars } from './../config/avatars';
 import IpfsImage from './IpfsImage.vue';
 
-const props = defineProps({
-	override: { type: String as PropType<string | null | ArrayBuffer>, default: null },
-	cid: { type: String as PropType<string | null>, default: null },
-	authorid: { type: String, default: `` },
-	size: { type: String, default: `w-10 h-10` },
-	noClick: { type: Boolean, default: false },
-});
+const props = withDefaults(
+	defineProps<{
+		override: string | null | ArrayBuffer;
+		cid: string | null;
+		authorid: string;
+		size: string;
+		noClick: boolean;
+	}>(),
+	{
+		override: undefined,
+		cid: undefined,
+		authorid: ``,
+		size: `w-10 h-10`,
+		noClick: false,
+	},
+);
 
 const avatarList = ref<Array<undefined>>(avatars);
 

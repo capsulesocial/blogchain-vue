@@ -41,12 +41,13 @@
 import CrownIcon from '@/components/icons/Crown.vue';
 import PenIcon from '@/components/icons/Pencil.vue';
 
-defineProps({
-	userIsSubscribed: {
-		type: Boolean,
-		required: true,
-	},
-});
+withDefaults(
+	defineProps<{
+		userIsSubscribed: boolean;
+		toggleSubscription: () => void;
+	}>(),
+	{},
+);
 
 // export default Vue.extend({
 // 	components: {

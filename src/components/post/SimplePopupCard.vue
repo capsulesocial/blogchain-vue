@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, PropType, ref } from 'vue';
+import { computed, ref } from 'vue';
 import { IGenericPostResponse } from '@/backend/post';
 import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
@@ -23,9 +23,12 @@ const featuredPhoto = ref<string | null>(null);
 
 const emit = defineEmits([`close`]);
 
-const props = defineProps({
-	fetchedPost: { type: Object as PropType<IGenericPostResponse>, required: true },
-});
+const props = withDefaults(
+	defineProps<{
+		fetchedPost: IGenericPostResponse;
+	}>(),
+	{},
+);
 
 // Get profile of authorID
 const author = computed(() => profilesStore.getProfile(props.fetchedPost.post.authorID));

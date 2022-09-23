@@ -1,10 +1,10 @@
 <script setup lang="ts">
-defineProps({
-	image: {
-		type: String,
-		required: true,
-	},
-});
+withDefaults(
+	defineProps<{
+		image: string;
+	}>(),
+	{},
+);
 
 defineEmits(['close']);
 </script>

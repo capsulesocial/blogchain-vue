@@ -2,16 +2,16 @@
 import { toRefs } from 'vue';
 import SpinnerIcon from './icons/SpinnerIcon.vue';
 
-const props = defineProps({
-	text: { type: String, required: true },
-	action: {
-		type: Function,
-		default: () => {
-			console.log(`button clicked with no action passed as prop!`);
-		},
+const props = withDefaults(
+	defineProps<{
+		text: string;
+		action: () => void;
+		loading: boolean;
+	}>(),
+	{
+		action: () => console.log(`button clicked with no action passed as prop!`),
 	},
-	loading: Boolean,
-});
+);
 
 function triggerAction() {
 	props.action();

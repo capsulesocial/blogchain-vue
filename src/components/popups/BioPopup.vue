@@ -6,9 +6,12 @@ import CloseIcon from '@/components/icons/CloseIcon.vue';
 const profilesStore = useProfilesStore();
 const emit = defineEmits([`close`]);
 
-const props = defineProps({
-	id: { type: String, required: true },
-});
+const props = withDefaults(
+	defineProps<{
+		id: string;
+	}>(),
+	{},
+);
 
 const authorID = props.id ? props.id : undefined;
 const profile = computed(() => profilesStore.getProfile(authorID as string));

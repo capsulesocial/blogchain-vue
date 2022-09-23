@@ -1,3 +1,15 @@
+<script setup lang="ts">
+import FriendAddIcon from '@/components/icons/FriendAdd.vue';
+import FriendRemoveIcon from '@/components/icons/FriendRemove.vue';
+
+withDefaults(
+	defineProps<{
+		userIsFollowed: boolean;
+		toggleFriend: () => void;
+	}>(),
+	{},
+);
+</script>
 <template>
 	<button class="focus:outline-none block rounded-lg" @click="toggleFriend">
 		<div v-if="userIsFollowed">
@@ -33,17 +45,6 @@
 		</div>
 	</button>
 </template>
-
-<script setup lang="ts">
-import FriendAddIcon from '@/components/icons/FriendAdd.vue';
-import FriendRemoveIcon from '@/components/icons/FriendRemove.vue';
-import { PropType } from 'vue';
-
-defineProps({
-	userIsFollowed: { type: Boolean, required: true },
-	toggleFriend: { type: Function as PropType<() => void>, required: true },
-});
-</script>
 
 <style scoped>
 div.friendbtn span.following {

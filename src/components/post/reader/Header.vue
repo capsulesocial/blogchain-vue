@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, withDefaults } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useStore } from '@/store/session';
 import { useProfilesStore } from '@/store/profiles';
 import { formatDate } from '@/helpers/helpers';
@@ -18,15 +18,12 @@ const props = withDefaults(
 	defineProps<{
 		id: string;
 		timestamp: number;
-		wordCount?: number;
+		content: string;
 		postimages: number;
 		isFollowed: boolean;
 		toggleFriend: () => void;
 	}>(),
-	{
-		postimages: 0,
-		wordCount: undefined,
-	},
+	{},
 );
 
 const profile = computed(() => profilesStore.getProfile(props.id));
