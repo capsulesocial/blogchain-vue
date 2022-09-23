@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, withDefaults } from 'vue';
 import { useStore } from '@/store/session';
 import { useProfilesStore } from '@/store/profiles';
 import { formatDate } from '@/helpers/helpers';
@@ -14,14 +14,20 @@ const store = useStore();
 const profilesStore = useProfilesStore();
 const router = useRouter();
 
-const props = defineProps<{
-	id: string;
-	timestamp: number;
-	wordCount?: number;
-	postimages: number;
-	isFollowed: boolean;
-	toggleFriend: () => void;
-}>();
+const props = withDefaults(
+	defineProps<{
+		id: string;
+		timestamp: number;
+		wordCount?: number;
+		postimages: number;
+		isFollowed: boolean;
+		toggleFriend: () => void;
+	}>(),
+	{
+		postimages: 0,
+		wordCount: undefined,
+	},
+);
 
 const profile = computed(() => profilesStore.getProfile(props.id));
 const readingTime = computed(() => (props.wordCount ? calculateReadingTime(props.wordCount, props.postimages) : null));

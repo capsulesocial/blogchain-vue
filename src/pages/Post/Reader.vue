@@ -227,7 +227,7 @@ function isReposted() {
 				:id="postMetadata.post.authorID"
 				:timestamp="postMetadata.post.timestamp"
 				:word-count="wordCount"
-				:postimages="postMetadata.post.postImages?.length ? postMetadata.post.postImages?.length : 0"
+				:postimages="postMetadata.post.postImages?.length"
 				:is-followed="userIsFollowed"
 				:toggle-friend="toggleFriend"
 			/>
@@ -242,7 +242,7 @@ function isReposted() {
 						}}</router-link>
 						<div class="flex items-center">
 							<!-- Bookmark button -->
-							<BookmarkButton :has-bookmark="postMetadata.bookmarked ?? false" />
+							<BookmarkButton :has-bookmark="postMetadata.bookmarked" />
 							<!-- Share popup button -->
 							<button
 								class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary ml-2 hover:fill-primary flex items-center"
