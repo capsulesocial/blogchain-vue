@@ -38,6 +38,7 @@ import ChevronLeft from '@/components/icons/ChevronLeft.vue';
 import PayWall from '@/components/post/reader/PayWall.vue';
 import { ISignedIPFSObject } from '@/backend/utilities/helpers';
 import IpfsLoading from '@/components/post/reader/IpfsLoading.vue';
+import FeaturedPhoto from '@/components/popups/FeaturedPhoto.vue';
 
 const store = useStore();
 const settings = useStoreSettings();
@@ -60,11 +61,11 @@ const showShare = ref<boolean>(false);
 const showStats = ref<boolean>(false);
 const showReposts = ref<boolean>(false);
 const showQuote = ref<boolean>(false);
+const showPhoto = ref<boolean>(false);
 const lastScroll = ref<number>(0);
 const filter = ref<string>(``);
 
 // Functions
-const showPhoto = () => {};
 const toggleFriend = () => {};
 // const getBookmarkStatus = () => {};
 
@@ -278,7 +279,7 @@ function isReposted() {
 						<button
 							v-if="hasFeaturedPhoto"
 							class="relative mb-5 mt-5 flex cursor-pointer flex-col justify-end w-full"
-							@click="showPhoto"
+							@click="showPhoto = true"
 						>
 							<div
 								v-if="post && post.data.featuredPhotoCaption && captionHeight !== undefined"
@@ -474,6 +475,12 @@ function isReposted() {
 				:featuredphotocid="postMetadata.post.featuredPhotoCID ?? ``"
 				:tags="postMetadata.post.tags"
 				@close="showQuote = false"
+			/>
+			<FeaturedPhoto
+				v-if="showPhoto"
+				:featuredphotocid="postMetadata?.post.featuredPhotoCID ?? ``"
+				:featuredphotocaption="post?.data.featuredPhotoCaption ?? ``"
+				@close="showPhoto = false"
 			/>
 		</Teleport>
 	</div>
