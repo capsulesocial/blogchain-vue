@@ -9,7 +9,7 @@ const props = withDefaults(
 		loading?: boolean;
 	}>(),
 	{
-		action: () => console.log(`button clicked with no action passed as prop!`),
+		action: () => null,
 	},
 );
 
