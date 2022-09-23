@@ -11,7 +11,7 @@ import QuoteIcon from '@/components/icons/QuoteIcon.vue';
 import ShareIcon from '@/components/icons/ShareIcon.vue';
 import CrownIcon from '@/components/icons/Crown.vue';
 import StatsIcon from '@/components/icons/StatsIcon.vue';
-import IpfsImage from '../IpfsImage.vue';
+import IpfsImage from '@/components/IpfsImage.vue';
 
 import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';

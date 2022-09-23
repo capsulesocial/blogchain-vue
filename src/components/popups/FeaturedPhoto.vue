@@ -1,15 +1,14 @@
 <script setup lang="ts">
+import IpfsImage from '@/components/IpfsImage.vue';
+
 import XIcon from '@/components/icons/XIcon.vue';
-const prop = withDefaults(
+const props = withDefaults(
 	defineProps<{
-		featuredPhoto: {
-			photo: string;
-			caption: string;
-		};
+		featuredphotocid: string;
+		featuredphotocaption: string;
 	}>(),
 	{},
 );
-
 defineEmits(['close']);
 </script>
 
@@ -23,15 +22,14 @@ defineEmits(['close']);
 			<button class="bg-gray1 dark:bg-gray5 focus:outline-none mb-5 rounded-full p-1" @click="$emit(`close`)">
 				<XIcon />
 			</button>
-
-			<img :src="prop.featuredPhoto.photo" class="modal-content max-w-3/5 h-auto rounded-lg" />
+			<IpfsImage class="modal-content max-w-3/5 h-auto rounded-lg overflow-hidden" :cid="props.featuredphotocid" />
 			<div class="flex justify-center mt-5">
 				<p
-					v-if="featuredPhoto.caption"
+					v-if="props.featuredphotocaption"
 					id="caption"
 					class="text-lightPrimaryText dark:text-darkPrimaryText py-2 px-3 text-center bg-lightBG dark:bg-darkBG rounded-lg shadow-lg"
 				>
-					{{ featuredPhoto.caption }}
+					{{ props.featuredphotocaption }}
 				</p>
 			</div>
 		</div>

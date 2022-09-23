@@ -18,12 +18,15 @@ const props = withDefaults(
 	defineProps<{
 		id: string;
 		timestamp: number;
-		content: string;
-		postimages: number;
+		wordCount?: number;
+		postimages?: number;
 		isFollowed: boolean;
 		toggleFriend: () => void;
 	}>(),
-	{},
+	{
+		postimages: 0,
+		wordCount: 0,
+	},
 );
 
 const profile = computed(() => profilesStore.getProfile(props.id));

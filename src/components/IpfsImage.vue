@@ -5,8 +5,6 @@ import { getPhotoFromIPFS, isValidPhoto } from '@/backend/getPhoto';
 
 import { toastError } from '@/plugins/toast';
 
-const imageSrc = ref<string | null>(null);
-
 const props = withDefaults(
 	defineProps<{
 		cid?: string | null;
@@ -19,6 +17,8 @@ const props = withDefaults(
 		defaultImage: null,
 	},
 );
+
+const imageSrc = ref<string | ArrayBuffer | null>(null);
 
 onMounted(async () => {
 	if (props.defaultImage) {
@@ -38,5 +38,5 @@ onMounted(async () => {
 	<div v-if="imageSrc !== null" class="modal-animation">
 		<img v-lazy="imageSrc" :class="imgClass + ' object-cover'" />
 	</div>
-	<div v-else class="animate-pulse bg-gray1 dark:bg-gray7"></div>
+	<div v-else class="animate-pulse bg-gray1 dark:bg-gray7 h-72 w-full rounded-lg"></div>
 </template>
