@@ -36,7 +36,7 @@ import LinkIcon from '@/components/icons/LinkIcon.vue';
 import ShareIcon from '@/components/icons/ShareIcon.vue';
 import ChevronLeft from '@/components/icons/ChevronLeft.vue';
 import PayWall from '@/components/post/reader/PayWall.vue';
-import { calculateReadingTime, ISignedIPFSObject } from '@/backend/utilities/helpers';
+import { ISignedIPFSObject } from '@/backend/utilities/helpers';
 import IpfsLoading from '@/components/post/reader/IpfsLoading.vue';
 
 const store = useStore();
@@ -49,7 +49,7 @@ const userIsFollowed = ref<boolean>(false);
 const showPaywall = ref<boolean>(false);
 const content = ref<string>(``);
 const excerpt = ref<string>(``);
-const readingTime = ref<number | null>(null);
+const wordCount = ref<number>();
 const hasFeaturedPhoto = ref<boolean>(false);
 const enabledTiers = ref<Array<string>>();
 const postImageKeys = ref<Array<IPostImageKey>>([]);
@@ -140,6 +140,11 @@ function checkAuthenticity() {
 // Fetch post
 onBeforeMount(async () => {
 	await fetchPostMetadata(cid.value, store.id);
+	const wordcount = postMetadata.value?.post.wordCount ?? 0;
+	if (!wordcount) {
+		return;
+	}
+	wordCount.value = wordcount;
 });
 
 onMounted(async () => {
@@ -152,17 +157,9 @@ onMounted(async () => {
 		post.value = res;
 		checkAuthenticity();
 		checkEncryption();
-		let wordcount = 0;
 		if (res.data.content) {
-			wordcount = res.data.content.split(/\s+/).length;
+			wordCount.value = res.data.content.split(/\s+/).length;
 		}
-		if (!wordcount) {
-			return;
-		}
-		if (wordcount <= 0) {
-			throw new Error(`Word count can't be equal or less than zero`);
-		}
-		readingTime.value = calculateReadingTime(wordcount, res.data.postImages?.length);
 	} catch (err) {
 		throw new Error(err as string);
 	}
@@ -229,7 +226,7 @@ function isReposted() {
 			<Header
 				:id="postMetadata.post.authorID"
 				:timestamp="postMetadata.post.timestamp"
-				:reading-time="readingTime"
+				:word-count="wordCount"
 				:postimages="postMetadata.post.postImages?.length ? postMetadata.post.postImages?.length : 0"
 				:is-followed="userIsFollowed"
 				:toggle-friend="toggleFriend"

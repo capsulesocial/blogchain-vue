@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, withDefaults } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useStore } from '@/store/session';
 import { useProfilesStore } from '@/store/profiles';
 import { formatDate } from '@/helpers/helpers';
@@ -8,26 +8,23 @@ import { useRouter } from 'vue-router';
 import Avatar from '@/components/Avatar.vue';
 import FriendButton from '@/components/FriendButton.vue';
 import XIcon from '@/components/icons/CloseIcon.vue';
+import { calculateReadingTime } from '@/backend/utilities/helpers';
 
 const store = useStore();
 const profilesStore = useProfilesStore();
 const router = useRouter();
 
-const props = withDefaults(
-	defineProps<{
-		id: string;
-		timestamp: number;
-		readingTime?: number | null;
-		postimages: number;
-		isFollowed: boolean;
-		toggleFriend: () => void;
-	}>(),
-	{
-		readingTime: null,
-	},
-);
+const props = defineProps<{
+	id: string;
+	timestamp: number;
+	wordCount?: number;
+	postimages: number;
+	isFollowed: boolean;
+	toggleFriend: () => void;
+}>();
 
 const profile = computed(() => profilesStore.getProfile(props.id));
+const readingTime = computed(() => (props.wordCount ? calculateReadingTime(props.wordCount, props.postimages) : null));
 
 onMounted(async () => {
 	profilesStore.fetchProfile(props.id);
