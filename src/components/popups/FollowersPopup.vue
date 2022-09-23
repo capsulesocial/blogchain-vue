@@ -67,10 +67,6 @@ const followersList = computed(() => connections.getConnections(authorID)?.follo
 						</span>
 						<span v-else> It seems that {{ profile.id }} doesn't have any followers yet! </span>
 					</p>
-					<SecondaryButton
-						v-if="$route.name === `home` || store.$state.id === $route.params.id"
-						:text="`Discover new content`"
-					/>
 				</article>
 				<article>
 					<HorizontalProfilePreview v-for="follower in followersList" :id="follower" :key="follower" />

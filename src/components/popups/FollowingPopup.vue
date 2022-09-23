@@ -63,10 +63,6 @@ const followingList = computed(() => connections.getConnections(authorID)?.follo
 						<span v-else-if="profile.name !== ``"> It looks like {{ profile.name }} isn't following anyone yet! </span>
 						<span v-else> It seems that {{ profile.id }} isn't following anyone yet! </span>
 					</p>
-					<SecondaryButton
-						v-if="$route.name === `home` || store.$state.id === $route.params.id"
-						:text="`Discover new content`"
-					/>
 				</article>
 				<article>
 					<HorizontalProfilePreview v-for="follower in followingList" :id="follower" :key="follower" />
