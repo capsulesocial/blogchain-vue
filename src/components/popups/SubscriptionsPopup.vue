@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, PropType, onMounted, computed } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { StripeElements, PaymentRequest, StripeCardElement } from '@stripe/stripe-js';
 import { useStore } from '@/store/session';
 import { useRoute } from 'vue-router';
@@ -24,26 +24,21 @@ import { toastError, toastSuccess, handleError } from '@/plugins/toast';
 import { followChange, getFollowersAndFollowing } from '@/backend/following';
 import { HTMLInputEvent } from '@/interfaces/HTMLInputEvent';
 
-const props = defineProps({
-	isSubscribed: {
-		type: Boolean as PropType<boolean>,
-		default: false,
-	},
-	author: {
-		type: Object as PropType<Profile>,
-		required: true,
-	},
-	authorAvatar: {
-		type: String as PropType<ArrayBuffer | string | null>,
-		default: null,
-	},
-	enabledTiers: {
-		type: Array as PropType<string[]>,
-		default: () => {
+const props = withDefaults(
+	defineProps<{
+		isSubscribed: boolean;
+		author: Profile;
+		authorAvatar: ArrayBuffer | string | null;
+		enabledTiers: string[];
+	}>(),
+	{
+		isSubscribed: false,
+		authorAvatar: null,
+		enabledTiers: () => {
 			return [];
 		},
 	},
-});
+);
 
 const store = useStore();
 const route = useRoute();

@@ -25,7 +25,6 @@ const router = useRouter();
 const route = useRoute();
 const profilesStore = useProfilesStore();
 const connectionsStore = useConnectionsStore();
-useSubscription.fetchSubs(store.$state.id);
 
 if (typeof route.params.id !== 'string') {
 	throw new Error('Invalid param type for id');
