@@ -8,10 +8,14 @@ import { SubscriptionTier } from '@/store/paymentProfile';
 import CheckCircleStaticIcon from '@/components/icons/CheckCircleStaticIcon.vue';
 import SubscribeButton from '@/components/subscriptions/SubscribeButton.vue';
 import SubscriptionsPopup from '@/components/popups/SubscriptionsPopup.vue';
+import ChangeTierPopup from '@/components/popups/ChangeTierPopup.vue';
+import { ISubscriptionWithProfile } from '@/store/subscriptions';
+import { useSubscriptionStore } from '@/store/subscriptions';
 
 const store = useStore();
 const profilesStore = useProfilesStore();
 const paymentStore = usePaymentsStore();
+const useSubscription = useSubscriptionStore();
 
 const props = defineProps({
 	id: { type: String, required: true },
@@ -25,10 +29,18 @@ const enabledTierNames = ref<Array<string>>([]);
 const toPreSelectTiers = ref<Array<SubscriptionTier>>([]);
 const availableTiers = ref<SubscriptionTier[]>([]);
 const showSubscription = ref<boolean>(false);
+const showChangeTier = ref<boolean>(false);
+const activeSub = ref<ISubscriptionWithProfile>();
 
 onMounted(async () => {
 	void profilesStore.fetchProfile(props.id);
 	await getTiers();
+	const activeSubs = await useSubscription.$state.active;
+	activeSubs.forEach((sub: ISubscriptionWithProfile): void => {
+		if (sub.authorID === profile.value.id) {
+			activeSub.value = sub;
+		}
+	});
 });
 
 async function getTiers() {
@@ -112,6 +124,13 @@ async function getTiers() {
 			:author-avatar="profile.avatar"
 			:enabled-tiers="props.enabledTiers"
 			@close="showSubscription = false"
+		/>
+		<ChangeTierPopup
+			v-if="showChangeTier && activeSub"
+			:author="profile"
+			:author-avatar="profile.avatar"
+			:enabled-tiers="props.enabledTiers"
+			:sub="activeSub"
 		/>
 	</Teleport>
 </template>
