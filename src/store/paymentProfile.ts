@@ -29,15 +29,19 @@ export const usePaymentsStore = defineStore(`payments`, {
 		};
 	},
 	actions: {
-		async getPaymentProfile(username: string): Promise<PaymentProfile> {
-			const paymentProfile = await retrievePaymentProfile(username);
+		async fetchPaymentProfile(id: string): Promise<PaymentProfile> {
+			const paymentProfile = await retrievePaymentProfile(id);
 			if (paymentProfile) {
 				return paymentProfile;
 			}
-			return createDefaultPaymentProfile(username);
+			return createDefaultPaymentProfile(id);
 		},
 	},
-	getters: {},
+	getters: {
+		getPaymentProfile: (state: PaymentProfileMap) => (id: string) => {
+			return state.paymentProfiles[id];
+		},
+	},
 });
 
 export function createDefaultPaymentProfile(username: string): PaymentProfile {

@@ -19,7 +19,7 @@ import SubConfirmation from '@/components/subscriptions/SubConfirmation.vue';
 import { useSubscriptionStore } from '@/store/subscriptions';
 import { Profile } from '@/backend/profile';
 import { getAmountFromTier, getCurrencySymbol, getZeroDecimalAmount, retrieveReaderProfile } from '@/backend/payment';
-import { usePaymentsStore, PaymentProfile, createDefaultPaymentProfile } from '@/store/paymentProfile';
+import { usePaymentsStore } from '@/store/paymentProfile';
 import { toastError, toastSuccess, handleError } from '@/plugins/toast';
 import { followChange, getFollowersAndFollowing } from '@/backend/following';
 import { HTMLInputEvent } from '@/interfaces/HTMLInputEvent';
@@ -49,7 +49,8 @@ const selectedTier = computed(() => useSubscription.$state.selectedTier);
 const selectedPeriod = computed(() => useSubscription.$state.selectedPeriod);
 const cardErrorMessage = computed(() => useSubscription.$state.cardErrorMessage);
 const saveEmail = computed(() => useSubscription.$state.saveEmail);
-const paymentProfile = ref<PaymentProfile>(createDefaultPaymentProfile(route.params.id as string));
+usePayments.fetchPaymentProfile(props.author);
+const paymentProfile = computed(() => usePayments.getPaymentProfile(props.author.id));
 const customerEmail = ref<string>(``);
 const displayButtons = ref({
 	applePay: false,
@@ -65,7 +66,6 @@ let cardElement: StripeCardElement | null = null;
 const emit = defineEmits([`close`]);
 
 onMounted(async (): Promise<void> => {
-	paymentProfile.value = await usePayments.getPaymentProfile(props.author.id);
 	void getFollowersAndFollowing(store.$state.id).then((data) => {
 		following.value = data.following;
 		userIsFollowed.value = data.following.has(props.author.id);
@@ -102,7 +102,7 @@ function initializeProfile(): void {
 		toastError(`Payment profile of author is missing`);
 		return;
 	}
-	if (!paymentProfile.value.stripeAccountId) {
+	if (!paymentProfile.value) {
 		toastError(`Author subscription profile is missing`);
 		return;
 	}

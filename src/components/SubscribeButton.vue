@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import CrownIcon from '@/components/icons/Crown.vue';
 import PenIcon from '@/components/icons/Pencil.vue';
@@ -7,8 +7,9 @@ import SubInfosPopup from '@/components/popups/SubInfosPopup.vue';
 import ChangeTierPopup from '@/components/popups/ChangeTierPopup.vue';
 import SubscriptionsPopup from '@/components/popups/SubscriptionsPopup.vue';
 import { useStore } from '@/store/session';
+import { useProfilesStore } from '@/store/profiles';
 import { useSubscriptionStore, ISubscriptionWithProfile } from '@/store/subscriptions';
-import { createDefaultProfile, Profile } from '@/backend/profile';
+// import { createDefaultProfile, Profile } from '@/backend/profile';
 
 withDefaults(
 	defineProps<{
@@ -23,8 +24,8 @@ const subscriptionInfo = ref();
 const toggleSub = ref<boolean>(false);
 const toggleChangeTier = ref<boolean>(false);
 const showSubscriptionPopup = ref<boolean>(false);
-const subscriptionProfile = ref<Profile>(createDefaultProfile(store.$state.id));
-const subscriptionProfileAvatar = ref<string | undefined>();
+const subscriptionProfile = computed(() => useProfilesStore().getProfile(store.id));
+const subscriptionProfileAvatar = ref<string | undefined>(subscriptionProfile.value.avatar);
 const authorPaymentProfile = ref<ISubscriptionWithProfile>();
 const isActiveSub = ref<boolean>(false);
 
@@ -33,17 +34,12 @@ onMounted(async (): Promise<void> => {
 });
 
 // methods
-async function subscribeAuthor(): Promise<void> {
-	showSubscriptionPopup.value = !showSubscriptionPopup.value;
-	subscriptionProfile.value = createDefaultProfile(route.params.id as string);
-	subscriptionProfileAvatar.value = subscriptionProfile.value.avatar;
-}
 async function toggleSubinfo(): Promise<void> {
 	await updateSubscriptionInfo();
 	toggleSub.value = !toggleSub.value;
 }
 async function toggleChangeTierPopup(author: { sub: ISubscriptionWithProfile; avatar: string }): Promise<void> {
-	subscriptionProfile.value = createDefaultProfile(author.sub.authorID);
+	// subscriptionProfile.value = createDefaultProfile(author.sub.authorID);
 	subscriptionProfileAvatar.value = author.avatar;
 	authorPaymentProfile.value = author.sub;
 	toggleChangeTier.value = !toggleChangeTier.value;
@@ -86,7 +82,7 @@ async function updateSubscriptionInfo(): Promise<void> {
 			<div
 				class="bg-neutral hover:bg-opacity-75 hidden rounded-lg px-5 text-sm font-semibold text-white shadow-sm border border-lightBorder transition duration-300 ease-in-out xl:flex flex-row items-center"
 				style="padding-top: 0.4rem; padding-bottom: 0.4rem"
-				@click.stop.prevent="subscribeAuthor"
+				@click="showSubscriptionPopup = !showSubscriptionPopup"
 			>
 				<p class="self-center">Subscribe</p>
 				<CrownIcon class="ml-2 h-4 w-4 self-center" />
@@ -94,7 +90,7 @@ async function updateSubscriptionInfo(): Promise<void> {
 			<!-- Mobile -->
 			<div
 				class="bg-neutral rounded-lg p-1 text-white shadow-sm border border-lightBorder transition duration-300 ease-in-out xl:hidden"
-				@click.stop.prevent="subscribeAuthor"
+				@click="showSubscriptionPopup = !showSubscriptionPopup"
 			>
 				<CrownIcon class="m-1 h-5 w-5" />
 			</div>

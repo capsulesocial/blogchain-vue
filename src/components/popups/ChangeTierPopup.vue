@@ -52,7 +52,7 @@ const canSwitchTier = ref<boolean>(true);
 defineEmits([`close`]);
 
 onMounted(async (): Promise<void> => {
-	usePayment.getPaymentProfile(props.author.id);
+	usePayment.fetchPaymentProfile(props.author.id);
 	// prefill selected tier
 	if (props.toPreSelectTier) {
 		selectedTier.value = props.toPreSelectTier;
@@ -72,7 +72,7 @@ async function initializeProfile(): Promise<void> {
 		toastError(`Author profile is missing`);
 		return;
 	}
-	paymentProfile.value = await usePayment.getPaymentProfile(props.author.id);
+	paymentProfile.value = await usePayment.fetchPaymentProfile(props.author.id);
 	if (!paymentProfile.value) {
 		toastError(`Payment profile of author is missing`);
 		return;

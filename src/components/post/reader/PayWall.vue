@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { useStore } from '@/store/session';
+import SubscribeButton from '@/components/SubscribeButton.vue';
 import { useProfilesStore } from '@/store/profiles';
 import { usePaymentsStore } from '@/store/paymentProfile';
 import { SubscriptionTier } from '@/store/paymentProfile';
@@ -30,7 +31,7 @@ onMounted(async () => {
 
 async function getTiers() {
 	//how to access get payment profile in this file?
-	const paymentProfile = await paymentStore.getPaymentProfile(profile.value.id);
+	const paymentProfile = await paymentStore.fetchPaymentProfile(profile.value.id);
 	if (paymentProfile) {
 		availableTiers.value = paymentProfile.tiers;
 	}
@@ -63,13 +64,12 @@ async function getTiers() {
 					this post and other subscriber-only content
 				</p>
 				<div class="flex items-center justify-center">
-					<!-- <SubscribeButton
-											:toggle-subscription="toggleSubscription"
-											:user-is-subscribed="false"
-											:enabled-tiers="enabledTiers"
-											class="header-profile my-4"
-											style="transform: scale(1.2)"
-										/> -->
+					<SubscribeButton
+						:user-is-subscribed="false"
+						:enabled-tiers="enabledTiers"
+						class="header-profile my-4"
+						style="transform: scale(1.2)"
+					/>
 				</div>
 				<p v-if="store.$state.id" class="text-sm mt-8 text-center text-gray5 dark:text-gray3">
 					Manage my <router-link to="/subscriptions" class="text-neutral text">subscriptions</router-link>
