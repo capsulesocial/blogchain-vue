@@ -35,8 +35,9 @@ import StatsIcon from '@/components/icons/StatsIcon.vue';
 import LinkIcon from '@/components/icons/LinkIcon.vue';
 import ShareIcon from '@/components/icons/ShareIcon.vue';
 import ChevronLeft from '@/components/icons/ChevronLeft.vue';
-import PayWall from '../../components/post/reader/PayWall.vue';
+import PayWall from '@/components/post/reader/PayWall.vue';
 import { ISignedIPFSObject } from '@/backend/utilities/helpers';
+import IpfsLoading from '@/components/post/reader/IpfsLoading.vue';
 
 const store = useStore();
 const settings = useStoreSettings();
@@ -48,12 +49,9 @@ const userIsFollowed = ref<boolean>(false);
 const showPaywall = ref<boolean>(false);
 const content = ref<string>(``);
 const excerpt = ref<string>(``);
+const wordCount = ref<number>();
 const hasFeaturedPhoto = ref<boolean>(false);
 const enabledTiers = ref<Array<string>>();
-const initNodes = ref<boolean>(true);
-const loadingIPFS = ref<boolean>(true);
-const initIPFS = ref<boolean>(false);
-const startIPFS = ref<boolean>(false);
 const postImageKeys = ref<Array<IPostImageKey>>([]);
 const captionHeight = ref<number | undefined>(0);
 const subscriptionStatus = ref<`INSUFFICIENT_TIER` | `NOT_SUBSCRIBED` | ``>(``);
@@ -76,12 +74,17 @@ const fetchPostMetadata = async (cid: string, currentUser?: string) => {
 		postMetadata.value = await getOnePost(cid, u);
 		if (postMetadata.value.hidden) {
 			// deleted.value = true;
-			// toastError(`This post has been hidden by the author`);
+			toastError(`This post has been hidden by the author`);
 			// emit(`showWarning`)
 		}
 		hasFeaturedPhoto.value = postMetadata.value.post.featuredPhotoCID ? true : false;
-	} catch (err) {
-		throw new Error(err as string);
+	} catch (err: unknown) {
+		if (err instanceof Error) {
+			toastError(`Error loading post: ${err.message}`);
+			return;
+		}
+
+		toastError(`Unknown error loading post`);
 	}
 };
 const setFilter = (f: string) => {
@@ -137,7 +140,14 @@ function checkAuthenticity() {
 // Fetch post
 onBeforeMount(async () => {
 	await fetchPostMetadata(cid.value, store.id);
-	checkAuthenticity();
+	const wordcount = postMetadata.value?.post.wordCount ?? 0;
+	if (!wordcount) {
+		return;
+	}
+	wordCount.value = wordcount;
+});
+
+onMounted(async () => {
 	try {
 		// Fetching post object
 		const res = await getPost(cid.value);
@@ -145,13 +155,14 @@ onBeforeMount(async () => {
 			return;
 		}
 		post.value = res;
+		checkAuthenticity();
 		checkEncryption();
+		if (res.data.content) {
+			wordCount.value = res.data.content.split(/\s+/).length;
+		}
 	} catch (err) {
 		throw new Error(err as string);
 	}
-});
-
-onMounted(() => {
 	const container = document.getElementById(`scrollable_content`);
 	if (container) {
 		container.addEventListener(`scroll`, handleScroll);
@@ -201,7 +212,7 @@ function isReposted() {
 		class="w-full flex flex-col items-center pb-10 h-screen max-h-screen overflow-y-auto lg:overflow-y-hidden"
 	>
 		<!-- loader -->
-		<article v-if="post === undefined" class="modal-animation fixed mt-20 flex w-full justify-center">
+		<article v-if="!postMetadata" class="modal-animation fixed mt-20 flex w-full justify-center">
 			<div class="flex flex-col items-center mt-10">
 				<div
 					class="loader m-5 border-2 border-gray1 dark:border-gray7 h-8 w-8 rounded-3xl"
@@ -213,10 +224,10 @@ function isReposted() {
 		<div v-else class="lg:w-760 lg:max-w-760 h-fit w-full">
 			<!-- Magic header that disappears on scroll down -->
 			<Header
-				:id="post.data.authorID"
-				:timestamp="post.data.timestamp"
-				:content="post.data.content"
-				:postimages="post.data.postImages?.length ? post.data.postImages?.length : 0"
+				:id="postMetadata.post.authorID"
+				:timestamp="postMetadata.post.timestamp"
+				:word-count="wordCount"
+				:postimages="postMetadata.post.postImages?.length"
 				:is-followed="userIsFollowed"
 				:toggle-friend="toggleFriend"
 			/>
@@ -226,12 +237,12 @@ function isReposted() {
 				<article class="relative">
 					<!-- Category and actions -->
 					<article class="my-5 flex w-full justify-between">
-						<router-link :to="`/discover/` + post.data.category" class="text-primary capitalize">{{
-							post.data.category.replace(`-`, ` `)
+						<router-link :to="`/discover/` + postMetadata.post.category" class="text-primary capitalize">{{
+							postMetadata.post.category.replace(`-`, ` `)
 						}}</router-link>
 						<div class="flex items-center">
 							<!-- Bookmark button -->
-							<BookmarkButton :has-bookmark="postMetadata?.bookmarked ? postMetadata?.bookmarked : false" />
+							<BookmarkButton :has-bookmark="postMetadata.bookmarked" />
 							<!-- Share popup button -->
 							<button
 								class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary ml-2 hover:fill-primary flex items-center"
@@ -248,68 +259,25 @@ function isReposted() {
 						<h1
 							class="text-lightPrimaryText dark:text-darkPrimaryText text-h1 mb-3 break-words font-serif font-semibold"
 						>
-							{{ post.data.title }}
+							{{ postMetadata.post.title }}
 						</h1>
 						<h2
-							v-if="post.data.subtitle"
+							v-if="postMetadata.post.subtitle"
 							class="text-lightSecondaryText dark:text-gray3 text-h2 mb-3 break-words font-serif font-medium"
 						>
-							{{ post.data.subtitle }}
+							{{ postMetadata.post.subtitle }}
 						</h2>
 					</article>
 					<!-- IPFS loader -->
-					<div
-						v-if="!post.data.content && !showPaywall && !hasFeaturedPhoto"
-						class="lg:w-760 lg:max-w-760 h-fit w-full"
-					>
-						<div
-							v-if="hasFeaturedPhoto"
-							class="h-72 w-full rounded-xl bg-gray1 dark:bg-gray7 animate-pulse mb-6 flex justify-center items-center mt-6"
-						>
-							<div class="flex items-center">
-								<span v-if="loadingIPFS" class="text-gray5 dark:text-gray1 mr-1 text-sm modal-animation"
-									>Loading IPFS...</span
-								>
-								<span v-else-if="initIPFS" class="text-gray5 dark:text-gray1 mr-1 text-sm modal-animation"
-									>Initialising IPFS...</span
-								>
-								<span v-else-if="startIPFS" class="text-gray5 dark:text-gray1 mr-1 text-sm modal-animation"
-									>Starting IPFS...</span
-								>
-								<span v-if="loadingIPFS || initIPFS || startIPFS" class="ml-1 flex h-3 w-3 modal-animation">
-									<span
-										class="absolute inline-flex h-3 w-3 animate-ping rounded-full opacity-75 bg-gray5 dark:bg-gray3"
-									></span>
-									<span class="relative inline-flex h-3 w-3 rounded-full bg-gray5 dark:bg-gray3"></span>
-								</span>
-							</div>
-						</div>
-						<div v-else-if="loadingIPFS || initIPFS || startIPFS" class="mt-6">
-							<div class="flex items-center">
-								<span v-if="loadingIPFS" class="text-gray5 dark:text-gray1 mr-1 text-sm modal-animation"
-									>Loading IPFS...</span
-								>
-								<span v-else-if="initIPFS" class="text-gray5 dark:text-gray1 mr-1 text-sm modal-animation"
-									>Initialising IPFS...</span
-								>
-								<span v-else-if="startIPFS" class="text-gray5 dark:text-gray1 mr-1 text-sm modal-animation"
-									>Starting IPFS...</span
-								>
-								<span v-if="loadingIPFS || initIPFS || startIPFS" class="ml-1 flex h-3 w-3 modal-animation">
-									<span
-										class="absolute inline-flex h-3 w-3 animate-ping rounded-full opacity-75 bg-gray5 dark:bg-gray3"
-									></span>
-									<span class="relative inline-flex h-3 w-3 rounded-full bg-gray5 dark:bg-gray3"></span>
-								</span>
-							</div>
-						</div>
+					<div v-if="!post && !showPaywall && !hasFeaturedPhoto" class="lg:w-760 lg:max-w-760 h-fit w-full">
+						<IpfsLoading :content-loader="false" :has-featured-photo="hasFeaturedPhoto" />
 					</div>
 					<!-- Post content-->
 					<div class="relative">
 						<!-- Featured Photo -->
 						<button
 							v-if="hasFeaturedPhoto"
-							class="relative mb-5 mt-5 flex cursor-pointer flex-col justify-end"
+							class="relative mb-5 mt-5 flex cursor-pointer flex-col justify-end w-full"
 							@click="showPhoto"
 						>
 							<div
@@ -320,7 +288,10 @@ function isReposted() {
 								"
 								style="background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.8) 100%)"
 							></div>
-							<IpfsImage class="w-full rounded-lg object-cover shadow-lg" :cid="post.data.featuredPhotoCID" />
+							<IpfsImage
+								class="w-full rounded-lg object-cover shadow-lg overflow-hidden"
+								:cid="postMetadata.post.featuredPhotoCID"
+							/>
 							<p
 								v-if="post && post.data.featuredPhotoCaption"
 								ref="photoCaption"
@@ -331,18 +302,8 @@ function isReposted() {
 							</p>
 						</button>
 						<!-- Content loader -->
-						<div v-if="!post.data.content && !showPaywall" class="lg:w-760 lg:max-w-760 h-fit w-full mt-6">
-							<div v-if="initNodes && !loadingIPFS && !initIPFS && !startIPFS" class="mb-6">
-								<div class="flex items-center">
-									<span class="text-gray5 dark:text-gray1 mr-1 text-sm modal-animation">Connecting to peers...</span>
-									<span class="ml-1 flex h-3 w-3 modal-animation">
-										<span
-											class="absolute inline-flex h-3 w-3 animate-ping rounded-full opacity-75 bg-gray5 dark:bg-gray3"
-										></span>
-										<span class="relative inline-flex h-3 w-3 rounded-full bg-gray5 dark:bg-gray3"></span>
-									</span>
-								</div>
-							</div>
+						<div v-if="!post && !showPaywall" class="lg:w-760 lg:max-w-760 h-fit w-full mt-6">
+							<IpfsLoading :content-loader="true" />
 							<div>
 								<div class="h-3 w-full rounded-xl bg-gray1 dark:bg-gray7 animate-pulse mb-2"></div>
 								<div class="h-3 w-full rounded-xl bg-gray1 dark:bg-gray7 animate-pulse mb-2"></div>
@@ -360,14 +321,14 @@ function isReposted() {
 						<!-- Post paywall -->
 						<article v-if="showPaywall">
 							<PayWall
-								:id="post.data.authorID"
+								:id="postMetadata.post.authorID"
 								:has-featured-photo="hasFeaturedPhoto"
 								:subscription-status="subscriptionStatus"
 								:enabled-tiers="enabledTiers ? enabledTiers : []"
 							/>
 						</article>
 						<!-- Content -->
-						<article v-else-if="post !== null" class="mt-5">
+						<article v-else-if="post" class="mt-5">
 							<div class="text-lightPrimaryText dark:text-darkSecondaryText editable content max-w-none break-words">
 								<ReaderView
 									:content="post.data.content"
@@ -379,7 +340,7 @@ function isReposted() {
 						</article>
 						<!-- Tags -->
 						<article class="mt-5 text-lg">
-							<TagCard v-for="t in post.data.tags" :key="t.name" class="mr-2 mb-2" :tag="t.name" />
+							<TagCard v-for="t in postMetadata.post.tags" :key="t.name" class="mr-2 mb-2" :tag="t.name" />
 						</article>
 						<!-- IPFS CID -->
 						<div class="mt-3">
@@ -396,11 +357,11 @@ function isReposted() {
 					</div>
 				</article>
 				<!-- post actions -->
-				<article v-if="post !== null && !showPaywall" class="py-6">
+				<article v-if="postMetadata && !showPaywall" class="py-6">
 					<div class="flex flex-row justify-between">
 						<div class="flex items-center relative">
 							<!-- Bookmark button -->
-							<BookmarkButton :has-bookmark="postMetadata?.bookmarked ? postMetadata?.bookmarked : false" />
+							<BookmarkButton :has-bookmark="postMetadata.bookmarked" />
 							<!-- Repost button -->
 							<button
 								class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary dark:hover:text-primary ml-4 flex items-center"
@@ -408,7 +369,7 @@ function isReposted() {
 								@click="showReposts = !showReposts"
 							>
 								<RepostIcon class="w-5 h-5" />
-								<span class="ml-1 text-sm">{{ postMetadata?.repostCount ? postMetadata?.repostCount : 0 }}</span>
+								<span class="ml-1 text-sm">{{ postMetadata.repostCount }}</span>
 							</button>
 							<!-- Repost tooltip -->
 							<div
@@ -447,31 +408,30 @@ function isReposted() {
 				</article>
 				<!-- Author -->
 				<AuthorFooter
-					:id="post.data.authorID"
+					:id="postMetadata.post.authorID"
 					:is-followed="userIsFollowed"
 					:toggle-friend="toggleFriend"
 					:class="showPaywall ? `mb-20` : ``"
 				/>
 				<!-- Comments -->
-				<article v-if="post !== null && !showPaywall && !showStats" class="pb-14">
+				<article v-if="postMetadata && !showPaywall && !showStats" class="pb-14">
 					<!-- filters -->
 					<div class="flex w-full justify-between pb-5">
 						<div class="flex flex-row items-center">
 							<span v-if="postMetadata" class="pr-2 font-semibold dark:text-darkPrimaryText"
-								>{{ postMetadata?.commentsCount }}
-								{{ postMetadata?.commentsCount === 1 ? 'comment' : 'comments' }}</span
+								>{{ postMetadata.commentsCount }} {{ postMetadata.commentsCount === 1 ? 'comment' : 'comments' }}</span
 							>
 							<button class="focus:outline-none ml-2" @click="showStats = true"><StatsIcon /></button>
 						</div>
 						<CommentFilter :filter="filter" class="modal-animation" @clicked="setFilter" />
 					</div>
 					<!-- Comment editor -->
-					<CommentEditor :comments-count="postMetadata?.commentsCount ? postMetadata?.commentsCount : 0" />
+					<CommentEditor :comments-count="postMetadata.commentsCount" />
 					<!-- Comments -->
 					<div v-for="i in 20" :key="i"><Comment class="mb-4" /></div>
 				</article>
 				<!-- Stats -->
-				<article v-if="post !== null && !showPaywall && showStats" class="pb-14">
+				<article v-if="postMetadata && !showPaywall && showStats" class="pb-14">
 					<button class="flex items-center pb-5" @click="showStats = false">
 						<div class="bg-gray1 dark:bg-gray5 focus:outline-none rounded-full">
 							<ChevronLeft />
@@ -481,38 +441,38 @@ function isReposted() {
 						>
 					</button>
 					<Stats
-						:id="postMetadata?.post._id ? postMetadata?.post._id : ``"
-						:bookmarkscount="postMetadata?.bookmarksCount ? postMetadata?.bookmarksCount : 0"
-						:repostcount="postMetadata?.repostCount ? postMetadata?.repostCount : 0"
+						:id="postMetadata.post._id"
+						:bookmarkscount="postMetadata.bookmarksCount"
+						:repostcount="postMetadata.repostCount"
 					/>
 				</article>
 			</section>
 		</div>
 		<Teleport to="body">
 			<SharePopup
-				v-if="showShare"
-				:id="postMetadata?.post._id ?? ``"
-				:title="post?.data.title ?? ``"
-				:subtitle="post?.data.subtitle ?? null"
-				:excerpt="postMetadata?.post.excerpt ?? ``"
-				:featuredphotocid="post?.data.featuredPhotoCID ?? ``"
-				:authorid="post?.data.authorID ?? ``"
+				v-if="showShare && postMetadata"
+				:id="postMetadata.post._id"
+				:title="postMetadata.post.title"
+				:subtitle="postMetadata.post.subtitle"
+				:excerpt="postMetadata.post.excerpt"
+				:featuredphotocid="postMetadata.post.featuredPhotoCID ?? ``"
+				:authorid="postMetadata.post.authorID"
 				@close="showShare = false"
 			/>
 			<QuotePopup
-				v-if="showQuote && post"
-				:id="postMetadata?.post._id ?? ``"
-				:authorid="post.data.authorID"
-				:timestamp="post.data.timestamp"
-				:wordcount="postMetadata?.post.wordCount ? postMetadata?.post.wordCount : 0"
-				:postimages="post.data.postImages ? post.data.postImages.length : 0"
-				:bookmarked="postMetadata?.bookmarked ?? false"
-				:encrypted="post.data.encrypted ?? false"
-				:title="post.data.title"
-				:subtitle="post?.data.subtitle ?? undefined"
-				:excerpt="postMetadata?.post.excerpt ?? ``"
-				:featuredphotocid="post?.data.featuredPhotoCID ?? ``"
-				:tags="post.data.tags"
+				v-if="showQuote && postMetadata"
+				:id="postMetadata.post._id"
+				:authorid="postMetadata.post.authorID"
+				:timestamp="postMetadata.post.timestamp"
+				:wordcount="postMetadata.post.wordCount ?? 0"
+				:postimages="postMetadata.post.postImages ? postMetadata.post.postImages.length : 0"
+				:bookmarked="postMetadata.bookmarked"
+				:encrypted="postMetadata.post.encrypted ?? false"
+				:title="postMetadata.post.title"
+				:subtitle="postMetadata.post.subtitle ?? undefined"
+				:excerpt="postMetadata.post.excerpt"
+				:featuredphotocid="postMetadata.post.featuredPhotoCID ?? ``"
+				:tags="postMetadata.post.tags"
 				@close="showQuote = false"
 			/>
 		</Teleport>
