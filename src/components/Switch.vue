@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-const props = defineProps({
-	enabled: Boolean,
-});
+const props = withDefaults(
+	defineProps<{
+		enabled: boolean;
+	}>(),
+	{},
+);
+
 const emit = defineEmits([`toggle`]);
 
 const active = ref<boolean>(props.enabled);

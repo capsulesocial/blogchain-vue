@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-const props = defineProps({
-	period: {
-		type: String,
-		default: `month`,
+const props = withDefaults(
+	defineProps<{
+		period: string;
+	}>(),
+	{
+		period: `month`,
 	},
-});
+);
 
 const active = ref<boolean>(false);
 const emit = defineEmits([`toggle`]);
