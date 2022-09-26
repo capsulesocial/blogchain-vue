@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import { StripeElements, PaymentRequest, StripeCardElement } from '@stripe/stripe-js';
-import { useStore } from '@/store/session';
 import { useRoute } from 'vue-router';
+import { Profile } from '@/backend/profile';
+import { toastError, toastSuccess } from '@/plugins/toast';
+import { getAmountFromTier, getCurrencySymbol, getZeroDecimalAmount, retrieveReaderProfile } from '@/backend/payment';
 import Avatar from '@/components/Avatar.vue';
 import SecondaryButton from '@/components/SecondaryButton.vue';
 import CloseIcon from '@/components/icons/XIcon.vue';
@@ -17,11 +19,9 @@ import BasicSwitch from '@/components/BasicSwitch.vue';
 import PaymentPolicy from '@/components/subscriptions/PaymentPolicy.vue';
 import SubConfirmation from '@/components/subscriptions/SubConfirmation.vue';
 import { useSubscriptionStore } from '@/store/subscriptions';
-import { Profile } from '@/backend/profile';
-import { getAmountFromTier, getCurrencySymbol, getZeroDecimalAmount, retrieveReaderProfile } from '@/backend/payment';
+import { useStore } from '@/store/session';
 import { usePaymentsStore } from '@/store/paymentProfile';
-import { toastError, toastSuccess } from '@/plugins/toast';
-import { getFollowersAndFollowing } from '@/backend/following';
+import { useConnectionsStore } from '@/store/connections';
 
 const props = withDefaults(
 	defineProps<{
@@ -42,6 +42,7 @@ const props = withDefaults(
 const store = useStore();
 const route = useRoute();
 const useSubscription = useSubscriptionStore();
+const connectionsStore = useConnectionsStore();
 const usePayments = usePaymentsStore();
 const step = computed(() => useSubscription.getStep);
 const selectedTier = computed(() => useSubscription.$state.selectedTier);
@@ -55,25 +56,22 @@ const displayButtons = ref({
 	googlePay: false,
 });
 const isLoading = ref<boolean>(false);
-const userIsFollowed = ref<boolean>(false);
-const following = ref<Set<string>>(new Set());
+const userIsFollowed = computed(() => connectionsStore.getFollowStatus(store.id, props.author.id));
 let paymentRequest: PaymentRequest | null = null;
 let elements: StripeElements | null = null;
 let cardElement: StripeCardElement | null = null;
 
 const emit = defineEmits([`close`]);
 
-onMounted(async (): Promise<void> => {
+onMounted(() => {
 	// Fetch updated payment profile of author
-	await usePayments.fetchPaymentProfile(props.author.id);
-	void getFollowersAndFollowing(store.$state.id).then((data) => {
-		following.value = data.following;
-		userIsFollowed.value = data.following.has(props.author.id);
+	usePayments.fetchPaymentProfile(props.author.id).then(() => {
+		initializeProfile();
 	});
+	// Check for saved email
 	void retrieveReaderProfile(store.$state.id).then(({ email }) => {
 		customerEmail.value = email ?? ``;
 	});
-	initializeProfile();
 });
 
 // methods
@@ -106,10 +104,10 @@ function initializeProfile(): void {
 		toastError(`Author subscription profile is missing`);
 		return;
 	}
-	// if (!paymentProfile.value.paymentsEnabled) {
-	// 	toastError(`Author hasn't enabled subscriptions`);
-	// 	return;
-	// }
+	if (!paymentProfile.value.paymentsEnabled) {
+		toastError(`Author hasn't enabled subscriptions`);
+		return;
+	}
 	if (!paymentProfile.value.tiers) {
 		toastError(`Author hasn't set-up subscriptions`);
 	}
@@ -219,7 +217,7 @@ function nextStep(): void {
 function previousStep(): void {
 	useSubscription.previousStep();
 }
-function submitCardPayment() {
+async function submitCardPayment() {
 	console.log(`submitCardPayment`);
 	isLoading.value = true;
 	const stripe = await useSubscription.stripeClient();
@@ -544,7 +542,7 @@ function toggleSaveEmail(): void {
 				<article v-show="step === 4" class="flex flex-col items-center modal-animation">
 					<SubConfirmation
 						:author="props.author"
-						:user-is-followed="userIsFollowed"
+						:user-is-followed="userIsFollowed ? userIsFollowed : false"
 						:toggle-friend="toggleFriend"
 						:selected-tier="selectedTier"
 						@star-reading="startReading"

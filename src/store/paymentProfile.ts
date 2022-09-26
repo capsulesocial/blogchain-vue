@@ -31,6 +31,7 @@ export const usePaymentsStore = defineStore(`payments`, {
 	actions: {
 		async fetchPaymentProfile(username: string): Promise<PaymentProfile> {
 			const paymentProfile = await retrievePaymentProfile(username);
+			this.$state.paymentProfiles[username] = paymentProfile;
 			if (paymentProfile) {
 				return paymentProfile;
 			}
