@@ -15,11 +15,10 @@ import IpfsImage from '@/components/IpfsImage.vue';
 
 import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
-import { formatDate } from '@/helpers/helpers';
 import type { IGenericPostResponse } from '@/backend/post';
 import { useProfilesStore } from '@/store/profiles';
-import { calculateReadingTime } from '@/backend/utilities/helpers';
 import { createPostExcerpt } from '@/helpers/post';
+import TimestampAndReadingTime from '@/components/TimestampAndReadingTime.vue';
 
 const store = useStore();
 const settings = useStoreSettings();
@@ -102,15 +101,12 @@ profilesStore.fetchProfile(props.fetchedPost.post.authorID);
 					<span class="text-gray5 dark:text-gray3"> @{{ author.id }} </span>
 				</div>
 				<!-- Timestamp and reading time -->
-				<div class="flex flex-row mt-1 items-center">
-					<span class="text-xs text-gray5 dark:text-gray3">
-						{{ formatDate(fetchedPost.post.timestamp) }}
-					</span>
-					<div class="h-1 w-1 rounded-full bg-gray5 dark:bg-gray3 mx-2"></div>
-					<span class="text-xs text-gray5 dark:text-gray3">
-						{{ calculateReadingTime(fetchedPost.post.wordCount, fetchedPost.post.postImages?.length) }} min read
-					</span>
-				</div>
+				<TimestampAndReadingTime
+					class="flex flex-row mt-1 items-center"
+					:timestamp="fetchedPost.post.timestamp"
+					:word-count="fetchedPost.post.wordCount"
+					:number-of-post-images="fetchedPost.post.postImages?.length"
+				/>
 			</div>
 			<div class="relative flex items-center">
 				<BookmarkButton :has-bookmark="fetchedPost.bookmarked" />
