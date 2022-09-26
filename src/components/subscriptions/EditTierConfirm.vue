@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import CrownIcon from '@/components/icons/Crown.vue';
 import CheckCircleIcon from '@/components/icons/CheckCircle.vue';
 import ChevronDownIcon from '@/components/icons/ChevronDown.vue';
-import TierSwitchButton from '@/components/TierSwitchButton.vue';
+import TierSwitchButton from '@/components/subscriptions/TierSwitchButton.vue';
 import { useStore } from '@/store/session';
 import { useSubscriptionStore, ISubscriptionWithProfile } from '@/store/subscriptions';
 import { SubscriptionTier, PaymentProfile } from '@/store/paymentProfile';

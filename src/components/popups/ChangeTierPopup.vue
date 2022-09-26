@@ -2,8 +2,8 @@
 import { ref, onMounted } from 'vue';
 import Avatar from '@/components/Avatar.vue';
 import CloseIcon from '@/components/icons/XIcon.vue';
-import EditTierSelect from '@/components/EditTierSelect.vue';
-import EditTierConfirm from '../EditTierConfirm.vue';
+import EditTierSelect from '@/components/subscriptions/EditTierSelect.vue';
+import EditTierConfirm from '@/components/subscriptions/EditTierConfirm.vue';
 import { useStore } from '@/store/session';
 import { ISubscriptionWithProfile } from '@/store/subscriptions';
 import {
@@ -44,7 +44,7 @@ const canSwitchTier = ref<boolean>(true);
 defineEmits([`close`]);
 
 onMounted(async (): Promise<void> => {
-	usePayment.getPaymentProfile(props.author.id);
+	usePayment.fetchPaymentProfile(props.author.id);
 	// prefill selected tier
 	if (props.toPreSelectTier) {
 		selectedTier.value = props.toPreSelectTier;
@@ -64,7 +64,7 @@ async function initializeProfile(): Promise<void> {
 		toastError(`Author profile is missing`);
 		return;
 	}
-	paymentProfile.value = await usePayment.getPaymentProfile(props.author.id);
+	paymentProfile.value = await usePayment.fetchPaymentProfile(props.author.id);
 	if (!paymentProfile.value) {
 		toastError(`Payment profile of author is missing`);
 		return;
@@ -73,10 +73,10 @@ async function initializeProfile(): Promise<void> {
 		toastError(`Author subscription profile is missing`);
 		return;
 	}
-	if (!paymentProfile.value.paymentsEnabled) {
-		toastError(`Author hasn't enabled subscriptions`);
-		return;
-	}
+	// if (!paymentProfile.value.paymentsEnabled) {
+	// 	toastError(`Author hasn't enabled subscriptions`);
+	// 	return;
+	// }
 	if (!paymentProfile.value.tiers) {
 		toastError(`Author hasn't set-up subscriptions`);
 	}

@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import SwitchPeriod from '@/components/ToggleSwitch.vue';
 import CrownIcon from '@/components/icons/Crown.vue';
 import CheckCircleIcon from '@/components/icons/CheckCircle.vue';
-import TierSwitchButton from '@/components/TierSwitchButton.vue';
+import TierSwitchButton from '@/components/subscriptions/TierSwitchButton.vue';
 import { ISubscriptionWithProfile } from '@/store/subscriptions';
 import { SubscriptionTier, PaymentProfile } from '@/store/paymentProfile';
 import { Profile } from '@/backend/profile';
@@ -20,8 +20,8 @@ const props = withDefaults(
 		paymentProfile: PaymentProfile;
 	}>(),
 	{
-		authorAvatar: null,
-		toPreSelectTier: null,
+		authorAvatar: undefined,
+		toPreSelectTier: undefined,
 		enabledTiers: () => {
 			return [];
 		},

@@ -61,7 +61,7 @@ const drafts = ref<DraftPost[]>([
 						:text="`Write a post`"
 						:action="
 							() => {
-								$router.push(`/home`);
+								$router.push(`/post`);
 							}
 						"
 					/>

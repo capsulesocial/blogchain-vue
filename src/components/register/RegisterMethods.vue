@@ -10,6 +10,7 @@ import CloseIcon from '@/components/icons/CloseIcon.vue';
 const isLoading = ref<boolean>(false);
 const showInfos = ref<boolean>(false);
 
+defineEmits([`close`]);
 // Methods
 const torusLogin = (type: `discord` | `google`) => {};
 const walletLoginComponent = () => {};

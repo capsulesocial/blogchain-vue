@@ -35,7 +35,7 @@ const currency = ref<string>(getCurrencySymbol(props.sub.currency));
 const emit = defineEmits(['close', 'switchPopup']);
 
 onMounted(async (): Promise<void> => {
-	paymentProfile.value = await usePayment.getPaymentProfile(props.sub.authorID);
+	paymentProfile.value = await usePayment.fetchPaymentProfile(props.sub.authorID);
 	transactions.value = await useSubscription.getSubsTransactions(store.$state.id, props.sub.subscriptionId);
 });
 
