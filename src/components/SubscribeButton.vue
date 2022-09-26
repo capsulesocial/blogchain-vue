@@ -122,36 +122,6 @@ async function updateSubscriptionInfo(): Promise<void> {
 	</div>
 </template>
 
-<script setup lang="ts">
-import CrownIcon from '@/components/icons/Crown.vue';
-import PenIcon from '@/components/icons/Pencil.vue';
-
-withDefaults(
-	defineProps<{
-		userIsSubscribed: boolean;
-		toggleSubscription: () => void;
-	}>(),
-	{},
-);
-
-// export default Vue.extend({
-// 	components: {
-// 		CrownIcon,
-// 		PenIcon,
-// 	},
-// 	props: {
-// 		userIsSubscribed: {
-// 			type: Boolean,
-// 			required: true,
-// 		},
-// 		toggleSubscription: {
-// 			type: Function as PropType<() => void>,
-// 			required: true,
-// 		},
-// 	},
-// })
-</script>
-
 <style scoped>
 div.friendbtn span.following {
 	display: block;
