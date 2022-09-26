@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router';
 import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
 import { AxiosError } from 'axios';
-import { toastError } from '@/plugins/toast';
+import { toastError, toastWarning } from '@/plugins/toast';
 import {
 	getOnePost,
 	getPost,
@@ -38,7 +38,8 @@ import ChevronLeft from '@/components/icons/ChevronLeft.vue';
 import PayWall from '@/components/post/reader/PayWall.vue';
 import { ISignedIPFSObject } from '@/backend/utilities/helpers';
 import IpfsLoading from '@/components/post/reader/IpfsLoading.vue';
-import FeaturedPhoto from '@/components/popups/FeaturedPhoto.vue';
+import FeaturedPhotoPopup from '../../components/popups/FeaturedPhotoPopup.vue';
+import WarningPopup from '@/components/popups/WarningPopup.vue';
 
 const store = useStore();
 const settings = useStoreSettings();
@@ -46,6 +47,7 @@ const router = useRouter();
 const cid = ref<string>(router.currentRoute.value.params.post as string);
 const post = ref<ISignedIPFSObject<Post>>();
 const postMetadata = ref<IPostResponseWithHidden>();
+const deleted = ref<boolean>(false);
 const userIsFollowed = ref<boolean>(false);
 const showPaywall = ref<boolean>(false);
 const content = ref<string>(``);
@@ -73,10 +75,9 @@ const fetchPostMetadata = async (cid: string, currentUser?: string) => {
 	const u = currentUser ? currentUser : `x`;
 	try {
 		postMetadata.value = await getOnePost(cid, u);
-		if (postMetadata.value.hidden) {
-			// deleted.value = true;
-			toastError(`This post has been hidden by the author`);
-			// emit(`showWarning`)
+		if (true) {
+			deleted.value = true;
+			toastWarning(`This post has been hidden by the author`);
 		}
 		hasFeaturedPhoto.value = postMetadata.value.post.featuredPhotoCID ? true : false;
 	} catch (err: unknown) {
@@ -476,12 +477,13 @@ function isReposted() {
 				:tags="postMetadata.post.tags"
 				@close="showQuote = false"
 			/>
-			<FeaturedPhoto
+			<FeaturedPhotoPopup
 				v-if="showPhoto"
 				:featuredphotocid="postMetadata?.post.featuredPhotoCID ?? ``"
 				:featuredphotocaption="post?.data.featuredPhotoCaption ?? ``"
 				@close="showPhoto = false"
 			/>
+			<WarningPopup v-if="deleted" @close="deleted = false" />
 		</Teleport>
 	</div>
 </template>
