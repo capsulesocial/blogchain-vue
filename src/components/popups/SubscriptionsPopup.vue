@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import { StripeElements, PaymentRequest, StripeCardElement } from '@stripe/stripe-js';
-import { useStore } from '@/store/session';
 import { useRoute } from 'vue-router';
+import { Profile } from '@/backend/profile';
+import { toastError, toastSuccess } from '@/plugins/toast';
+import { getAmountFromTier, getCurrencySymbol, getZeroDecimalAmount, retrieveReaderProfile } from '@/backend/payment';
 import Avatar from '@/components/Avatar.vue';
 import SecondaryButton from '@/components/SecondaryButton.vue';
 import CloseIcon from '@/components/icons/XIcon.vue';
@@ -17,12 +19,9 @@ import BasicSwitch from '@/components/BasicSwitch.vue';
 import PaymentPolicy from '@/components/subscriptions/PaymentPolicy.vue';
 import SubConfirmation from '@/components/subscriptions/SubConfirmation.vue';
 import { useSubscriptionStore } from '@/store/subscriptions';
-import { Profile } from '@/backend/profile';
-import { getAmountFromTier, getCurrencySymbol, getZeroDecimalAmount, retrieveReaderProfile } from '@/backend/payment';
-import { usePaymentsStore, PaymentProfile, createDefaultPaymentProfile } from '@/store/paymentProfile';
-import { toastError, toastSuccess, handleError } from '@/plugins/toast';
-import { followChange, getFollowersAndFollowing } from '@/backend/following';
-import { HTMLInputEvent } from '@/interfaces/HTMLInputEvent';
+import { useStore } from '@/store/session';
+import { usePaymentsStore } from '@/store/paymentProfile';
+import { useConnectionsStore } from '@/store/connections';
 
 const props = withDefaults(
 	defineProps<{
@@ -43,37 +42,36 @@ const props = withDefaults(
 const store = useStore();
 const route = useRoute();
 const useSubscription = useSubscriptionStore();
+const connectionsStore = useConnectionsStore();
 const usePayments = usePaymentsStore();
 const step = computed(() => useSubscription.getStep);
 const selectedTier = computed(() => useSubscription.$state.selectedTier);
 const selectedPeriod = computed(() => useSubscription.$state.selectedPeriod);
 const cardErrorMessage = computed(() => useSubscription.$state.cardErrorMessage);
 const saveEmail = computed(() => useSubscription.$state.saveEmail);
-const paymentProfile = ref<PaymentProfile>(createDefaultPaymentProfile(route.params.id as string));
+const paymentProfile = computed(() => usePayments.paymentProfile(props.author.id));
 const customerEmail = ref<string>(``);
 const displayButtons = ref({
 	applePay: false,
 	googlePay: false,
 });
 const isLoading = ref<boolean>(false);
-const userIsFollowed = ref<boolean>(false);
-const following = ref<Set<string>>(new Set());
+const userIsFollowed = computed(() => connectionsStore.getFollowStatus(store.id, props.author.id));
 let paymentRequest: PaymentRequest | null = null;
 let elements: StripeElements | null = null;
 let cardElement: StripeCardElement | null = null;
 
 const emit = defineEmits([`close`]);
 
-onMounted(async (): Promise<void> => {
-	paymentProfile.value = await usePayments.fetchPaymentProfile(props.author.id);
-	void getFollowersAndFollowing(store.$state.id).then((data) => {
-		following.value = data.following;
-		userIsFollowed.value = data.following.has(props.author.id);
+onMounted(() => {
+	// Fetch updated payment profile of author
+	usePayments.fetchPaymentProfile(props.author.id).then(() => {
+		initializeProfile();
 	});
+	// Check for saved email
 	void retrieveReaderProfile(store.$state.id).then(({ email }) => {
 		customerEmail.value = email ?? ``;
 	});
-	initializeProfile();
 });
 
 // methods
@@ -106,10 +104,10 @@ function initializeProfile(): void {
 		toastError(`Author subscription profile is missing`);
 		return;
 	}
-	// if (!paymentProfile.value.paymentsEnabled) {
-	// 	toastError(`Author hasn't enabled subscriptions`);
-	// 	return;
-	// }
+	if (!paymentProfile.value.paymentsEnabled) {
+		toastError(`Author hasn't enabled subscriptions`);
+		return;
+	}
 	if (!paymentProfile.value.tiers) {
 		toastError(`Author hasn't set-up subscriptions`);
 	}
@@ -219,9 +217,11 @@ function nextStep(): void {
 function previousStep(): void {
 	useSubscription.previousStep();
 }
-async function submitCardPayment(e: HTMLInputEvent): Promise<void> {
+async function submitCardPayment() {
+	console.log(`submitCardPayment`);
 	isLoading.value = true;
 	const stripe = await useSubscription.stripeClient();
+	console.log(stripe);
 	if (!cardElement) {
 		isLoading.value = false;
 		throw new Error(`Card elements is not initialized`);
@@ -251,16 +251,7 @@ async function submitCardPayment(e: HTMLInputEvent): Promise<void> {
 	await useSubscription.submitPayment(paymentMethod, customerEmail.value);
 	isLoading.value = false;
 }
-async function toggleFriend(): Promise<void> {
-	try {
-		await followChange(userIsFollowed.value ? `UNFOLLOW` : `FOLLOW`, store.$state.id, props.author.id);
-		toastSuccess(userIsFollowed.value ? `Unfollowed ${props.author.id}` : `Followed ${props.author.id}`);
-		const { following } = await getFollowersAndFollowing(store.$state.id, true);
-		userIsFollowed.value = following.has(props.author.id);
-	} catch (err: unknown) {
-		handleError(err);
-	}
-}
+async function toggleFriend() {}
 function toggleSaveEmail(): void {
 	useSubscription.updateEmail(!useSubscription.$state.saveEmail);
 }
@@ -526,12 +517,7 @@ function toggleSaveEmail(): void {
 							cardErrorMessage
 						}}</small>
 						<div class="flex flex-row-reverse items-center mt-4">
-							<SecondaryButton
-								v-if="!isLoading"
-								:text="`Pay`"
-								:action="async () => await submitCardPayment"
-								:thin="false"
-							/>
+							<SecondaryButton v-if="!isLoading" :text="`Pay`" :action="submitCardPayment" :thin="false" />
 							<div class="w-full">
 								<button class="text-primary self-center text-sm" @click.stop="useSubscription.$state.step = 5">
 									Payment policy
@@ -547,7 +533,7 @@ function toggleSaveEmail(): void {
 							<!--Stripe.js injects the Payment Element-->
 						</div>
 						<div class="mt-4 flex flex-row-reverse">
-							<SecondaryButton :text="`Pay Now`" :action="async () => await submitCardPayment" />
+							<SecondaryButton :text="`Pay Now`" :action="submitCardPayment" />
 						</div>
 						<div id="payment-message" class="hidden"></div>
 					</form>
@@ -556,7 +542,7 @@ function toggleSaveEmail(): void {
 				<article v-show="step === 4" class="flex flex-col items-center modal-animation">
 					<SubConfirmation
 						:author="props.author"
-						:user-is-followed="userIsFollowed"
+						:user-is-followed="userIsFollowed ? userIsFollowed : false"
 						:toggle-friend="toggleFriend"
 						:selected-tier="selectedTier"
 						@star-reading="startReading"

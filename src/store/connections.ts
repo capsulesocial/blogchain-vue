@@ -13,6 +13,14 @@ export const useConnectionsStore = defineStore(`connections`, {
 	},
 	persist: false,
 	getters: {
+		// Returns whether the logged in user is following account of id param
+		getFollowStatus: (state: Connections) => (me: string, them: string) => {
+			if (me === ``) {
+				return false;
+			}
+			const myFollowing = state.profiles.get(me)?.following;
+			return myFollowing?.has(them);
+		},
 		getConnections: (state: Connections) => (id: string) => {
 			return state.profiles.get(id);
 		},
