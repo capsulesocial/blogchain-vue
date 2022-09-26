@@ -78,11 +78,11 @@ function toggleDropdownDelete() {
 			<!-- Desktop avatar -->
 			<div class="mr-4 hidden items-start justify-between lg:flex">
 				<!-- <Avatar
-				:avatar="avatar"
-				:authorid="authorID"
-				size="w-12 h-12"
-				style="margin-top: 2px; margin-left: 2px; margin-right: 2px"
-			/> -->
+					:cid="avatar"
+					:authorid="authorID"
+					size="w-12 h-12"
+					style="margin-top: 2px; margin-left: 2px; margin-right: 2px"
+				/> -->
 				<div class="w-10 h-10 rounded-lg bg-gray1 animate-pulse hidden lg:flex"></div>
 			</div>
 			<div class="flex flex-col w-full">

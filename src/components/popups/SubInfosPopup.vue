@@ -114,7 +114,7 @@ async function cancelSubscription(): Promise<void> {
 					<!-- avatar/name -->
 					<div class="flex items-center">
 						<Avatar
-							:avatar="props.sub.avatar"
+							:cid="props.sub.avatar"
 							:authorid="props.sub.authorID"
 							:size="`w-12 h-12 xl:w-14 xl:h-14`"
 							class="mr-4"

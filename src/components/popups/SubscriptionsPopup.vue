@@ -286,8 +286,8 @@ function toggleSaveEmail(): void {
 					<div v-if="step !== 3" class="flex flex-row">
 						<Avatar
 							class="flex-shrink-0"
-							:author-i-d="author.id"
-							:avatar="props.author.avatar"
+							:authorid="author.id"
+							:cid="props.author.avatar"
 							:no-click="true"
 							:size="`w-14 h-14`"
 						/>

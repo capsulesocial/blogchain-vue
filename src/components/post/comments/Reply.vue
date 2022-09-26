@@ -34,7 +34,7 @@ function toggleDropdownDelete() {
 <template>
 	<div v-if="!replyDeleted" class="flex relative">
 		<div class="flex-shrink-0 mr-2">
-			<!-- <Avatar :avatar="avatar" :authorID="authorID" size="w-10 h-10" /> -->
+			<!-- <Avatar :cid="avatar" :authorID="authorID" size="w-10 h-10" /> -->
 			<div class="w-10 h-10 rounded-lg bg-gray1 animate-pulse"></div>
 		</div>
 		<div class="ml-2 flex-1 leading-relaxed">

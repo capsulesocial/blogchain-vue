@@ -115,9 +115,8 @@ function sendComment() {
 				style="width: 60px; height: 60px"
 			>
 				<Avatar
-					:avatar="
-						store.$state.id === `` ? require(`@/assets/images/avatars/unauthenticated.webp`) : store.$state.avatar
-					"
+					:cid="store.$state.id === `` ? require(`@/assets/images/avatars/unauthenticated.webp`) : store.$state.avatar"
+					:override="store.$state.id === `` ? require(`@/assets/images/avatars/unauthenticated.webp`) : null"
 					:authorid="store.$state.id"
 					class="flex-shrink-0"
 					:no-click="true"

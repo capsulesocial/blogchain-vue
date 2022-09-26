@@ -59,7 +59,7 @@ function getAvatar(id: string) {
 					v-for="f in mutuals"
 					:key="f"
 					:authorid="f"
-					:avatar="getAvatar(f)"
+					:cid="getAvatar(f)"
 					:size="`w-10 h-10`"
 					class="-ml-4 rounded-xl bg-white dark:bg-transparent p-1"
 				/>
