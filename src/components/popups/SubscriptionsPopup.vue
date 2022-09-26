@@ -19,10 +19,9 @@ import SubConfirmation from '@/components/subscriptions/SubConfirmation.vue';
 import { useSubscriptionStore } from '@/store/subscriptions';
 import { Profile } from '@/backend/profile';
 import { getAmountFromTier, getCurrencySymbol, getZeroDecimalAmount, retrieveReaderProfile } from '@/backend/payment';
-import { usePaymentsStore, PaymentProfile, createDefaultPaymentProfile } from '@/store/paymentProfile';
-import { toastError, toastSuccess, handleError } from '@/plugins/toast';
-import { followChange, getFollowersAndFollowing } from '@/backend/following';
-import { HTMLInputEvent } from '@/interfaces/HTMLInputEvent';
+import { usePaymentsStore } from '@/store/paymentProfile';
+import { toastError, toastSuccess } from '@/plugins/toast';
+import { getFollowersAndFollowing } from '@/backend/following';
 
 const props = withDefaults(
 	defineProps<{
@@ -49,7 +48,7 @@ const selectedTier = computed(() => useSubscription.$state.selectedTier);
 const selectedPeriod = computed(() => useSubscription.$state.selectedPeriod);
 const cardErrorMessage = computed(() => useSubscription.$state.cardErrorMessage);
 const saveEmail = computed(() => useSubscription.$state.saveEmail);
-const paymentProfile = ref<PaymentProfile>(createDefaultPaymentProfile(route.params.id as string));
+const paymentProfile = computed(() => usePayments.paymentProfile(props.author.id));
 const customerEmail = ref<string>(``);
 const displayButtons = ref({
 	applePay: false,
@@ -65,7 +64,8 @@ let cardElement: StripeCardElement | null = null;
 const emit = defineEmits([`close`]);
 
 onMounted(async (): Promise<void> => {
-	paymentProfile.value = await usePayments.fetchPaymentProfile(props.author.id);
+	// Fetch updated payment profile of author
+	await usePayments.fetchPaymentProfile(props.author.id);
 	void getFollowersAndFollowing(store.$state.id).then((data) => {
 		following.value = data.following;
 		userIsFollowed.value = data.following.has(props.author.id);
@@ -219,9 +219,11 @@ function nextStep(): void {
 function previousStep(): void {
 	useSubscription.previousStep();
 }
-async function submitCardPayment(e: HTMLInputEvent): Promise<void> {
+function submitCardPayment() {
+	console.log(`submitCardPayment`);
 	isLoading.value = true;
 	const stripe = await useSubscription.stripeClient();
+	console.log(stripe);
 	if (!cardElement) {
 		isLoading.value = false;
 		throw new Error(`Card elements is not initialized`);
@@ -251,16 +253,7 @@ async function submitCardPayment(e: HTMLInputEvent): Promise<void> {
 	await useSubscription.submitPayment(paymentMethod, customerEmail.value);
 	isLoading.value = false;
 }
-async function toggleFriend(): Promise<void> {
-	try {
-		await followChange(userIsFollowed.value ? `UNFOLLOW` : `FOLLOW`, store.$state.id, props.author.id);
-		toastSuccess(userIsFollowed.value ? `Unfollowed ${props.author.id}` : `Followed ${props.author.id}`);
-		const { following } = await getFollowersAndFollowing(store.$state.id, true);
-		userIsFollowed.value = following.has(props.author.id);
-	} catch (err: unknown) {
-		handleError(err);
-	}
-}
+async function toggleFriend() {}
 function toggleSaveEmail(): void {
 	useSubscription.updateEmail(!useSubscription.$state.saveEmail);
 }
@@ -526,12 +519,7 @@ function toggleSaveEmail(): void {
 							cardErrorMessage
 						}}</small>
 						<div class="flex flex-row-reverse items-center mt-4">
-							<SecondaryButton
-								v-if="!isLoading"
-								:text="`Pay`"
-								:action="async () => await submitCardPayment"
-								:thin="false"
-							/>
+							<SecondaryButton v-if="!isLoading" :text="`Pay`" :action="submitCardPayment" :thin="false" />
 							<div class="w-full">
 								<button class="text-primary self-center text-sm" @click.stop="useSubscription.$state.step = 5">
 									Payment policy
@@ -547,7 +535,7 @@ function toggleSaveEmail(): void {
 							<!--Stripe.js injects the Payment Element-->
 						</div>
 						<div class="mt-4 flex flex-row-reverse">
-							<SecondaryButton :text="`Pay Now`" :action="async () => await submitCardPayment" />
+							<SecondaryButton :text="`Pay Now`" :action="submitCardPayment" />
 						</div>
 						<div id="payment-message" class="hidden"></div>
 					</form>
