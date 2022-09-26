@@ -526,7 +526,12 @@ function toggleSaveEmail(): void {
 							cardErrorMessage
 						}}</small>
 						<div class="flex flex-row-reverse items-center mt-4">
-							<SecondaryButton v-if="!isLoading" :text="`Pay`" :action="submitCardPayment" :thin="false" />
+							<SecondaryButton
+								v-if="!isLoading"
+								:text="`Pay`"
+								:action="async () => await submitCardPayment"
+								:thin="false"
+							/>
 							<div class="w-full">
 								<button class="text-primary self-center text-sm" @click.stop="useSubscription.$state.step = 5">
 									Payment policy
@@ -542,7 +547,7 @@ function toggleSaveEmail(): void {
 							<!--Stripe.js injects the Payment Element-->
 						</div>
 						<div class="mt-4 flex flex-row-reverse">
-							<SecondaryButton :text="`Pay Now`" :action="submitCardPayment" />
+							<SecondaryButton :text="`Pay Now`" :action="async () => await submitCardPayment" />
 						</div>
 						<div id="payment-message" class="hidden"></div>
 					</form>
