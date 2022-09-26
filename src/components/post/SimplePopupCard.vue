@@ -4,8 +4,6 @@ import { IGenericPostResponse } from '@/backend/post';
 import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
 import { useProfilesStore } from '@/store/profiles';
-import { formatDate } from '@/helpers/helpers';
-import { calculateReadingTime } from '@/backend/utilities/helpers';
 import { createPostExcerpt } from '@/helpers/post';
 
 import Avatar from '@/components/Avatar.vue';
@@ -17,6 +15,7 @@ import XIcon from '@/components/icons/XIcon.vue';
 import MoreIcon from '@/components/icons/MoreIcon.vue';
 import BinIcon from '@/components/icons/BinIcon.vue';
 import CrownIcon from '@/components/icons/Crown.vue';
+import TimestampAndReadingTime from '@/components/TimestampAndReadingTime.vue';
 
 const store = useStore();
 const settings = useStoreSettings();
@@ -71,15 +70,12 @@ function openDeleteDropdown() {
 						<span class="text-gray5 dark:text-gray3"> @{{ author.id }} </span>
 					</div>
 					<!-- Timestamp and reading time -->
-					<div class="flex flex-row mt-1 items-center">
-						<span class="text-xs text-gray5 dark:text-gray3">
-							{{ formatDate(fetchedPost.post.timestamp) }}
-						</span>
-						<div class="h-1 w-1 rounded-full bg-gray5 dark:bg-gray3 mx-2"></div>
-						<span class="text-xs text-gray5 dark:text-gray3">
-							{{ calculateReadingTime(fetchedPost.post.wordCount, fetchedPost.post.postImages?.length) }} min read
-						</span>
-					</div>
+					<TimestampAndReadingTime
+						class="flex flex-row mt-1 items-center"
+						:timestamp="fetchedPost.post.timestamp"
+						:word-count="fetchedPost.post.wordCount"
+						:number-of-post-images="fetchedPost.post.postImages?.length"
+					/>
 				</div>
 			</div>
 			<div class="relative flex w-full items-center justify-center lg:w-1/5 lg:justify-end">

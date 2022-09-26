@@ -2,13 +2,12 @@
 import { computed, onMounted } from 'vue';
 import { useStore } from '@/store/session';
 import { useProfilesStore } from '@/store/profiles';
-import { formatDate } from '@/helpers/helpers';
 import { useRouter } from 'vue-router';
 
 import Avatar from '@/components/Avatar.vue';
 import FriendButton from '@/components/FriendButton.vue';
 import XIcon from '@/components/icons/CloseIcon.vue';
-import { calculateReadingTime } from '@/backend/utilities/helpers';
+import TimestampAndReadingTime from '@/components/TimestampAndReadingTime.vue';
 
 const store = useStore();
 const profilesStore = useProfilesStore();
@@ -30,7 +29,6 @@ const props = withDefaults(
 );
 
 const profile = computed(() => profilesStore.getProfile(props.id));
-const readingTime = computed(() => (props.wordCount ? calculateReadingTime(props.wordCount, props.postimages) : null));
 
 onMounted(async () => {
 	profilesStore.fetchProfile(props.id);
@@ -70,16 +68,12 @@ const handleClose = () => {
 						:user-is-followed="isFollowed"
 						class="hidden lg:block"
 					/>
-					<!-- Timestamp and reading time -->
-					<div class="flex flex-col lg:flex-row items-center lg:ml-8">
-						<span class="text-sm text-gray5 dark:text-gray3">
-							{{ formatDate(props.timestamp) }}
-						</span>
-						<div v-if="readingTime !== null" class="hidden lg:block h-1 w-1 rounded bg-gray5 dark:bg-gray3 mx-2"></div>
-						<span v-if="readingTime !== null" class="text-xs lg:text-sm text-gray5 dark:text-gray3">
-							{{ readingTime }} min read
-						</span>
-					</div>
+					<TimestampAndReadingTime
+						class="flex flex-col lg:flex-row items-center lg:ml-8"
+						:timestamp="props.timestamp"
+						:number-of-post-images="props.postimages"
+						:word-count="props.wordCount"
+					/>
 				</div>
 				<span class="flex items-center">
 					<button class="bg-gray1 dark:bg-gray5 focus:outline-none rounded-full p-1" @click="handleClose">

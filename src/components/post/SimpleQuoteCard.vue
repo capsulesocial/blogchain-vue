@@ -3,8 +3,6 @@ import { computed, ref } from 'vue';
 import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
 import { useProfilesStore } from '@/store/profiles';
-import { formatDate } from '@/helpers/helpers';
-import { calculateReadingTime } from '@/backend/utilities/helpers';
 import { createPostExcerpt } from '@/helpers/post';
 import { Tag } from '@/backend/post';
 
@@ -16,6 +14,7 @@ import IpfsImage from '@/components/IpfsImage.vue';
 import MoreIcon from '@/components/icons/MoreIcon.vue';
 import BinIcon from '@/components/icons/BinIcon.vue';
 import CrownIcon from '@/components/icons/Crown.vue';
+import TimestampAndReadingTime from '@/components/TimestampAndReadingTime.vue';
 
 const store = useStore();
 const settings = useStoreSettings();
@@ -32,7 +31,7 @@ const props = withDefaults(
 		bookmarked: boolean;
 		encrypted: boolean;
 		title: string;
-		subtitle?: string;
+		subtitle?: string | null;
 		excerpt: string;
 		featuredphotocid: string;
 		tags: Tag[];
@@ -79,15 +78,12 @@ function openDeleteDropdown() {
 						<span class="text-gray5 dark:text-gray3"> @{{ author.id }} </span>
 					</div>
 					<!-- Timestamp and reading time -->
-					<div class="flex flex-row mt-1 items-center">
-						<span class="text-xs text-gray5 dark:text-gray3">
-							{{ formatDate(props.timestamp) }}
-						</span>
-						<div class="h-1 w-1 rounded-full bg-gray5 dark:bg-gray3 mx-2"></div>
-						<span class="text-xs text-gray5 dark:text-gray3">
-							{{ calculateReadingTime(props.wordcount, props.postimages) }} min read
-						</span>
-					</div>
+					<TimestampAndReadingTime
+						class="flex flex-row mt-1 items-center"
+						:timestamp="props.timestamp"
+						:word-count="props.wordcount"
+						:number-of-post-images="props.postimages"
+					/>
 				</div>
 			</div>
 			<div class="relative flex w-full items-center justify-center lg:w-1/5 lg:justify-end">
