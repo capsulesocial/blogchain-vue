@@ -75,7 +75,7 @@ const fetchPostMetadata = async (cid: string, currentUser?: string) => {
 	const u = currentUser ? currentUser : `x`;
 	try {
 		postMetadata.value = await getOnePost(cid, u);
-		if (true) {
+		if (postMetadata.value.hidden) {
 			deleted.value = true;
 			toastWarning(`This post has been hidden by the author`);
 		}
