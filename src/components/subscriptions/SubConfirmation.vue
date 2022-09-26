@@ -2,14 +2,19 @@
 import FriendButton from '@/components/FriendButton.vue';
 import Avatar from '@/components/Avatar.vue';
 import CrownIcon from '@/components/icons/Crown.vue';
-import { SubscriptionTier } from '@/store/paymentProfile';
 import { Profile } from '@/backend/profile';
 import { darkMode } from '@/plugins/colors';
+import { SubscriptionTier } from '@/store/paymentProfile';
+import { useConnectionsStore } from '@/store/connections';
+import { useStore } from '@/store/session';
+import { computed } from 'vue';
 
 const props = withDefaults(
-	defineProps<{ author: Profile; selectedTier: SubscriptionTier; userIsFollowed: boolean; toggleFriend: () => void }>(),
+	defineProps<{ author: Profile; selectedTier: SubscriptionTier; toggleFriend: () => void }>(),
 	{},
 );
+
+const userIsFollowed = computed(() => useConnectionsStore().getFollowStatus(useStore().$state.id, props.author.id));
 
 defineEmits([`startReading`]);
 </script>
@@ -53,7 +58,7 @@ defineEmits([`startReading`]);
 				are now unlocked for your account.
 			</p>
 			<button
-				v-if="props.userIsFollowed"
+				v-if="userIsFollowed"
 				class="px-5 py-2 rounded-lg bg-neutral focus:outline-none text-white mt-6 font-semibold"
 				@click.stop="$emit(`startReading`)"
 			>
@@ -64,7 +69,7 @@ defineEmits([`startReading`]);
 					Don't forget to follow this author to see<br />
 					their latest posts on your home feed:
 				</p>
-				<FriendButton :toggle-friend="props.toggleFriend" :user-is-followed="props.userIsFollowed" />
+				<FriendButton :authorid="props.author.id" />
 			</div>
 		</div>
 		<img

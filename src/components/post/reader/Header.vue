@@ -19,8 +19,6 @@ const props = withDefaults(
 		timestamp: number;
 		wordCount?: number;
 		postimages?: number;
-		isFollowed: boolean;
-		toggleFriend: () => void;
 	}>(),
 	{
 		postimages: 0,
@@ -62,12 +60,7 @@ const handleClose = () => {
 							@{{ props.id }}</router-link
 						>
 					</div>
-					<FriendButton
-						v-if="props.id !== store.$state.id"
-						:toggle-friend="toggleFriend"
-						:user-is-followed="isFollowed"
-						class="hidden lg:block"
-					/>
+					<FriendButton v-if="props.id !== store.$state.id" :authorid="props.id" class="hidden lg:block" />
 					<TimestampAndReadingTime
 						class="flex flex-col lg:flex-row items-center lg:ml-8"
 						:timestamp="props.timestamp"

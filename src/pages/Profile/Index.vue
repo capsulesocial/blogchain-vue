@@ -94,7 +94,6 @@ const selfView = ref<boolean>(authorID.value === store.$state.id);
 const showAvatarPopup = ref<boolean>(false);
 const scrollingDown = ref<boolean>(false);
 const totalPostsCount = ref<number>(0);
-const userIsFollowed = ref<boolean>(false);
 const longBio = ref<boolean>(profile.value.bio.length > 200);
 const expandBio = ref<boolean>(false);
 const openFollowersPopup = ref<boolean>(false);
@@ -119,9 +118,6 @@ function handleBack() {
 		return;
 	}
 	router.go(-1);
-}
-function toggleFriend() {
-	return;
 }
 function toggleEdit() {
 	showSettings.value = !showSettings.value;
@@ -290,12 +286,7 @@ function getStyles(tab: string): string {
 							:disabled="scrollingDown"
 						/>
 					</span>
-					<FriendButton
-						v-else
-						:toggle-friend="toggleFriend"
-						:user-is-followed="userIsFollowed"
-						class="header-profile flex-shrink-0"
-					/>
+					<FriendButton v-else :authorid="authorID" class="header-profile flex-shrink-0" />
 					<!-- Subscription button -->
 					<div v-if="!selfView && paymentsProfile.paymentsEnabled" class="header-profile flex-shrink-0 ml-2">
 						<SubscribeButton :is-subscribed="isActiveSub" :action="() => (showSubscription = !showSubscription)" />

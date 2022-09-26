@@ -1,18 +1,26 @@
 <script setup lang="ts">
 import FriendAddIcon from '@/components/icons/FriendAdd.vue';
 import FriendRemoveIcon from '@/components/icons/FriendRemove.vue';
+import { useStore } from '@/store/session';
+import { useConnectionsStore } from '@/store/connections';
+import { computed } from 'vue';
 
-withDefaults(
+const props = withDefaults(
 	defineProps<{
-		userIsFollowed: boolean;
-		toggleFriend: () => void;
+		authorid: string;
 	}>(),
 	{},
 );
+
+const store = useStore();
+const connectionsStore = useConnectionsStore();
+
+const isFollowing = computed(() => connectionsStore.getFollowStatus(store.id, props.authorid));
 </script>
+
 <template>
-	<button class="focus:outline-none block rounded-lg" @click="toggleFriend">
-		<div v-if="userIsFollowed">
+	<button class="focus:outline-none block rounded-lg" @click="connectionsStore.toggleFollowing(props.authorid)">
+		<div v-if="isFollowing">
 			<!-- Desktop -->
 			<div
 				class="friendbtn text-grey5 hidden rounded-lg bg-lightBG px-5 text-sm font-semibold shadow-sm border border-lightBorder transition duration-300 ease-in-out hover:text-negative hover:border-negative xl:block"
