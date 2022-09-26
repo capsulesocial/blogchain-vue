@@ -356,7 +356,7 @@ function getStyles(tab: string): string {
 				:author-avatar="profile.avatar"
 				:enabled-tiers="[]"
 			/>
-			<SubInfosPopup v-else :sub="activeSub" />
+			<SubInfosPopup v-else :sub="activeSub" @close="showSubscription = false" />
 		</div>
 		<FollowersPopup v-if="openFollowersPopup" @close="openFollowersPopup = false" />
 		<FollowingPopup v-if="openFollowingPopup" @close="openFollowingPopup = false" />
