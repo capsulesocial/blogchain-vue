@@ -20,13 +20,11 @@ const props = withDefaults(
 	defineProps<{
 		author: Profile;
 		sub: ISubscriptionWithProfile;
-		authorAvatar?: string | undefined;
 		toPreSelectTier?: SubscriptionTier;
 		enabledTiers?: string[];
 	}>(),
 	{
-		authorAvatar: null,
-		toPreSelectTier: null,
+		toPreSelectTier: undefined,
 		enabledTiers: () => {
 			return [];
 		},
@@ -106,7 +104,7 @@ initializeProfile();
 						<Avatar
 							class="flex-shrink-0"
 							:authorid="author.id"
-							:avatar="props.authorAvatar"
+							:cid="author.avatar"
 							:no-click="true"
 							:size="`w-14 h-14`"
 						/>

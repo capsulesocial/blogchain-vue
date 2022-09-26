@@ -25,8 +25,8 @@ defineEmits([`startReading`]);
 		<div class="flex flex-row items-center p-4 border border-neutral rounded-lg w-2/3">
 			<Avatar
 				class="flex-shrink-0"
-				:author-i-d="props.author.id"
-				:avatar="props.author.avatar"
+				:authorid="props.author.id"
+				:cid="props.author.avatar"
 				:no-click="true"
 				:size="`w-14 h-14`"
 			/>

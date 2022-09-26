@@ -33,7 +33,7 @@ onMounted(async () => {
 			<div>
 				<h6 class="text-gray5 dark:text-gray3 mb-4 font-sans text-sm">Written By:</h6>
 				<div class="flex pr-5">
-					<Avatar :avatar="profile.avatar" :authorid="profile.id" size="w-16 h-16" class="flex-shrink-0 self-start" />
+					<Avatar :cid="profile.avatar" :authorid="profile.id" size="w-16 h-16" class="flex-shrink-0 self-start" />
 					<div class="mx-4">
 						<router-link
 							v-if="profile.name !== ``"

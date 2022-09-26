@@ -163,13 +163,7 @@ defineExpose({ updateFromProfile });
 		<div class="mb-5 flex w-full justify-center">
 			<button class="focus:outline-none relative h-24 w-24" @click="handleImageClick">
 				<span class="absolute inline-flex w-24 h-24 top-0 left-0">
-					<Avatar
-						:author-i-d="store.$state.id"
-						:avatar="profilePic"
-						:cid="newAvatarCID"
-						:no-click="true"
-						:size="`w-24 h-24`"
-					/>
+					<Avatar :authorid="store.$state.id" :cid="newAvatarCID" :no-click="true" :size="`w-24 h-24`" />
 				</span>
 				<span
 					class="bg-darkOnPrimaryText text-lightOnPrimaryText absolute inline-flex h-24 w-24 top-0 left-0 items-center justify-center rounded-lg bg-opacity-25"

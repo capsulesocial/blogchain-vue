@@ -28,7 +28,7 @@ const props = withDefaults(
 		tags: Tag[];
 	}>(),
 	{
-		subtitle: null,
+		subtitle: undefined,
 	},
 );
 const quoteContent = ref<string>(``);
@@ -59,7 +59,7 @@ function handleResize(e: any) {
 		>
 			<!-- Quote input -->
 			<div class="flex items-start flex-row lg:pb-4">
-				<Avatar :authorid="store.$state.id" :avatar="store.$state.avatar" class="flex-shrink-0" />
+				<Avatar :authorid="store.$state.id" :cid="store.$state.avatar" class="flex-shrink-0" />
 				<textarea
 					ref="repostText"
 					v-model="quoteContent"
