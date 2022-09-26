@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router';
 import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
 import { AxiosError } from 'axios';
-import { toastError, toastWarning } from '@/plugins/toast';
+import { toastError, toastWarning, toastSuccess } from '@/plugins/toast';
 import {
 	getOnePost,
 	getPost,
@@ -139,6 +139,17 @@ function checkAuthenticity() {
 	}
 }
 
+function checkNewPost() {
+	if (settings.recentlyPosted) {
+		toastSuccess(`Your post has been successfully published on Blogchain`);
+		settings.setRecentlyPosted(false);
+		// Trigger share popup
+		setTimeout(() => {
+			showShare.value = true;
+		}, 1500);
+	}
+}
+
 // Fetch post
 onBeforeMount(async () => {
 	await fetchPostMetadata(cid.value, store.id);
@@ -159,6 +170,7 @@ onMounted(async () => {
 		post.value = res;
 		checkAuthenticity();
 		checkEncryption();
+		checkNewPost();
 		if (res.data.content) {
 			wordCount.value = res.data.content.split(/\s+/).length;
 		}

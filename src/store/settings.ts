@@ -23,6 +23,7 @@ export const useStoreSettings = defineStore(`settings`, {
 				secondary2: `tags`,
 			},
 			recentlyInSettings: false,
+			recentlyPosted: false,
 		};
 	},
 	persist: true,
@@ -85,6 +86,9 @@ export const useStoreSettings = defineStore(`settings`, {
 		},
 		setRecentlyInSettings(isRecentlyInSettings: boolean) {
 			this.recentlyInSettings = isRecentlyInSettings;
+		},
+		setRecentlyPosted(isRecentlyPosted: boolean) {
+			this.recentlyPosted = isRecentlyPosted;
 		},
 	},
 });
