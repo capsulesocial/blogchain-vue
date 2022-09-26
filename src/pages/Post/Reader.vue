@@ -48,7 +48,6 @@ const cid = ref<string>(router.currentRoute.value.params.post as string);
 const post = ref<ISignedIPFSObject<Post>>();
 const postMetadata = ref<IPostResponseWithHidden>();
 const deleted = ref<boolean>(false);
-const userIsFollowed = ref<boolean>(false);
 const showPaywall = ref<boolean>(false);
 const content = ref<string>(``);
 const excerpt = ref<string>(``);
@@ -242,7 +241,6 @@ function isReposted() {
 				:timestamp="postMetadata.post.timestamp"
 				:word-count="wordCount"
 				:postimages="postMetadata.post.postImages?.length"
-				:is-followed="userIsFollowed"
 				:toggle-friend="toggleFriend"
 			/>
 			<!-- Reader -->
@@ -423,7 +421,6 @@ function isReposted() {
 				<!-- Author -->
 				<AuthorFooter
 					:id="postMetadata.post.authorID"
-					:is-followed="userIsFollowed"
 					:toggle-friend="toggleFriend"
 					:class="showPaywall ? `mb-20` : ``"
 				/>

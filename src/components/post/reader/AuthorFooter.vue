@@ -12,8 +12,6 @@ const profilesStore = useProfilesStore();
 const props = withDefaults(
 	defineProps<{
 		id: string;
-		isFollowed: boolean;
-		toggleFriend: () => void;
 	}>(),
 	{},
 );
@@ -58,8 +56,7 @@ onMounted(async () => {
 				<FriendButton
 					v-if="props.id !== store.$state.id"
 					class="hidden justify-self-end xl:block"
-					:user-is-followed="isFollowed"
-					:toggle-friend="toggleFriend"
+					:authorid="props.id"
 				/>
 			</div>
 		</div>

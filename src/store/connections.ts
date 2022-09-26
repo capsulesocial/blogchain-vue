@@ -44,5 +44,8 @@ export const useConnectionsStore = defineStore(`connections`, {
 			this.$state.profiles.set(id, { followers, following });
 			return this.$state.profiles.get(id);
 		},
+		toggleFollowing(id: string) {
+			return;
+		},
 	},
 });
