@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router';
 import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
 import { AxiosError } from 'axios';
-import { toastError } from '@/plugins/toast';
+import { toastError, toastWarning, toastSuccess } from '@/plugins/toast';
 import {
 	getOnePost,
 	getPost,
@@ -38,7 +38,8 @@ import ChevronLeft from '@/components/icons/ChevronLeft.vue';
 import PayWall from '@/components/post/reader/PayWall.vue';
 import { ISignedIPFSObject } from '@/backend/utilities/helpers';
 import IpfsLoading from '@/components/post/reader/IpfsLoading.vue';
-import FeaturedPhoto from '@/components/popups/FeaturedPhoto.vue';
+import FeaturedPhotoPopup from '../../components/popups/FeaturedPhotoPopup.vue';
+import WarningPopup from '@/components/popups/WarningPopup.vue';
 
 const store = useStore();
 const settings = useStoreSettings();
@@ -46,6 +47,7 @@ const router = useRouter();
 const cid = ref<string>(router.currentRoute.value.params.post as string);
 const post = ref<ISignedIPFSObject<Post>>();
 const postMetadata = ref<IPostResponseWithHidden>();
+const deleted = ref<boolean>(false);
 const userIsFollowed = ref<boolean>(false);
 const showPaywall = ref<boolean>(false);
 const content = ref<string>(``);
@@ -74,9 +76,8 @@ const fetchPostMetadata = async (cid: string, currentUser?: string) => {
 	try {
 		postMetadata.value = await getOnePost(cid, u);
 		if (postMetadata.value.hidden) {
-			// deleted.value = true;
-			toastError(`This post has been hidden by the author`);
-			// emit(`showWarning`)
+			deleted.value = true;
+			toastWarning(`This post has been hidden by the author`);
 		}
 		hasFeaturedPhoto.value = postMetadata.value.post.featuredPhotoCID ? true : false;
 	} catch (err: unknown) {
@@ -138,6 +139,17 @@ function checkAuthenticity() {
 	}
 }
 
+function checkNewPost() {
+	if (settings.recentlyPosted) {
+		toastSuccess(`Your post has been successfully published on Blogchain`);
+		settings.setRecentlyPosted(false);
+		// Trigger share popup
+		setTimeout(() => {
+			showShare.value = true;
+		}, 1500);
+	}
+}
+
 // Fetch post
 onBeforeMount(async () => {
 	await fetchPostMetadata(cid.value, store.id);
@@ -158,6 +170,7 @@ onMounted(async () => {
 		post.value = res;
 		checkAuthenticity();
 		checkEncryption();
+		checkNewPost();
 		if (res.data.content) {
 			wordCount.value = res.data.content.split(/\s+/).length;
 		}
@@ -476,12 +489,13 @@ function isReposted() {
 				:tags="postMetadata.post.tags"
 				@close="showQuote = false"
 			/>
-			<FeaturedPhoto
+			<FeaturedPhotoPopup
 				v-if="showPhoto"
 				:featuredphotocid="postMetadata?.post.featuredPhotoCID ?? ``"
 				:featuredphotocaption="post?.data.featuredPhotoCaption ?? ``"
 				@close="showPhoto = false"
 			/>
+			<WarningPopup v-if="deleted" @close="deleted = false" />
 		</Teleport>
 	</div>
 </template>

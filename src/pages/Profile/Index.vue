@@ -2,28 +2,33 @@
 import { ref, computed, onMounted, onBeforeMount } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useMeta } from 'vue-meta';
+import { useProfilesStore } from '@/store/profiles';
+import { useSubscriptionStore, ISubscriptionWithProfile } from '@/store/subscriptions';
+import { useStore } from '@/store/session';
+import { useStoreSettings } from '@/store/settings';
+import { useConnectionsStore } from '@/store/connections';
+import { PaymentProfile, usePaymentsStore } from '@/store/paymentProfile';
 import { getUserInfoNEAR } from '@/backend/near';
 import { handleError } from '@/plugins/toast';
+
 import BackButton from '@/components/icons/ChevronLeft.vue';
-import PencilIcon from '@/components/icons/Pencil.vue';
 import SecondaryButton from '@/components/SecondaryButton.vue';
 import FriendButton from '@/components/FriendButton.vue';
 import SubscribeButton from '@/components/subscriptions/SubscribeButton.vue';
+import Avatar from '@/components/Avatar.vue';
+
 import SubscriptionsPopup from '@/components/popups/SubscriptionsPopup.vue';
 import ChangeTierPopup from '@/components/popups/ChangeTierPopup.vue';
 import SubInfosPopup from '@/components/popups/SubInfosPopup.vue';
 import EditProfile from '@/components/popups/EditProfile.vue';
-import Avatar from '@/components/Avatar.vue';
 import FollowersPopup from '@/components/popups/FollowersPopup.vue';
 import FollowingPopup from '@/components/popups/FollowingPopup.vue';
 import BioPopup from '@/components/popups/BioPopup.vue';
-import { useProfilesStore } from '@/store/profiles';
-import { useSubscriptionStore, ISubscriptionWithProfile } from '@/store/subscriptions';
-import { useStore } from '@/store/session';
-import { useConnectionsStore } from '@/store/connections';
-import { PaymentProfile, usePaymentsStore } from '@/store/paymentProfile';
+
+import PencilIcon from '@/components/icons/Pencil.vue';
 
 const store = useStore();
+const settings = useStoreSettings();
 const useSubscription = useSubscriptionStore();
 const paymentStore = usePaymentsStore();
 const router = useRouter();
@@ -78,6 +83,10 @@ onMounted(async (): Promise<void> => {
 			activeSub.value = sub;
 		}
 	});
+	if (settings.recentlyInSettings) {
+		showSettings.value = true;
+		settings.setRecentlyInSettings(false);
+	}
 });
 
 const fromExternalSite = ref<boolean>(false);
