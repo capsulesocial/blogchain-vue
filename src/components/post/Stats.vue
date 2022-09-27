@@ -22,7 +22,7 @@ const commentsStats = ref<ICommentsStats>({
 	negative: 0,
 	faceStats: {},
 });
-const faceStats = ref<FaceStat[]>([]);
+const facePercentage = ref<FaceStat[]>([]);
 const page = ref<number>(0);
 
 // const emit = defineEmits([`close`]);
@@ -34,17 +34,6 @@ const props = withDefaults(
 	}>(),
 	{},
 );
-
-function getStyle(emotionType: string): string {
-	if (feelings.positive.has(emotionType)) {
-		return `positive`;
-	}
-	if (feelings.negative.has(emotionType)) {
-		return `negative`;
-	}
-
-	return `neutral`;
-}
 
 async function updateCommentsStats() {
 	commentsStats.value = await getCommentsStats(props.id);
@@ -58,7 +47,9 @@ async function updateCommentsStats() {
 		const f = faces[face];
 		stats[f.label] = { face: f, count: faceStats[face] };
 	}
-	// faceStats.value = sortBy(Object.values(stats), `count`);
+	facePercentage.value = Object.values(stats).sort((a, b) => {
+		return a.count - b.count;
+	});
 }
 
 updateCommentsStats();
@@ -173,13 +164,22 @@ updateCommentsStats();
 					<ChevronLeft />
 				</button>
 				<div class="grid w-full grid-cols-3 lg:grid-cols-6">
-					<div v-for="f in faceStats.slice(page * 6, page * 6 + 6)" :key="f.face.label" class="flex w-24 flex-col">
-						<div class="flex flex-col rounded-lg border p-1" :class="`border-` + getStyle(f.face.label)">
+					<div v-for="f in facePercentage.slice(page * 6, page * 6 + 6)" :key="f.face.label" class="flex w-24 flex-col">
+						<div
+							class="flex flex-col rounded-lg p-1 bg-opacity-10"
+							:class="
+								feelings.positive.has(f.face.label)
+									? `bg-positive`
+									: feelings.negative.has(f.face.label)
+									? `bg-negative`
+									: `bg-neutral`
+							"
+						>
 							<span class="self-center text-xs dark:text-darkPrimaryText">{{ f.face.label.replace(/_/g, ' ') }}</span>
 							<img
 								:src="settings.isDarkMode ? f.face.dark : f.face.light"
 								:alt="f.face.label"
-								class="h-16 w-16 self-center mt-1"
+								class="h-20 w-20 self-center mt-1"
 							/>
 						</div>
 						<span class="mt-1 self-center text-sm font-semibold dark:text-darkPrimaryText"
@@ -188,7 +188,7 @@ updateCommentsStats();
 					</div>
 				</div>
 				<button
-					v-show="6 * page + 6 < faceStats.length"
+					v-show="6 * page + 6 < facePercentage.length"
 					class="bg-gray1 dark:bg-gray5 focus:outline-none rounded-full"
 					@click="page = page + 1"
 				>
