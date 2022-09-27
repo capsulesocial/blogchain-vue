@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, onBeforeMount, onMounted, ref } from 'vue';
 import SimpleFeedCard from '@/components/post/SimpleFeedCard.vue';
 import BookmarksFilter from '@/components/BookmarksFilter.vue';
 import { BookmarkSort } from '@/backend/bookmarks';
-import { storeToRefs } from 'pinia';
 import { usePostsStore } from '@/store/posts';
 
 const postsStore = usePostsStore();
-const { posts } = storeToRefs(postsStore);
+const bookmarkedPosts = computed(() => postsStore.getBookmarkedPosts());
 
 const filter = ref<string>(`BOOKMARK_DESC`);
 
@@ -15,6 +14,12 @@ function setSort(sort: BookmarkSort) {
 	// When a user selects a filter
 	filter.value = sort;
 }
+onBeforeMount(() => {
+	postsStore.fetchBookmarkedPosts();
+});
+onMounted(() => {
+	postsStore.getBookmarkedPosts();
+});
 </script>
 
 <template>
@@ -26,8 +31,8 @@ function setSort(sort: BookmarkSort) {
 		id="scrollable_content"
 		class="min-h-115 h-115 lg:min-h-210 lg:h-210 xl:min-h-220 xl:h-220 w-full overflow-y-auto lg:overflow-y-hidden relative"
 	>
-		<div v-for="post in posts" :key="`new_${post.post._id}`">
-			<SimpleFeedCard :fetched-post="post" />
+		<div v-for="post in bookmarkedPosts" :key="`new_${post}`">
+			<SimpleFeedCard :fetched-post="postsStore.getPost(post)" />
 		</div>
 	</article>
 </template>

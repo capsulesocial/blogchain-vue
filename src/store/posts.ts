@@ -1,4 +1,5 @@
 import { Algorithm, getPosts, IGenericPostResponse, readableTimeframe, Timeframe } from '@/backend/post';
+import { getBookmarksOfUser } from '@/backend/bookmarks';
 import { handleError } from '@/plugins/toast';
 import { defineStore } from 'pinia';
 import { useStore } from './session';
@@ -15,6 +16,7 @@ export interface Posts {
 	};
 	profilePosts: Map<string, string[]>;
 	categoryPosts: Map<string, string[]>;
+	bookmarkedPosts: Map<string, string[]>;
 }
 
 export const usePostsStore = defineStore(`posts`, {
@@ -31,6 +33,7 @@ export const usePostsStore = defineStore(`posts`, {
 			},
 			profilePosts: new Map<string, string[]>(),
 			categoryPosts: new Map<string, string[]>(),
+			bookmarkedPosts: new Map<string, string[]>(),
 		};
 	},
 	getters: {
@@ -49,8 +52,35 @@ export const usePostsStore = defineStore(`posts`, {
 		getCategoryPosts: (state: Posts) => (category: string) => {
 			return state.categoryPosts.get(category);
 		},
+		getBookmarkedPosts: (state: Posts) => () => {
+			const id = useStore().$state.id;
+			return state.bookmarkedPosts.get(id);
+		},
 	},
 	actions: {
+		async fetchBookmarkedPosts(offset = 0) {
+			// Set up payload
+			const id = useStore().$state.id;
+			if (id === ``) {
+				return;
+			}
+			// Send request
+			try {
+				const posts = await getBookmarksOfUser(id, undefined, `BOOKMARK_DESC`, 10, offset);
+				// const posts = await getPosts({ bookmarkedBy: id }, id, payload);
+				console.log(posts);
+				const postArr: string[] = [];
+				// Add to store
+				for (const post of posts) {
+					this.$state.posts.set(post.post._id, post);
+					postArr.push(post.post._id);
+				}
+				this.bookmarkedPosts.set(id, postArr);
+			} catch (err) {
+				handleError(err);
+				return [];
+			}
+		},
 		async fetchProfilePosts(authorID: string, offset = 0) {
 			// Set up payload
 			const id = useStore().$state.id;
