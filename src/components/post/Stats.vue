@@ -9,6 +9,7 @@ import ChevronRight from '@/components/icons/ChevronRight.vue';
 import ChevronLeft from '@/components/icons/ChevronLeft.vue';
 import RepostIcon from '@/components/icons/RepostIcon.vue';
 import QuoteIcon from '@/components/icons/QuoteIcon.vue';
+import QuotesPopup from '../popups/QuotesPopup.vue';
 
 interface FaceStat {
 	face: IFace;
@@ -26,6 +27,7 @@ const commentsStats = ref<ICommentsStats>({
 const facePercentage = ref<FaceStat[]>([]);
 const page = ref<number>(0);
 const showReposters = ref<boolean>(false);
+const showQuotes = ref<boolean>(false);
 
 // const emit = defineEmits([`close`]);
 const props = withDefaults(
@@ -87,7 +89,7 @@ updateCommentsStats();
 					<RepostIcon :shrink="true" class="mr-2 p-1" />
 					<p>See reposters</p>
 				</button>
-				<button class="text-sm text-primary h-fit flex items-center mt-2">
+				<button class="text-sm text-primary h-fit flex items-center mt-2" @click="showQuotes = true">
 					<QuoteIcon class="mr-2 p-1" />
 					<p>See quotes</p>
 				</button>
@@ -200,6 +202,7 @@ updateCommentsStats();
 		</div>
 		<Teleport to="body">
 			<RepostersPopup v-if="showReposters" :cid="props.id" @close="showReposters = false" />
+			<QuotesPopup v-if="showQuotes" :cid="props.id" @close="showQuotes = false" />
 		</Teleport>
 	</div>
 </template>
