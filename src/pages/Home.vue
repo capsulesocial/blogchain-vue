@@ -5,7 +5,7 @@ import ChevronDown from '@/components/icons/ChevronDown.vue';
 import { storeToRefs } from 'pinia';
 import { usePostsStore } from '@/store/posts';
 import { useRootStore } from '@/store/index';
-import { Algorithm, Timeframe, readableTimeframe } from '@/backend/post';
+import { Algorithm, Timeframe, readableTimeframe, IGenericPostResponse } from '@/backend/post';
 import PostCardContainer from '@/components/post/PostCardContainer.vue';
 import OnboardingWizard from '@/components/popups/OnboardingWizard.vue';
 
@@ -13,8 +13,9 @@ import OnboardingWizard from '@/components/popups/OnboardingWizard.vue';
 const showAlgorithmDropdown = ref<boolean>(false);
 const postsStore = usePostsStore();
 const rootStore = useRootStore();
-const { homeFeed, displayTimeframe, posts } = storeToRefs(postsStore);
+const { homeFeed, displayTimeframe } = storeToRefs(postsStore);
 const scrollContainer = ref<HTMLElement | null>(null);
+const homePosts = ref<IGenericPostResponse[]>([]);
 
 const scrollListener = async (e: Event) => {
 	if (homeFeed.value.isLoading) {
@@ -28,7 +29,7 @@ const scrollListener = async (e: Event) => {
 };
 
 onMounted(async () => {
-	usePostsStore().fetchHomePosts();
+	homePosts.value = await usePostsStore().fetchHomePosts();
 	document.addEventListener(`click`, (e) => {
 		// Dropdown is closed
 		if (!showAlgorithmDropdown.value) {
@@ -109,7 +110,7 @@ onMounted(async () => {
 		ref="scrollContainer"
 		class="min-h-115 h-115 lg:min-h-210 lg:h-210 xl:min-h-220 xl:h-220 w-full overflow-y-auto lg:overflow-y-hidden relative"
 	>
-		<div v-for="post in posts" :key="`new_${post.post._id}`">
+		<div v-for="post in homePosts" :key="`new_${post.post._id}`">
 			<PostCardContainer :fetched-post="post" />
 		</div>
 	</div>
