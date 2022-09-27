@@ -14,14 +14,12 @@ const props = withDefaults(
 		author: Profile;
 		sub: ISubscriptionWithProfile;
 		authorAvatar?: string | undefined;
-		toPreSelectTier?: SubscriptionTier;
 		enabledTiers?: string[];
 		canSwitchTier?: boolean;
 		paymentProfile: PaymentProfile;
 	}>(),
 	{
 		authorAvatar: undefined,
-		toPreSelectTier: undefined,
 		enabledTiers: () => {
 			return [];
 		},
@@ -30,7 +28,7 @@ const props = withDefaults(
 );
 
 const canSwitchTier = ref<boolean>(true);
-const selectedTier = ref<SubscriptionTier>(props.toPreSelectTier);
+const selectedTier = ref<SubscriptionTier | null>(null);
 const selectedPeriod = ref<string>(`month`);
 const emit = defineEmits([`close`, 'nextStep']);
 const text = ref(`Next`);
@@ -70,6 +68,7 @@ function getStyles(DisplayedTier: SubscriptionTier): string {
 function nextStep(): void {
 	emit(`nextStep`, selectedTier.value, selectedPeriod.value);
 }
+console.log(props.paymentProfile);
 </script>
 <template>
 	<!-- Step 0: Change tier -->

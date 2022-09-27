@@ -122,6 +122,9 @@ function handleBack() {
 function toggleEdit() {
 	showSettings.value = !showSettings.value;
 }
+function toggleChangeTier() {
+	showChangeTier.value = true;
+}
 function updateProfileMethod() {
 	store.updateFromProfile();
 }
@@ -349,14 +352,16 @@ function getStyles(tab: string): string {
 			@close="showSubscription = false"
 		/>
 		<div v-if="showSubscription && activeSub">
+			<SubInfosPopup :sub="activeSub" @switch-popup="toggleChangeTier" @close="showSubscription = false" />
+		</div>
+		<div v-if="showChangeTier && activeSub">
 			<ChangeTierPopup
-				v-if="showChangeTier"
 				:author="profile"
 				:sub="activeSub"
 				:author-avatar="profile.avatar"
 				:enabled-tiers="[]"
+				@close="showChangeTier = false"
 			/>
-			<SubInfosPopup v-else :sub="activeSub" @close="showSubscription = false" />
 		</div>
 		<FollowersPopup v-if="openFollowersPopup" @close="openFollowersPopup = false" />
 		<FollowingPopup v-if="openFollowingPopup" @close="openFollowingPopup = false" />
