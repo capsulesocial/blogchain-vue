@@ -68,7 +68,6 @@ function getStyles(DisplayedTier: SubscriptionTier): string {
 function nextStep(): void {
 	emit(`nextStep`, selectedTier.value, selectedPeriod.value);
 }
-console.log(props.paymentProfile);
 </script>
 <template>
 	<!-- Step 0: Change tier -->
