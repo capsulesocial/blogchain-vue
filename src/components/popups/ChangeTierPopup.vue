@@ -1,17 +1,12 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import Avatar from '@/components/Avatar.vue';
 import CloseIcon from '@/components/icons/XIcon.vue';
 import EditTierSelect from '@/components/subscriptions/EditTierSelect.vue';
 import EditTierConfirm from '@/components/subscriptions/EditTierConfirm.vue';
 import { useStore } from '@/store/session';
 import { ISubscriptionWithProfile } from '@/store/subscriptions';
-import {
-	usePaymentsStore,
-	SubscriptionTier,
-	PaymentProfile,
-	createDefaultPaymentProfile,
-} from '@/store/paymentProfile';
+import { usePaymentsStore, SubscriptionTier } from '@/store/paymentProfile';
 import { canSwitchSubscription } from '@/backend/payment';
 import { toastError, handleError } from '@/plugins/toast';
 import { Profile } from '@/backend/profile';
@@ -36,13 +31,16 @@ const usePayment = usePaymentsStore();
 const step = ref<number>(0);
 const selectedTier = ref<SubscriptionTier>(props.toPreSelectTier);
 const selectedPeriod = ref<string>(`month`);
-const paymentProfile = ref<PaymentProfile>(createDefaultPaymentProfile(store.$state.id));
+const paymentProfile = computed(() => usePayment.paymentProfile(props.author.id));
 const canSwitchTier = ref<boolean>(true);
 
 defineEmits([`close`]);
 
 onMounted(async (): Promise<void> => {
-	usePayment.fetchPaymentProfile(props.author.id);
+	// Fetch updated payment profile of author
+	await usePayment.fetchPaymentProfile(props.author.id).then(() => {
+		initializeProfile();
+	});
 	// prefill selected tier
 	if (props.toPreSelectTier) {
 		selectedTier.value = props.toPreSelectTier;
@@ -55,14 +53,12 @@ onMounted(async (): Promise<void> => {
 		handleError(err);
 	}
 });
-
 // methods
-async function initializeProfile(): Promise<void> {
+function initializeProfile(): void {
 	if (!props.author) {
 		toastError(`Author profile is missing`);
 		return;
 	}
-	paymentProfile.value = await usePayment.fetchPaymentProfile(props.author.id);
 	if (!paymentProfile.value) {
 		toastError(`Payment profile of author is missing`);
 		return;
@@ -71,10 +67,10 @@ async function initializeProfile(): Promise<void> {
 		toastError(`Author subscription profile is missing`);
 		return;
 	}
-	// if (!paymentProfile.value.paymentsEnabled) {
-	// 	toastError(`Author hasn't enabled subscriptions`);
-	// 	return;
-	// }
+	if (!paymentProfile.value.paymentsEnabled) {
+		toastError(`Author hasn't enabled subscriptions`);
+		return;
+	}
 	if (!paymentProfile.value.tiers) {
 		toastError(`Author hasn't set-up subscriptions`);
 	}
@@ -84,8 +80,6 @@ function nextStep(selectTier: SubscriptionTier, selectPeriod: string): void {
 	selectedPeriod.value = selectPeriod;
 	step.value += 1;
 }
-
-initializeProfile();
 </script>
 <template>
 	<div

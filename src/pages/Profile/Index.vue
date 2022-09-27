@@ -16,7 +16,6 @@ import SecondaryButton from '@/components/SecondaryButton.vue';
 import FriendButton from '@/components/FriendButton.vue';
 import SubscribeButton from '@/components/subscriptions/SubscribeButton.vue';
 import Avatar from '@/components/Avatar.vue';
-
 import SubscriptionsPopup from '@/components/popups/SubscriptionsPopup.vue';
 import ChangeTierPopup from '@/components/popups/ChangeTierPopup.vue';
 import SubInfosPopup from '@/components/popups/SubInfosPopup.vue';
@@ -24,7 +23,6 @@ import EditProfile from '@/components/popups/EditProfile.vue';
 import FollowersPopup from '@/components/popups/FollowersPopup.vue';
 import FollowingPopup from '@/components/popups/FollowingPopup.vue';
 import BioPopup from '@/components/popups/BioPopup.vue';
-
 import PencilIcon from '@/components/icons/Pencil.vue';
 
 const store = useStore();
@@ -103,7 +101,7 @@ const showSubscription = ref<boolean>(false);
 const showChangeTier = ref<boolean>(false);
 
 // Check if coming from external site
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, from, next): void => {
 	next((vm: any) => {
 		if (to && from.name === null) {
 			fromExternalSite.value = true;
@@ -112,17 +110,17 @@ router.beforeEach((to, from, next) => {
 });
 
 // methods
-function handleBack() {
+function handleBack(): void {
 	if (fromExternalSite.value) {
 		router.push(`/home`);
 		return;
 	}
 	router.go(-1);
 }
-function toggleEdit() {
+function toggleEdit(): void {
 	showSettings.value = !showSettings.value;
 }
-function updateProfileMethod() {
+function updateProfileMethod(): void {
 	store.updateFromProfile();
 }
 function getStyles(tab: string): string {
@@ -349,14 +347,16 @@ function getStyles(tab: string): string {
 			@close="showSubscription = false"
 		/>
 		<div v-if="showSubscription && activeSub">
+			<SubInfosPopup :sub="activeSub" @switch-popup="showChangeTier = true" @close="showSubscription = false" />
+		</div>
+		<div v-if="showChangeTier && activeSub">
 			<ChangeTierPopup
-				v-if="showChangeTier"
 				:author="profile"
 				:sub="activeSub"
 				:author-avatar="profile.avatar"
 				:enabled-tiers="[]"
+				@close="showChangeTier = false"
 			/>
-			<SubInfosPopup v-else :sub="activeSub" @close="showSubscription = false" />
 		</div>
 		<FollowersPopup v-if="openFollowersPopup" @close="openFollowersPopup = false" />
 		<FollowingPopup v-if="openFollowingPopup" @close="openFollowingPopup = false" />
