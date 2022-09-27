@@ -103,7 +103,7 @@ const showSubscription = ref<boolean>(false);
 const showChangeTier = ref<boolean>(false);
 
 // Check if coming from external site
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, from, next): void => {
 	next((vm: any) => {
 		if (to && from.name === null) {
 			fromExternalSite.value = true;
@@ -112,20 +112,20 @@ router.beforeEach((to, from, next) => {
 });
 
 // methods
-function handleBack() {
+function handleBack(): void {
 	if (fromExternalSite.value) {
 		router.push(`/home`);
 		return;
 	}
 	router.go(-1);
 }
-function toggleEdit() {
+function toggleEdit(): void {
 	showSettings.value = !showSettings.value;
 }
-function toggleChangeTier() {
+function toggleChangeTier(): void {
 	showChangeTier.value = true;
 }
-function updateProfileMethod() {
+function updateProfileMethod(): void {
 	store.updateFromProfile();
 }
 function getStyles(tab: string): string {

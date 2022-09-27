@@ -36,7 +36,7 @@ const canSwitchTier = ref<boolean>(true);
 
 defineEmits([`close`]);
 
-onMounted(async () => {
+onMounted(async (): Promise<void> => {
 	// Fetch updated payment profile of author
 	await usePayment.fetchPaymentProfile(props.author.id).then(() => {
 		initializeProfile();
