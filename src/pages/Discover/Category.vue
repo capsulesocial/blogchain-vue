@@ -1,17 +1,15 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useMeta } from 'vue-meta';
 import { useRoute } from 'vue-router';
-import { storeToRefs } from 'pinia';
 import { usePostsStore } from '@/store/posts';
 import BackIcon from '@/components/icons/ChevronLeft.vue';
 import SimpleFeedCard from '@/components/post/SimpleFeedCard.vue';
 
 const route = useRoute();
 const postsStore = usePostsStore();
-
-const { posts } = storeToRefs(postsStore);
 const category = ref<string>(route.params.category as string);
+const categoryPosts = computed(() => postsStore.getCategoryPosts(category.value));
 const lastScroll = ref<number>(0);
 const isScrollingDown = ref<boolean>(false);
 
@@ -69,7 +67,7 @@ function collapse() {
 }
 
 onMounted(() => {
-	usePostsStore().fetchHomePosts();
+	postsStore.fetchDiscoverPosts(category.value);
 	if (window.addEventListener) {
 		window.addEventListener('wheel', collapse);
 		window.addEventListener('touchmove', collapse);
@@ -127,8 +125,8 @@ onMounted(() => {
 		id="scrollable_content"
 		class="min-h-115 h-115 lg:min-h-150 lg:h-150 w-full overflow-y-auto lg:overflow-y-hidden relative"
 	>
-		<div v-for="post in posts" :key="`new_${post.post._id}`">
-			<SimpleFeedCard :fetched-post="post" />
+		<div v-for="post in categoryPosts" :key="`new_${post}`">
+			<SimpleFeedCard :fetched-post="postsStore.getPost(post)" />
 		</div>
 	</article>
 </template>

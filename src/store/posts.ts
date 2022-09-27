@@ -14,6 +14,7 @@ export interface Posts {
 		isLoading: boolean;
 	};
 	profilePosts: Map<string, string[]>;
+	categoryPosts: Map<string, string[]>;
 }
 
 export const usePostsStore = defineStore(`posts`, {
@@ -29,6 +30,7 @@ export const usePostsStore = defineStore(`posts`, {
 				timeframe: Timeframe.MONTH,
 			},
 			profilePosts: new Map<string, string[]>(),
+			categoryPosts: new Map<string, string[]>(),
 		};
 	},
 	getters: {
@@ -43,6 +45,9 @@ export const usePostsStore = defineStore(`posts`, {
 		},
 		getProfilePosts: (state: Posts) => (authorID: string) => {
 			return state.profilePosts.get(authorID);
+		},
+		getCategoryPosts: (state: Posts) => (category: string) => {
+			return state.categoryPosts.get(category);
 		},
 	},
 	actions: {
@@ -68,6 +73,32 @@ export const usePostsStore = defineStore(`posts`, {
 					postArr.push(post.post._id);
 				}
 				this.profilePosts.set(authorID, postArr);
+			} catch (err) {
+				handleError(err);
+				return [];
+			}
+		},
+		async fetchDiscoverPosts(category: string, offset = 0) {
+			if (category === ``) {
+				return [];
+			}
+			const id = useStore().$state.id;
+			const bookmarker = id !== `` ? id : `x`;
+			const payload = {
+				limit: 10,
+				offset,
+				following: id,
+			};
+			// Send request
+			try {
+				const posts = await getPosts({ category: category }, bookmarker, payload);
+				const postArr: string[] = [];
+				// Add to store
+				for (const post of posts) {
+					this.$state.posts.set(post.post._id, post);
+					postArr.push(post.post._id);
+				}
+				this.categoryPosts.set(category, postArr);
 			} catch (err) {
 				handleError(err);
 				return [];

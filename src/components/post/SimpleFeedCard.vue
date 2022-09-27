@@ -28,11 +28,12 @@ const showReposts = ref<boolean>(false);
 
 const props = withDefaults(
 	defineProps<{
-		fetchedPost: IGenericPostResponse;
+		fetchedPost?: IGenericPostResponse;
 		activeAction?: string;
 	}>(),
 	{
 		activeAction: ``,
+		fetchedPost: undefined,
 	},
 );
 
@@ -75,6 +76,7 @@ profilesStore.fetchProfile(props.fetchedPost.post.authorID);
 
 <template>
 	<div
+		v-if="fetchedPost"
 		class="bg-lightBG dark:bg-darkBGStop dark:border-darkBG dark:border-opacity-25 border-opacity-75 py-4 px-5 xl:py-5 xl:px-6 transition ease-in-out hover:bg-hoverPost dark:hover:bg-darkBG dark:hover:bg-opacity-25"
 	>
 		<!-- Card profile header -->
