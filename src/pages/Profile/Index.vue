@@ -16,7 +16,6 @@ import SecondaryButton from '@/components/SecondaryButton.vue';
 import FriendButton from '@/components/FriendButton.vue';
 import SubscribeButton from '@/components/subscriptions/SubscribeButton.vue';
 import Avatar from '@/components/Avatar.vue';
-
 import SubscriptionsPopup from '@/components/popups/SubscriptionsPopup.vue';
 import ChangeTierPopup from '@/components/popups/ChangeTierPopup.vue';
 import SubInfosPopup from '@/components/popups/SubInfosPopup.vue';
@@ -24,7 +23,6 @@ import EditProfile from '@/components/popups/EditProfile.vue';
 import FollowersPopup from '@/components/popups/FollowersPopup.vue';
 import FollowingPopup from '@/components/popups/FollowingPopup.vue';
 import BioPopup from '@/components/popups/BioPopup.vue';
-
 import PencilIcon from '@/components/icons/Pencil.vue';
 
 const store = useStore();
@@ -121,9 +119,6 @@ function handleBack(): void {
 }
 function toggleEdit(): void {
 	showSettings.value = !showSettings.value;
-}
-function toggleChangeTier(): void {
-	showChangeTier.value = true;
 }
 function updateProfileMethod(): void {
 	store.updateFromProfile();
@@ -352,7 +347,7 @@ function getStyles(tab: string): string {
 			@close="showSubscription = false"
 		/>
 		<div v-if="showSubscription && activeSub">
-			<SubInfosPopup :sub="activeSub" @switch-popup="toggleChangeTier" @close="showSubscription = false" />
+			<SubInfosPopup :sub="activeSub" @switch-popup="showChangeTier = true" @close="showSubscription = false" />
 		</div>
 		<div v-if="showChangeTier && activeSub">
 			<ChangeTierPopup
