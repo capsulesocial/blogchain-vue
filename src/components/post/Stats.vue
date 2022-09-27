@@ -4,6 +4,7 @@ import { useStoreSettings } from '@/store/settings';
 import { ICommentsStats, getCommentsStats } from '@/backend/comment';
 import { IFace, faces } from '@/config/faces';
 import { feelings } from '@/config/config';
+import RepostersPopup from '@/components/popups/RepostersPopup.vue';
 import ChevronRight from '@/components/icons/ChevronRight.vue';
 import ChevronLeft from '@/components/icons/ChevronLeft.vue';
 import RepostIcon from '@/components/icons/RepostIcon.vue';
@@ -24,6 +25,7 @@ const commentsStats = ref<ICommentsStats>({
 });
 const facePercentage = ref<FaceStat[]>([]);
 const page = ref<number>(0);
+const showReposters = ref<boolean>(false);
 
 // const emit = defineEmits([`close`]);
 const props = withDefaults(
@@ -81,7 +83,7 @@ updateCommentsStats();
 			</div>
 			<div v-if="props.repostcount > 0" class="flex flex-col w-2/5 lg:w-1/5">
 				<!-- Show reposters and quotes -->
-				<button class="text-sm text-primary h-fit flex items-center">
+				<button class="text-sm text-primary h-fit flex items-center" @click="showReposters = true">
 					<RepostIcon :shrink="true" class="mr-2 p-1" />
 					<p>See reposters</p>
 				</button>
@@ -196,5 +198,8 @@ updateCommentsStats();
 				</button>
 			</div>
 		</div>
+		<Teleport to="body">
+			<RepostersPopup v-if="showReposters" :cid="props.id" @close="showReposters = false" />
+		</Teleport>
 	</div>
 </template>

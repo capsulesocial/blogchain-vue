@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { toastError, toastSuccess } from '../../plugins/toast';
 // import axios from 'axios'
-import { ref, PropType } from 'vue';
+import { ref } from 'vue';
 import { createPostExcerpt } from '@/helpers/post';
 // import { capsuleServer, baseUrl } from './../../backend/utilities/config'
 // import { handleError } from '@/plugins/toast'
