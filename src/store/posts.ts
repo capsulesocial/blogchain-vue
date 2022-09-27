@@ -17,6 +17,7 @@ export interface Posts {
 	profilePosts: Map<string, string[]>;
 	categoryPosts: Map<string, string[]>;
 	bookmarkedPosts: Map<string, string[]>;
+	tagPosts: Map<string, string[]>;
 }
 
 export const usePostsStore = defineStore(`posts`, {
@@ -34,6 +35,7 @@ export const usePostsStore = defineStore(`posts`, {
 			profilePosts: new Map<string, string[]>(),
 			categoryPosts: new Map<string, string[]>(),
 			bookmarkedPosts: new Map<string, string[]>(),
+			tagPosts: new Map<string, string[]>(),
 		};
 	},
 	getters: {
@@ -56,8 +58,38 @@ export const usePostsStore = defineStore(`posts`, {
 			const id = useStore().$state.id;
 			return state.bookmarkedPosts.get(id);
 		},
+		getPostsWithTag: (state: Posts) => (tag: string) => {
+			return state.tagPosts.get(tag);
+		},
 	},
 	actions: {
+		async fetchTagPosts(tag: string, offset = 0) {
+			if (tag === ``) {
+				return [];
+			}
+			const id = useStore().$state.id;
+			const bookmarker = id !== `` ? id : `x`;
+			const payload = {
+				limit: 10,
+				offset,
+				following: id,
+			};
+			// Send request
+			try {
+				const posts = await getPosts({ tag: tag }, bookmarker, payload);
+				console.log(posts);
+				const postArr: string[] = [];
+				// Add to store
+				for (const post of posts) {
+					this.$state.posts.set(post.post._id, post);
+					postArr.push(post.post._id);
+				}
+				this.tagPosts.set(tag, postArr);
+			} catch (err) {
+				handleError(err);
+				return [];
+			}
+		},
 		async fetchBookmarkedPosts(offset = 0) {
 			// Set up payload
 			const id = useStore().$state.id;

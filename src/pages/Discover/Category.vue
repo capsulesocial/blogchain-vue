@@ -4,7 +4,7 @@ import { useMeta } from 'vue-meta';
 import { useRoute } from 'vue-router';
 import { usePostsStore } from '@/store/posts';
 import BackIcon from '@/components/icons/ChevronLeft.vue';
-import SimpleFeedCard from '@/components/post/SimpleFeedCard.vue';
+import PostCardContainer from '@/components/post/PostCardContainer.vue';
 
 const route = useRoute();
 const postsStore = usePostsStore();
@@ -126,7 +126,7 @@ onMounted(() => {
 		class="min-h-115 h-115 lg:min-h-150 lg:h-150 w-full overflow-y-auto lg:overflow-y-hidden relative"
 	>
 		<div v-for="post in categoryPosts" :key="`new_${post}`">
-			<SimpleFeedCard :fetched-post="postsStore.getPost(post)" />
+			<PostCardContainer :fetched-post="postsStore.getPost(post)" />
 		</div>
 	</article>
 </template>
