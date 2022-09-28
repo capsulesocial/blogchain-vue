@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue';
 import { useMeta } from 'vue-meta';
 import PostCardContainerVue from '@/components/post/PostCardContainer.vue';
 import BackIcon from '@/components/icons/ChevronLeft.vue';
+import SecondaryButton from '@/components/SecondaryButton.vue';
 import { useRouter, useRoute } from 'vue-router';
 import { usePostsStore } from '@/store/posts';
 
@@ -56,17 +57,16 @@ isLoading.value = false;
 		<h2 class="text-lightPrimaryText dark:text-darkPrimaryText text-2xl font-semibold">{{ tag }}</h2>
 	</div>
 	<!-- Posts loaded -->
-	<div ref="container" class="min-h-130 h-130 xl:min-h-150 xl:h-150 w-full overflow-y-auto">
+	<div id="scrollable_content" ref="container" class="min-h-130 h-130 xl:min-h-150 xl:h-150 w-full overflow-y-auto">
 		<article
 			v-if="tagPosts?.length == 0 && !isLoading"
-			id="scrollable_content"
 			class="mt-10 grid justify-items-center overflow-y-hidden px-6 xl:px-0"
 		>
 			<p class="text-gray5 dark:text-gray3 align-end mb-5 flex items-end text-sm" style="max-width: 366px">
 				It seems there are no posts under this topic yet
 			</p>
 			<SecondaryButton :text="`Back home`" :action="toggleHomeFeed" />
-			<!-- <img src="/images/tag.webp" loading="lazy" class="top-0 mt-64 xl:mt-10" /> -->
+			<img :src="require(`@/assets/images/brand/tag.webp`)" loading="lazy" class="top-0 mt-64 xl:mt-10" />
 		</article>
 		<article v-for="p in tagPosts" :key="p">
 			<PostCardContainerVue :fetched-post="postsStore.getPost(p)" />
