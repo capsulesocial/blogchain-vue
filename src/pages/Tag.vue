@@ -61,7 +61,7 @@ isLoading.value = false;
 	<div id="scrollable_content">
 		<!-- Tag page header -->
 		<div class="border-lightBorder bg-gray7 flex flex-row items-center rounded-lg bg-opacity-25 p-2 shadow-lg">
-			<button class="bg-gray1 focus:outline-none m-3 flex-shrink-0 rounded-full" @click.self="handleBack">
+			<button class="bg-gray1 focus:outline-none m-3 flex-shrink-0 rounded-full" @click="handleBack">
 				<BackIcon />
 			</button>
 			<h2 class="text-lightPrimaryText dark:text-darkPrimaryText text-2xl font-semibold">{{ tagParam }}</h2>
