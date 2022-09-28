@@ -5,6 +5,7 @@ import { useRoute } from 'vue-router';
 import { usePostsStore } from '@/store/posts';
 import BackIcon from '@/components/icons/ChevronLeft.vue';
 import PostCardContainer from '@/components/post/PostCardContainer.vue';
+import SecondaryButton from '@/components/SecondaryButton.vue';
 
 const route = useRoute();
 const postsStore = usePostsStore();
@@ -125,8 +126,14 @@ onMounted(() => {
 		id="scrollable_content"
 		class="min-h-115 h-115 lg:min-h-150 lg:h-150 w-full overflow-y-auto lg:overflow-y-hidden relative"
 	>
-		<div v-for="post in categoryPosts" :key="`new_${post}`">
-			<PostCardContainer :fetched-post="postsStore.getPost(post)" />
+		<div v-if="categoryPosts && categoryPosts.length > 0">
+			<PostCardContainer v-for="post in categoryPosts" :key="`new_${post}`" :fetched-post="postsStore.getPost(post)" />
+		</div>
+		<div v-else class="mt-10 grid justify-items-center overflow-y-hidden px-6 xl:px-0">
+			<p class="text-gray5 dark:text-gray3 align-end mb-5 flex items-end text-sm" style="max-width: 366px">
+				It seems there are no posts under this category yet
+			</p>
+			<SecondaryButton :text="`All categories`" :action="() => $router.push(`/discover`)" />
 		</div>
 	</article>
 </template>
