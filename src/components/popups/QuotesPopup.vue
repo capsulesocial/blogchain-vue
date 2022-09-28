@@ -6,6 +6,7 @@ import { getRegularPost } from '@/backend/post';
 import { Algorithm } from '@/backend/post';
 import { formatDate } from '@/helpers/helpers';
 
+import Avatar from '@/components/Avatar.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
 
 const emit = defineEmits([`close`]);
@@ -87,7 +88,7 @@ onMounted(async (): Promise<void> => {
 					<div class="flex items-center">
 						<Avatar :authorid="quote.authorID" :cid="quote.avatar" size="w-12 h-12" />
 						<div class="h-12 flex flex-col px-4">
-							<nuxt-link :to="`/id/` + quote.authorID" class="flex items-center">
+							<router-link :to="`/id/` + quote.authorID" class="flex items-center">
 								<span
 									v-if="quote.name != ``"
 									class="text-base font-medium text-lightPrimaryText dark:text-darkPrimaryText"
@@ -96,7 +97,7 @@ onMounted(async (): Promise<void> => {
 								</span>
 								<span v-else class="text-gray5 dark:text-gray3 text-base font-medium"> {{ quote.authorID }} </span>
 								<span class="text-gray5 dark:text-gray3 text-sm ml-2">@{{ quote.authorID }}</span>
-							</nuxt-link>
+							</router-link>
 							<span class="mt-1 text-xs text-gray5 dark:text-gray3">{{ formatDate(quote.timestamp) }}</span>
 						</div>
 					</div>
