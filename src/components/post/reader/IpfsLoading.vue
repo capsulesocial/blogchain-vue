@@ -28,22 +28,18 @@ async function update() {
 }
 
 onMounted(async () => {
-	console.log('doing 1');
 	await ipfs().loadingResult;
 	loadingIPFS.value = false;
 	initIPFS.value = true;
-	console.log('doing 2');
 	await ipfs().initResult;
 	startIPFS.value = true;
 	initIPFS.value = false;
 	initNodes.value = false;
-	console.log('doing 3');
 	ipfs().startResult.then(async () => {
 		startIPFS.value = false;
 		initIPFS.value = false;
 		loadingIPFS.value = false;
 		initNodes.value = true;
-		console.log('doing 4');
 		await update();
 		updateLoop();
 	});

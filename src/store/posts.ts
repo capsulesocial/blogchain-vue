@@ -77,7 +77,6 @@ export const usePostsStore = defineStore(`posts`, {
 			// Send request
 			try {
 				const posts = await getPosts({ tag: tag }, bookmarker, payload);
-				console.log(posts);
 				const postArr: string[] = [];
 				// Add to store
 				for (const post of posts) {

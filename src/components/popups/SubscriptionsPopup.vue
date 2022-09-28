@@ -217,11 +217,9 @@ function nextStep(): void {
 function previousStep(): void {
 	useSubscription.previousStep();
 }
-async function submitCardPayment() {
-	console.log(`submitCardPayment`);
+async function submitCardPayment(): Promise<void> {
 	isLoading.value = true;
 	const stripe = await useSubscription.stripeClient();
-	console.log(stripe);
 	if (!cardElement) {
 		isLoading.value = false;
 		throw new Error(`Card elements is not initialized`);

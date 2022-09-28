@@ -5,7 +5,6 @@ import { nearNetwork, bootstrapNodes } from '@/backend/utilities/config';
 import { toastError } from './toast';
 
 export async function initBackend() {
-	console.log('Backend running!');
 	try {
 		for (let i = 0; i < localStorage.length && nearNetwork === `mainnet`; i++) {
 			const key = localStorage.key(i);
