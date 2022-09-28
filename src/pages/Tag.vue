@@ -61,7 +61,7 @@ isLoading.value = false;
 	<div id="scrollable_content">
 		<!-- Tag page header -->
 		<div class="border-lightBorder bg-gray7 flex flex-row items-center rounded-lg bg-opacity-25 p-2 shadow-lg">
-			<button class="bg-gray1 focus:outline-none m-3 flex-shrink-0 rounded-full" @click="handleBack">
+			<button class="bg-gray1 focus:outline-none m-3 flex-shrink-0 rounded-full" @click.self="handleBack">
 				<BackIcon />
 			</button>
 			<h2 class="text-lightPrimaryText dark:text-darkPrimaryText text-2xl font-semibold">{{ tagParam }}</h2>
@@ -78,8 +78,8 @@ isLoading.value = false;
 				<SecondaryButton :text="`Back home`" :action="toggleHomeFeed" />
 				<img src="@/assets/images/brand/tag.webp" loading="lazy" class="top-0 mt-64 xl:mt-10" />
 			</article>
-			<article v-for="p in posts" :key="p['post._id']">
-				<PostCardContainer :fetched-post="p" />
+			<article v-for="post in posts" :key="post['post._id']">
+				<PostCardContainer :fetched-post="post" />
 			</article>
 			<p v-if="noMorePosts" class="text-gray5 dark:text-gray3 py-5 text-center text-sm">No more posts</p>
 			<!-- Not loaded yet -->
