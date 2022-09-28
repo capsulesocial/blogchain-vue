@@ -9,9 +9,11 @@ import QuotePopup from '../popups/QuotePopup.vue';
 
 const props = withDefaults(
 	defineProps<{
-		fetchedPost: IGenericPostResponse;
+		fetchedPost?: IGenericPostResponse;
 	}>(),
-	{},
+	{
+		fetchedPost: undefined,
+	},
 );
 
 const toggleAction = (a: `` | `comments` | `stats` | `share` | `quote`) => {
@@ -19,7 +21,7 @@ const toggleAction = (a: `` | `comments` | `stats` | `share` | `quote`) => {
 };
 const activeAction = ref<`` | `comments` | `stats` | `share` | `quote`>(``);
 </script>
-<template>
+<template v-if="props.fetchedPost">
 	<SimpleFeedCard :fetched-post="props.fetchedPost" :active-action="activeAction" @toggle-action="toggleAction" />
 	<Teleport v-if="activeAction !== ``" to="body">
 		<!-- show comments -->
@@ -53,7 +55,7 @@ const activeAction = ref<`` | `comments` | `stats` | `share` | `quote`>(``);
 				:bookmarked="props.fetchedPost.bookmarked"
 				:encrypted="props.fetchedPost.post.encrypted ? props.fetchedPost.post.encrypted : false"
 				:title="props.fetchedPost.post.title"
-				:subtitle="props.fetchedPost.post.subtitle"
+				:subtitle="props.fetchedPost.post.subtitle ? props.fetchedPost.post.subtitle : undefined"
 				:excerpt="props.fetchedPost.post.excerpt"
 				:featuredphotocid="props.fetchedPost.post.featuredPhotoCID ? props.fetchedPost.post.featuredPhotoCID : ``"
 				:tags="props.fetchedPost.post.tags"

@@ -1,37 +1,26 @@
 <script setup lang="ts">
+import { computed, onMounted, ref } from 'vue';
 import { useMeta } from 'vue-meta';
-import { ref } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
+import PostCardContainerVue from '@/components/post/PostCardContainer.vue';
 import BackIcon from '@/components/icons/ChevronLeft.vue';
+import { useRouter, useRoute } from 'vue-router';
+import { usePostsStore } from '@/store/posts';
+
 const router = useRouter();
 const route = useRoute();
+const postsStore = usePostsStore();
 
 useMeta({
 	title: `${route.params.tag} posts on Blogchain`,
 	htmlAttrs: { lang: 'en', amp: true },
 });
 
-const tag = ref<string>(route.params.tag as string);
+const tag = computed(() => route.params.tag as string);
+const tagPosts = computed(() => postsStore.getPostsWithTag(tag.value));
 const isLoading = ref<boolean>(true);
 const noMorePosts = ref<boolean>(false);
 const fromExternalSite = ref<boolean>(false);
-// TODO: fetch posts with related tag and update
-const posts = [
-	{
-		authorID: 'amjohnphilip',
-		title: 'post title here',
-		id: 1,
-		subtitle: 'here is post subtitle',
-		content: 'here is the post content',
-		category: 'technology',
-		featuredPhotoCID: 'ahythgytgayfh7543t84gyvggvfryfg',
-		featuredPhotoCaption: 'Photo by John from Pexels',
-		timestamp: 5748957875,
-		tags: ['javaScript'],
-		encrypted: false,
-		postImages: 'postcidhere',
-	},
-];
+
 // Check if coming from external site
 router.beforeEach((to, from, next) => {
 	next((vm: any) => {
@@ -51,6 +40,10 @@ function toggleHomeFeed() {
 	router.push(`/home`);
 }
 
+onMounted(() => {
+	postsStore.fetchTagPosts(tag.value);
+});
+
 isLoading.value = false;
 </script>
 
@@ -65,7 +58,8 @@ isLoading.value = false;
 	<!-- Posts loaded -->
 	<div ref="container" class="min-h-130 h-130 xl:min-h-150 xl:h-150 w-full overflow-y-auto">
 		<article
-			v-if="posts.length == 0 && !isLoading"
+			v-if="tagPosts?.length == 0 && !isLoading"
+			id="scrollable_content"
 			class="mt-10 grid justify-items-center overflow-y-hidden px-6 xl:px-0"
 		>
 			<p class="text-gray5 dark:text-gray3 align-end mb-5 flex items-end text-sm" style="max-width: 366px">
@@ -74,9 +68,8 @@ isLoading.value = false;
 			<SecondaryButton :text="`Back home`" :action="toggleHomeFeed" />
 			<!-- <img src="/images/tag.webp" loading="lazy" class="top-0 mt-64 xl:mt-10" /> -->
 		</article>
-		<article v-for="p in posts" :key="p.id">
-			<!-- TODO: RENDER THE POST CARDS HERE  -->
-			<p>{{ p.title }}</p>
+		<article v-for="p in tagPosts" :key="p">
+			<PostCardContainerVue :fetched-post="postsStore.getPost(p)" />
 		</article>
 		<p v-if="noMorePosts" class="text-gray5 dark:text-gray3 py-5 text-center text-sm">No more posts</p>
 		<!-- Not loaded yet -->
