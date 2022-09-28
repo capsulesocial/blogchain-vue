@@ -4,10 +4,12 @@ import { useStoreSettings } from '@/store/settings';
 import { ICommentsStats, getCommentsStats } from '@/backend/comment';
 import { IFace, faces } from '@/config/faces';
 import { feelings } from '@/config/config';
+import RepostersPopup from '@/components/popups/RepostersPopup.vue';
 import ChevronRight from '@/components/icons/ChevronRight.vue';
 import ChevronLeft from '@/components/icons/ChevronLeft.vue';
 import RepostIcon from '@/components/icons/RepostIcon.vue';
 import QuoteIcon from '@/components/icons/QuoteIcon.vue';
+import QuotesPopup from '../popups/QuotesPopup.vue';
 
 interface FaceStat {
 	face: IFace;
@@ -22,8 +24,10 @@ const commentsStats = ref<ICommentsStats>({
 	negative: 0,
 	faceStats: {},
 });
-const faceStats = ref<FaceStat[]>([]);
+const facePercentage = ref<FaceStat[]>([]);
 const page = ref<number>(0);
+const showReposters = ref<boolean>(false);
+const showQuotes = ref<boolean>(false);
 
 // const emit = defineEmits([`close`]);
 const props = withDefaults(
@@ -34,17 +38,6 @@ const props = withDefaults(
 	}>(),
 	{},
 );
-
-function getStyle(emotionType: string): string {
-	if (feelings.positive.has(emotionType)) {
-		return `positive`;
-	}
-	if (feelings.negative.has(emotionType)) {
-		return `negative`;
-	}
-
-	return `neutral`;
-}
 
 async function updateCommentsStats() {
 	commentsStats.value = await getCommentsStats(props.id);
@@ -58,7 +51,9 @@ async function updateCommentsStats() {
 		const f = faces[face];
 		stats[f.label] = { face: f, count: faceStats[face] };
 	}
-	// faceStats.value = sortBy(Object.values(stats), `count`);
+	facePercentage.value = Object.values(stats).sort((a, b) => {
+		return a.count - b.count;
+	});
 }
 
 updateCommentsStats();
@@ -90,11 +85,11 @@ updateCommentsStats();
 			</div>
 			<div v-if="props.repostcount > 0" class="flex flex-col w-2/5 lg:w-1/5">
 				<!-- Show reposters and quotes -->
-				<button class="text-sm text-primary h-fit flex items-center">
+				<button class="text-sm text-primary h-fit flex items-center" @click="showReposters = true">
 					<RepostIcon :shrink="true" class="mr-2 p-1" />
 					<p>See reposters</p>
 				</button>
-				<button class="text-sm text-primary h-fit flex items-center mt-2">
+				<button class="text-sm text-primary h-fit flex items-center mt-2" @click="showQuotes = true">
 					<QuoteIcon class="mr-2 p-1" />
 					<p>See quotes</p>
 				</button>
@@ -173,13 +168,22 @@ updateCommentsStats();
 					<ChevronLeft />
 				</button>
 				<div class="grid w-full grid-cols-3 lg:grid-cols-6">
-					<div v-for="f in faceStats.slice(page * 6, page * 6 + 6)" :key="f.face.label" class="flex w-24 flex-col">
-						<div class="flex flex-col rounded-lg border p-1" :class="`border-` + getStyle(f.face.label)">
+					<div v-for="f in facePercentage.slice(page * 6, page * 6 + 6)" :key="f.face.label" class="flex w-24 flex-col">
+						<div
+							class="flex flex-col rounded-lg p-1 bg-opacity-10"
+							:class="
+								feelings.positive.has(f.face.label)
+									? `bg-positive`
+									: feelings.negative.has(f.face.label)
+									? `bg-negative`
+									: `bg-neutral`
+							"
+						>
 							<span class="self-center text-xs dark:text-darkPrimaryText">{{ f.face.label.replace(/_/g, ' ') }}</span>
 							<img
 								:src="settings.isDarkMode ? f.face.dark : f.face.light"
 								:alt="f.face.label"
-								class="h-16 w-16 self-center mt-1"
+								class="h-20 w-20 self-center mt-1"
 							/>
 						</div>
 						<span class="mt-1 self-center text-sm font-semibold dark:text-darkPrimaryText"
@@ -188,7 +192,7 @@ updateCommentsStats();
 					</div>
 				</div>
 				<button
-					v-show="6 * page + 6 < faceStats.length"
+					v-show="6 * page + 6 < facePercentage.length"
 					class="bg-gray1 dark:bg-gray5 focus:outline-none rounded-full"
 					@click="page = page + 1"
 				>
@@ -196,5 +200,9 @@ updateCommentsStats();
 				</button>
 			</div>
 		</div>
+		<Teleport to="body">
+			<RepostersPopup v-if="showReposters" :cid="props.id" @close="showReposters = false" />
+			<QuotesPopup v-if="showQuotes" :cid="props.id" @close="showQuotes = false" />
+		</Teleport>
 	</div>
 </template>

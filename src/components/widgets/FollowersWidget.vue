@@ -17,7 +17,7 @@ const openFollowersPopup = ref<boolean>(false);
 	<div class="bg-lightBG dark:bg-darkBGStop mb-5 rounded-lg border border-lightBorder shadow-lg px-6 py-4">
 		<h3 class="text-lightPrimaryText dark:text-darkPrimaryText text-base font-semibold mb-2">Recent Followers</h3>
 		<div v-if="followersList">
-			<p v-if="followersList.size === 0" class="text-gray5 dark:text-gray3 mb-4 mt-3 text-sm">
+			<p v-if="followersList.size === 0" class="text-gray5 dark:text-gray3 mb-1 mt-3 text-sm">
 				<span> It seems no one is following {{ authorID === store.id ? `you` : authorID }} yet </span>
 			</p>
 			<div v-else>
