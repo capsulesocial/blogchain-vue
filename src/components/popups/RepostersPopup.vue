@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { getReposters, IGetRepostsOptions } from '@/backend/reposts';
-import { createDefaultProfile, getProfile, Profile } from '@/backend/profile';
+import HorizontalProfilePreview from '@/components/HorizontalProfilePreview.vue';
+import CloseIcon from '@/components/icons/CloseIcon.vue';
+import { Profile } from '@/backend/profile';
 import { toastError } from '@/plugins/toast';
 import { Algorithm } from '@/backend/post';
-
-import HorizontalProfilePreview from '@/components/HorizontalProfilePreview.vue';
-
-import CloseIcon from '@/components/icons/CloseIcon.vue';
+import { useProfilesStore } from '@/store/profiles';
 
 const emit = defineEmits([`close`]);
+const profileStore = useProfilesStore();
 
 const props = withDefaults(
 	defineProps<{
@@ -23,16 +23,9 @@ const reposters = ref<Array<string>>([]);
 const repostersProfiles = ref<Array<Profile>>([]);
 
 async function getFollowers(p: string) {
-	let profile = createDefaultProfile(p);
-	try {
-		const fetchedProfile = await getProfile(p);
-		if (fetchedProfile.profile) {
-			profile = fetchedProfile.profile;
-		}
-		repostersProfiles.value.push(profile);
-	} catch (err) {
-		toastError(err as string);
-	}
+	await profileStore.fetchProfile(p);
+	const profile = profileStore.getProfile(p);
+	repostersProfiles.value.push(profile);
 }
 
 async function initReposters() {
