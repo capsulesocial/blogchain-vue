@@ -98,8 +98,6 @@ export const usePostsStore = defineStore(`posts`, {
 			// Send request
 			try {
 				const posts = await getBookmarksOfUser(id, undefined, `BOOKMARK_DESC`, 10, offset);
-				// const posts = await getPosts({ bookmarkedBy: id }, id, payload);
-				console.log(posts);
 				const postArr: string[] = [];
 				// Add to store
 				for (const post of posts) {
