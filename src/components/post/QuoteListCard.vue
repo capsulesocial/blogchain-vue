@@ -19,7 +19,6 @@ const content = ref<string | undefined>();
 onBeforeMount(() => profileStore.fetchProfile(props.authorid));
 onMounted(async () => {
 	const c = await getRegularPost(props.cid);
-	console.log(c);
 	content.value = c.data.content;
 });
 </script>
