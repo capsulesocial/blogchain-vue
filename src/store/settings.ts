@@ -78,7 +78,6 @@ export const useStoreSettings = defineStore(`settings`, {
 			this.widgets.primary = w;
 		},
 		setSecondaryWidget(w: `drafts` | `bookmarks`) {
-			console.log(`setting secondary widget `, w);
 			this.widgets.secondary = w;
 		},
 		setSecondary2Widget(w: `tags` | `followers`) {

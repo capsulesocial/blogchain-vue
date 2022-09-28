@@ -8,9 +8,7 @@ const props = withDefaults(
 		action: () => void;
 	}>(),
 	{
-		action: () => {
-			console.log(`default action`);
-		},
+		action: () => {},
 		isSubscribed: false,
 	},
 );
