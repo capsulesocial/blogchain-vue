@@ -89,7 +89,7 @@ export enum Algorithm {
 	TOP = `TOP`,
 }
 export enum Timeframe {
-	DAY = `1`,
+	// DAY = `1`,
 	WEEK = `7`,
 	MONTH = `30`,
 	YEAR = `365`,
@@ -98,8 +98,8 @@ export enum Timeframe {
 
 export function readableTimeframe(timeframe: Timeframe) {
 	switch (timeframe) {
-		case Timeframe.DAY:
-			return `Today`;
+		// case Timeframe.DAY:
+		// 	return `Today`;
 		case Timeframe.WEEK:
 			return `This week`;
 		case Timeframe.MONTH:
