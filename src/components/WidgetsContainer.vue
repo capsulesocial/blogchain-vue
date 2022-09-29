@@ -8,12 +8,14 @@ import SettingsWidgets from '@/components/widgets/pages/SettingsWidgets.vue';
 import Footer from '@/components/Footer.vue';
 import SubscriptionsWidgets from '@/components/widgets/pages/SubscriptionsWidgets.vue';
 import TagsWidgets from './widgets/pages/TagsWidgets.vue';
+import EditorWidgets from './widgets/pages/EditorWidgets.vue';
 </script>
 <template>
 	<aside class="w-5/12 -mr-5 -mt-4 hidden overflow-y-auto p-4 pb-32 lg:block min-h-61 h-61">
 		<HomeWidgets v-if="$route.name === `Home`" />
 		<DiscoverWidgets v-if="$route.name === `Discover`" />
 		<BookmarksWidgets v-if="$route.name === `Bookmarks`" />
+		<EditorWidgets v-if="$route.name === `Post Editor`" />
 		<ProfileWidgets v-if="$route.matched[0]?.path === `/id/:id`" />
 		<HelpWidgets v-if="$route.name === `Help`" />
 		<SettingsWidgets v-if="$route.matched[0]?.path === `/settings`" />

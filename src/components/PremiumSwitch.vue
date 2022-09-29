@@ -1,0 +1,32 @@
+<script setup lang="ts">
+import CrownIcon from '@/components/icons/CrownIcon.vue';
+withDefaults(
+	defineProps<{
+		enabled?: boolean;
+		onBG?: boolean;
+	}>(),
+	{},
+);
+
+const emit = defineEmits([`toggle`]);
+
+function toggleSwitch() {
+	emit(`toggle`);
+}
+</script>
+
+<template>
+	<div
+		class="relative w-14 h-7 transition duration-500 ease-in-out rounded-full cursor-pointer"
+		:class="[enabled ? 'bg-neutral' : 'bg-gray1 dark:bg-gray7']"
+		@click="toggleSwitch"
+	>
+		<label
+			class="absolute left-0 w-7 h-7 mb-2 transition duration-300 ease-in-out transform bg-lightBG dark:bg-darkBG border-2 rounded-full flex justify-center items-center"
+			:class="[enabled ? 'translate-x-full border-neutral' : 'translate-x-0 border-gray1 dark:border-gray7']"
+		>
+			<CrownIcon class="text-neutral stroke-neutral self-center w-4 h-4" />
+		</label>
+		<input type="checkbox" class="w-full h-full appearance-none focus:outline-none" />
+	</div>
+</template>

@@ -69,7 +69,7 @@ const routes = [
 		},
 	},
 	{
-		path: '/post',
+		path: '/write',
 		name: 'Post Editor',
 		component: PostEditor,
 		meta: {
