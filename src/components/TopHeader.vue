@@ -98,7 +98,7 @@ function logout() {
 					>Bookmarks</router-link
 				>
 				<router-link
-					to="/post"
+					to="/write"
 					style="padding: 0.6rem 1.7rem"
 					class="mx-4 bg-primary dark:bg-secondary text-lightButtonText focus:outline-none transform rounded-lg font-bold transition duration-500 ease-in-out hover:shadow-lg"
 					>Write a Post</router-link
