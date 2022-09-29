@@ -33,7 +33,7 @@ const props = withDefaults(
 const image = ref<string>(``);
 
 const isOpen1 = ref<boolean>(false);
-const isLoading = ref<boolean>(false);
+const isLoading = ref<boolean>(true);
 
 const generatedDirectLink = ref<string>(``);
 const generatedBlogchainLink = ref<string>(``);
@@ -192,8 +192,14 @@ onMounted(async (): Promise<void> => {
 					</button>
 				</div>
 			</div>
+			<div v-show="isLoading" class="modal-animation flex w-full justify-center z-20 mt-6 mb-2">
+				<div
+					class="loader m-5 border-2 border-gray1 dark:border-gray7 h-8 w-8 rounded-3xl"
+					:style="`border-top: 2px solid`"
+				></div>
+			</div>
 			<!-- Direct Link -->
-			<div class="flex flex-col mt-3 w-full">
+			<div v-if="!isLoading" class="flex flex-col mt-3 w-full">
 				<label for="newName" class="mb-1 font-semibold dark:text-darkPrimaryText">Direct Link</label>
 				<p class="text-gray5 dark:text-gray3 mb-2">Social media friendly link that you can share on any platform</p>
 				<div class="relative flex w-full h-8 rounded-lg bg-gray1 dark:bg-gray7 items-center">
@@ -213,7 +219,11 @@ onMounted(async (): Promise<void> => {
 				</div>
 			</div>
 			<!-- Expand Link -->
-			<div class="message-header relative flex items-center justify-between mt-5 w-full" @click="toggleAccordion1()">
+			<div
+				v-if="!isLoading"
+				class="message-header relative flex items-center justify-between mt-5 w-full"
+				@click="toggleAccordion1()"
+			>
 				<div class="w-1/3 bg-gray3 dark:bg-gray2 rounded-lg" style="height: 1px"></div>
 				<div
 					:class="isOpen1 ? `plus0 hidden` : `plus1`"
@@ -231,7 +241,8 @@ onMounted(async (): Promise<void> => {
 				</div>
 				<div class="w-1/3 bg-gray3 dark:bg-gray2 rounded-lg" style="height: 1px"></div>
 			</div>
-			<div :class="isOpen1 ? `mt-5` : `is-closed`" class="flex flex-col w-full message-body">
+			<!-- Blogchain Link -->
+			<div v-if="!isLoading" :class="isOpen1 ? `mt-5` : `is-closed`" class="flex flex-col w-full message-body">
 				<label for="newName" class="mb-1 font-semibold dark:text-darkPrimaryText">Blogchain Link</label>
 				<p class="text-gray5 dark:text-gray3 mb-2">IPFS decentralized permanent link</p>
 				<div class="relative flex w-full h-8 rounded-lg bg-gray1 dark:bg-gray7 items-center">
