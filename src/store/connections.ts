@@ -1,5 +1,9 @@
 import { defineStore } from 'pinia';
-import { getFollowersAndFollowing } from '@/backend/following';
+import { useStore } from '@/store/session';
+
+import { getFollowersAndFollowing, followChange } from '@/backend/following';
+
+import { toastSuccess, handleError } from '@/plugins/toast';
 
 export interface Connections {
 	profiles: Map<string, { followers: Set<string>; following: Set<string> }>;
@@ -44,8 +48,26 @@ export const useConnectionsStore = defineStore(`connections`, {
 			this.$state.profiles.set(id, { followers, following });
 			return this.$state.profiles.get(id);
 		},
-		toggleFollowing(id: string) {
-			return;
+		async toggleFollowing(id: string): Promise<void> {
+			const store = useStore();
+			const isFollowing = await this.getFollowStatus(store.$state.id, id);
+			if (id !== store.$state.id) {
+				try {
+					await followChange(isFollowing ? `UNFOLLOW` : `FOLLOW`, store.$state.id, id);
+					toastSuccess(isFollowing ? `Unfollowed ${id}` : `Followed ${id}`);
+				} catch (err: unknown) {
+					handleError(err);
+				} finally {
+					// Update local store with action
+					if (isFollowing) {
+						this.$state.profiles.get(store.id)?.following.delete(id);
+						this.$state.profiles.get(id)?.followers.delete(store.id);
+					} else {
+						this.$state.profiles.get(store.id)?.following.add(id);
+						this.$state.profiles.get(id)?.followers.add(store.id);
+					}
+				}
+			}
 		},
 	},
 });
