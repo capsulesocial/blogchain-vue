@@ -12,6 +12,8 @@ import ShareIcon from '@/components/icons/ShareIcon.vue';
 import CrownIcon from '@/components/icons/Crown.vue';
 import StatsIcon from '@/components/icons/StatsIcon.vue';
 import IpfsImage from '@/components/IpfsImage.vue';
+import FriendButton from '@/components/FriendButton.vue';
+import ProfileCardHeader from '@/components/post/ProfileCardHeader.vue';
 
 import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
@@ -25,6 +27,8 @@ const settings = useStoreSettings();
 const profilesStore = useProfilesStore();
 const showDelete = ref<boolean>(false);
 const showReposts = ref<boolean>(false);
+const showProfileCard = ref<boolean>(false);
+const hasEntered = ref<boolean>(false);
 
 const props = withDefaults(
 	defineProps<{
@@ -71,6 +75,21 @@ function quoteRepost() {
 	emit(`toggle-action`, `quote`);
 }
 
+function triggerProfileCardFalse(): void {
+	setTimeout(() => {
+		if (hasEntered.value !== true) {
+			showProfileCard.value = false;
+			hasEntered.value = false;
+		}
+	}, 70);
+	hasEntered.value = false;
+}
+
+function triggerProfileCardTrue(): void {
+	hasEntered.value = true;
+	showProfileCard.value = true;
+}
+
 profilesStore.fetchProfile(props.fetchedPost.post.authorID);
 </script>
 
@@ -81,7 +100,7 @@ profilesStore.fetchProfile(props.fetchedPost.post.authorID);
 	>
 		<!-- Card profile header -->
 		<div class="flex w-full justify-between">
-			<div class="flex">
+			<div class="flex" @mouseover="triggerProfileCardTrue" @mouseleave="triggerProfileCardFalse">
 				<Avatar
 					:authorid="author.id"
 					:cid="author.avatar"
@@ -110,6 +129,23 @@ profilesStore.fetchProfile(props.fetchedPost.post.authorID);
 					:number-of-post-images="fetchedPost.post.postImages?.length"
 				/>
 			</div>
+			<!-- hover profile card -->
+			<div
+				v-show="showProfileCard"
+				class="border-lightBorder modal-animation-delay absolute z-40 flex w-72 flex-col rounded-lg border bg-lightBG dark:bg-darkBG p-4 shadow-lg"
+				@mouseover="triggerProfileCardTrue"
+				@mouseleave="showProfileCard = false"
+			>
+				<div class="w-full flex flex-row justify-between items-center mb-4">
+					<Avatar :authorid="author.id" :cid="author.avatar" size="w-16 h-16" />
+					<FriendButton
+						v-if="fetchedPost.post.authorID !== store.$state.id && $route.name !== `id`"
+						:authorid="author.id"
+					/>
+				</div>
+				<ProfileCardHeader :author-i-d="author.id" :author-name="author.name" :is-hover-card="true" />
+			</div>
+			<!-- bookmark -->
 			<div class="relative flex items-center">
 				<BookmarkButton :has-bookmark="fetchedPost.bookmarked" />
 				<button
