@@ -1,14 +1,12 @@
 <script setup lang="ts">
 import { toastError, toastSuccess } from '../../plugins/toast';
-// import axios from 'axios'
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { createPostExcerpt } from '@/helpers/post';
-// import { capsuleServer, baseUrl } from './../../backend/utilities/config'
-// import { handleError } from '@/plugins/toast'
-import IpfsImage from '@/components/IpfsImage.vue';
+import { createShareableLink } from '@/backend/shareable_links';
+import { sanitizeUrl } from '@braintree/sanitize-url';
 
+import IpfsImage from '@/components/IpfsImage.vue';
 import CloseIcon from '../icons/CloseIcon.vue';
-// import CheckedIcon from '../icons/CheckCircleIcon.vue'
 import TwitterIcon from '../icons/brands/solid/Twitter.vue';
 import FacebookIcon from '../icons/brands/solid/Facebook.vue';
 import RedditIcon from '../icons/brands/solid/Reddit.vue';
@@ -35,7 +33,7 @@ const props = withDefaults(
 const image = ref<string>(``);
 
 const isOpen1 = ref<boolean>(false);
-const isLoading = ref<boolean>(false);
+const isLoading = ref<boolean>(true);
 
 const generatedDirectLink = ref<string>(``);
 const generatedBlogchainLink = ref<string>(``);
@@ -74,57 +72,52 @@ function copyBlogchainLink() {
 		});
 }
 
-async function generateLinks() {
-	// Might need backend investigation into error response on production
-	if (!props.id) {
-		return;
-	}
-	// const cid: string = props.cid
-	// generatedBlogchainLink.value = `${baseUrl}/post/${cid}`
-	// try {
-	// 	const shareableLink = await axios.post(`${capsuleServer}/share`, {
-	// 		cid,
-	// 	})
-	// 	generatedDirectLink.value = shareableLink.data.data
-	// } catch (ex) {
-	// 	handleError(ex)
-	// }
+async function generateShareableLink() {
+	generatedDirectLink.value = await createShareableLink(props.id);
+	generatedBlogchainLink.value = `https://blogchain.app/post/${props.id}`;
 	isLoading.value = false;
 }
 
 function twitterShare() {
 	window.open(
-		`https://twitter.com/share?url=${encodeURIComponent(
-			generatedDirectLink.value.toString(),
-		)}&hashtags=blogchain&text=${props.title} by ${props.authorid}`,
+		sanitizeUrl(
+			`https://twitter.com/share?url=${encodeURIComponent(
+				generatedDirectLink.value.toString(),
+			)}&hashtags=blogchain&text=${props.title} by ${props.authorid}`,
+		),
 	);
 }
 
 function facebookShare() {
-	window.open(`https://www.facebook.com/sharer/sharer.php?u=${generatedDirectLink.value}`);
+	window.open(sanitizeUrl(`https://www.facebook.com/sharer/sharer.php?u=${generatedDirectLink.value}`));
 }
 
 function redditShare() {
-	window.open(`https://reddit.com/submit?url=${generatedDirectLink.value}&title=${props.title}`);
+	window.open(sanitizeUrl(`https://reddit.com/submit?url=${generatedDirectLink.value}&title=${props.title}`));
 }
 
 function linkedinShare() {
 	window.open(
-		`https://www.linkedin.com/shareArticle?url=${generatedDirectLink.value}&title=${props.title}&summary=${
-			props.subtitle ? props.subtitle : createPostExcerpt(props.excerpt)
-		}&source=blogchain.app`,
+		sanitizeUrl(
+			`https://www.linkedin.com/shareArticle?url=${generatedDirectLink.value}&title=${props.title}&summary=${
+				props.subtitle ? props.subtitle : createPostExcerpt(props.excerpt)
+			}&source=blogchain.app`,
+		),
 	);
 }
 
 function mailShare() {
 	window.open(
-		`mailto:?subject=${props.title}&body=${
-			props.subtitle ? props.subtitle : createPostExcerpt(props.excerpt)
-		}%0D%0A%0D%0A${generatedDirectLink.value}`,
+		sanitizeUrl(
+			`mailto:?subject=${props.title}&body=${
+				props.subtitle ? props.subtitle : createPostExcerpt(props.excerpt)
+			}%0D%0A%0D%0A${generatedDirectLink.value}`,
+		),
 	);
 }
-
-generateLinks();
+onMounted(async (): Promise<void> => {
+	generateShareableLink();
+});
 </script>
 
 <template>
@@ -205,8 +198,14 @@ generateLinks();
 					</button>
 				</div>
 			</div>
+			<div v-show="isLoading" class="modal-animation flex w-full justify-center z-20 mt-6 mb-2">
+				<div
+					class="loader m-5 border-2 border-gray1 dark:border-gray7 h-8 w-8 rounded-3xl"
+					:style="`border-top: 2px solid`"
+				></div>
+			</div>
 			<!-- Direct Link -->
-			<div class="flex flex-col mt-3 w-full">
+			<div v-if="!isLoading" class="flex flex-col mt-3 w-full">
 				<label for="newName" class="mb-1 font-semibold dark:text-darkPrimaryText">Direct Link</label>
 				<p class="text-gray5 dark:text-gray3 mb-2">Social media friendly link that you can share on any platform</p>
 				<div class="relative flex w-full h-8 rounded-lg bg-gray1 dark:bg-gray7 items-center">
@@ -226,7 +225,11 @@ generateLinks();
 				</div>
 			</div>
 			<!-- Expand Link -->
-			<div class="message-header relative flex items-center justify-between mt-5 w-full" @click="toggleAccordion1()">
+			<div
+				v-if="!isLoading"
+				class="message-header relative flex items-center justify-between mt-5 w-full"
+				@click="toggleAccordion1()"
+			>
 				<div class="w-1/3 bg-gray3 dark:bg-gray2 rounded-lg" style="height: 1px"></div>
 				<div
 					:class="isOpen1 ? `plus0 hidden` : `plus1`"
@@ -244,7 +247,8 @@ generateLinks();
 				</div>
 				<div class="w-1/3 bg-gray3 dark:bg-gray2 rounded-lg" style="height: 1px"></div>
 			</div>
-			<div :class="isOpen1 ? `mt-5` : `is-closed`" class="flex flex-col w-full message-body">
+			<!-- Blogchain Link -->
+			<div v-if="!isLoading" :class="isOpen1 ? `mt-5` : `is-closed`" class="flex flex-col w-full message-body">
 				<label for="newName" class="mb-1 font-semibold dark:text-darkPrimaryText">Blogchain Link</label>
 				<p class="text-gray5 dark:text-gray3 mb-2">IPFS decentralized permanent link</p>
 				<div class="relative flex w-full h-8 rounded-lg bg-gray1 dark:bg-gray7 items-center">
