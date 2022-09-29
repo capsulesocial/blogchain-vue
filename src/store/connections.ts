@@ -51,15 +51,21 @@ export const useConnectionsStore = defineStore(`connections`, {
 		async toggleFollowing(id: string): Promise<void> {
 			const store = useStore();
 			const isFollowing = await this.getFollowStatus(store.$state.id, id);
-
 			if (id !== store.$state.id) {
 				try {
 					await followChange(isFollowing ? `UNFOLLOW` : `FOLLOW`, store.$state.id, id);
 					toastSuccess(isFollowing ? `Unfollowed ${id}` : `Followed ${id}`);
-					await this.fetchConnections(store.$state.id);
-					console.log(await this.fetchConnections(store.$state.id));
 				} catch (err: unknown) {
 					handleError(err);
+				} finally {
+					// Update local store with action
+					if (isFollowing) {
+						this.$state.profiles.get(store.id)?.following.delete(id);
+						this.$state.profiles.get(id)?.followers.delete(store.id);
+					} else {
+						this.$state.profiles.get(store.id)?.following.add(id);
+						this.$state.profiles.get(id)?.followers.add(store.id);
+					}
 				}
 			}
 		},
