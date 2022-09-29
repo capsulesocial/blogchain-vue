@@ -1,14 +1,12 @@
 <script setup lang="ts">
 import { toastError, toastSuccess } from '../../plugins/toast';
-// import axios from 'axios'
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { createPostExcerpt } from '@/helpers/post';
-// import { capsuleServer, baseUrl } from './../../backend/utilities/config'
-// import { handleError } from '@/plugins/toast'
+import { createShareableLink } from '@/backend/shareable_links';
+
 import IpfsImage from '@/components/IpfsImage.vue';
 
 import CloseIcon from '../icons/CloseIcon.vue';
-// import CheckedIcon from '../icons/CheckCircleIcon.vue'
 import TwitterIcon from '../icons/brands/solid/Twitter.vue';
 import FacebookIcon from '../icons/brands/solid/Facebook.vue';
 import RedditIcon from '../icons/brands/solid/Reddit.vue';
@@ -74,21 +72,9 @@ function copyBlogchainLink() {
 		});
 }
 
-async function generateLinks() {
-	// Might need backend investigation into error response on production
-	if (!props.id) {
-		return;
-	}
-	// const cid: string = props.cid
-	// generatedBlogchainLink.value = `${baseUrl}/post/${cid}`
-	// try {
-	// 	const shareableLink = await axios.post(`${capsuleServer}/share`, {
-	// 		cid,
-	// 	})
-	// 	generatedDirectLink.value = shareableLink.data.data
-	// } catch (ex) {
-	// 	handleError(ex)
-	// }
+async function generateShareableLink() {
+	generatedDirectLink.value = await createShareableLink(props.id);
+	generatedBlogchainLink.value = `https://blogchain.app/post/${props.id}`;
 	isLoading.value = false;
 }
 
@@ -123,8 +109,9 @@ function mailShare() {
 		}%0D%0A%0D%0A${generatedDirectLink.value}`,
 	);
 }
-
-generateLinks();
+onMounted(async (): Promise<void> => {
+	generateShareableLink();
+});
 </script>
 
 <template>
