@@ -144,6 +144,9 @@ profilesStore.fetchProfile(props.fetchedPost.post.authorID);
 					/>
 				</div>
 				<ProfileCardHeader :author-i-d="author.id" :author-name="author.name" :is-hover-card="true" />
+				<span v-if="author.bio !== ``" class="mt-2 dark:text-darkPrimaryText">
+					{{ author.bio.slice(0, 150) + (author.bio.length > 150 ? '...' : '') }}
+				</span>
 			</div>
 			<!-- bookmark -->
 			<div class="relative flex items-center">
