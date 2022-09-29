@@ -12,7 +12,6 @@ export interface Posts {
 		limit: number;
 		noMorePosts: boolean;
 		timeframe: Timeframe;
-		isLoading: boolean;
 	};
 	profilePosts: Map<string, string[]>;
 	categoryPosts: Map<string, string[]>;
@@ -29,7 +28,6 @@ export const usePostsStore = defineStore(`posts`, {
 				currentOffset: 0,
 				limit: 10,
 				noMorePosts: false,
-				isLoading: false,
 				timeframe: Timeframe.MONTH,
 			},
 			profilePosts: new Map<string, string[]>(),
@@ -163,11 +161,7 @@ export const usePostsStore = defineStore(`posts`, {
 				return [];
 			}
 		},
-		async fetchHomePosts(shouldReset = false): Promise<IGenericPostResponse[]> {
-			if (this.homeFeed.isLoading) {
-				return [];
-			}
-			this.homeFeed.isLoading = true;
+		async fetchHomePosts(): Promise<IGenericPostResponse[]> {
 			// Set up payload
 			const id = useStore().$state.id;
 			const timeframe = this.homeFeed.timeframe !== Timeframe.ALL_TIME ? this.homeFeed.timeframe : undefined;
@@ -182,10 +176,6 @@ export const usePostsStore = defineStore(`posts`, {
 			// Send request
 			try {
 				const res = await getPosts(timePayload, bookmarker, payload);
-				// Emptying posts when algorithm is changed
-				if (shouldReset) {
-					this.emptyPosts();
-				}
 				// Add to store
 				for (const post of res) {
 					this.$state.posts.set(post.post._id as string, post);
@@ -193,8 +183,7 @@ export const usePostsStore = defineStore(`posts`, {
 				if (res.length < this.homeFeed.limit) {
 					this.homeFeed.noMorePosts = true;
 				}
-				this.homeFeed.currentOffset = this.$state.posts.size;
-				this.homeFeed.isLoading = false;
+				this.homeFeed.currentOffset = this.homeFeed.currentOffset + this.homeFeed.limit;
 				return res;
 			} catch (error) {
 				handleError(error);
@@ -208,7 +197,7 @@ export const usePostsStore = defineStore(`posts`, {
 			this.homeFeed.algorithm = algorithm;
 			this.homeFeed.currentOffset = 0;
 			this.homeFeed.noMorePosts = false;
-			await this.fetchHomePosts(true);
+			await this.fetchHomePosts();
 		},
 		async setTimeframe(timeframe: Timeframe) {
 			if (this.homeFeed.timeframe === timeframe) {
@@ -217,10 +206,7 @@ export const usePostsStore = defineStore(`posts`, {
 			this.homeFeed.timeframe = timeframe;
 			this.homeFeed.currentOffset = 0;
 			this.homeFeed.noMorePosts = false;
-			await this.fetchHomePosts(true);
-		},
-		emptyPosts() {
-			this.$state.posts = new Map();
+			await this.fetchHomePosts();
 		},
 	},
 });

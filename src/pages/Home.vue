@@ -1,43 +1,65 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
+import { storeToRefs } from 'pinia';
 import ChevronUp from '@/components/icons/ChevronUp.vue';
 import ChevronDown from '@/components/icons/ChevronDown.vue';
-import { storeToRefs } from 'pinia';
-import { usePostsStore } from '@/store/posts';
-import { useRootStore } from '@/store/index';
 import { Algorithm, Timeframe, readableTimeframe, IGenericPostResponse } from '@/backend/post';
 import PostCardContainer from '@/components/post/PostCardContainer.vue';
 import OnboardingWizard from '@/components/popups/OnboardingWizard.vue';
+import BrandedButton from '@/components/BrandedButton.vue';
+import { usePostsStore } from '@/store/posts';
+import { useRootStore } from '@/store/index';
+import { useStore } from '@/store/session';
+import { useConnectionsStore } from '@/store/connections';
 
 // refs
 const showAlgorithmDropdown = ref<boolean>(false);
 const postsStore = usePostsStore();
 const rootStore = useRootStore();
+const store = useStore();
+const connectionsStore = useConnectionsStore();
 const { homeFeed, displayTimeframe } = storeToRefs(postsStore);
 const scrollContainer = ref<HTMLElement | null>(null);
+const isLoading = ref<boolean>(false);
 const homePosts = ref<IGenericPostResponse[]>([]);
+const following = computed(() => connectionsStore.getConnections(store.$state.id)?.following);
 
 const scrollListener = async (e: Event) => {
-	if (homeFeed.value.isLoading) {
+	if (isLoading.value) {
 		return;
 	}
-
 	const { scrollTop, scrollHeight, clientHeight } = e.target as HTMLElement;
 	if (scrollTop + clientHeight >= scrollHeight - 5) {
-		await postsStore.fetchHomePosts();
+		const newPosts = await usePostsStore().fetchHomePosts();
+		homePosts.value = homePosts.value.concat(newPosts);
 	}
 };
 
+const handleFeedSwitch = async (alg: Algorithm, timeframe?: Timeframe) => {
+	if (alg === postsStore.homeFeed.algorithm && !timeframe) {
+		return;
+	}
+	if (alg === `TOP` && timeframe) {
+		postsStore.setTimeframe(timeframe);
+	}
+	if (postsStore.homeFeed.algorithm !== alg || timeframe) {
+		homePosts.value = [];
+	}
+	postsStore.setAlgorithm(alg);
+	const newPosts = await usePostsStore().fetchHomePosts();
+	homePosts.value = homePosts.value.concat(newPosts);
+};
+
 onMounted(async () => {
+	isLoading.value = true;
 	homePosts.value = await usePostsStore().fetchHomePosts();
+	isLoading.value = false;
 	document.addEventListener(`click`, (e) => {
-		// Dropdown is closed
 		if (!showAlgorithmDropdown.value) {
 			return;
 		}
 		showAlgorithmDropdown.value = false;
 	});
-
 	if (scrollContainer.value) {
 		scrollContainer.value.addEventListener('scroll', scrollListener);
 	}
@@ -52,21 +74,21 @@ onMounted(async () => {
 					homeFeed.algorithm === Algorithm.FOLLOWING ? ` text-primary font-semibold` : `text-gray5 dark:text-gray3`
 				"
 				class="flex items-center focus:outline-none h-full w-full py-4 px-6"
-				@click="postsStore.setAlgorithm(Algorithm.FOLLOWING)"
+				@click="handleFeedSwitch(Algorithm.FOLLOWING)"
 			>
 				Following
 			</button>
 			<button
 				:class="homeFeed.algorithm === Algorithm.NEW ? ` text-primary font-semibold` : `text-gray5 dark:text-gray3`"
 				class="flex items-center px-6 focus:outline-none h-full w-full py-4"
-				@click="postsStore.setAlgorithm(Algorithm.NEW)"
+				@click="handleFeedSwitch(Algorithm.NEW)"
 			>
 				New
 			</button>
 			<button
 				:class="homeFeed.algorithm === Algorithm.TOP ? ` text-primary font-semibold` : `text-gray5 dark:text-gray3`"
 				class="flex items-center focus:outline-none h-full w-full py-4 px-6"
-				@click="postsStore.setAlgorithm(Algorithm.TOP)"
+				@click="handleFeedSwitch(Algorithm.TOP)"
 			>
 				Top
 			</button>
@@ -90,14 +112,14 @@ onMounted(async () => {
 				style="margin-top: 40px"
 			>
 				<div
-					v-for="timeframe in [Timeframe.DAY, Timeframe.WEEK, Timeframe.MONTH, Timeframe.YEAR, Timeframe.ALL_TIME]"
+					v-for="timeframe in [Timeframe.WEEK, Timeframe.MONTH, Timeframe.YEAR, Timeframe.ALL_TIME]"
 					:key="timeframe"
 					class="hotzone flex justify-start items-start flex-col dark:text-gray3"
 				>
 					<button
 						:class="homeFeed.timeframe === timeframe ? ` text-primary font-semibold` : `text-gray5 dark:text-gray3`"
 						class="hotzone focus:outline-none my-1 px-2 whitespace-nowrap"
-						@click="postsStore.setTimeframe(timeframe)"
+						@click="handleFeedSwitch(Algorithm.TOP, timeframe)"
 					>
 						{{ readableTimeframe(timeframe) }}
 					</button>
@@ -110,9 +132,39 @@ onMounted(async () => {
 		ref="scrollContainer"
 		class="min-h-115 h-115 lg:min-h-210 lg:h-210 xl:min-h-220 xl:h-220 w-full overflow-y-auto lg:overflow-y-hidden relative"
 	>
+		<!-- Not following anyone -->
+		<div
+			v-if="
+				!isLoading && postsStore.homeFeed.algorithm === `FOLLOWING` && following?.size === 0 && homePosts.length === 0
+			"
+			class="relative h-full overflow-y-hidden"
+		>
+			<div class="flex flex-col justify-center p-12">
+				<h2 class="text-center text-2xl font-semibold dark:text-darkPrimaryText">Welcome 🚀</h2>
+				<p class="text-gray5 dark:text-gray3 mb-5 mt-2 self-center text-center xl:mx-14">
+					It seems like you don't follow anyone yet. You can visit the Top feed to follow top rated content creators and
+					start your Blogchain experience!
+				</p>
+				<div class="flex justify-center">
+					<BrandedButton
+						:action="
+							() => {
+								handleFeedSwitch(Algorithm.TOP);
+							}
+						"
+						:text="`Top posts`"
+					/>
+				</div>
+			</div>
+			<img v-lazy="{ src: require(`@/assets/images/brand/follow-window.webp`) }" class="top-0 xl:mt-0" />
+		</div>
+
 		<div v-for="post in homePosts" :key="`new_${post.post._id}`">
 			<PostCardContainer :fetched-post="post" />
 		</div>
+		<p v-if="postsStore.homeFeed.noMorePosts" class="text-gray5 dark:text-gray3 py-5 text-center text-sm">
+			No more posts
+		</p>
 	</div>
 	<!-- Onboarding Wizard -->
 	<OnboardingWizard v-if="rootStore.$state.recentlyJoined" />
