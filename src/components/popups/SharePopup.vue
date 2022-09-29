@@ -3,9 +3,9 @@ import { toastError, toastSuccess } from '../../plugins/toast';
 import { onMounted, ref } from 'vue';
 import { createPostExcerpt } from '@/helpers/post';
 import { createShareableLink } from '@/backend/shareable_links';
+import { sanitizeUrl } from '@braintree/sanitize-url';
 
 import IpfsImage from '@/components/IpfsImage.vue';
-
 import CloseIcon from '../icons/CloseIcon.vue';
 import TwitterIcon from '../icons/brands/solid/Twitter.vue';
 import FacebookIcon from '../icons/brands/solid/Facebook.vue';
@@ -80,33 +80,39 @@ async function generateShareableLink() {
 
 function twitterShare() {
 	window.open(
-		`https://twitter.com/share?url=${encodeURIComponent(
-			generatedDirectLink.value.toString(),
-		)}&hashtags=blogchain&text=${props.title} by ${props.authorid}`,
+		sanitizeUrl(
+			`https://twitter.com/share?url=${encodeURIComponent(
+				generatedDirectLink.value.toString(),
+			)}&hashtags=blogchain&text=${props.title} by ${props.authorid}`,
+		),
 	);
 }
 
 function facebookShare() {
-	window.open(`https://www.facebook.com/sharer/sharer.php?u=${generatedDirectLink.value}`);
+	window.open(sanitizeUrl(`https://www.facebook.com/sharer/sharer.php?u=${generatedDirectLink.value}`));
 }
 
 function redditShare() {
-	window.open(`https://reddit.com/submit?url=${generatedDirectLink.value}&title=${props.title}`);
+	window.open(sanitizeUrl(`https://reddit.com/submit?url=${generatedDirectLink.value}&title=${props.title}`));
 }
 
 function linkedinShare() {
 	window.open(
-		`https://www.linkedin.com/shareArticle?url=${generatedDirectLink.value}&title=${props.title}&summary=${
-			props.subtitle ? props.subtitle : createPostExcerpt(props.excerpt)
-		}&source=blogchain.app`,
+		sanitizeUrl(
+			`https://www.linkedin.com/shareArticle?url=${generatedDirectLink.value}&title=${props.title}&summary=${
+				props.subtitle ? props.subtitle : createPostExcerpt(props.excerpt)
+			}&source=blogchain.app`,
+		),
 	);
 }
 
 function mailShare() {
 	window.open(
-		`mailto:?subject=${props.title}&body=${
-			props.subtitle ? props.subtitle : createPostExcerpt(props.excerpt)
-		}%0D%0A%0D%0A${generatedDirectLink.value}`,
+		sanitizeUrl(
+			`mailto:?subject=${props.title}&body=${
+				props.subtitle ? props.subtitle : createPostExcerpt(props.excerpt)
+			}%0D%0A%0D%0A${generatedDirectLink.value}`,
+		),
 	);
 }
 onMounted(async (): Promise<void> => {

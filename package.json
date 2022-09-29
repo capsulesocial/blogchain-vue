@@ -12,6 +12,7 @@
 		"format": "prettier .  --write"
 	},
 	"dependencies": {
+		"@braintree/sanitize-url": "^6.0.0",
 		"@capsulesocial/capsule-config": "^1.2.7",
 		"@capsulesocial/ipfs-wrapper": "1.1.0",
 		"@stripe/stripe-js": "^1.37.0",
