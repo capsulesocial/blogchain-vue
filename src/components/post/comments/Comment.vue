@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useStoreSettings } from '@/store/settings';
 import { faces, IFace } from '@/config/faces';
 import type { Profile } from '@/backend/profile';
 import { feelings } from '@/config/config';
 import { formatDate } from '@/helpers/helpers';
 import { useStore } from '@/store/session';
+import { useCommentsStore } from '@/store/comments';
 import { ICommentData } from '@/backend/comment';
 import MoreIcon from '@/components/icons/MoreIcon.vue';
 import BinIcon from '@/components/icons/BinIcon.vue';
@@ -13,11 +14,13 @@ import Reply from '@/components/post/comments/Reply.vue';
 
 const settings = useStoreSettings();
 const store = useStore();
+const commentStore = useCommentsStore();
 
 // comment
 const emotion = ref<IFace>(faces.sad);
 const showLabel = ref<boolean>(false);
-const content = ref<string>(`this is a default comment`);
+const comments = computed(() => commentStore.$state.comments);
+commentStore.fetchComments(`bafyreigzq766egtiatnxqred6n6fwf2f5f663dhv7fby7c3qg6r2ef22mi`, 0, 10);
 const replies = ref<ICommentData[]>([
 	{
 		authorID: `jackistesting`,
@@ -145,7 +148,7 @@ function toggleDropdownDelete() {
 									</div>
 									<!-- Text comment -->
 									<p class="break-words w-4/5 py-1 mb-6 font-sans leading-relaxed dark:text-darkPrimaryText">
-										<span style="white-space: pre-line">{{ content }}</span>
+										<span style="white-space: pre-line">{{ comments }}</span>
 									</p>
 
 									<!-- Reply button -->

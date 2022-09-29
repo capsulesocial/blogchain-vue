@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import { feelings } from '@/config/config';
 import { faceGroupings, IFace } from '@/config/faces';
 import { useStore } from '@/store/session';
+import { useCommentsStore } from '@/store/comments';
 import { useStoreSettings } from '@/store/settings';
 import { toastWarning, toastError } from '@/plugins/toast';
 import Avatar from '@/components/Avatar.vue';
@@ -10,12 +11,16 @@ import CloseIcon from '@/components/icons/CloseIcon.vue';
 import SendIcon from '@/components/icons/SendIcon.vue';
 import BrandedButton from '@/components/BrandedButton.vue';
 
+import { createComment } from '@/backend/comment';
+
+const commentStore = useCommentsStore();
 const store = useStore();
 const settings = useStoreSettings();
 
 const props = withDefaults(
 	defineProps<{
 		commentsCount: number;
+		cid: string;
 	}>(),
 	{},
 );
@@ -76,12 +81,15 @@ function cancelEmotion() {
 	selectedEmotion.value = { label: ``, light: null, dark: null };
 }
 
-function sendComment() {
+async function sendComment(): Promise<void> {
 	if (activeEmotion.value.label === ``) {
 		toastError(`You must select a reaction before posting`);
 		return;
 	}
-	// TODO send comment request
+	const c = createComment(store.$state.id, comment.value, selectedEmotion.value.label, props.cid);
+	await commentStore.sendUserComment(c, `comment`);
+	comment.value = ``;
+	selectedEmotion.value.label = ``;
 }
 </script>
 

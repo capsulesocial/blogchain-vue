@@ -437,7 +437,7 @@ function isReposted() {
 						<CommentFilter :filter="filter" class="modal-animation" @clicked="setFilter" />
 					</div>
 					<!-- Comment editor -->
-					<CommentEditor :comments-count="postMetadata.commentsCount" />
+					<CommentEditor :comments-count="postMetadata.commentsCount" :cid="cid" />
 					<!-- Comments -->
 					<div v-for="i in 20" :key="i"><Comment class="mb-4" /></div>
 				</article>
