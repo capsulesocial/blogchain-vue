@@ -3,6 +3,7 @@ import { onBeforeMount, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
+import { useCommentsStore } from '@/store/comments';
 import { AxiosError } from 'axios';
 import { toastError, toastWarning, toastSuccess } from '@/plugins/toast';
 import {
@@ -15,6 +16,7 @@ import {
 	getDecryptedContent,
 	verifyPostAuthenticity,
 } from '@/backend/post';
+import { ICommentData } from '@/backend/comment';
 
 import ReaderView from '@/components/post/reader/ReaderView.vue';
 import TagCard from '@/components/TagCard.vue';
@@ -43,6 +45,7 @@ import WarningPopup from '@/components/popups/WarningPopup.vue';
 
 const store = useStore();
 const settings = useStoreSettings();
+const commentStore = useCommentsStore();
 const router = useRouter();
 const cid = ref<string>(router.currentRoute.value.params.post as string);
 const post = ref<ISignedIPFSObject<Post>>();
@@ -65,9 +68,15 @@ const showQuote = ref<boolean>(false);
 const showPhoto = ref<boolean>(false);
 const lastScroll = ref<number>(0);
 const filter = ref<string>(``);
+const offset = ref<number>(0);
+const limit = ref<number>(10);
+const postComments = ref<ICommentData[]>();
 
-// Functions
-const toggleFriend = () => {};
+// methods
+
+function toggleFriend() {
+	return;
+}
 // const getBookmarkStatus = () => {};
 
 const fetchPostMetadata = async (cid: string, currentUser?: string) => {
@@ -157,6 +166,8 @@ onBeforeMount(async () => {
 		return;
 	}
 	wordCount.value = wordcount;
+	const res = await commentStore.fetchComments(cid.value, offset.value, limit.value);
+	postComments.value = res;
 });
 
 onMounted(async () => {
@@ -439,7 +450,9 @@ function isReposted() {
 					<!-- Comment editor -->
 					<CommentEditor :comments-count="postMetadata.commentsCount" :cid="cid" />
 					<!-- Comments -->
-					<div v-for="i in 20" :key="i"><Comment class="mb-4" /></div>
+					<div v-for="postComment in postComments" :key="postComment._id">
+						<Comment class="mb-4" :post-comment="postComment" />
+					</div>
 				</article>
 				<!-- Stats -->
 				<article v-if="postMetadata && !showPaywall && showStats" class="pb-14">

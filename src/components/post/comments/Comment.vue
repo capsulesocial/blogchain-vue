@@ -1,56 +1,43 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, onBeforeMount, computed } from 'vue';
 import { useStoreSettings } from '@/store/settings';
 import { faces, IFace } from '@/config/faces';
-import type { Profile } from '@/backend/profile';
+// import type { Profile } from '@/backend/profile';
 import { feelings } from '@/config/config';
-import { formatDate } from '@/helpers/helpers';
 import { useStore } from '@/store/session';
+import { useProfilesStore } from '@/store/profiles';
 import { useCommentsStore } from '@/store/comments';
-import { ICommentData } from '@/backend/comment';
+
 import MoreIcon from '@/components/icons/MoreIcon.vue';
 import BinIcon from '@/components/icons/BinIcon.vue';
 import Reply from '@/components/post/comments/Reply.vue';
+import Avatar from '@/components/Avatar.vue';
+import { formatDate } from '@/helpers/helpers';
 
+import { ICommentData } from '@/backend/comment';
+
+const props = withDefaults(
+	defineProps<{
+		postComment: ICommentData;
+	}>(),
+	{},
+);
 const settings = useStoreSettings();
 const store = useStore();
 const commentStore = useCommentsStore();
+const profilesStore = useProfilesStore();
 
 // comment
 const emotion = ref<IFace>(faces.sad);
 const showLabel = ref<boolean>(false);
-const comments = computed(() => commentStore.$state.comments);
-commentStore.fetchComments(`bafyreigzq766egtiatnxqred6n6fwf2f5f663dhv7fby7c3qg6r2ef22mi`, 0, 10);
-const replies = ref<ICommentData[]>([
-	{
-		authorID: `jackistesting`,
-		_id: `szfkbjkaaefonqnef`,
-		timestamp: 13047013,
-		parentCID: `aepfjanfoeaofae`,
-		emotion: `admiration`,
-	},
-	{
-		authorID: `jackistesting`,
-		_id: `aekjfaofneofnoao`,
-		timestamp: 13047013,
-		parentCID: `aepfjanfoeaofae`,
-		emotion: `admiration`,
-	},
-]);
+const comment = ref();
+
+const replies = ref<ICommentData[]>([]);
 // todo: regroup those 2 into a fetched post of type IGenericPostResponse
 const postAuthor = ref<string>(`jackistesting`);
 const timestamp = ref<number>(13392);
 // --
-const commentAuthor = ref<Profile>({
-	id: `jackistesting`,
-	name: `Jack Dishman`,
-	email: `tb12@gmail.com`,
-	bio: `6-time super bowl champion`,
-	location: `Tampa Bay`,
-	avatar: ``,
-	socials: [],
-	website: `tb12.com`,
-});
+const commentAuthor = computed(() => profilesStore.getProfile(props.postComment.authorID));
 
 const showReplies = ref<boolean>(false);
 const showDelete = ref<boolean>(false);
@@ -59,6 +46,12 @@ const commentDeleted = ref<boolean>(false);
 // replies
 const reply = ref<string>(``);
 const replyInputHeight = ref<number>(64);
+
+onBeforeMount(async () => {
+	const res = await commentStore.fetchComment(props.postComment._id);
+	comment.value = res;
+	void profilesStore.fetchProfile(props.postComment.authorID);
+});
 
 function handleResize(e: any) {
 	if (e.srcElement.clientHeight !== e.srcElement.scrollHeight) {
@@ -80,13 +73,12 @@ function toggleDropdownDelete() {
 		<div class="mt-2 flex w-full">
 			<!-- Desktop avatar -->
 			<div class="mr-4 hidden items-start justify-between lg:flex">
-				<!-- <Avatar
-					:cid="avatar"
-					:authorid="authorID"
+				<Avatar
+					:cid="commentAuthor.avatar"
+					:authorid="commentAuthor.id"
 					size="w-12 h-12"
 					style="margin-top: 2px; margin-left: 2px; margin-right: 2px"
-				/> -->
-				<div class="w-10 h-10 rounded-lg bg-gray1 animate-pulse hidden lg:flex"></div>
+				/>
 			</div>
 			<div class="flex flex-col w-full">
 				<!-- Comment -->
@@ -109,10 +101,10 @@ function toggleDropdownDelete() {
 								<span v-if="commentAuthor.name != ``" class="font-semibold dark:text-darkPrimaryText">
 									{{ commentAuthor.name }}
 								</span>
-								<span v-else class="text-gray5 dark:text-gray3 font-semibold">{{ commentAuthor.id }}</span>
-								<span class="text-gray5 dark:text-gray3 ml-2 text-sm"> @{{ commentAuthor.id }} </span>
+								<span v-else class="text-gray5 dark:text-gray3 font-semibold">{{ props.postComment.authorID }}</span>
+								<span class="text-gray5 dark:text-gray3 ml-2 text-sm"> @{{ props.postComment.authorID }} </span>
 								<span
-									v-if="commentAuthor.id === postAuthor"
+									v-if="props.postComment.authorID === postAuthor"
 									class="bg-gray1 dark:bg-lightBG dark:text-darkPrimaryText ml-2 rounded-2xl dark:bg-opacity-25 py-1 px-2 text-xs"
 								>
 									Author
@@ -120,7 +112,7 @@ function toggleDropdownDelete() {
 							</router-link>
 							<div class="h-1 w-1 bg-gray5 mr-2 rounded-xl"></div>
 							<span v-if="timestamp" class="self-center text-xs dark:text-gray3 mb-2 lg:mt-2">
-								{{ formatDate(timestamp) }}
+								{{ formatDate(props.postComment.timestamp) }}
 							</span>
 						</div>
 						<!-- Content -->
@@ -148,7 +140,7 @@ function toggleDropdownDelete() {
 									</div>
 									<!-- Text comment -->
 									<p class="break-words w-4/5 py-1 mb-6 font-sans leading-relaxed dark:text-darkPrimaryText">
-										<span style="white-space: pre-line">{{ comments }}</span>
+										<span style="white-space: pre-line">{{ comment.content }}</span>
 									</p>
 
 									<!-- Reply button -->
@@ -179,7 +171,7 @@ function toggleDropdownDelete() {
 						</div>
 					</div>
 					<button
-						v-if="store.$state.id === commentAuthor.id || store.$state.id === postAuthor"
+						v-if="store.$state.id === props.postComment.authorID || store.$state.id === postAuthor"
 						class="focus:outline-none absolute top-0 right-0 flex-col justify-start text-gray5 dark:text-gray3 pt-2 pr-3"
 						@click.stop="toggleDropdownDelete"
 					>
@@ -231,7 +223,7 @@ function toggleDropdownDelete() {
 						<Reply
 							v-for="r in filterReplies()"
 							:key="r._id"
-							:commenter-i-d="commentAuthor.id"
+							:commenter-i-d="props.postComment.authorID"
 							:authorid="r.authorID"
 							:cid="r._id"
 							:timestamp="r.timestamp"
