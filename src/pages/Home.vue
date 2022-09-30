@@ -7,6 +7,7 @@ import { Algorithm, Timeframe, readableTimeframe, IGenericPostResponse } from '@
 import PostCardContainer from '@/components/post/PostCardContainer.vue';
 import OnboardingWizard from '@/components/popups/OnboardingWizard.vue';
 import BrandedButton from '@/components/BrandedButton.vue';
+import ReloadIcon from '@/components/icons/ReloadIcon.vue';
 import { usePostsStore } from '@/store/posts';
 import { useRootStore } from '@/store/index';
 import { useStore } from '@/store/session';
@@ -51,6 +52,12 @@ const handleFeedSwitch = async (alg: Algorithm, timeframe?: Timeframe) => {
 };
 
 onMounted(async () => {
+	if (postsStore.$state.homeFeed.savedOffset > 0) {
+		postsStore.$state.homeFeed.currentOffset = postsStore.$state.homeFeed.savedOffset;
+		postsStore.$state.homeFeed.savedOffset = 0;
+	} else {
+		postsStore.$state.homeFeed.currentOffset = 0;
+	}
 	isLoading.value = true;
 	homePosts.value = await usePostsStore().fetchHomePosts();
 	isLoading.value = false;
@@ -158,6 +165,21 @@ onMounted(async () => {
 			</div>
 			<img v-lazy="{ src: require(`@/assets/images/brand/follow-window.webp`) }" class="top-0 xl:mt-0" />
 		</div>
+		<!-- If saved offset is > 0 -->
+		<button
+			v-if="postsStore.$state.homeFeed.savedOffset !== 0"
+			ref="reload"
+			class="flex w-full justify-center items-center text-sm text-primary py-2 hover:bg-gray1 dark:hover:bg-darkBG hover:bg-opacity-25 dark:hover:bg-opacity-25 transition ease-in-out"
+			@click="
+				() => {
+					postsStore.$state.homeFeed.savedOffset = 0;
+					usePostsStore().fetchHomePosts();
+				}
+			"
+		>
+			<ReloadIcon class="mr-2 w-4 h-4" />
+			Load newest posts
+		</button>
 
 		<div v-for="post in homePosts" :key="`new_${post.post._id}`">
 			<PostCardContainer :fetched-post="post" />
