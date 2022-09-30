@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, onMounted, ref } from 'vue';
+import { onBeforeMount, onMounted, ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
@@ -16,7 +16,6 @@ import {
 	getDecryptedContent,
 	verifyPostAuthenticity,
 } from '@/backend/post';
-import { ICommentData } from '@/backend/comment';
 
 import ReaderView from '@/components/post/reader/ReaderView.vue';
 import TagCard from '@/components/TagCard.vue';
@@ -70,7 +69,7 @@ const lastScroll = ref<number>(0);
 const filter = ref<string>(``);
 const offset = ref<number>(0);
 const limit = ref<number>(10);
-const postComments = ref<ICommentData[]>();
+const postComments = computed(() => commentStore.$state.comments);
 
 // methods
 
@@ -166,8 +165,7 @@ onBeforeMount(async () => {
 		return;
 	}
 	wordCount.value = wordcount;
-	const res = await commentStore.fetchComments(cid.value, offset.value, limit.value);
-	postComments.value = res;
+	void (await commentStore.fetchComments(cid.value, offset.value, limit.value));
 });
 
 onMounted(async () => {

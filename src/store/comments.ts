@@ -1,10 +1,14 @@
 import { defineStore } from 'pinia';
-import { getCommentsOfPost, sendComment, INewCommentData, getComment } from '@/backend/comment';
+import { ref } from 'vue';
+import { getCommentsOfPost, sendComment, INewCommentData, getComment, ICommentData } from '@/backend/comment';
 import { handleError, toastSuccess } from '@/plugins/toast';
 
 export const useCommentsStore = defineStore(`comments`, {
 	state: () => {
-		return {};
+		const comments = ref<ICommentData[]>([]);
+		return {
+			comments,
+		};
 	},
 	persist: false,
 	getters: {},
@@ -15,6 +19,7 @@ export const useCommentsStore = defineStore(`comments`, {
 			}
 			try {
 				const fcomments = await getCommentsOfPost(postCid, offset, limit);
+				this.comments = fcomments;
 				return fcomments;
 			} catch (error: unknown) {
 				handleError(error);
@@ -27,6 +32,7 @@ export const useCommentsStore = defineStore(`comments`, {
 			try {
 				const _id = await sendComment(content, type);
 				if (_id) {
+					this.comments.push({ _id, ...content });
 					toastSuccess(type === `comment` ? `Comment sent successfully 🎉  ` : `Reply sent successfully 🎉  `);
 				}
 			} catch (error: unknown) {
@@ -44,5 +50,6 @@ export const useCommentsStore = defineStore(`comments`, {
 				handleError(error);
 			}
 		},
+		async deleteComment() {},
 	},
 });

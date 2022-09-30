@@ -14,7 +14,7 @@ import Reply from '@/components/post/comments/Reply.vue';
 import Avatar from '@/components/Avatar.vue';
 import { formatDate } from '@/helpers/helpers';
 
-import { ICommentData } from '@/backend/comment';
+import { INewCommentData, ICommentData } from '@/backend/comment';
 
 const props = withDefaults(
 	defineProps<{
@@ -30,7 +30,7 @@ const profilesStore = useProfilesStore();
 // comment
 const emotion = ref<IFace>(faces.sad);
 const showLabel = ref<boolean>(false);
-const comment = ref();
+const comment = ref<INewCommentData>();
 
 const replies = ref<ICommentData[]>([]);
 // todo: regroup those 2 into a fetched post of type IGenericPostResponse
@@ -50,6 +50,7 @@ const replyInputHeight = ref<number>(64);
 onBeforeMount(async () => {
 	const res = await commentStore.fetchComment(props.postComment._id);
 	comment.value = res;
+	emotion.value = faces[res?.emotion];
 	void profilesStore.fetchProfile(props.postComment.authorID);
 });
 
@@ -140,7 +141,7 @@ function toggleDropdownDelete() {
 									</div>
 									<!-- Text comment -->
 									<p class="break-words w-4/5 py-1 mb-6 font-sans leading-relaxed dark:text-darkPrimaryText">
-										<span style="white-space: pre-line">{{ comment.content }}</span>
+										<span style="white-space: pre-line">{{ comment?.content }}</span>
 									</p>
 
 									<!-- Reply button -->
