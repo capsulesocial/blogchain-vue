@@ -88,7 +88,7 @@ function openDeleteDropdown() {
 			</div>
 			<div class="relative flex w-full items-center justify-center lg:w-1/5 lg:justify-end">
 				<!-- Bookmarks button -->
-				<BookmarkButton :has-bookmark="props.bookmarked" />
+				<BookmarkButton :has-bookmark="props.bookmarked" :postcid="props.id" />
 				<button
 					v-if="author.id === store.$state.id"
 					class="focus:outline-none text-gray5 dark:text-gray3 ml-2"

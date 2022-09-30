@@ -150,7 +150,7 @@ profilesStore.fetchProfile(props.fetchedPost.post.authorID);
 			</div>
 			<!-- bookmark -->
 			<div class="relative flex items-center">
-				<BookmarkButton :has-bookmark="fetchedPost.bookmarked" />
+				<BookmarkButton :has-bookmark="fetchedPost.bookmarked" :postcid="fetchedPost.post._id" />
 				<button
 					v-if="fetchedPost.post.authorID === store.$state.id"
 					class="focus:outline-none text-gray5 dark:text-gray3 ml-2"

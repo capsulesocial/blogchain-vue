@@ -3,6 +3,7 @@ import BookmarkIcon from '@/components/icons/BookmarkIcon.vue';
 withDefaults(
 	defineProps<{
 		hasBookmark: boolean;
+		postcid: string;
 	}>(),
 	{},
 );
@@ -14,6 +15,6 @@ withDefaults(
 		style="margin-top: 2px"
 		@click="() => {}"
 	>
-		<BookmarkIcon />
+		<BookmarkIcon :is-active="hasBookmark" />
 	</button>
 </template>

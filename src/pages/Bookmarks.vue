@@ -2,6 +2,7 @@
 import { computed, onBeforeMount, onMounted, ref } from 'vue';
 import SimpleFeedCard from '@/components/post/SimpleFeedCard.vue';
 import BookmarksFilter from '@/components/BookmarksFilter.vue';
+import BookmarksIcon from '@/components/icons/BookmarkIcon.vue';
 import SecondaryButton from '@/components/SecondaryButton.vue';
 import { BookmarkSort } from '@/backend/bookmarks';
 import { usePostsStore } from '@/store/posts';
@@ -51,7 +52,7 @@ onMounted(() => {
 					style="max-width: 400px"
 				>
 					You can bookmark any post by clicking the<span>
-						<BookmarkIcon class="h-5 w-5 fill-current" />
+						<BookmarksIcon class="h-5 w-5 fill-current" />
 					</span>
 					icon:
 				</p>
