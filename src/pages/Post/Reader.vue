@@ -439,7 +439,8 @@ function isReposted() {
 					<div class="flex w-full justify-between pb-5">
 						<div class="flex flex-row items-center">
 							<span v-if="postMetadata" class="pr-2 font-semibold dark:text-darkPrimaryText"
-								>{{ postMetadata.commentsCount }} {{ postMetadata.commentsCount === 1 ? 'comment' : 'comments' }}</span
+								>{{ commentStore.$state.comments.length }}
+								{{ postMetadata.commentsCount === 1 ? 'comment' : 'comments' }}</span
 							>
 							<button class="focus:outline-none ml-2" @click="showStats = true"><StatsIcon /></button>
 						</div>
@@ -449,7 +450,7 @@ function isReposted() {
 					<CommentEditor :comments-count="postMetadata.commentsCount" :cid="cid" />
 					<!-- Comments -->
 					<div v-for="postComment in postComments" :key="postComment._id">
-						<Comment class="mb-4" :post-comment="postComment" />
+						<Comment class="mb-4" :post-comment="postComment" :cid="cid" />
 					</div>
 				</article>
 				<!-- Stats -->

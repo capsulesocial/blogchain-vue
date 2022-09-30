@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
+
 import { getCommentsOfPost, sendComment, INewCommentData, getComment, ICommentData } from '@/backend/comment';
+import { sendPostDeletion } from '@/backend/postDeletion';
 import { handleError, toastSuccess } from '@/plugins/toast';
 
 export const useCommentsStore = defineStore(`comments`, {
@@ -31,10 +33,21 @@ export const useCommentsStore = defineStore(`comments`, {
 			}
 			try {
 				const _id = await sendComment(content, type);
-				if (_id) {
+				if (type === `comment`) {
 					this.comments.push({ _id, ...content });
-					toastSuccess(type === `comment` ? `Comment sent successfully 🎉  ` : `Reply sent successfully 🎉  `);
 				}
+				toastSuccess(type === `comment` ? `Comment sent successfully 🎉  ` : `Reply sent successfully 🎉  `);
+			} catch (error: unknown) {
+				handleError(error);
+			}
+		},
+		async getCommentReplies(postCid: string, offset: number, limit: number) {
+			if (!postCid) {
+				return;
+			}
+			try {
+				const freplies = await getCommentsOfPost(postCid, offset, limit);
+				return freplies;
 			} catch (error: unknown) {
 				handleError(error);
 			}
@@ -50,6 +63,16 @@ export const useCommentsStore = defineStore(`comments`, {
 				handleError(error);
 			}
 		},
-		async deleteComment() {},
+		async removeComment(action: `HIDE`, postCID: string, authorID: string) {
+			if (!action || !postCID || !authorID) {
+				return;
+			}
+			try {
+				await sendPostDeletion(action, postCID, authorID);
+				toastSuccess(`This comment has been successfully removed`);
+			} catch (error) {
+				handleError(error);
+			}
+		},
 	},
 });

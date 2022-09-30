@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onBeforeMount, computed } from 'vue';
+import { ref, onBeforeMount, computed, onMounted } from 'vue';
 import { useStoreSettings } from '@/store/settings';
 import { faces, IFace } from '@/config/faces';
 // import type { Profile } from '@/backend/profile';
@@ -13,12 +13,16 @@ import BinIcon from '@/components/icons/BinIcon.vue';
 import Reply from '@/components/post/comments/Reply.vue';
 import Avatar from '@/components/Avatar.vue';
 import { formatDate } from '@/helpers/helpers';
+import { toastError } from '@/plugins/toast';
+import { qualityComment } from '@/plugins/quality';
+import { isError } from '@/plugins/helpers';
 
-import { INewCommentData, ICommentData } from '@/backend/comment';
+import { INewCommentData, ICommentData, createComment } from '@/backend/comment';
 
 const props = withDefaults(
 	defineProps<{
 		postComment: ICommentData;
+		cid: string;
 	}>(),
 	{},
 );
@@ -46,12 +50,20 @@ const commentDeleted = ref<boolean>(false);
 // replies
 const reply = ref<string>(``);
 const replyInputHeight = ref<number>(64);
+const repliseOffset = ref<number>(0);
+const repliseLimit = ref<number>(10);
 
 onBeforeMount(async () => {
 	const res = await commentStore.fetchComment(props.postComment._id);
 	comment.value = res;
 	emotion.value = faces[res?.emotion];
 	void profilesStore.fetchProfile(props.postComment.authorID);
+});
+
+onMounted(async () => {
+	const replyres = await commentStore.getCommentReplies(props.postComment._id, repliseOffset.value, repliseLimit.value);
+	replies.value = replyres;
+	console.log(replyres);
 });
 
 function handleResize(e: any) {
@@ -66,6 +78,24 @@ function filterReplies(): ICommentData[] {
 
 function toggleDropdownDelete() {
 	showDelete.value = !showDelete.value;
+}
+async function sendReply() {
+	if (reply.value === ``) {
+		toastError(`You must write a reply`);
+		return;
+	}
+	reply.value = reply.value.trim();
+	const replyQuality = qualityComment(reply.value);
+	if (isError(replyQuality)) {
+		toastError(replyQuality.error);
+		return;
+	}
+	const c = createComment(store.$state.id, reply.value, `no-emotion`, props.postComment.parentCID);
+	await commentStore.sendUserComment(c, `reply`);
+	reply.value = ``;
+}
+function deleteComment() {
+	commentStore.removeComment(`HIDE`, props.cid, store.$state.id);
 }
 </script>
 
@@ -185,7 +215,7 @@ function toggleDropdownDelete() {
 						style="top: 40px; right: 0px"
 					>
 						<!-- Delete -->
-						<button class="focus:outline-none text-negative flex">
+						<button class="focus:outline-none text-negative flex" @click="deleteComment">
 							<BinIcon class="w-4 h-4" />
 							<span class="text-negative self-center text-xs ml-1 mr-1">Remove this comment</span>
 						</button>
@@ -210,7 +240,11 @@ function toggleDropdownDelete() {
 						>
 						</textarea>
 						<span class="relative w-1/5 flex justify-end items-end">
-							<button v-if="reply !== ''" class="text-primary focus:outline-none text-left font-sans text-sm p-4">
+							<button
+								v-if="reply !== ''"
+								class="text-primary focus:outline-none text-left font-sans text-sm p-4"
+								@click="sendReply"
+							>
 								Post reply
 							</button>
 						</span>
