@@ -1,5 +1,5 @@
 import { Algorithm, getPosts, IGenericPostResponse, readableTimeframe, Timeframe } from '@/backend/post';
-import { getBookmarksOfUser } from '@/backend/bookmarks';
+import { getBookmarksOfUser, sendBookmarkEvent } from '@/backend/bookmarks';
 import { handleError } from '@/plugins/toast';
 import { defineStore } from 'pinia';
 import { useStore } from './session';
@@ -207,6 +207,16 @@ export const usePostsStore = defineStore(`posts`, {
 			this.homeFeed.currentOffset = 0;
 			this.homeFeed.noMorePosts = false;
 			await this.fetchHomePosts();
+		},
+		async handleBookmark(bookmark: boolean, authorID: string, postCID: string) {
+			const action: `ADD` | `REMOVE` = bookmark ? `ADD` : `REMOVE`;
+			try {
+				await sendBookmarkEvent(action, authorID, postCID);
+			} catch (err) {
+				throw new Error(err as string);
+			} finally {
+				this.fetchBookmarkedPosts(0);
+			}
 		},
 	},
 });

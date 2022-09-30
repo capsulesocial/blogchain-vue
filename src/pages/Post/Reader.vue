@@ -254,7 +254,7 @@ function isReposted() {
 						}}</router-link>
 						<div class="flex items-center">
 							<!-- Bookmark button -->
-							<BookmarkButton :has-bookmark="postMetadata.bookmarked" />
+							<BookmarkButton :has-bookmark="postMetadata.bookmarked" :postcid="postMetadata.post._id" />
 							<!-- Share popup button -->
 							<button
 								class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary ml-2 hover:fill-primary flex items-center"
@@ -373,7 +373,7 @@ function isReposted() {
 					<div class="flex flex-row justify-between">
 						<div class="flex items-center relative">
 							<!-- Bookmark button -->
-							<BookmarkButton :has-bookmark="postMetadata.bookmarked" />
+							<BookmarkButton :has-bookmark="postMetadata.bookmarked" :postcid="postMetadata.post._id" />
 							<!-- Repost button -->
 							<button
 								class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary dark:hover:text-primary ml-4 flex items-center"
