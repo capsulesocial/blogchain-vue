@@ -49,7 +49,11 @@ onMounted(async (): Promise<void> => {
 				></div>
 			</div>
 			<article v-if="!isLoading">
-				<div v-for="quote in reposts" :key="quote.post._id" class="flex flex-col">
+				<div
+					v-for="quote in reposts"
+					:key="quote.post._id"
+					class="flex flex-col border-b border-lightBorder dark:border-darkBorder my-4"
+				>
 					<QuoteListCard
 						:authorid="quote.repost.authorID"
 						:cid="quote.repost._id"

@@ -9,6 +9,7 @@ export interface Posts {
 	homeFeed: {
 		algorithm: Algorithm;
 		currentOffset: number;
+		savedOffset: number;
 		limit: number;
 		noMorePosts: boolean;
 		timeframe: Timeframe;
@@ -26,6 +27,7 @@ export const usePostsStore = defineStore(`posts`, {
 			homeFeed: {
 				algorithm: Algorithm.NEW,
 				currentOffset: 0,
+				savedOffset: 0,
 				limit: 10,
 				noMorePosts: false,
 				timeframe: Timeframe.MONTH,
