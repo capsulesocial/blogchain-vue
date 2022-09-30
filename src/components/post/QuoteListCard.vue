@@ -37,16 +37,10 @@ onMounted(async () => {
 			<span class="mt-1 text-xs text-gray5 dark:text-gray3">{{ formatDate(props.timestamp) }}</span>
 		</div>
 	</div>
-	<div
-		v-if="content"
-		class="my-4 pb-4 border-b border-lightBorder dark:border-darkBorder text-lightPrimaryText dark:text-darkPrimaryText"
-	>
+	<div v-if="content" class="pb-4 text-lightPrimaryText dark:text-darkPrimaryText">
 		{{ content }}
 	</div>
-	<div
-		v-else
-		class="my-4 pb-4 border-b border-lightBorder dark:border-darkBorder text-lightPrimaryText dark:text-darkPrimaryText"
-	>
+	<div v-else class="pb-4 text-lightPrimaryText dark:text-darkPrimaryText">
 		<div class="h-3 w-full rounded-xl bg-gray1 dark:bg-gray7 animate-pulse"></div>
 	</div>
 </template>

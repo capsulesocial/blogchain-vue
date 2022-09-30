@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, withDefaults } from 'vue';
+import { computed, onBeforeMount, ref, withDefaults } from 'vue';
 import Avatar from '@/components/Avatar.vue';
 import BookmarkButton from '@/components/post/BookmarkButton.vue';
 import MoreIcon from '@/components/icons/MoreIcon.vue';
@@ -14,7 +14,7 @@ import StatsIcon from '@/components/icons/StatsIcon.vue';
 import IpfsImage from '@/components/IpfsImage.vue';
 import FriendButton from '@/components/FriendButton.vue';
 import ProfileCardHeader from '@/components/post/ProfileCardHeader.vue';
-
+import QuoteListCard from '@/components/post/QuoteListCard.vue';
 import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
 import type { IGenericPostResponse } from '@/backend/post';
@@ -90,7 +90,9 @@ function triggerProfileCardTrue(): void {
 	showProfileCard.value = true;
 }
 
-profilesStore.fetchProfile(props.fetchedPost.post.authorID);
+onBeforeMount(() => {
+	profilesStore.fetchProfile(props.fetchedPost.post.authorID);
+});
 </script>
 
 <template>
@@ -98,6 +100,28 @@ profilesStore.fetchProfile(props.fetchedPost.post.authorID);
 		v-if="fetchedPost"
 		class="bg-lightBG dark:bg-darkBGStop dark:border-darkBG dark:border-opacity-25 border-opacity-75 py-4 px-5 xl:py-5 xl:px-6 transition ease-in-out hover:bg-hoverPost dark:hover:bg-darkBG dark:hover:bg-opacity-25"
 	>
+		<!-- Simple repost -->
+		<div
+			v-if="fetchedPost.repost && fetchedPost.repost.type === `simple`"
+			class="text-gray5 dark:text-gray3 -mt-2 mb-4 flex w-full items-center pt-2 lg:mb-3"
+		>
+			<RepostIcon class="hidden lg:block" style="width: 15px; height: 15px" :shrink="true" />
+			<p class="text-gray5 dark:text-gray3 hidden pl-2 text-sm lg:block">
+				<router-link v-if="fetchedPost.repost.authorID === store.$state.id" :to="`/id/` + store.$state.id"
+					>You</router-link
+				>
+				<router-link v-else :to="`/id/` + fetchedPost.repost.authorID">{{ fetchedPost.repost.authorID }}</router-link>
+				reposted
+			</p>
+		</div>
+		<!-- Quote repost -->
+		<div v-if="fetchedPost.repost && fetchedPost.repost.type === `quote`">
+			<QuoteListCard
+				:authorid="fetchedPost.repost.authorID"
+				:timestamp="fetchedPost.repost.timestamp"
+				:cid="fetchedPost.repost._id"
+			/>
+		</div>
 		<!-- Card profile header -->
 		<div class="flex w-full justify-between">
 			<div class="flex" @mouseover="triggerProfileCardTrue" @mouseleave="triggerProfileCardFalse">
