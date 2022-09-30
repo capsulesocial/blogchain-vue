@@ -122,229 +122,240 @@ onBeforeMount(() => {
 				:cid="fetchedPost.repost._id"
 			/>
 		</div>
-		<!-- Card profile header -->
-		<div class="flex w-full justify-between">
-			<div class="flex" @mouseover="triggerProfileCardTrue" @mouseleave="triggerProfileCardFalse">
-				<Avatar
-					:authorid="author.id"
-					:cid="author.avatar"
-					:size="`w-12 h-12`"
-					class="transition ease-in-out hover:opacity-75 modal-animation"
-				/>
-			</div>
-			<div class="ml-4 flex flex-grow flex-col">
-				<div class="flex flex-row">
-					<span
-						v-if="author.name !== ``"
-						class="text-base dark:text-darkPrimaryText transition ease-in-out hover:underline mr-2 font-medium"
-					>
-						{{ author.name }}
-					</span>
-					<span v-else class="text-gray5 dark:text-gray3 text-base transition ease-in-out hover:underline mr-2">
-						{{ author.id }}
-					</span>
-					<span class="text-gray5 dark:text-gray3"> @{{ author.id }} </span>
-				</div>
-				<!-- Timestamp and reading time -->
-				<TimestampAndReadingTime
-					class="flex flex-row mt-1 items-center"
-					:timestamp="fetchedPost.post.timestamp"
-					:word-count="fetchedPost.post.wordCount"
-					:number-of-post-images="fetchedPost.post.postImages?.length"
-				/>
-			</div>
-			<!-- hover profile card -->
-			<div
-				v-show="showProfileCard"
-				class="border-lightBorder modal-animation-delay absolute z-40 flex w-72 flex-col rounded-lg border bg-lightBG dark:bg-darkBG p-4 shadow-lg"
-				@mouseover="triggerProfileCardTrue"
-				@mouseleave="showProfileCard = false"
-			>
-				<div class="w-full flex flex-row justify-between items-center mb-4">
-					<Avatar :authorid="author.id" :cid="author.avatar" size="w-16 h-16" />
-					<FriendButton
-						v-if="fetchedPost.post.authorID !== store.$state.id && $route.name !== `id`"
+		<!-- Inner post area -->
+		<div
+			:class="
+				fetchedPost.repost && fetchedPost.repost.type === `quote`
+					? `bg-lightBorder xl:dark:bg-darkInput rounded-lg p-4`
+					: ``
+			"
+		>
+			<!-- Card profile header -->
+			<div class="flex w-full justify-between">
+				<div class="flex" @mouseover="triggerProfileCardTrue" @mouseleave="triggerProfileCardFalse">
+					<Avatar
 						:authorid="author.id"
+						:cid="author.avatar"
+						:size="`w-12 h-12`"
+						class="transition ease-in-out hover:opacity-75 modal-animation"
 					/>
 				</div>
-				<ProfileCardHeader :author-i-d="author.id" :author-name="author.name" :is-hover-card="true" />
-				<span v-if="author.bio !== ``" class="mt-2 dark:text-darkPrimaryText">
-					{{ author.bio.slice(0, 150) + (author.bio.length > 150 ? '...' : '') }}
-				</span>
-			</div>
-			<!-- bookmark -->
-			<div class="relative flex items-center">
-				<BookmarkButton :has-bookmark="fetchedPost.bookmarked" :postcid="fetchedPost.post._id" />
-				<button
-					v-if="fetchedPost.post.authorID === store.$state.id"
-					class="focus:outline-none text-gray5 dark:text-gray3 ml-2"
-					@click.stop="openDeleteDropdown"
-				>
-					<MoreIcon />
-				</button>
-				<div
-					v-if="showDelete"
-					class="dropdownDeleteOpen border-lightBorder modal-animation absolute z-10 right-0 flex w-36 flex-col rounded-lg border bg-lightBG dark:bg-darkBG p-1 shadow-lg"
-					:class="settings.isDarkMode ? `dropdownDeleteOpenDark` : `dropdownDeleteOpen`"
-					:style="`margin-top: 70px;margin-right: -10px;`"
-				>
-					<!-- Delete -->
-					<button class="focus:outline-none text-negative flex items-center" @click.self="deletePost">
-						<BinIcon class="m-1 w-4 h-4" />
-						<span class="text-negative self-center text-xs text-center w-full">Remove from feed</span>
-					</button>
-				</div>
-			</div>
-		</div>
-		<!-- Content -->
-		<div class="mt-4 flex flex-col justify-between xl:flex-row">
-			<!-- Left side: Title, subtitle / preview, tags -->
-			<div class="mr-4 flex w-full flex-col justify-between">
-				<router-link class="cursor-pointer" :to="`/post/` + fetchedPost.post._id">
-					<div class="flex max-w-full flex-col overflow-hidden pr-4">
-						<div class="flex flex-row w-full justify-between">
-							<h3 class="break-words pb-2 text-lg font-semibold dark:text-darkPrimaryText">
-								{{ fetchedPost.post.title
-								}}<CrownIcon v-if="fetchedPost.post.encrypted" class="ml-2 inline text-neutral w-5 h-5 -mt-1" />
-							</h3>
-						</div>
-						<h6 class="break-words text-lightSecondaryText dark:text-darkSecondaryText">
-							{{ fetchedPost.post.subtitle ? fetchedPost.post.subtitle : createPostExcerpt(fetchedPost.post.excerpt) }}
-						</h6>
+				<div class="ml-4 flex flex-grow flex-col">
+					<div class="flex flex-row">
+						<span
+							v-if="author.name !== ``"
+							class="text-base dark:text-darkPrimaryText transition ease-in-out hover:underline mr-2 font-medium"
+						>
+							{{ author.name }}
+						</span>
+						<span v-else class="text-gray5 dark:text-gray3 text-base transition ease-in-out hover:underline mr-2">
+							{{ author.id }}
+						</span>
+						<span class="text-gray5 dark:text-gray3"> @{{ author.id }} </span>
 					</div>
-				</router-link>
-				<!-- Display tags (Desktop) -->
-				<div class="my-2 hidden overflow-x-auto xl:flex xl:flex-wrap text-lg">
-					<TagCard v-for="t in fetchedPost.post.tags" :key="t.name" :tag="t.name" class="my-2 mr-4" />
+					<!-- Timestamp and reading time -->
+					<TimestampAndReadingTime
+						class="flex flex-row mt-1 items-center"
+						:timestamp="fetchedPost.post.timestamp"
+						:word-count="fetchedPost.post.wordCount"
+						:number-of-post-images="fetchedPost.post.postImages?.length"
+					/>
 				</div>
-				<!-- Actions buttons (Desktop) -->
-				<div class="text-gray5 dark:text-gray3 mt-1 hidden xl:flex xl:items-center relative">
-					<!-- Comment -->
+				<!-- hover profile card -->
+				<div
+					v-show="showProfileCard"
+					class="border-lightBorder modal-animation-delay absolute z-40 flex w-72 flex-col rounded-lg border bg-lightBG dark:bg-darkBG p-4 shadow-lg"
+					@mouseover="triggerProfileCardTrue"
+					@mouseleave="showProfileCard = false"
+				>
+					<div class="w-full flex flex-row justify-between items-center mb-4">
+						<Avatar :authorid="author.id" :cid="author.avatar" size="w-16 h-16" />
+						<FriendButton
+							v-if="fetchedPost.post.authorID !== store.$state.id && $route.name !== `id`"
+							:authorid="author.id"
+						/>
+					</div>
+					<ProfileCardHeader :author-i-d="author.id" :author-name="author.name" :is-hover-card="true" />
+					<span v-if="author.bio !== ``" class="mt-2 dark:text-darkPrimaryText">
+						{{ author.bio.slice(0, 150) + (author.bio.length > 150 ? '...' : '') }}
+					</span>
+				</div>
+				<!-- bookmark -->
+				<div class="relative flex items-center">
+					<BookmarkButton :has-bookmark="fetchedPost.bookmarked" :postcid="fetchedPost.post._id" />
 					<button
-						class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary dark:hover:text-primary mr-4 flex items-center"
-						:class="activeAction === `comments` ? `text-primary` : ``"
-						@click="emit(`toggle-action`, `comments`)"
+						v-if="fetchedPost.post.authorID === store.$state.id"
+						class="focus:outline-none text-gray5 dark:text-gray3 ml-2"
+						@click.stop="openDeleteDropdown"
 					>
-						<CommentIcon :is-active="activeAction === `comments`" class="w-5 h-5" />
-						<span class="ml-1 text-sm">{{ fetchedPost.commentsCount }}</span>
-					</button>
-					<!-- Repost -->
-					<button
-						class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary dark:hover:text-primary mr-4 flex items-center"
-						:class="showReposts ? `text-primary` : ``"
-						@click="showReposts = !showReposts"
-					>
-						<RepostIcon class="w-5 h-5" />
-						<span class="ml-1 text-sm">{{ fetchedPost.repostCount }}</span>
+						<MoreIcon />
 					</button>
 					<div
-						v-show="showReposts"
-						class="bg-lightBG dark:bg-darkBG text-lightPrimaryText dark:text-darkPrimaryText border-lightBorder modal-animation absolute z-20 flex w-40 flex-col rounded-lg border p-2 shadow-lg"
-						:class="settings.isDarkMode ? `dropdownRepostOpenDark` : `dropdownRepostOpen`"
-						style="left: 95px; bottom: -2px"
+						v-if="showDelete"
+						class="dropdownDeleteOpen border-lightBorder modal-animation absolute z-10 right-0 flex w-36 flex-col rounded-lg border bg-lightBG dark:bg-darkBG p-1 shadow-lg"
+						:class="settings.isDarkMode ? `dropdownDeleteOpenDark` : `dropdownDeleteOpen`"
+						:style="`margin-top: 70px;margin-right: -10px;`"
 					>
-						<!-- Simple Repost -->
-						<button
-							class="hover:text-primary focus:outline-none text-gray5 dark:text-gray3 flex mr-4 items-center"
-							@click="simpleRepost()"
-						>
-							<RepostIcon :shrink="true" class="mr-2 p-1" :class="isReposted() ? `text-primary` : ``" />
-							<span v-if="isReposted()" class="self-center text-xs">Undo Repost</span>
-							<span v-else class="self-center text-xs">Repost to Feed</span>
-						</button>
-						<!-- Quote Repost -->
-						<button
-							class="hover:text-primary focus:outline-none text-gray5 dark:text-gray3 flex mr-4 items-center"
-							@click="quoteRepost()"
-						>
-							<QuoteIcon class="mr-2 p-1" />
-							<span class="self-center text-xs">Quote</span>
+						<!-- Delete -->
+						<button class="focus:outline-none text-negative flex items-center" @click.self="deletePost">
+							<BinIcon class="m-1 w-4 h-4" />
+							<span class="text-negative self-center text-xs text-center w-full">Remove from feed</span>
 						</button>
 					</div>
-					<!-- Share popup button -->
-					<button
-						class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary mr-4 dark:hover:text-primary flex items-center"
-						:class="activeAction === `share` ? `text-primary` : ``"
-						style="margin-top: 2px"
-						@click="emit(`toggle-action`, `share`)"
-					>
-						<ShareIcon :is-active="activeAction === `share`" />
-						<p class="ml-1 text-sm">Share</p>
-					</button>
-					<button class="focus:outline-none" @click="emit(`toggle-action`, `stats`)"><StatsIcon /></button>
 				</div>
 			</div>
-			<!-- Right side: Image -->
-			<router-link
-				v-if="fetchedPost.post.featuredPhotoCID !== `` && fetchedPost.post.featuredPhotoCID"
-				class="cursor-pointer"
-				:to="`/post/` + fetchedPost.post._id"
-			>
-				<IpfsImage
-					class="mt-4 w-full flex-shrink-0 xl:mt-0 xl:w-56 h-48 xl:h-32 rounded-lg"
-					:img-class="'h-48 w-full flex-shrink-0 rounded-lg xl:h-32'"
-					:cid="fetchedPost.post.featuredPhotoCID"
-				/>
-			</router-link>
-		</div>
-		<!-- Display tags (Mobile) -->
-		<div class="my-2 flex flex-wrap overflow-x-auto xl:hidden">
-			<TagCard v-for="t in fetchedPost.post.tags" :key="t.name" :tag="t.name" class="my-2 mr-4" />
-		</div>
-		<!-- Comment and share (Mobile) -->
-		<div class="text-gray5 dark:text-gray3 mt-1 flex xl:hidden relative">
-			<button
-				class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary mr-4 hover:fill-primary flex items-center"
-				:class="activeAction === `comments` ? `text-primary` : ``"
-				@click="emit(`toggle-action`, `comments`)"
-			>
-				<CommentIcon :is-active="activeAction === `comments`" class="w-5 h-5" />
-				<span class="ml-1 text-sm">{{ fetchedPost.commentsCount }}</span>
-			</button>
-			<!-- Repost popup -->
-			<button
-				class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary dark:hover:text-primary mr-4 flex items-center"
-				:class="showReposts ? `text-primary` : ``"
-				@click="showReposts = !showReposts"
-			>
-				<RepostIcon class="w-5 h-5" />
-				<span class="ml-1 text-sm">{{ fetchedPost.repostCount }}</span>
-			</button>
-			<div
-				v-show="showReposts"
-				class="bg-lightBG dark:bg-darkBG text-lightPrimaryText dark:text-darkPrimaryText border-lightBorder modal-animation absolute z-20 flex w-40 flex-col rounded-lg border p-2 shadow-lg"
-				:class="settings.isDarkMode ? `dropdownRepostOpenDark` : `dropdownRepostOpen`"
-				style="left: 95px; bottom: -2px"
-			>
-				<!-- Simple Repost -->
-				<button
-					class="hover:text-primary focus:outline-none text-gray5 dark:text-gray3 flex mr-4 items-center"
-					@click="simpleRepost()"
+			<!-- Content -->
+			<div class="mt-4 flex flex-col justify-between xl:flex-row">
+				<!-- Left side: Title, subtitle / preview, tags -->
+				<div class="mr-4 flex w-full flex-col justify-between">
+					<router-link class="cursor-pointer" :to="`/post/` + fetchedPost.post._id">
+						<div class="flex max-w-full flex-col overflow-hidden pr-4">
+							<div class="flex flex-row w-full justify-between">
+								<h3 class="break-words pb-2 text-lg font-semibold dark:text-darkPrimaryText">
+									{{ fetchedPost.post.title
+									}}<CrownIcon v-if="fetchedPost.post.encrypted" class="ml-2 inline text-neutral w-5 h-5 -mt-1" />
+								</h3>
+							</div>
+							<h6 class="break-words text-lightSecondaryText dark:text-darkSecondaryText">
+								{{
+									fetchedPost.post.subtitle ? fetchedPost.post.subtitle : createPostExcerpt(fetchedPost.post.excerpt)
+								}}
+							</h6>
+						</div>
+					</router-link>
+					<!-- Display tags (Desktop) -->
+					<div class="my-2 hidden overflow-x-auto xl:flex xl:flex-wrap text-lg">
+						<TagCard v-for="t in fetchedPost.post.tags" :key="t.name" :tag="t.name" class="my-2 mr-4" />
+					</div>
+					<!-- Actions buttons (Desktop) -->
+					<div class="text-gray5 dark:text-gray3 mt-1 hidden xl:flex xl:items-center relative">
+						<!-- Comment -->
+						<button
+							class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary dark:hover:text-primary mr-4 flex items-center"
+							:class="activeAction === `comments` ? `text-primary` : ``"
+							@click="emit(`toggle-action`, `comments`)"
+						>
+							<CommentIcon :is-active="activeAction === `comments`" class="w-5 h-5" />
+							<span class="ml-1 text-sm">{{ fetchedPost.commentsCount }}</span>
+						</button>
+						<!-- Repost -->
+						<button
+							class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary dark:hover:text-primary mr-4 flex items-center"
+							:class="showReposts ? `text-primary` : ``"
+							@click="showReposts = !showReposts"
+						>
+							<RepostIcon class="w-5 h-5" />
+							<span class="ml-1 text-sm">{{ fetchedPost.repostCount }}</span>
+						</button>
+						<div
+							v-show="showReposts"
+							class="bg-lightBG dark:bg-darkBG text-lightPrimaryText dark:text-darkPrimaryText border-lightBorder modal-animation absolute z-20 flex w-40 flex-col rounded-lg border p-2 shadow-lg"
+							:class="settings.isDarkMode ? `dropdownRepostOpenDark` : `dropdownRepostOpen`"
+							style="left: 95px; bottom: -2px"
+						>
+							<!-- Simple Repost -->
+							<button
+								class="hover:text-primary focus:outline-none text-gray5 dark:text-gray3 flex mr-4 items-center"
+								@click="simpleRepost()"
+							>
+								<RepostIcon :shrink="true" class="mr-2 p-1" :class="isReposted() ? `text-primary` : ``" />
+								<span v-if="isReposted()" class="self-center text-xs">Undo Repost</span>
+								<span v-else class="self-center text-xs">Repost to Feed</span>
+							</button>
+							<!-- Quote Repost -->
+							<button
+								class="hover:text-primary focus:outline-none text-gray5 dark:text-gray3 flex mr-4 items-center"
+								@click="quoteRepost()"
+							>
+								<QuoteIcon class="mr-2 p-1" />
+								<span class="self-center text-xs">Quote</span>
+							</button>
+						</div>
+						<!-- Share popup button -->
+						<button
+							class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary mr-4 dark:hover:text-primary flex items-center"
+							:class="activeAction === `share` ? `text-primary` : ``"
+							style="margin-top: 2px"
+							@click="emit(`toggle-action`, `share`)"
+						>
+							<ShareIcon :is-active="activeAction === `share`" />
+							<p class="ml-1 text-sm">Share</p>
+						</button>
+						<button class="focus:outline-none" @click="emit(`toggle-action`, `stats`)"><StatsIcon /></button>
+					</div>
+				</div>
+				<!-- Right side: Image -->
+				<router-link
+					v-if="fetchedPost.post.featuredPhotoCID !== `` && fetchedPost.post.featuredPhotoCID"
+					class="cursor-pointer"
+					:to="`/post/` + fetchedPost.post._id"
 				>
-					<RepostIcon :shrink="true" class="mr-2 p-1" :class="isReposted() ? `text-primary` : ``" />
-					<span v-if="isReposted()" class="self-center text-xs">Undo Repost</span>
-					<span v-else class="self-center text-xs">Repost to Feed</span>
-				</button>
-				<!-- Quote Repost -->
-				<button
-					class="hover:text-primary focus:outline-none text-gray5 dark:text-gray3 flex mr-4 items-center"
-					@click="quoteRepost()"
-				>
-					<QuoteIcon class="mr-2 p-1" />
-					<span class="self-center text-xs">Quote</span>
-				</button>
+					<IpfsImage
+						class="mt-4 w-full flex-shrink-0 xl:mt-0 xl:w-56 h-48 xl:h-32 rounded-lg"
+						:img-class="'h-48 w-full flex-shrink-0 rounded-lg xl:h-32'"
+						:cid="fetchedPost.post.featuredPhotoCID"
+					/>
+				</router-link>
 			</div>
-			<!-- Share popup button -->
-			<button
-				class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary mr-4 hover:fill-primary flex items-center"
-				:class="activeAction === `share` ? `text-primary` : ``"
-				style="margin-top: 2px"
-				@click="emit(`toggle-action`, `share`)"
-			>
-				<ShareIcon :is-active="activeAction === `share`" />
-				<p class="ml-1 text-sm">Share</p>
-			</button>
-			<button class="focus:outline-none" @click="emit(`toggle-action`, `stats`)"><StatsIcon /></button>
+			<!-- Display tags (Mobile) -->
+			<div class="my-2 flex flex-wrap overflow-x-auto xl:hidden">
+				<TagCard v-for="t in fetchedPost.post.tags" :key="t.name" :tag="t.name" class="my-2 mr-4" />
+			</div>
+			<!-- Comment and share (Mobile) -->
+			<div class="text-gray5 dark:text-gray3 mt-1 flex xl:hidden relative">
+				<button
+					class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary mr-4 hover:fill-primary flex items-center"
+					:class="activeAction === `comments` ? `text-primary` : ``"
+					@click="emit(`toggle-action`, `comments`)"
+				>
+					<CommentIcon :is-active="activeAction === `comments`" class="w-5 h-5" />
+					<span class="ml-1 text-sm">{{ fetchedPost.commentsCount }}</span>
+				</button>
+				<!-- Repost popup -->
+				<button
+					class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary dark:hover:text-primary mr-4 flex items-center"
+					:class="showReposts ? `text-primary` : ``"
+					@click="showReposts = !showReposts"
+				>
+					<RepostIcon class="w-5 h-5" />
+					<span class="ml-1 text-sm">{{ fetchedPost.repostCount }}</span>
+				</button>
+				<div
+					v-show="showReposts"
+					class="bg-lightBG dark:bg-darkBG text-lightPrimaryText dark:text-darkPrimaryText border-lightBorder modal-animation absolute z-20 flex w-40 flex-col rounded-lg border p-2 shadow-lg"
+					:class="settings.isDarkMode ? `dropdownRepostOpenDark` : `dropdownRepostOpen`"
+					style="left: 95px; bottom: -2px"
+				>
+					<!-- Simple Repost -->
+					<button
+						class="hover:text-primary focus:outline-none text-gray5 dark:text-gray3 flex mr-4 items-center"
+						@click="simpleRepost()"
+					>
+						<RepostIcon :shrink="true" class="mr-2 p-1" :class="isReposted() ? `text-primary` : ``" />
+						<span v-if="isReposted()" class="self-center text-xs">Undo Repost</span>
+						<span v-else class="self-center text-xs">Repost to Feed</span>
+					</button>
+					<!-- Quote Repost -->
+					<button
+						class="hover:text-primary focus:outline-none text-gray5 dark:text-gray3 flex mr-4 items-center"
+						@click="quoteRepost()"
+					>
+						<QuoteIcon class="mr-2 p-1" />
+						<span class="self-center text-xs">Quote</span>
+					</button>
+				</div>
+				<!-- Share popup button -->
+				<button
+					class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary mr-4 hover:fill-primary flex items-center"
+					:class="activeAction === `share` ? `text-primary` : ``"
+					style="margin-top: 2px"
+					@click="emit(`toggle-action`, `share`)"
+				>
+					<ShareIcon :is-active="activeAction === `share`" />
+					<p class="ml-1 text-sm">Share</p>
+				</button>
+				<button class="focus:outline-none" @click="emit(`toggle-action`, `stats`)"><StatsIcon /></button>
+			</div>
 		</div>
 	</div>
 </template>
