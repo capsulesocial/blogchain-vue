@@ -1,41 +1,62 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onBeforeMount, computed } from 'vue';
 import { useStore } from '@/store/session';
+import { useProfilesStore } from '@/store/profiles';
+import { useCommentsStore } from '@/store/comments';
+
 import { useStoreSettings } from '@/store/settings';
-import type { Profile } from '@/backend/profile';
 import { formatDate } from '@/helpers/helpers';
+
 import MoreIcon from '@/components/icons/MoreIcon.vue';
 import BinIcon from '@/components/icons/BinIcon.vue';
+import Avatar from '@/components/Avatar.vue';
 
 const settings = useStoreSettings();
 const store = useStore();
+const profilesStore = useProfilesStore();
+const commentStore = useCommentsStore();
 
-const content = ref<string>(`this is a default reply`);
-const replyAuthor = ref<Profile>({
-	id: `jackistesting`,
-	name: `Jack Dishman`,
-	email: `tb12@gmail.com`,
-	bio: `6-time super bowl champion`,
-	location: `Tampa Bay`,
-	avatar: ``,
-	socials: [],
-	website: `tb12.com`,
-});
-const postAuthor = ref<string>(`jackistesting`);
-const timestamp = ref<number>(13392);
+const props = withDefaults(
+	defineProps<{
+		postauthorid: string;
+		authorid: string;
+		cid: string;
+		timestamp: number;
+	}>(),
+	{},
+);
+
+const emit = defineEmits([`removeReply`]);
+
+const content = ref<string>();
+const replyAuthor = computed(() => profilesStore.getProfile(props.authorid));
+const postAuthor = ref<string>(props.authorid);
+const timestamp = ref<number>(props.timestamp);
 
 const replyDeleted = ref<boolean>(false);
 const showDelete = ref<boolean>(false);
 
-function toggleDropdownDelete() {
+onBeforeMount(async (): Promise<void> => {
+	void profilesStore.fetchProfile(props.authorid);
+	const res = await commentStore.fetchComment(props.cid);
+	content.value = res?.content;
+});
+
+function toggleDropdownDelete(): void {
 	showDelete.value = !showDelete.value;
+}
+
+function removeReply(): void {
+	commentStore.removeComment(`HIDE`, props.cid, store.$state.id);
+	// emit event here to remporarily remove deleted reply
+	emit(`removeReply`, props.cid);
+	toggleDropdownDelete();
 }
 </script>
 <template>
 	<div v-if="!replyDeleted" class="flex relative">
 		<div class="flex-shrink-0 mr-2">
-			<!-- <Avatar :cid="avatar" :authorID="authorID" size="w-10 h-10" /> -->
-			<div class="w-10 h-10 rounded-lg bg-gray1 animate-pulse"></div>
+			<Avatar :cid="replyAuthor.avatar" :author-i-d="replyAuthor.id" size="w-10 h-10" />
 		</div>
 		<div class="ml-2 flex-1 leading-relaxed">
 			<div class="flex flex-col sm:flex-row items-start sm:items-center">
@@ -70,7 +91,7 @@ function toggleDropdownDelete() {
 					style="top: 40px; right: 0px"
 				>
 					<!-- Delete -->
-					<button class="focus:outline-none text-negative flex">
+					<button class="focus:outline-none text-negative flex" @click="removeReply">
 						<BinIcon class="w-4 h-4" />
 						<span class="text-negative self-center text-xs ml-1 mr-1">Remove this reply</span>
 					</button>

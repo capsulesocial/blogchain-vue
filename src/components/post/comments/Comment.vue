@@ -22,7 +22,6 @@ import { INewCommentData, ICommentData, createComment } from '@/backend/comment'
 const props = withDefaults(
 	defineProps<{
 		postComment: ICommentData;
-		cid: string;
 	}>(),
 	{},
 );
@@ -32,14 +31,14 @@ const commentStore = useCommentsStore();
 const profilesStore = useProfilesStore();
 
 // comment
-const emotion = ref<IFace>(faces.sad);
+
 const showLabel = ref<boolean>(false);
 const comment = ref<INewCommentData>();
+const emotion = ref<IFace>(faces.sad);
 
 const replies = ref<ICommentData[]>([]);
 // todo: regroup those 2 into a fetched post of type IGenericPostResponse
 const postAuthor = ref<string>(`jackistesting`);
-const timestamp = ref<number>(13392);
 // --
 const commentAuthor = computed(() => profilesStore.getProfile(props.postComment.authorID));
 
@@ -60,26 +59,26 @@ onBeforeMount(async () => {
 	void profilesStore.fetchProfile(props.postComment.authorID);
 });
 
-onMounted(async () => {
-	const replyres = await commentStore.getCommentReplies(props.postComment._id, repliseOffset.value, repliseLimit.value);
-	replies.value = replyres;
-	console.log(replyres);
+onMounted(async (): Promise<void> => {
+	const res = await commentStore.getCommentReplies(props.postComment._id, repliseOffset.value, repliseLimit.value);
+	replies.value = res;
 });
 
-function handleResize(e: any) {
+function handleResize(e: any): void {
 	if (e.srcElement.clientHeight !== e.srcElement.scrollHeight) {
 		replyInputHeight.value = e.srcElement.scrollHeight;
 	}
 }
 
-function filterReplies(): ICommentData[] {
-	return replies.value.sort((p0, p1) => p0.timestamp - p1.timestamp);
-}
+// function filterReplies(): ICommentData[] {
+// 	return replies.value.sort((p0, p1) => p0.timestamp - p1.timestamp);
+// }
 
-function toggleDropdownDelete() {
+function toggleDropdownDelete(): void {
 	showDelete.value = !showDelete.value;
 }
-async function sendReply() {
+
+async function sendReply(): Promise<void> {
 	if (reply.value === ``) {
 		toastError(`You must write a reply`);
 		return;
@@ -90,12 +89,22 @@ async function sendReply() {
 		toastError(replyQuality.error);
 		return;
 	}
-	const c = createComment(store.$state.id, reply.value, `no-emotion`, props.postComment.parentCID);
-	await commentStore.sendUserComment(c, `reply`);
+	const c = createComment(store.$state.id, reply.value, `no-emotion`, props.postComment._id);
+	const _id = await commentStore.sendUserComment(c, `reply`);
+	replies.value.push({ _id, ...c });
 	reply.value = ``;
 }
-function deleteComment() {
-	commentStore.removeComment(`HIDE`, props.cid, store.$state.id);
+
+function removeComment(): void {
+	commentStore.removeComment(`HIDE`, props.postComment._id, store.$state.id);
+	toggleDropdownDelete();
+}
+function deleteReply(cid: string): void {
+	// temporarily remove deleted reply from already available replies
+	replies.value.splice(
+		replies.value.findIndex((reply) => reply._id === cid),
+		1,
+	);
 }
 </script>
 
@@ -127,7 +136,12 @@ function deleteComment() {
 						<!-- Top row: name, id, timestamp -->
 						<div class="flex items-center flex-wrap">
 							<router-link :to="`/id/` + commentAuthor.id" class="mr-3 flex items-center lg:mb-0 mb-2">
-								<!-- <Avatar :avatar="avatar" :author-i-d="authorID" size="w-8 h-8" class="mr-2 flex-shrink-0 lg:hidden" /> -->
+								<Avatar
+									:avatar="commentAuthor.avatar"
+									:author-i-d="props.postComment.authorID"
+									size="w-8 h-8"
+									class="mr-2 flex-shrink-0 lg:hidden"
+								/>
 								<div class="w-8 h-8 rounded-lg bg-gray1 animate-pulse lg:hidden mr-2"></div>
 								<span v-if="commentAuthor.name != ``" class="font-semibold dark:text-darkPrimaryText">
 									{{ commentAuthor.name }}
@@ -142,7 +156,7 @@ function deleteComment() {
 								</span>
 							</router-link>
 							<div class="h-1 w-1 bg-gray5 mr-2 rounded-xl"></div>
-							<span v-if="timestamp" class="self-center text-xs dark:text-gray3 mb-2 lg:mt-2">
+							<span v-if="props.postComment.timestamp" class="self-center text-xs dark:text-gray3 mb-2 lg:mt-2">
 								{{ formatDate(props.postComment.timestamp) }}
 							</span>
 						</div>
@@ -215,7 +229,7 @@ function deleteComment() {
 						style="top: 40px; right: 0px"
 					>
 						<!-- Delete -->
-						<button class="focus:outline-none text-negative flex" @click="deleteComment">
+						<button class="focus:outline-none text-negative flex" @click="removeComment">
 							<BinIcon class="w-4 h-4" />
 							<span class="text-negative self-center text-xs ml-1 mr-1">Remove this comment</span>
 						</button>
@@ -254,15 +268,16 @@ function deleteComment() {
 						to reply to this comment and be part of the debate
 					</div>
 					<!-- List replies -->
-					<div v-if="filterReplies().length > 0" class="pl-5 mt-2">
+					<div v-if="replies.length > 0" class="pl-5 mt-2">
 						<Reply
-							v-for="r in filterReplies()"
-							:key="r._id"
-							:commenter-i-d="props.postComment.authorID"
-							:authorid="r.authorID"
-							:cid="r._id"
-							:timestamp="r.timestamp"
+							v-for="rep in replies"
+							:key="rep._id"
+							:postauthorid="postAuthor"
+							:authorid="rep.authorID"
+							:cid="rep._id"
+							:timestamp="rep.timestamp"
 							class="pt-1 mt-2"
+							@remove-reply="deleteReply"
 						/>
 					</div>
 				</div>
