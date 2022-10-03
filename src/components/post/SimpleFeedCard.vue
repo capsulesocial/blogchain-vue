@@ -93,6 +93,23 @@ function triggerProfileCardTrue(): void {
 onBeforeMount(() => {
 	profilesStore.fetchProfile(props.fetchedPost.post.authorID);
 });
+
+window.addEventListener(
+	`click`,
+	(e: any): void => {
+		if (!e.target) {
+			return;
+		}
+		if (
+			e.target.parentNode === null ||
+			e.target.parentNode.classList === undefined ||
+			!e.target.parentNode.classList.contains(`toggleRepost`)
+		) {
+			showReposts.value = false;
+		}
+	},
+	false,
+);
 </script>
 
 <template>
@@ -240,9 +257,9 @@ onBeforeMount(() => {
 						</button>
 						<!-- Repost -->
 						<button
-							class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary dark:hover:text-primary mr-4 flex items-center"
+							class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary dark:hover:text-primary mr-4 flex toggleRepost items-center"
 							:class="showReposts ? `text-primary` : ``"
-							@click="showReposts = !showReposts"
+							@click.stop="showReposts = !showReposts"
 						>
 							<RepostIcon class="w-5 h-5" />
 							<span class="ml-1 text-sm">{{ fetchedPost.repostCount }}</span>
