@@ -5,14 +5,12 @@ import { useStoreSettings } from '@/store/settings';
 import { feelings } from '@/config/config';
 import { formatDate } from '@/helpers/helpers';
 import { useStore } from '@/store/session';
-import { ICommentData } from '@/backend/comment';
-// import MoreIcon from '@/components/icons/MoreIcon.vue';
 import BinIcon from '@/components/icons/BinIcon.vue';
-// import Reply from '@/components/post/comments/Reply.vue';
-import { useCommentsStore } from '@/store/comments';
-import { useProfilesStore } from '@/store/profiles';
+import Reply from '@/components/post/comments/Reply.vue';
 import Avatar from '@/components/Avatar.vue';
 import MoreIcon from '@/components/icons/MoreIcon.vue';
+import { useCommentsStore } from '@/store/comments';
+import { useProfilesStore } from '@/store/profiles';
 
 const commentsStore = useCommentsStore();
 const settings = useStoreSettings();
@@ -29,27 +27,12 @@ const props = withDefaults(
 
 // comment
 const showLabel = ref<boolean>(false);
-const replies = ref<ICommentData[]>([
-	{
-		authorID: `jackistesting`,
-		_id: `szfkbjkaaefonqnef`,
-		timestamp: 13047013,
-		parentCID: `aepfjanfoeaofae`,
-		emotion: `admiration`,
-	},
-	{
-		authorID: `jackistesting`,
-		_id: `aekjfaofneofnoao`,
-		timestamp: 13047013,
-		parentCID: `aepfjanfoeaofae`,
-		emotion: `admiration`,
-	},
-]);
 
 const showReplies = ref<boolean>(false);
 const showDelete = ref<boolean>(false);
 const commentDeleted = ref<boolean>(false);
 const comment = computed(() => commentsStore.getCommentData(props.cid));
+const replies = computed(() => commentsStore.getCommentsOfPost(props.cid));
 const author = computed(() => {
 	if (typeof comment.value?.authorID !== `string`) {
 		throw new Error(`authorID should be a string`);
@@ -68,10 +51,6 @@ function handleResize(e: any) {
 	}
 }
 
-function filterReplies(): ICommentData[] {
-	return replies.value.sort((p0, p1) => p0.timestamp - p1.timestamp);
-}
-
 function toggleDropdownDelete() {
 	showDelete.value = !showDelete.value;
 }
@@ -79,6 +58,7 @@ function toggleDropdownDelete() {
 onMounted(async () => {
 	const c = await commentsStore.fetchComment(props.cid);
 	await profileStore.fetchProfile(c.authorID);
+	await commentsStore.fetchCommentsOfPost(props.cid);
 });
 </script>
 
@@ -168,14 +148,14 @@ onMounted(async () => {
 											Reply
 										</button>
 										<p
-											v-if="replies.length === 1"
+											v-if="replies && replies.length === 1"
 											class="text-gray5 dark:text-gray3 focus:outline-none text-left font-sans text-sm ml-4 cursor-pointer"
 											@click="showReplies = !showReplies"
 										>
 											{{ replies.length }} Reply
 										</p>
 										<p
-											v-else
+											v-else-if="replies"
 											class="text-gray5 dark:text-gray3 focus:outline-none text-left font-sans text-sm ml-4 cursor-pointer"
 											@click="showReplies = !showReplies"
 										>
@@ -235,16 +215,8 @@ onMounted(async () => {
 						to reply to this comment and be part of the debate
 					</div>
 					<!-- List replies -->
-					<div v-if="filterReplies().length > 0" class="pl-5 mt-2">
-						<!-- <Reply
-							v-for="r in filterReplies()"
-							:key="r._id"
-							:commenter-i-d="commentAuthor.id"
-							:authorid="r.authorID"
-							:cid="r._id"
-							:timestamp="r.timestamp"
-							class="pt-1 mt-2"
-						/> -->
+					<div v-if="replies && replies?.length > 0" class="pl-5 mt-2">
+						<Reply v-for="r in replies" :key="r" :cid="r" />
 					</div>
 				</div>
 			</div>

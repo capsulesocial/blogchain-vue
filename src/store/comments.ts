@@ -42,11 +42,12 @@ export const useCommentsStore = defineStore(`comments`, {
 		async fetchCommentsOfPost(
 			postCID: string,
 			offset = 0,
+			limit = 10,
 			emotion?: string,
 			emotionCategory?: `negative` | `neutral` | `positive`,
 		) {
 			try {
-				const res = await getCommentsOfPost(postCID, offset, 10, emotion, emotionCategory);
+				const res = await getCommentsOfPost(postCID, offset, limit, emotion, emotionCategory);
 				const postComments: string[] = [];
 				for (const c of res) {
 					const comment = await getComment(c._id);
