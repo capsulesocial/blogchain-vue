@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useStore } from '@/store/session';
 import { useConnectionsStore } from '@/store/connections';
 import { useRoute, useRouter } from 'vue-router';
@@ -14,7 +14,12 @@ const connectionsStore = useConnectionsStore();
 const route = useRoute();
 const router = useRouter();
 
-const authorID: string = route.params.id as string;
+const authorID = computed(() => {
+	if (typeof route.params.id !== `string`) {
+		throw new Error(`${route.params.id} should be of type string!`);
+	}
+	return route.params.id;
+});
 const reposts = ref<IRepostResponse[]>([]);
 const isLoading = ref<boolean>(true);
 const currentOffset = ref<number>(0);
@@ -37,8 +42,8 @@ function toggleHomeFeed() {
 </script>
 
 <template>
-	<div id="scrollable_content">
-		<section class="px-0">
+	<div>
+		<section id="scrollable_content" class="px-0">
 			<article v-if="reposts.length === 0 && !isLoading" class="mt-24 grid justify-items-center px-10 xl:px-0">
 				<p class="text-gray5 dark:text-gray3 mb-5 text-sm">
 					<span v-if="route.params.id === store.$state.id">It seems you haven't reposted any content yet.</span>
