@@ -81,7 +81,7 @@ onMounted(async () => {
 	<div v-show="!commentDeleted" class="object-contain">
 		<div class="mt-2 flex w-full">
 			<!-- Desktop avatar -->
-			<div class="mr-4 hidden items-start justify-between lg:flex">
+			<div class="mr-4 hidden items-start justify-between lg:flex flex-shrink-0">
 				<Avatar
 					:cid="author.avatar"
 					:authorid="author.id"
