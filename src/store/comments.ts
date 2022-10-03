@@ -1,6 +1,6 @@
-import { getCommentsOfPost, getCommentsOfUser, getComment, INewCommentData } from '@/backend/comment';
+import { getCommentsOfPost, getCommentsOfUser, getComment, INewCommentData, sendComment } from '@/backend/comment';
 import { defineStore } from 'pinia';
-import { handleError } from '@/plugins/toast';
+import { handleError, toastSuccess } from '@/plugins/toast';
 
 export interface Comments {
 	comments: Map<string, INewCommentData>;
@@ -34,6 +34,20 @@ export const useCommentsStore = defineStore(`comments`, {
 		},
 	},
 	actions: {
+		async sendResponse(content: INewCommentData, type: `comment` | `reply`) {
+			if (!content || !type) {
+				return;
+			}
+			try {
+				const _id: string = await sendComment(content, type);
+				this.comments.set(_id, content);
+			} catch (error: unknown) {
+				handleError(error);
+			} finally {
+				this.fetchCommentsOfPost(content.parentCID);
+				toastSuccess(type === `comment` ? `Comment sent successfully 🎉  ` : `Reply sent successfully 🎉  `);
+			}
+		},
 		async fetchComment(cid: string) {
 			const c = await getComment(cid);
 			this.$state.comments.set(cid, c);

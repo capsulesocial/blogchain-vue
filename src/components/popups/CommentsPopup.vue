@@ -52,7 +52,7 @@ onMounted(async () => {
 				<CommentFilter :filter="filter" class="modal-animation" @clicked="setFilter" />
 			</div>
 			<!-- Comment editor -->
-			<CommentEditor :comments-count="props.fetchedPost.commentsCount" class="px-6" />
+			<CommentEditor :comments-count="props.fetchedPost.commentsCount" :parentcid="fetchedPost.post._id" class="px-6" />
 			<!-- Comments -->
 			<div v-for="c in postComments" :key="c">
 				<Comment :cid="c" :authorid="props.fetchedPost.post.authorID" class="px-6 mb-4" />
