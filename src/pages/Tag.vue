@@ -16,7 +16,12 @@ useMeta({
 	htmlAttrs: { lang: 'en', amp: true },
 });
 
-const tag = computed(() => route.params.tag as string);
+const tag = computed(() => {
+	if (typeof route.params.tag !== `string`) {
+		throw new Error(`route.params.id should be a string!`);
+	}
+	return route.params.tag;
+});
 const tagPosts = computed(() => postsStore.getPostsWithTag(tag.value));
 const isLoading = ref<boolean>(true);
 const noMorePosts = ref<boolean>(false);

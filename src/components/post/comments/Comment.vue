@@ -1,23 +1,34 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useStoreSettings } from '@/store/settings';
+import { computed, onMounted, ref } from 'vue';
 import { faces, IFace } from '@/config/faces';
-import type { Profile } from '@/backend/profile';
+import { useStoreSettings } from '@/store/settings';
 import { feelings } from '@/config/config';
 import { formatDate } from '@/helpers/helpers';
 import { useStore } from '@/store/session';
 import { ICommentData } from '@/backend/comment';
-import MoreIcon from '@/components/icons/MoreIcon.vue';
+// import MoreIcon from '@/components/icons/MoreIcon.vue';
 import BinIcon from '@/components/icons/BinIcon.vue';
-import Reply from '@/components/post/comments/Reply.vue';
+// import Reply from '@/components/post/comments/Reply.vue';
+import { useCommentsStore } from '@/store/comments';
+import { useProfilesStore } from '@/store/profiles';
+import Avatar from '@/components/Avatar.vue';
+import MoreIcon from '@/components/icons/MoreIcon.vue';
 
+const commentsStore = useCommentsStore();
 const settings = useStoreSettings();
 const store = useStore();
+const profileStore = useProfilesStore();
+
+const props = withDefaults(
+	defineProps<{
+		cid: string;
+		authorid: string;
+	}>(),
+	{},
+);
 
 // comment
-const emotion = ref<IFace>(faces.sad);
 const showLabel = ref<boolean>(false);
-const content = ref<string>(`this is a default comment`);
 const replies = ref<ICommentData[]>([
 	{
 		authorID: `jackistesting`,
@@ -34,24 +45,18 @@ const replies = ref<ICommentData[]>([
 		emotion: `admiration`,
 	},
 ]);
-// todo: regroup those 2 into a fetched post of type IGenericPostResponse
-const postAuthor = ref<string>(`jackistesting`);
-const timestamp = ref<number>(13392);
-// --
-const commentAuthor = ref<Profile>({
-	id: `jackistesting`,
-	name: `Jack Dishman`,
-	email: `tb12@gmail.com`,
-	bio: `6-time super bowl champion`,
-	location: `Tampa Bay`,
-	avatar: ``,
-	socials: [],
-	website: `tb12.com`,
-});
 
 const showReplies = ref<boolean>(false);
 const showDelete = ref<boolean>(false);
 const commentDeleted = ref<boolean>(false);
+const comment = computed(() => commentsStore.getCommentData(props.cid));
+const author = computed(() => {
+	if (typeof comment.value?.authorID !== `string`) {
+		throw new Error(`authorID should be a string`);
+	}
+	return profileStore.getProfile(comment.value?.authorID);
+});
+const emotion = ref<IFace>(typeof comment.value?.emotion === `string` ? faces[comment.value?.emotion] : faces.default);
 
 // replies
 const reply = ref<string>(``);
@@ -70,29 +75,35 @@ function filterReplies(): ICommentData[] {
 function toggleDropdownDelete() {
 	showDelete.value = !showDelete.value;
 }
+
+onMounted(async () => {
+	const c = await commentsStore.fetchComment(props.cid);
+	await profileStore.fetchProfile(c.authorID);
+});
 </script>
 
 <template>
 	<div v-show="!commentDeleted" class="object-contain">
 		<div class="mt-2 flex w-full">
 			<!-- Desktop avatar -->
-			<div class="mr-4 hidden items-start justify-between lg:flex">
-				<!-- <Avatar
-					:cid="avatar"
-					:authorid="authorID"
+			<div class="mr-4 hidden items-start justify-between lg:flex flex-shrink-0">
+				<Avatar
+					:cid="author.avatar"
+					:authorid="author.id"
 					size="w-12 h-12"
 					style="margin-top: 2px; margin-left: 2px; margin-right: 2px"
-				/> -->
-				<div class="w-10 h-10 rounded-lg bg-gray1 animate-pulse hidden lg:flex"></div>
+				/>
+				<div v-show="!author" class="w-10 h-10 rounded-lg bg-gray1 animate-pulse hidden lg:flex"></div>
 			</div>
 			<div class="flex flex-col w-full">
 				<!-- Comment -->
 				<div
+					v-if="comment"
 					class="relative flex flex-row w-full overflow-x-auto justify-between rounded-lg bg-opacity-5"
 					:class="
-						feelings.positive.has(emotion.label)
+						feelings.positive.has(comment.emotion)
 							? `bg-positive`
-							: feelings.negative.has(emotion.label)
+							: feelings.negative.has(comment.emotion)
 							? `bg-negative`
 							: `bg-neutral`
 					"
@@ -100,24 +111,24 @@ function toggleDropdownDelete() {
 					<div class="flex w-full flex-grow flex-col px-4 py-2">
 						<!-- Top row: name, id, timestamp -->
 						<div class="flex items-center flex-wrap">
-							<router-link :to="`/id/` + commentAuthor.id" class="mr-3 flex items-center lg:mb-0 mb-2">
+							<router-link :to="`/id/` + author.id" class="mr-3 flex items-center lg:mb-0 mb-2">
 								<!-- <Avatar :avatar="avatar" :author-i-d="authorID" size="w-8 h-8" class="mr-2 flex-shrink-0 lg:hidden" /> -->
 								<div class="w-8 h-8 rounded-lg bg-gray1 animate-pulse lg:hidden mr-2"></div>
-								<span v-if="commentAuthor.name != ``" class="font-semibold dark:text-darkPrimaryText">
-									{{ commentAuthor.name }}
+								<span v-if="author.name != ``" class="font-semibold dark:text-darkPrimaryText">
+									{{ author.name }}
 								</span>
-								<span v-else class="text-gray5 dark:text-gray3 font-semibold">{{ commentAuthor.id }}</span>
-								<span class="text-gray5 dark:text-gray3 ml-2 text-sm"> @{{ commentAuthor.id }} </span>
+								<span v-else class="text-gray5 dark:text-gray3 font-semibold">{{ author.id }}</span>
+								<span class="text-gray5 dark:text-gray3 ml-2 text-sm"> @{{ author.id }} </span>
 								<span
-									v-if="commentAuthor.id === postAuthor"
+									v-if="author.id === props.authorid"
 									class="bg-gray1 dark:bg-lightBG dark:text-darkPrimaryText ml-2 rounded-2xl dark:bg-opacity-25 py-1 px-2 text-xs"
 								>
 									Author
 								</span>
 							</router-link>
 							<div class="h-1 w-1 bg-gray5 mr-2 rounded-xl"></div>
-							<span v-if="timestamp" class="self-center text-xs dark:text-gray3 mb-2 lg:mt-2">
-								{{ formatDate(timestamp) }}
+							<span v-if="comment.timestamp" class="self-center text-xs dark:text-gray3 mb-2 lg:mt-2">
+								{{ formatDate(comment.timestamp) }}
 							</span>
 						</div>
 						<!-- Content -->
@@ -145,7 +156,7 @@ function toggleDropdownDelete() {
 									</div>
 									<!-- Text comment -->
 									<p class="break-words w-4/5 py-1 mb-6 font-sans leading-relaxed dark:text-darkPrimaryText">
-										<span style="white-space: pre-line">{{ content }}</span>
+										<span style="white-space: pre-line">{{ comment.content }}</span>
 									</p>
 
 									<!-- Reply button -->
@@ -176,7 +187,7 @@ function toggleDropdownDelete() {
 						</div>
 					</div>
 					<button
-						v-if="store.$state.id === commentAuthor.id || store.$state.id === postAuthor"
+						v-if="store.$state.id === props.authorid || store.$state.id === comment.authorID"
 						class="focus:outline-none absolute top-0 right-0 flex-col justify-start text-gray5 dark:text-gray3 pt-2 pr-3"
 						@click.stop="toggleDropdownDelete"
 					>
@@ -225,7 +236,7 @@ function toggleDropdownDelete() {
 					</div>
 					<!-- List replies -->
 					<div v-if="filterReplies().length > 0" class="pl-5 mt-2">
-						<Reply
+						<!-- <Reply
 							v-for="r in filterReplies()"
 							:key="r._id"
 							:commenter-i-d="commentAuthor.id"
@@ -233,7 +244,7 @@ function toggleDropdownDelete() {
 							:cid="r._id"
 							:timestamp="r.timestamp"
 							class="pt-1 mt-2"
-						/>
+						/> -->
 					</div>
 				</div>
 			</div>

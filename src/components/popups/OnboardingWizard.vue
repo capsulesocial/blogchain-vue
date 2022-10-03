@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { createDefaultProfile, getProfile, Profile } from '@/backend/profile';
+import { ref, onMounted, computed } from 'vue';
+// import { createDefaultProfile, getProfile, Profile } from '@/backend/profile';
 import { useRoute } from 'vue-router';
 import { useStore } from '@/store/session';
 import { useRootStore } from '@/store/index';
+import { useProfilesStore } from '@/store/profiles';
 import { getPhotoFromIPFS } from '@/backend/getPhoto';
 import CloseIcon from '@/components/icons/XIcon.vue';
 import BrandedButton from '@/components/BrandedButton.vue';
@@ -12,11 +13,10 @@ import EditProfile from '@/components/popups/EditProfile.vue';
 const store = useStore();
 const route = useRoute();
 const rootStore = useRootStore();
+const profileStore = useProfilesStore();
 const step = ref<number>(0);
-const myProfile = ref<Profile>(createDefaultProfile(store.$state.id));
+const myProfile = computed(() => profileStore.getProfile(store.$state.id));
 const myAvatar = ref<string | ArrayBuffer | null>(null);
-const visitProfile = ref<Profile>(createDefaultProfile(route.params.id as string));
-const visitAvatar = ref<string | ArrayBuffer | null>(null);
 const settings = ref<any>();
 
 const emit = defineEmits(['closePopup']);
@@ -25,6 +25,7 @@ window.addEventListener(`click`, handleClose, false);
 
 onMounted(() => {
 	settings.value?.focus();
+	profileStore.fetchProfile(store.$state.id);
 });
 // methods
 function getTitle(): string {
@@ -72,17 +73,11 @@ function handleClose(e: any): void {
 	}
 }
 async function getMyProfile(update = false) {
-	const { profile } = await getProfile(store.$state.id, update);
-	myProfile.value = profile || createDefaultProfile(store.$state.id);
+	await profileStore.fetchProfile(store.$state.id);
 	if (myProfile.value.avatar.length > 1) {
 		getPhotoFromIPFS(myProfile.value.avatar).then((p) => {
 			myAvatar.value = p;
 		});
-	}
-	// Set visitProfile to myProfile if viewing my own profile
-	if (store.$state.id !== `` && store.$state.id === route.params.id) {
-		visitProfile.value = myProfile.value;
-		visitAvatar.value = myAvatar.value;
 	}
 }
 function updateFromWizard(): void {

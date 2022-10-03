@@ -7,7 +7,12 @@ import { usePostsStore } from '@/store/posts';
 
 const postsStore = usePostsStore();
 const route = useRoute();
-const authorID = computed(() => route.params.id as string);
+const authorID = computed(() => {
+	if (typeof route.params.id !== `string`) {
+		throw new Error('route.params.id should not be an array!');
+	}
+	return route.params.id;
+});
 const posts = computed(() => postsStore.getProfilePosts(authorID.value));
 
 onBeforeMount(() => {

@@ -34,7 +34,11 @@ async function initReposters() {
 		reposters.value = await getReposters(props.cid, options);
 		reposters.value.forEach(await getFollowers);
 	} catch (err) {
-		toastError(err as string);
+		if (err instanceof Error) {
+			toastError(err.message);
+			return;
+		}
+		throw err;
 	} finally {
 		isLoading.value = false;
 	}

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, onMounted, ref } from 'vue';
+import { computed, onBeforeMount, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
@@ -40,11 +40,15 @@ import { ISignedIPFSObject } from '@/backend/utilities/helpers';
 import IpfsLoading from '@/components/post/reader/IpfsLoading.vue';
 import FeaturedPhotoPopup from '../../components/popups/FeaturedPhotoPopup.vue';
 import WarningPopup from '@/components/popups/WarningPopup.vue';
+import { useCommentsStore } from '@/store/comments';
 
 const store = useStore();
 const settings = useStoreSettings();
+const commentsStore = useCommentsStore();
 const router = useRouter();
-const cid = ref<string>(router.currentRoute.value.params.post as string);
+const cid = ref<string>(
+	typeof router.currentRoute.value.params.post === `string` ? router.currentRoute.value.params.post : ``,
+);
 const post = ref<ISignedIPFSObject<Post>>();
 const postMetadata = ref<IPostResponseWithHidden>();
 const deleted = ref<boolean>(false);
@@ -57,6 +61,8 @@ const enabledTiers = ref<Array<string>>();
 const postImageKeys = ref<Array<IPostImageKey>>([]);
 const captionHeight = ref<number | undefined>(0);
 const subscriptionStatus = ref<`INSUFFICIENT_TIER` | `NOT_SUBSCRIBED` | ``>(``);
+const postComments = computed(() => commentsStore.getCommentsOfPost(cid.value));
+
 // Local states
 const showShare = ref<boolean>(false);
 const showStats = ref<boolean>(false);
@@ -173,8 +179,10 @@ onMounted(async () => {
 		if (res.data.content) {
 			wordCount.value = res.data.content.split(/\s+/).length;
 		}
+		// Fetch comments
+		await commentsStore.fetchCommentsOfPost(cid.value);
 	} catch (err) {
-		throw new Error(err as string);
+		throw err;
 	}
 	const container = document.getElementById(`scrollable_content`);
 	if (container) {
@@ -439,7 +447,9 @@ function isReposted() {
 					<!-- Comment editor -->
 					<CommentEditor :comments-count="postMetadata.commentsCount" />
 					<!-- Comments -->
-					<div v-for="i in 20" :key="i"><Comment class="mb-4" /></div>
+					<div v-for="c in postComments" :key="c">
+						<Comment :cid="c" :authorid="postMetadata.post.authorID" class="mb-4" />
+					</div>
 				</article>
 				<!-- Stats -->
 				<article v-if="postMetadata && !showPaywall && showStats" class="pb-14">

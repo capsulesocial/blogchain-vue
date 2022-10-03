@@ -38,7 +38,12 @@ if (typeof route.params.id !== 'string') {
 	throw new Error('Invalid param type for id');
 }
 const profileExists = ref<boolean>(false);
-const authorID = computed(() => route.params.id as string);
+const authorID = computed(() => {
+	if (typeof route.params.id !== `string`) {
+		throw new Error(`route.params.id should be of type string!`);
+	}
+	return route.params.id;
+});
 const profile = computed(() => profilesStore.getProfile(authorID.value));
 connectionsStore.fetchConnections(authorID.value);
 const connections = computed(() => connectionsStore.getConnections(authorID.value));
@@ -48,11 +53,8 @@ const isActiveSub = ref<boolean>(false);
 const activeSub = ref<ISubscriptionWithProfile>();
 void useSubscription.fetchSubs(store.$state.id);
 // Check if payments are enabled
-
 useMeta({
-	title: profile.value.name
-		? `${profile.value.name as string} -  Blogchain`
-		: `@${authorID.value as string} -  Blogchain`,
+	title: profile.value.name ? `${profile.value.name} -  Blogchain` : `@${authorID.value} -  Blogchain`,
 	htmlAttrs: { lang: 'en', amp: true },
 });
 
@@ -92,7 +94,7 @@ const selfView = ref<boolean>(authorID.value === store.$state.id);
 const showAvatarPopup = ref<boolean>(false);
 const scrollingDown = ref<boolean>(false);
 const totalPostsCount = ref<number>(0);
-const longBio = ref<boolean>(profile.value.bio.length > 200);
+const longBio = computed(() => profile.value.bio.length > 200);
 const expandBio = ref<boolean>(false);
 const openFollowersPopup = ref<boolean>(false);
 const openFollowingPopup = ref<boolean>(false);

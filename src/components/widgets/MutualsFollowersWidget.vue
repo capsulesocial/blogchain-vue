@@ -13,7 +13,12 @@ const route = useRoute();
 const profileStore = useProfilesStore();
 
 const openMutualFollowersPopup = ref<boolean>(false);
-const authorID = computed(() => route.params.id as string);
+const authorID = computed(() => {
+	if (typeof route.params.id !== `string`) {
+		throw new Error('route.params.id should not be an array!');
+	}
+	return route.params.id;
+});
 
 function getText(): string {
 	if (!mutuals.value) {

@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { IGenericPostResponse } from '@/backend/post';
 import Comment from '@/components/post/comments/Comment.vue';
 import SimplePopupCard from '@/components/post/SimplePopupCard.vue';
 import StatsIcon from '@/components/icons/StatsIcon.vue';
 import CommentFilter from '@/components/post/comments/CommentFilter.vue';
 import CommentEditor from '@/components/post/comments/CommentEditor.vue';
+import { useCommentsStore } from '@/store/comments';
 
 const emit = defineEmits([`close`, `stats`]);
 
@@ -17,11 +18,16 @@ const props = withDefaults(
 );
 
 const filter = ref<string>(``);
+const commentsStore = useCommentsStore();
+const postComments = computed(() => commentsStore.getCommentsOfPost(props.fetchedPost.post._id));
 
 function setFilter(reaction: string): void {
 	filter.value = reaction;
 	// filter comments
 }
+onMounted(async () => {
+	await commentsStore.fetchCommentsOfPost(props.fetchedPost.post._id);
+});
 </script>
 
 <template>
@@ -48,7 +54,9 @@ function setFilter(reaction: string): void {
 			<!-- Comment editor -->
 			<CommentEditor :comments-count="props.fetchedPost.commentsCount" class="px-6" />
 			<!-- Comments -->
-			<div v-for="i in 20" :key="i"><Comment class="px-6 mb-4" /></div>
+			<div v-for="c in postComments" :key="c">
+				<Comment :cid="c" :authorid="props.fetchedPost.post.authorID" class="px-6 mb-4" />
+			</div>
 		</div>
 	</div>
 </template>
