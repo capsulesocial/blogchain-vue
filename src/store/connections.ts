@@ -2,6 +2,8 @@ import { defineStore } from 'pinia';
 import { useStore } from '@/store/session';
 
 import { getFollowersAndFollowing, followChange } from '@/backend/following';
+import { IRepostResponse, Algorithm } from '@/backend/post';
+import { getReposts } from '@/backend/reposts';
 
 import { toastSuccess, handleError } from '@/plugins/toast';
 
@@ -68,6 +70,17 @@ export const useConnectionsStore = defineStore(`connections`, {
 					}
 				}
 			}
+		},
+		async fetchReposts(
+			id: string,
+			sort: Algorithm,
+			offset: number,
+			limit: number,
+		): Promise<IRepostResponse[] | undefined> {
+			if (!id) {
+				return;
+			}
+			return await getReposts({ authorID: id }, { sort: sort, offset: offset, limit: limit });
 		},
 	},
 });
