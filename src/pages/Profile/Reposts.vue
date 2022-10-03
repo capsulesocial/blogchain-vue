@@ -28,7 +28,8 @@ const algorithm = ref<Algorithm>(Algorithm.NEW);
 const noMorePosts = ref<boolean>(false);
 
 onMounted(async (): Promise<void> => {
-	const repost = await connectionsStore.fetchReposts(authorID, algorithm.value, currentOffset.value, limit.value);
+	const repost = await connectionsStore.fetchReposts(authorID.value, algorithm.value, currentOffset.value, limit.value);
+	isLoading.value = false;
 	if (repost !== undefined) {
 		reposts.value = repost;
 		return;
@@ -42,8 +43,11 @@ function toggleHomeFeed() {
 </script>
 
 <template>
-	<div>
-		<section id="scrollable_content" class="px-0">
+	<div
+		id="scrollable_content"
+		class="min-h-115 h-115 lg:min-h-210 lg:h-210 xl:min-h-220 xl:h-220 overflow-y-auto lg:overflow-y-hidden relative w-full px-4"
+	>
+		<section class="px-0">
 			<article v-if="reposts.length === 0 && !isLoading" class="mt-24 grid justify-items-center px-10 xl:px-0">
 				<p class="text-gray5 dark:text-gray3 mb-5 text-sm">
 					<span v-if="route.params.id === store.$state.id">It seems you haven't reposted any content yet.</span>
