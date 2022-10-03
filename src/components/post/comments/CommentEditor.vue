@@ -6,6 +6,9 @@ import { useStore } from '@/store/session';
 import { useCommentsStore } from '@/store/comments';
 import { useStoreSettings } from '@/store/settings';
 import { toastWarning, toastError } from '@/plugins/toast';
+import { qualityComment } from '@/plugins/quality';
+import { isError } from '@/plugins/helpers';
+
 import Avatar from '@/components/Avatar.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
 import SendIcon from '@/components/icons/SendIcon.vue';
@@ -86,10 +89,17 @@ async function sendComment(): Promise<void> {
 		toastError(`You must select a reaction before posting`);
 		return;
 	}
+	comment.value = comment.value.trim();
+	const commentQuality = qualityComment(comment.value);
+	if (isError(commentQuality)) {
+		toastError(commentQuality.error);
+		return;
+	}
 	const c = createComment(store.$state.id, comment.value, selectedEmotion.value.label, props.cid);
 	await commentStore.sendUserComment(c, `comment`);
 	comment.value = ``;
 	selectedEmotion.value.label = ``;
+	activeEmotion.value.label = ``;
 }
 </script>
 

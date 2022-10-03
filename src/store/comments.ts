@@ -28,7 +28,7 @@ export const useCommentsStore = defineStore(`comments`, {
 				return;
 			}
 			try {
-				const fcomments = await getCommentsOfPost(postCid, offset, limit);
+				const fcomments: ICommentData[] = await getCommentsOfPost(postCid, offset, limit);
 				this.comments = fcomments;
 				return fcomments;
 			} catch (error: unknown) {
@@ -44,10 +44,9 @@ export const useCommentsStore = defineStore(`comments`, {
 				const _id: string = await sendComment(content, type);
 				if (type === `comment`) {
 					this.comments.push({ _id, ...content });
-				} else {
-					// if reply return _id to temporarily add to the already available replies
-					return _id;
 				}
+				// if reply return _id and assign to the added reply _id
+				return _id;
 				toastSuccess(type === `comment` ? `Comment sent successfully 🎉  ` : `Reply sent successfully 🎉  `);
 			} catch (error: unknown) {
 				handleError(error);
@@ -82,11 +81,8 @@ export const useCommentsStore = defineStore(`comments`, {
 			}
 			try {
 				await sendPostDeletion(action, postCID, authorID);
-				// remove the deleted comment from store state
-				this.comments.filter((comment) => {
-					comment._id !== postCID;
-				});
-
+				// soft delete the comment from the store state
+				this.$state.comments = this.comments.filter((comment) => !(comment._id === postCID));
 				toastSuccess(`This comment has been successfully removed`);
 			} catch (error) {
 				handleError(error);

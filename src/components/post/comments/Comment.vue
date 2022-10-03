@@ -12,6 +12,7 @@ import MoreIcon from '@/components/icons/MoreIcon.vue';
 import BinIcon from '@/components/icons/BinIcon.vue';
 import Reply from '@/components/post/comments/Reply.vue';
 import Avatar from '@/components/Avatar.vue';
+
 import { formatDate } from '@/helpers/helpers';
 import { toastError } from '@/plugins/toast';
 import { qualityComment } from '@/plugins/quality';
@@ -55,13 +56,18 @@ const repliseLimit = ref<number>(10);
 onBeforeMount(async () => {
 	const res = await commentStore.fetchComment(props.postComment._id);
 	comment.value = res;
-	emotion.value = faces[res?.emotion];
+	if (res?.emotion !== undefined) {
+		emotion.value = faces[res?.emotion];
+	}
+
 	void profilesStore.fetchProfile(props.postComment.authorID);
 });
 
 onMounted(async (): Promise<void> => {
 	const res = await commentStore.getCommentReplies(props.postComment._id, repliseOffset.value, repliseLimit.value);
-	replies.value = res;
+	if (res !== undefined) {
+		replies.value = res;
+	}
 });
 
 function handleResize(e: any): void {
@@ -90,8 +96,8 @@ async function sendReply(): Promise<void> {
 		return;
 	}
 	const c = createComment(store.$state.id, reply.value, `no-emotion`, props.postComment._id);
-	const _id = await commentStore.sendUserComment(c, `reply`);
-	replies.value.push({ _id, ...c });
+	const id = (await commentStore.sendUserComment(c, `reply`)) as string;
+	replies.value.push({ _id: id, ...c });
 	reply.value = ``;
 }
 
