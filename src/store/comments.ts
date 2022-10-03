@@ -1,9 +1,9 @@
-import { ICommentData, getCommentsOfPost, getComment, INewCommentData } from '@/backend/comment';
+import { getCommentsOfPost, getComment, INewCommentData } from '@/backend/comment';
 import { defineStore } from 'pinia';
 import { handleError } from '@/plugins/toast';
 
 export interface Comments {
-	comments: Map<string, INewCommentData | ICommentData>;
+	comments: Map<string, INewCommentData>;
 	postComments: Map<string, string[]>;
 	authorComments: Map<string, string[]>;
 }
@@ -11,15 +11,21 @@ export interface Comments {
 export const useCommentsStore = defineStore(`comments`, {
 	state: (): Comments => {
 		return {
-			comments: new Map<string, INewCommentData | ICommentData>(),
+			comments: new Map<string, INewCommentData>(),
 			postComments: new Map<string, string[]>(),
 			authorComments: new Map<string, string[]>(),
 		};
 	},
 	getters: {
-		getCommentData: (state: Comments) => (commentCID: string) => {
-			return state.comments.get(commentCID);
-		},
+		getCommentData:
+			(state: Comments) =>
+			(commentCID: string): INewCommentData | undefined => {
+				const c = state.comments.get(commentCID);
+				if (c) {
+					return c;
+				}
+				return undefined;
+			},
 		getCommentsOfPost: (state: Comments) => (postCID: string) => {
 			return state.postComments.get(postCID);
 		},
@@ -40,7 +46,8 @@ export const useCommentsStore = defineStore(`comments`, {
 				const res = await getCommentsOfPost(postCID, offset, 10, emotion, emotionCategory);
 				const postComments: string[] = [];
 				for (const c of res) {
-					this.$state.comments.set(c._id, c);
+					const comment = await getComment(c._id);
+					this.$state.comments.set(c._id, comment);
 					postComments.push(c._id);
 				}
 				this.postComments.set(postCID, postComments);
