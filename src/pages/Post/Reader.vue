@@ -177,6 +177,8 @@ onMounted(async () => {
 		if (res.data.content) {
 			wordCount.value = res.data.content.split(/\s+/).length;
 		}
+		// Fetch comments
+		await commentsStore.fetchCommentsOfPost(cid.value);
 	} catch (err) {
 		throw new Error(err as string);
 	}
