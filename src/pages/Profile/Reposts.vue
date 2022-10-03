@@ -32,7 +32,7 @@ onMounted(async (): Promise<void> => {
 
 // methods
 function toggleHomeFeed() {
-	router.push(`home`);
+	router.push(`/home`);
 }
 </script>
 
