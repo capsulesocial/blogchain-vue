@@ -1,4 +1,4 @@
-import { getCommentsOfPost, getComment, INewCommentData } from '@/backend/comment';
+import { getCommentsOfPost, getCommentsOfUser, getComment, INewCommentData } from '@/backend/comment';
 import { defineStore } from 'pinia';
 import { handleError } from '@/plugins/toast';
 
@@ -29,6 +29,9 @@ export const useCommentsStore = defineStore(`comments`, {
 		getCommentsOfPost: (state: Comments) => (postCID: string) => {
 			return state.postComments.get(postCID);
 		},
+		getCommentsOfAuthor: (state: Comments) => (authorID: string) => {
+			return state.authorComments.get(authorID);
+		},
 	},
 	actions: {
 		async fetchComment(cid: string) {
@@ -55,6 +58,19 @@ export const useCommentsStore = defineStore(`comments`, {
 				handleError(err);
 			}
 		},
-		fetchCommentsOfAuthor: (authorID: string) => {},
+		async fetchCommentsOfAuthor(authorID: string, offset = 0) {
+			try {
+				const res = await getCommentsOfUser(authorID, offset, 10);
+				const authorComments: string[] = [];
+				for (const c of res) {
+					const comment = await getComment(c._id);
+					this.$state.comments.set(c._id, comment);
+					authorComments.push(c._id);
+				}
+				this.authorComments.set(authorID, authorComments);
+			} catch (err) {
+				handleError(err);
+			}
+		},
 	},
 });
