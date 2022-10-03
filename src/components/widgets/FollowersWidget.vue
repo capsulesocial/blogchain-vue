@@ -9,7 +9,15 @@ import FollowersPopup from '@/components/popups/FollowersPopup.vue';
 const store = useStore();
 const route = useRoute();
 const connections = useConnectionsStore();
-const authorID = computed(() => (route.name === `Home` ? store.$state.id : (route.params.id as string)));
+const authorID = computed(() => {
+	if (route.name === `Home`) {
+		return store.$state.id;
+	}
+	if (typeof route.params.id !== `string`) {
+		throw new Error('route.params.id should not be an array!');
+	}
+	return route.params.id;
+});
 const followersList = computed(() => connections.getConnections(authorID.value)?.followers);
 const openFollowersPopup = ref<boolean>(false);
 </script>

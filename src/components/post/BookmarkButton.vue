@@ -18,7 +18,11 @@ const handleBookmark = async () => {
 	try {
 		await postsStore.handleBookmark(!isBookmarked.value, store.$state.id, props.postcid);
 	} catch (err) {
-		toastError(err as string);
+		if (err instanceof Error) {
+			toastError(err.message);
+			return;
+		}
+		throw err;
 	} finally {
 		isBookmarked.value = !isBookmarked.value;
 		if (isBookmarked.value) {

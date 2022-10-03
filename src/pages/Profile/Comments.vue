@@ -6,7 +6,13 @@ import { useRoute } from 'vue-router';
 
 const commentsStore = useCommentsStore();
 const route = useRoute();
-const authorID = computed(() => route.params.id as string);
+const authorID = computed(() => {
+	const id = route.params.id;
+	if (Array.isArray(id)) {
+		throw new Error("The route.params.id shouldn't be an array!");
+	}
+	return id;
+});
 const comments = computed(() => commentsStore.getCommentsOfAuthor(authorID.value));
 onMounted(() => {
 	commentsStore.fetchCommentsOfAuthor(authorID.value);
@@ -18,6 +24,8 @@ onMounted(() => {
 		id="scrollable_content"
 		class="min-h-115 h-115 lg:min-h-210 lg:h-210 xl:min-h-220 xl:h-220 overflow-y-auto lg:overflow-y-hidden relative w-full px-4"
 	>
-		<div v-for="c in comments" :key="c"><Comment :cid="c" :authorid="authorID" class="mb-4" /></div>
+		<div v-for="c in comments" :key="c">
+			<Comment :cid="c" :authorid="authorID" class="mb-4" />
+		</div>
 	</div>
 </template>

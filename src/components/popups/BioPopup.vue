@@ -13,8 +13,7 @@ const props = withDefaults(
 	{},
 );
 
-const authorID = props.id ? props.id : undefined;
-const profile = computed(() => profilesStore.getProfile(authorID as string));
+const profile = computed(() => profilesStore.getProfile(props.id));
 </script>
 <template>
 	<div

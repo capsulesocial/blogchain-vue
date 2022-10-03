@@ -46,7 +46,9 @@ const store = useStore();
 const settings = useStoreSettings();
 const commentsStore = useCommentsStore();
 const router = useRouter();
-const cid = ref<string>(router.currentRoute.value.params.post as string);
+const cid = ref<string>(
+	typeof router.currentRoute.value.params.post === `string` ? router.currentRoute.value.params.post : ``,
+);
 const post = ref<ISignedIPFSObject<Post>>();
 const postMetadata = ref<IPostResponseWithHidden>();
 const deleted = ref<boolean>(false);
@@ -180,7 +182,7 @@ onMounted(async () => {
 		// Fetch comments
 		await commentsStore.fetchCommentsOfPost(cid.value);
 	} catch (err) {
-		throw new Error(err as string);
+		throw err;
 	}
 	const container = document.getElementById(`scrollable_content`);
 	if (container) {

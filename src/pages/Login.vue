@@ -52,7 +52,11 @@ async function walletLogin(): Promise<void> {
 		if (keyFileTarget.value) {
 			keyFileTarget.value = null;
 		}
-		toastError(err as string);
+		if (err instanceof Error) {
+			toastError(err.message);
+			return;
+		}
+		throw err;
 	}
 }
 

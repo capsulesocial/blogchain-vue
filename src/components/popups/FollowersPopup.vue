@@ -13,17 +13,21 @@ const store = useStore();
 const emit = defineEmits([`close`]);
 const connections = useConnectionsStore();
 
-if (route.name !== `Home`) {
-	if (typeof route.params.id !== 'string') {
-		throw new Error('Invalid param type for id');
+const authorID = computed(() => {
+	if (route.name === 'Home') {
+		return store.$state.id;
 	}
-}
 
-const authorID: string = route.name === `Home` ? store.$state.id : (route.params.id as string);
-profilesStore.fetchProfile(authorID);
+	if (typeof route.params.id !== 'string') {
+		throw new Error('route.params.id should not be an array!');
+	}
 
-const profile = computed(() => profilesStore.getProfile(authorID as string));
-const followersList = computed(() => connections.getConnections(authorID)?.followers);
+	return route.params.id;
+});
+profilesStore.fetchProfile(authorID.value);
+
+const profile = computed(() => profilesStore.getProfile(authorID.value));
+const followersList = computed(() => connections.getConnections(authorID.value)?.followers);
 </script>
 <template>
 	<div

@@ -9,7 +9,7 @@ import SecondaryButton from '@/components/SecondaryButton.vue';
 
 const route = useRoute();
 const postsStore = usePostsStore();
-const category = ref<string>(route.params.category as string);
+const category = ref<string>(typeof route.params.category === `string` ? route.params.category : ``);
 const categoryPosts = computed(() => postsStore.getCategoryPosts(category.value));
 const lastScroll = ref<number>(0);
 const isScrollingDown = ref<boolean>(false);

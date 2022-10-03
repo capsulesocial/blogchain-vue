@@ -11,10 +11,15 @@ import MailIcon from '@/components/icons/MailIcon.vue';
 const store = useStore();
 const route = useRoute();
 const profilesStore = useProfilesStore();
+const id = computed(() => {
+	if (typeof route.params.id !== `string`) {
+		throw new Error('route.params.id should not be an array!');
+	}
+	return route.params.id;
+});
+const profile = computed(() => profilesStore.getProfile(id.value));
 
-const profile = computed(() => profilesStore.getProfile(route.params.id as string));
-
-profilesStore.fetchProfile(route.params.id as string);
+profilesStore.fetchProfile(id.value);
 
 function redirectWebsite(): void {
 	if (profile.value.website?.substr(0, 7) !== `http://` && profile.value.website?.substr(0, 8) !== `https://`) {

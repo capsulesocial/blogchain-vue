@@ -70,10 +70,10 @@ onMounted(() => {
 					<img
 						v-if="selectedMode.label === x.label"
 						id="selectedMode"
-						:src="(x.image as string)"
+						:src="x.image"
 						class="border-primary h-32 w-44 rounded-lg border shadow-lg"
 					/>
-					<img v-else :src="(x.image as string)" class="border-lightBorder h-32 w-44 rounded-lg border shadow-lg" />
+					<img v-else :src="x.image" class="border-lightBorder h-32 w-44 rounded-lg border shadow-lg" />
 					<span
 						class="mt-1 text-center"
 						:class="selectedMode.label === x.label ? `text-primary` : `text-gray5 dark:text-gray3`"

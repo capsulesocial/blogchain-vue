@@ -1,5 +1,5 @@
 export interface IMode {
-	image: unknown;
+	image: string;
 	label: `Light` | `Dark` | `OS`;
 }
 

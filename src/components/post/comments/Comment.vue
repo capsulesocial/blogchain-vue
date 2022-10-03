@@ -50,8 +50,13 @@ const showReplies = ref<boolean>(false);
 const showDelete = ref<boolean>(false);
 const commentDeleted = ref<boolean>(false);
 const comment = computed(() => commentsStore.getCommentData(props.cid));
-const author = computed(() => profileStore.getProfile(comment.value?.authorID as string));
-const emotion = ref<IFace>(faces[comment.value?.emotion as string]);
+const author = computed(() => {
+	if (typeof comment.value?.authorID !== `string`) {
+		throw new Error(`authorID should be a string`);
+	}
+	return profileStore.getProfile(comment.value?.authorID);
+});
+const emotion = ref<IFace>(typeof comment.value?.emotion === `string` ? faces[comment.value?.emotion] : faces.default);
 
 // replies
 const reply = ref<string>(``);

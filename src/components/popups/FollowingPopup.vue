@@ -19,10 +19,18 @@ if (route.name !== `Home`) {
 	}
 }
 
-const authorID = route.name === `Home` ? store.$state.id : (route.params.id as string);
-const profile = computed(() => profilesStore.getProfile(authorID as string));
+const authorID = computed(() => {
+	if (route.name === `Home`) {
+		return store.$state.id;
+	}
+	if (typeof route.params.id !== `string`) {
+		throw new Error('route.params.id should not be an array!');
+	}
+	return route.params.id;
+});
+const profile = computed(() => profilesStore.getProfile(authorID.value));
 // TODO: fetch following from store / backend
-const followingList = computed(() => connections.getConnections(authorID)?.following);
+const followingList = computed(() => connections.getConnections(authorID.value)?.following);
 </script>
 <template>
 	<div
