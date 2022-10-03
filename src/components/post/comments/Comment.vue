@@ -11,6 +11,10 @@ import Avatar from '@/components/Avatar.vue';
 import MoreIcon from '@/components/icons/MoreIcon.vue';
 import { useCommentsStore } from '@/store/comments';
 import { useProfilesStore } from '@/store/profiles';
+import { qualityComment } from '@/plugins/quality';
+import { isError } from '@/plugins/helpers';
+import { toastError, handleError } from '@/plugins/toast';
+import { createComment } from '@/backend/comment';
 
 const commentsStore = useCommentsStore();
 const settings = useStoreSettings();
@@ -53,6 +57,25 @@ function handleResize(e: any) {
 
 function toggleDropdownDelete() {
 	showDelete.value = !showDelete.value;
+}
+
+async function sendReply() {
+	// Check quality
+	reply.value = reply.value.trim();
+	const commentQuality = qualityComment(reply.value);
+	if (isError(commentQuality)) {
+		toastError(commentQuality.error);
+		return;
+	}
+	// Send comment request
+	try {
+		const c = createComment(store.$state.id, reply.value, `no-emotion`, props.cid);
+		await commentsStore.sendResponse(c, `reply`);
+	} catch (err) {
+		handleError(err);
+	} finally {
+		reply.value = ``;
+	}
 }
 
 onMounted(async () => {
@@ -205,7 +228,11 @@ onMounted(async () => {
 						>
 						</textarea>
 						<span class="relative w-1/5 flex justify-end items-end">
-							<button v-if="reply !== ''" class="text-primary focus:outline-none text-left font-sans text-sm p-4">
+							<button
+								v-if="reply !== ''"
+								class="text-primary focus:outline-none text-left font-sans text-sm p-4"
+								@click="sendReply"
+							>
 								Post reply
 							</button>
 						</span>
