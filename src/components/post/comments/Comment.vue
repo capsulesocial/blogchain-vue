@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from 'vue';
 import { faces, IFace } from '@/config/faces';
 import { useStoreSettings } from '@/store/settings';
-import { feelings } from '@/config/config';
+import { emotionCategories } from '@/config/config';
 import { formatDate } from '@/helpers/helpers';
 import { useStore } from '@/store/session';
 import BinIcon from '@/components/icons/BinIcon.vue';
@@ -104,9 +104,9 @@ onMounted(async () => {
 					v-if="comment"
 					class="relative flex flex-row w-full overflow-x-auto justify-between rounded-lg bg-opacity-5"
 					:class="
-						feelings.positive.has(comment.emotion)
+						emotionCategories.positive.has(comment.emotion)
 							? `bg-positive`
-							: feelings.negative.has(comment.emotion)
+							: emotionCategories.negative.has(comment.emotion)
 							? `bg-negative`
 							: `bg-neutral`
 					"

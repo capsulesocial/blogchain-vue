@@ -1,6 +1,7 @@
 import { getCommentsOfPost, getCommentsOfUser, getComment, INewCommentData, sendComment } from '@/backend/comment';
 import { defineStore } from 'pinia';
 import { handleError, toastSuccess } from '@/plugins/toast';
+import { Emotions, EmotionCategories } from '@/config/config';
 
 export interface Comments {
 	comments: Map<string, INewCommentData>;
@@ -57,8 +58,8 @@ export const useCommentsStore = defineStore(`comments`, {
 			postCID: string,
 			offset = 0,
 			limit = 10,
-			emotion?: string,
-			emotionCategory?: `negative` | `neutral` | `positive`,
+			emotion?: Emotions,
+			emotionCategory?: EmotionCategories,
 		) {
 			try {
 				const res = await getCommentsOfPost(postCID, offset, limit, emotion, emotionCategory);
