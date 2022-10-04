@@ -27,7 +27,6 @@ const props = withDefaults(
 const emit = defineEmits([`close`, `delete`]);
 
 const store = useStore();
-// const postsStore = usePostsStore();
 const settings = useStoreSettings();
 const profilesStore = useProfilesStore();
 const showDelete = ref<boolean>(false);

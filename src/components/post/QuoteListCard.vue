@@ -37,7 +37,6 @@ function openDeleteDropdown() {
 	});
 }
 async function deleteRepost() {
-	console.log(`delete repost`);
 	try {
 		await postsStore.removePost(props.cid, store.$state.id);
 	} catch (err) {
