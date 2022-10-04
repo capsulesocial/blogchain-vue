@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { feelings } from '@/config/config';
+import { emotionCategories, EmotionCategories } from '@/config/config';
 import { faceGroupings, IFace } from '@/config/faces';
 import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
@@ -27,9 +27,9 @@ const props = withDefaults(
 );
 
 const showEmotions = ref<boolean>(false);
-const selectedEmotionColor = ref<`positive` | `neutral` | `negative` | `neutralLightest`>(`neutralLightest`);
-const selectedEmotion = ref<IFace>({ label: ``, light: null, dark: null });
-const activeEmotion = ref<IFace>({ label: ``, light: null, dark: null });
+const selectedEmotionColor = ref<EmotionCategories | `neutralLightest`>(`neutralLightest`);
+const selectedEmotion = ref<IFace | null>(null);
+const activeEmotion = ref<IFace | null>(null);
 const comment = ref<string>(``);
 
 function sleep(ms: any) {
@@ -48,18 +48,21 @@ async function toggleShowEmotions() {
 	body.scrollIntoView({ block: `center` });
 }
 
-function setEmotion(e: EventTarget | null, r: { label: string; light: any; dark: any }) {
+function setEmotion(e: EventTarget | null, r: IFace) {
 	if (!e) {
+		return;
+	}
+	if (r.label === 'default') {
 		return;
 	}
 	const target = e as HTMLElement;
 	target.scrollIntoView({ behavior: `smooth`, block: `center` });
 	selectedEmotion.value = r;
-	if (feelings.positive.has(r.label)) {
+	if (emotionCategories.positive.has(r.label)) {
 		selectedEmotionColor.value = `positive`;
 		return;
 	}
-	if (feelings.negative.has(r.label)) {
+	if (emotionCategories.negative.has(r.label)) {
 		selectedEmotionColor.value = `negative`;
 		return;
 	}
@@ -68,7 +71,7 @@ function setEmotion(e: EventTarget | null, r: { label: string; light: any; dark:
 }
 
 function confirmEmotion() {
-	if (selectedEmotion.value.label === ``) {
+	if (!selectedEmotion.value) {
 		toastWarning(`No face selected!`);
 		return;
 	}
@@ -79,12 +82,16 @@ function confirmEmotion() {
 function cancelEmotion() {
 	showEmotions.value = false;
 	selectedEmotionColor.value = `neutralLightest`;
-	selectedEmotion.value = { label: ``, light: null, dark: null };
+	selectedEmotion.value = null;
 }
 
 async function sendComment() {
 	// Check quality
-	if (activeEmotion.value.label === ``) {
+	if (!activeEmotion.value || !selectedEmotion.value) {
+		toastError(`You must select a reaction before posting`);
+		return;
+	}
+	if (selectedEmotion.value.label === 'default') {
 		toastError(`You must select a reaction before posting`);
 		return;
 	}
@@ -102,8 +109,8 @@ async function sendComment() {
 		handleError(err);
 	} finally {
 		comment.value = ``;
-		selectedEmotion.value.label = ``;
-		activeEmotion.value.label = ``;
+		selectedEmotion.value = null;
+		activeEmotion.value = null;
 	}
 }
 </script>
@@ -155,7 +162,7 @@ async function sendComment() {
 						: (selectedEmotionColor === `positive` ||
 								selectedEmotionColor === `neutral` ||
 								selectedEmotionColor === `negative`) &&
-						  selectedEmotion.label !== ``
+						  selectedEmotion
 						? `border p-2 bg-` + selectedEmotionColor
 						: `p-2 bg-lightBG dark:bg-darkBG`
 				"
@@ -168,7 +175,7 @@ async function sendComment() {
 						<!-- Front side: Type comment -->
 						<div v-show="!showEmotions" class="flex w-full bg-lightBG dark:bg-darkBG">
 							<button class="focus:outline-none h-auto flex-shrink-0" @click="toggleShowEmotions">
-								<span v-if="activeEmotion.label !== ``">
+								<span v-if="activeEmotion">
 									<img
 										:src="settings.isDarkMode ? activeEmotion.dark : activeEmotion.light"
 										:alt="activeEmotion.label"
@@ -206,8 +213,8 @@ async function sendComment() {
 								<button
 									class="bg-primary focus:outline-none block rounded-lg lg:hidden"
 									style="margin-right: 15.2px; margin-bottom: 12px"
-									:disabled="comment === '' && activeEmotion.label === ''"
-									:class="comment !== '' && activeEmotion.label !== '' ? '' : 'opacity-50 cursor-not-allowed'"
+									:disabled="comment === '' && !activeEmotion"
+									:class="comment !== '' && activeEmotion ? '' : 'opacity-50 cursor-not-allowed'"
 									@click="sendComment"
 								>
 									<SendIcon class="m-2 mb-3 ml-3 h-5 w-5 text-white transform rotate-45" />
@@ -218,8 +225,8 @@ async function sendComment() {
 									class="hidden lg:block"
 									:action="sendComment"
 									:thin="true"
-									:disabled="comment === '' && activeEmotion.label === ''"
-									:class="comment !== '' && activeEmotion.label !== '' ? '' : 'opacity-50 cursor-not-allowed'"
+									:disabled="comment === '' && !activeEmotion"
+									:class="comment !== '' && activeEmotion ? '' : 'opacity-50 cursor-not-allowed'"
 								/>
 							</span>
 						</div>
@@ -255,7 +262,9 @@ async function sendComment() {
 										:key="face.label"
 										class="focus:outline-none outline-none rounded-lg border-2"
 										:class="
-											selectedEmotion.label === face.label ? `border-` + selectedEmotionColor : `border-transparent`
+											selectedEmotion && selectedEmotion.label === face.label
+												? `border-` + selectedEmotionColor
+												: `border-transparent`
 										"
 										style="transition: all 0.3s ease-in-out"
 										@click="setEmotion($event.target, face)"
@@ -269,7 +278,7 @@ async function sendComment() {
 										<p
 											class="capitalize lg:hidden mt-1"
 											:class="
-												selectedEmotion.label === face.label
+												selectedEmotion && selectedEmotion.label === face.label
 													? `font-bold text-` + selectedEmotionColor
 													: `text-gray7 dark:text-gray3`
 											"
@@ -285,7 +294,7 @@ async function sendComment() {
 										<button
 											class="focus:outline-none outline-none flex flex-grow items-center justify-center"
 											:class="
-												selectedEmotion.label === face.label
+												selectedEmotion && selectedEmotion.label === face.label
 													? `font-bold text-` + selectedEmotionColor
 													: `text-gray7 dark:text-gray3`
 											"

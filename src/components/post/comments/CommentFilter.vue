@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { feelings } from '@/config/config';
+import { emotionCategories, EmotionCategories } from '@/config/config';
 import { faces } from '@/config/faces';
 import { useStoreSettings } from '@/store/settings';
 import ChevronUp from '@/components/icons/ChevronUp.vue';
@@ -17,9 +17,9 @@ const props = withDefaults(
 
 const settings = useStoreSettings();
 const showFilter = ref<boolean>(false);
-const feeling = ref<`positive` | `negative` | `neutral`>(`positive`);
+const feeling = ref<EmotionCategories>(`positive`);
 
-function setCommentFilterFeeling(input: `positive` | `negative` | `neutral`) {
+function setCommentFilterFeeling(input: EmotionCategories) {
 	feeling.value = input;
 	emit(`clicked`, input);
 }
@@ -87,7 +87,7 @@ function clearFilter() {
 				style="height: 225px; padding-right: 5px"
 			>
 				<button
-					v-for="r in feelings[feeling]"
+					v-for="r in emotionCategories[feeling]"
 					:key="r.indexOf"
 					class="tooltip focus:outline-none border-lightBorder relative inline-block h-24 w-24 transform rounded-xl border transition duration-500 ease-in-out hover:scale-105 mb-4"
 				>

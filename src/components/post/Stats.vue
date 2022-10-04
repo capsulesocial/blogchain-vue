@@ -2,8 +2,8 @@
 import { ref } from 'vue';
 import { useStoreSettings } from '@/store/settings';
 import { ICommentsStats, getCommentsStats } from '@/backend/comment';
-import { IFace, faces } from '@/config/faces';
-import { feelings } from '@/config/config';
+import { IFaceWithoutDefault, faces } from '@/config/faces';
+import { emotionCategories } from '@/config/config';
 import RepostersPopup from '@/components/popups/RepostersPopup.vue';
 import ChevronRight from '@/components/icons/ChevronRight.vue';
 import ChevronLeft from '@/components/icons/ChevronLeft.vue';
@@ -12,7 +12,7 @@ import QuoteIcon from '@/components/icons/QuoteIcon.vue';
 import QuotesPopup from '../popups/QuotesPopup.vue';
 
 interface FaceStat {
-	face: IFace;
+	face: IFaceWithoutDefault;
 	count: number;
 }
 
@@ -49,7 +49,7 @@ async function updateCommentsStats() {
 			continue;
 		}
 		const f = faces[face];
-		stats[f.label] = { face: f, count: faceStats[face] };
+		stats[f.label] = { face: f as IFaceWithoutDefault, count: faceStats[face] };
 	}
 	facePercentage.value = Object.values(stats).sort((a, b) => {
 		return a.count - b.count;
@@ -172,9 +172,9 @@ updateCommentsStats();
 						<div
 							class="flex flex-col rounded-lg p-1 bg-opacity-10"
 							:class="
-								feelings.positive.has(f.face.label)
+								emotionCategories.positive.has(f.face.label)
 									? `bg-positive`
-									: feelings.negative.has(f.face.label)
+									: emotionCategories.negative.has(f.face.label)
 									? `bg-negative`
 									: `bg-neutral`
 							"
