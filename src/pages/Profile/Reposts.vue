@@ -7,7 +7,7 @@ import { useRoute, useRouter } from 'vue-router';
 import SimpleFeedCard from '@/components/post/SimpleFeedCard.vue';
 import SecondaryButton from '@/components/SecondaryButton.vue';
 
-import { IRepostResponse, Algorithm } from '@/backend/post';
+import { Algorithm } from '@/backend/post';
 
 const store = useStore();
 const connectionsStore = useConnectionsStore();
@@ -20,7 +20,7 @@ const authorID = computed(() => {
 	}
 	return route.params.id;
 });
-const reposts = ref<IRepostResponse[]>([]);
+const reposts = computed(() => connectionsStore.$state.reposts);
 const isLoading = ref<boolean>(true);
 const currentOffset = ref<number>(0);
 const limit = ref<number>(10);
@@ -28,12 +28,7 @@ const algorithm = ref<Algorithm>(Algorithm.NEW);
 const noMorePosts = ref<boolean>(false);
 
 onMounted(async (): Promise<void> => {
-	const repost = await connectionsStore.fetchReposts(authorID.value, algorithm.value, currentOffset.value, limit.value);
-	isLoading.value = false;
-	if (repost !== undefined) {
-		reposts.value = repost;
-		return;
-	}
+	void connectionsStore.fetchReposts(authorID.value, algorithm.value, currentOffset.value, limit.value);
 });
 
 // methods

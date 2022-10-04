@@ -15,8 +15,10 @@ import IpfsImage from '@/components/IpfsImage.vue';
 import FriendButton from '@/components/FriendButton.vue';
 import ProfileCardHeader from '@/components/post/ProfileCardHeader.vue';
 import QuoteListCard from '@/components/post/QuoteListCard.vue';
+
 import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
+import { useConnectionsStore } from '@/store/connections';
 import type { IGenericPostResponse } from '@/backend/post';
 import { useProfilesStore } from '@/store/profiles';
 import { createPostExcerpt } from '@/helpers/post';
@@ -25,6 +27,7 @@ import TimestampAndReadingTime from '@/components/TimestampAndReadingTime.vue';
 const store = useStore();
 const settings = useStoreSettings();
 const profilesStore = useProfilesStore();
+const connectionsStore = useConnectionsStore();
 const showDelete = ref<boolean>(false);
 const showReposts = ref<boolean>(false);
 const showProfileCard = ref<boolean>(false);
@@ -64,10 +67,15 @@ function isReposted() {
 	}
 	return false;
 }
-
-function simpleRepost() {
+console.log(props.fetchedPost);
+async function simpleRepost() {
 	showReposts.value = false;
 	// todo : simple repost request
+	if (!isReposted) {
+		await connectionsStore.sendUserRepost(store.$state.id, props.fetchedPost.post._id, ``, `simple`);
+	} else {
+		await connectionsStore.removeUserRepost(props.fetchedPost.repost?._id as string, store.$state.id);
+	}
 }
 
 function quoteRepost() {

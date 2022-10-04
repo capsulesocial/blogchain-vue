@@ -2,19 +2,22 @@ import { defineStore } from 'pinia';
 import { useStore } from '@/store/session';
 
 import { getFollowersAndFollowing, followChange } from '@/backend/following';
-import { IRepostResponse, Algorithm } from '@/backend/post';
-import { getReposts } from '@/backend/reposts';
+import { Algorithm, IGenericPostResponse } from '@/backend/post';
+import { getReposts, sendRepost } from '@/backend/reposts';
+import { sendPostDeletion } from '@/backend/postDeletion';
 
 import { toastSuccess, handleError } from '@/plugins/toast';
 
 export interface Connections {
 	profiles: Map<string, { followers: Set<string>; following: Set<string> }>;
+	reposts: IGenericPostResponse[];
 }
 
 export const useConnectionsStore = defineStore(`connections`, {
 	state: (): Connections => {
 		return {
 			profiles: new Map<string, { followers: Set<string>; following: Set<string> }>(),
+			reposts: [],
 		};
 	},
 	persist: false,
@@ -71,16 +74,35 @@ export const useConnectionsStore = defineStore(`connections`, {
 				}
 			}
 		},
-		async fetchReposts(
-			id: string,
-			sort: Algorithm,
-			offset: number,
-			limit: number,
-		): Promise<IRepostResponse[] | undefined> {
+		async removeUserRepost(postCID: string, authorID: string) {
+			try {
+				await sendPostDeletion(`HIDE`, postCID, authorID);
+				// soft delete the repost from the store
+				this.$state.reposts.splice(this.$state.reposts.findIndex((repost) => repost.post._id === postCID));
+				toastSuccess(`This repost has been successfully removed from your profile`);
+			} catch (err: unknown) {
+				handleError(err);
+			}
+		},
+		async sendUserRepost(authorID: string, postCID: string, content: string, type: string) {
+			if (!authorID) {
+				return;
+			}
+
+			try {
+				const repostCID = await sendRepost(authorID, postCID, content, type);
+				toastSuccess(`You have successfully reposted this post`);
+				return repostCID;
+			} catch (err: unknown) {
+				handleError(err);
+			}
+		},
+
+		async fetchReposts(id: string, sort: Algorithm, offset: number, limit: number): Promise<void> {
 			if (!id) {
 				return;
 			}
-			return await getReposts({ authorID: id }, { sort: sort, offset: offset, limit: limit });
+			this.$state.reposts = await getReposts({ authorID: id }, { sort: sort, offset: offset, limit: limit });
 		},
 	},
 });
