@@ -4,7 +4,7 @@ import SimplePopupCard from '@/components/post/SimplePopupCard.vue';
 import ChevronLeft from '@/components/icons/ChevronLeft.vue';
 import Stats from '@/components/post/Stats.vue';
 
-const emit = defineEmits([`close`, `comments`]);
+const emit = defineEmits([`close`, `comments`, `delete`]);
 const props = withDefaults(
 	defineProps<{
 		fetchedPost: IGenericPostResponse;
@@ -23,7 +23,7 @@ const props = withDefaults(
 			class="popup min-h-40 w-full lg:w-748 bg-lightBG dark:bg-darkBGStop card-animation max-h-90 z-10 overflow-y-auto rounded-lg shadow-lg"
 		>
 			<!-- popup header with post summary -->
-			<SimplePopupCard :fetched-post="props.fetchedPost" @close="emit(`close`)" />
+			<SimplePopupCard :fetched-post="props.fetchedPost" @close="emit(`close`)" @delete="emit(`delete`)" />
 			<!-- Back button -->
 			<button class="flex items-center px-6 py-5" @click="emit(`comments`)">
 				<div class="bg-gray1 dark:bg-gray5 focus:outline-none rounded-full">

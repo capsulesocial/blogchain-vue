@@ -1,6 +1,7 @@
 import { Algorithm, getPosts, IGenericPostResponse, readableTimeframe, Timeframe } from '@/backend/post';
 import { getBookmarksOfUser, sendBookmarkEvent } from '@/backend/bookmarks';
-import { handleError } from '@/plugins/toast';
+import { sendPostDeletion } from '@/backend/postDeletion';
+import { handleError, toastSuccess } from '@/plugins/toast';
 import { defineStore } from 'pinia';
 import { useStore } from './session';
 
@@ -218,6 +219,15 @@ export const usePostsStore = defineStore(`posts`, {
 				throw new Error(err as string);
 			} finally {
 				this.fetchBookmarkedPosts(0);
+			}
+		},
+		async removePost(postCID: string, authorID: string) {
+			try {
+				await sendPostDeletion(`HIDE`, postCID, authorID);
+			} catch (err) {
+				handleError(err);
+			} finally {
+				toastSuccess(`Post has been hidden from feed`);
 			}
 		},
 	},

@@ -7,7 +7,6 @@ import BinIcon from '@/components/icons/BinIcon.vue';
 import TagCard from '@/components/TagCard.vue';
 import CommentIcon from '@/components/icons/CommentIcon.vue';
 import RepostIcon from '@/components/icons/RepostIcon.vue';
-import QuoteIcon from '@/components/icons/QuoteIcon.vue';
 import ShareIcon from '@/components/icons/ShareIcon.vue';
 import CrownIcon from '@/components/icons/Crown.vue';
 import StatsIcon from '@/components/icons/StatsIcon.vue';
@@ -21,12 +20,12 @@ import type { IGenericPostResponse } from '@/backend/post';
 import { useProfilesStore } from '@/store/profiles';
 import { createPostExcerpt } from '@/helpers/post';
 import TimestampAndReadingTime from '@/components/TimestampAndReadingTime.vue';
+import RepostButton from '@/components/post/RepostButton.vue';
 
 const store = useStore();
 const settings = useStoreSettings();
 const profilesStore = useProfilesStore();
 const showDelete = ref<boolean>(false);
-const showReposts = ref<boolean>(false);
 const showProfileCard = ref<boolean>(false);
 const hasEntered = ref<boolean>(false);
 
@@ -41,38 +40,17 @@ const props = withDefaults(
 	},
 );
 
-const emit = defineEmits([`toggle-comments`, `toggle-action`]);
+const emit = defineEmits([`toggle-comments`, `toggle-action`, `delete`, `hide`]);
 
 // Get profile of authorID
 const author = computed(() => profilesStore.getProfile(props.fetchedPost.post.authorID));
 
 // Fetch featured photo
-
-function deletePost() {}
 function openDeleteDropdown() {
 	showDelete.value = true;
 	window.addEventListener(`click`, (e) => {
 		showDelete.value = false;
 	});
-}
-
-function isReposted() {
-	if (props.fetchedPost.reposted) {
-		if (props.fetchedPost.reposted !== ``) {
-			return true;
-		}
-	}
-	return false;
-}
-
-function simpleRepost() {
-	showReposts.value = false;
-	// todo : simple repost request
-}
-
-function quoteRepost() {
-	showReposts.value = false;
-	emit(`toggle-action`, `quote`);
 }
 
 function triggerProfileCardFalse(): void {
@@ -93,23 +71,6 @@ function triggerProfileCardTrue(): void {
 onBeforeMount(() => {
 	profilesStore.fetchProfile(props.fetchedPost.post.authorID);
 });
-
-window.addEventListener(
-	`click`,
-	(e: any): void => {
-		if (!e.target) {
-			return;
-		}
-		if (
-			e.target.parentNode === null ||
-			e.target.parentNode.classList === undefined ||
-			!e.target.parentNode.classList.contains(`toggleRepost`)
-		) {
-			showReposts.value = false;
-		}
-	},
-	false,
-);
 </script>
 
 <template>
@@ -137,6 +98,7 @@ window.addEventListener(
 				:authorid="fetchedPost.repost.authorID"
 				:timestamp="fetchedPost.repost.timestamp"
 				:cid="fetchedPost.repost._id"
+				@hide="emit(`hide`)"
 			/>
 		</div>
 		<!-- Inner post area -->
@@ -214,7 +176,7 @@ window.addEventListener(
 						:style="`margin-top: 70px;margin-right: -10px;`"
 					>
 						<!-- Delete -->
-						<button class="focus:outline-none text-negative flex items-center" @click.self="deletePost">
+						<button class="focus:outline-none text-negative flex items-center" @click="emit(`delete`)">
 							<BinIcon class="m-1 w-4 h-4" />
 							<span class="text-negative self-center text-xs text-center w-full">Remove from feed</span>
 						</button>
@@ -256,38 +218,12 @@ window.addEventListener(
 							<span class="ml-1 text-sm">{{ fetchedPost.commentsCount }}</span>
 						</button>
 						<!-- Repost -->
-						<button
-							class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary dark:hover:text-primary mr-4 flex toggleRepost items-center"
-							:class="showReposts ? `text-primary` : ``"
-							@click.stop="showReposts = !showReposts"
-						>
-							<RepostIcon class="w-5 h-5" />
-							<span class="ml-1 text-sm">{{ fetchedPost.repostCount }}</span>
-						</button>
-						<div
-							v-show="showReposts"
-							class="bg-lightBG dark:bg-darkBG text-lightPrimaryText dark:text-darkPrimaryText border-lightBorder modal-animation absolute z-20 flex w-40 flex-col rounded-lg border p-2 shadow-lg"
-							:class="settings.isDarkMode ? `dropdownRepostOpenDark` : `dropdownRepostOpen`"
-							style="left: 95px; bottom: -2px"
-						>
-							<!-- Simple Repost -->
-							<button
-								class="hover:text-primary focus:outline-none text-gray5 dark:text-gray3 flex mr-4 items-center"
-								@click="simpleRepost()"
-							>
-								<RepostIcon :shrink="true" class="mr-2 p-1" :class="isReposted() ? `text-primary` : ``" />
-								<span v-if="isReposted()" class="self-center text-xs">Undo Repost</span>
-								<span v-else class="self-center text-xs">Repost to Feed</span>
-							</button>
-							<!-- Quote Repost -->
-							<button
-								class="hover:text-primary focus:outline-none text-gray5 dark:text-gray3 flex mr-4 items-center"
-								@click="quoteRepost()"
-							>
-								<QuoteIcon class="mr-2 p-1" />
-								<span class="self-center text-xs">Quote</span>
-							</button>
-						</div>
+						<RepostButton
+							:postcid="fetchedPost.post._id"
+							:repost="fetchedPost.reposted"
+							:repost-count="fetchedPost.repostCount"
+							@toggle-action="emit(`toggle-action`, `quote`)"
+						/>
 						<!-- Share popup button -->
 						<button
 							class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary mr-4 dark:hover:text-primary flex items-center"
@@ -329,38 +265,12 @@ window.addEventListener(
 					<span class="ml-1 text-sm">{{ fetchedPost.commentsCount }}</span>
 				</button>
 				<!-- Repost popup -->
-				<button
-					class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary dark:hover:text-primary mr-4 flex items-center"
-					:class="showReposts ? `text-primary` : ``"
-					@click="showReposts = !showReposts"
-				>
-					<RepostIcon class="w-5 h-5" />
-					<span class="ml-1 text-sm">{{ fetchedPost.repostCount }}</span>
-				</button>
-				<div
-					v-show="showReposts"
-					class="bg-lightBG dark:bg-darkBG text-lightPrimaryText dark:text-darkPrimaryText border-lightBorder modal-animation absolute z-20 flex w-40 flex-col rounded-lg border p-2 shadow-lg"
-					:class="settings.isDarkMode ? `dropdownRepostOpenDark` : `dropdownRepostOpen`"
-					style="left: 95px; bottom: -2px"
-				>
-					<!-- Simple Repost -->
-					<button
-						class="hover:text-primary focus:outline-none text-gray5 dark:text-gray3 flex mr-4 items-center"
-						@click="simpleRepost()"
-					>
-						<RepostIcon :shrink="true" class="mr-2 p-1" :class="isReposted() ? `text-primary` : ``" />
-						<span v-if="isReposted()" class="self-center text-xs">Undo Repost</span>
-						<span v-else class="self-center text-xs">Repost to Feed</span>
-					</button>
-					<!-- Quote Repost -->
-					<button
-						class="hover:text-primary focus:outline-none text-gray5 dark:text-gray3 flex mr-4 items-center"
-						@click="quoteRepost()"
-					>
-						<QuoteIcon class="mr-2 p-1" />
-						<span class="self-center text-xs">Quote</span>
-					</button>
-				</div>
+				<RepostButton
+					:postcid="fetchedPost.post._id"
+					:repost="fetchedPost.reposted"
+					:repost-count="fetchedPost.repostCount"
+					@toggle-action="emit(`toggle-action`, `quote`)"
+				/>
 				<!-- Share popup button -->
 				<button
 					class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary mr-4 hover:fill-primary flex items-center"

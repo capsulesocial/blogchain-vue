@@ -17,13 +17,6 @@ import BinIcon from '@/components/icons/BinIcon.vue';
 import CrownIcon from '@/components/icons/Crown.vue';
 import TimestampAndReadingTime from '@/components/TimestampAndReadingTime.vue';
 
-const store = useStore();
-const settings = useStoreSettings();
-const profilesStore = useProfilesStore();
-const showDelete = ref<boolean>(false);
-
-const emit = defineEmits([`close`]);
-
 const props = withDefaults(
 	defineProps<{
 		fetchedPost: IGenericPostResponse;
@@ -31,10 +24,21 @@ const props = withDefaults(
 	{},
 );
 
+const emit = defineEmits([`close`, `delete`]);
+
+const store = useStore();
+const settings = useStoreSettings();
+const profilesStore = useProfilesStore();
+const showDelete = ref<boolean>(false);
+
 // Get profile of authorID
 const author = computed(() => profilesStore.getProfile(props.fetchedPost.post.authorID));
 
-function deletePost() {}
+async function deletePost() {
+	emit(`close`);
+	emit(`delete`);
+}
+
 function openDeleteDropdown() {
 	showDelete.value = true;
 	window.addEventListener(`click`, (e) => {
@@ -95,7 +99,7 @@ function openDeleteDropdown() {
 					:style="`margin-top: 70px;margin-right: -10px;`"
 				>
 					<!-- Delete -->
-					<button class="focus:outline-none text-negative flex items-center" @click.self="deletePost">
+					<button class="focus:outline-none text-negative flex items-center" @click="deletePost">
 						<BinIcon class="m-1 w-4 h-4" />
 						<span class="text-negative self-center text-xs text-center w-full">Remove from feed</span>
 					</button>
