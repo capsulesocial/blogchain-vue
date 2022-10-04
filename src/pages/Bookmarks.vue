@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeMount, onMounted, ref } from 'vue';
+import { onBeforeMount, onMounted, ref } from 'vue';
 import SimpleFeedCard from '@/components/post/SimpleFeedCard.vue';
 import BookmarksFilter from '@/components/BookmarksFilter.vue';
 import BookmarksIcon from '@/components/icons/BookmarkIcon.vue';
@@ -10,33 +10,45 @@ import { useStore } from '@/store/session';
 
 const postsStore = usePostsStore();
 const store = useStore();
-const bookmarkedPosts = computed(() => postsStore.getBookmarkedPosts());
-
-const filter = ref<string>(`BOOKMARK_DESC`);
-
-function setSort(sort: BookmarkSort) {
+// const bookmarkedPosts = computed(() => postsStore.getBookmarkedPosts());
+const posts = ref<string[]>([]);
+async function setSort(sort: BookmarkSort) {
+	posts.value = [];
 	// When a user selects a filter
-	filter.value = sort;
-}
-onBeforeMount(() => {
-	postsStore.fetchBookmarkedPosts();
-});
-onMounted(() => {
+	postsStore.setBookmarkFilter(sort);
 	postsStore.getBookmarkedPosts();
+	const pList = await postsStore.fetchBookmarkedPosts();
+	if (!pList) {
+		return;
+	}
+	posts.value = [...pList];
+}
+onBeforeMount(() => {});
+onMounted(async () => {
+	postsStore.getBookmarkedPosts();
+	const pList = await postsStore.fetchBookmarkedPosts();
+	if (!pList) {
+		return;
+	}
+	posts.value = pList;
 });
 </script>
 
 <template>
 	<div class="flex flex-col sm:flex-row items-center justify-between px-5 pt-3 pb-3 xl:px-6 xl:pt-4">
 		<h2 class="text-lightPrimaryText dark:text-darkPrimaryText text-lg font-semibold xl:text-xl">My bookmarks</h2>
-		<BookmarksFilter class="modal-animation mt-2 sm:mt-0" :filter="filter" @clicked="setSort" />
+		<BookmarksFilter
+			class="modal-animation mt-2 sm:mt-0"
+			:filter="postsStore.$state.bookmarkFilter"
+			@clicked="setSort"
+		/>
 	</div>
 	<article
 		id="scrollable_content"
 		class="min-h-115 h-115 lg:min-h-210 lg:h-210 xl:min-h-220 xl:h-220 w-full overflow-y-auto lg:overflow-y-hidden relative"
 	>
-		<div v-if="bookmarkedPosts && bookmarkedPosts.length > 0">
-			<SimpleFeedCard v-for="post in bookmarkedPosts" :key="`new_${post}`" :fetched-post="postsStore.getPost(post)" />
+		<div v-if="posts && posts.length > 0">
+			<SimpleFeedCard v-for="post in posts" :key="`new_${post}`" :fetched-post="postsStore.getPost(post)" />
 		</div>
 		<!-- No bookmarks present -->
 		<div v-else class="mt-12 grid justify-items-center overflow-y-hidden px-6 xl:px-0">
