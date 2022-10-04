@@ -46,6 +46,7 @@ const activeAction = ref<`` | `comments` | `stats` | `share` | `quote`>(``);
 			:active-action="activeAction"
 			@toggle-action="toggleAction"
 			@delete="deletePost"
+			@hide="isDeleted = true"
 		/>
 		<Teleport v-if="activeAction !== ``" to="body">
 			<!-- show comments -->
