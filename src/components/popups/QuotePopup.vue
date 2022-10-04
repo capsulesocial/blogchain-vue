@@ -12,7 +12,7 @@ import { qualityComment } from '@/plugins/quality';
 import { isError } from '@/plugins/helpers';
 import { handleError, toastError, toastSuccess } from '@/plugins/toast';
 
-const emit = defineEmits([`close`, `stats`]);
+const emit = defineEmits([`close`, `stats`, `delete`]);
 
 const store = useStore();
 const connectionsStore = useConnectionsStore();
@@ -111,6 +111,7 @@ function handleResize(e: any) {
 				:tags="props.tags"
 				class="hidden lg:block"
 				@close="emit(`close`)"
+				@delete="emit(`delete`)"
 			/>
 			<!-- Quote button -->
 			<div

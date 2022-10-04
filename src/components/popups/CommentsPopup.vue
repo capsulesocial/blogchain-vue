@@ -8,7 +8,7 @@ import CommentFilter from '@/components/post/comments/CommentFilter.vue';
 import CommentEditor from '@/components/post/comments/CommentEditor.vue';
 import { useCommentsStore } from '@/store/comments';
 
-const emit = defineEmits([`close`, `stats`]);
+const emit = defineEmits([`close`, `stats`, `delete`]);
 
 const props = withDefaults(
 	defineProps<{
@@ -40,7 +40,7 @@ onMounted(async () => {
 			class="popup min-h-40 w-full lg:w-748 bg-lightBG dark:bg-darkBGStop card-animation max-h-90 z-10 overflow-y-auto rounded-lg shadow-lg"
 		>
 			<!-- popup header with post summary -->
-			<SimplePopupCard :fetched-post="props.fetchedPost" @close="emit(`close`)" />
+			<SimplePopupCard :fetched-post="props.fetchedPost" @close="emit(`close`)" @delete="emit(`delete`)" />
 			<!-- filters -->
 			<div class="flex w-full justify-between px-6 py-5">
 				<div class="flex flex-row items-center">

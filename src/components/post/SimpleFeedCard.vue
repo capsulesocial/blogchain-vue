@@ -28,6 +28,7 @@ const profilesStore = useProfilesStore();
 const showDelete = ref<boolean>(false);
 const showProfileCard = ref<boolean>(false);
 const hasEntered = ref<boolean>(false);
+const isDeleted = ref<boolean>(false);
 
 const props = withDefaults(
 	defineProps<{
@@ -40,14 +41,12 @@ const props = withDefaults(
 	},
 );
 
-const emit = defineEmits([`toggle-comments`, `toggle-action`]);
+const emit = defineEmits([`toggle-comments`, `toggle-action`, `delete`]);
 
 // Get profile of authorID
 const author = computed(() => profilesStore.getProfile(props.fetchedPost.post.authorID));
 
 // Fetch featured photo
-
-function deletePost() {}
 function openDeleteDropdown() {
 	showDelete.value = true;
 	window.addEventListener(`click`, (e) => {
@@ -77,7 +76,7 @@ onBeforeMount(() => {
 
 <template>
 	<div
-		v-if="fetchedPost"
+		v-if="fetchedPost && !isDeleted"
 		class="bg-lightBG dark:bg-darkBGStop dark:border-darkBG dark:border-opacity-25 border-opacity-75 py-4 px-5 xl:py-5 xl:px-6 transition ease-in-out hover:bg-hoverPost dark:hover:bg-darkBG dark:hover:bg-opacity-25"
 	>
 		<!-- Simple repost -->
@@ -177,7 +176,7 @@ onBeforeMount(() => {
 						:style="`margin-top: 70px;margin-right: -10px;`"
 					>
 						<!-- Delete -->
-						<button class="focus:outline-none text-negative flex items-center" @click.self="deletePost">
+						<button class="focus:outline-none text-negative flex items-center" @click="emit(`delete`)">
 							<BinIcon class="m-1 w-4 h-4" />
 							<span class="text-negative self-center text-xs text-center w-full">Remove from feed</span>
 						</button>

@@ -19,7 +19,8 @@ import TimestampAndReadingTime from '@/components/TimestampAndReadingTime.vue';
 const store = useStore();
 const settings = useStoreSettings();
 const profilesStore = useProfilesStore();
-const showDelete = ref<boolean>(false);
+
+const emit = defineEmits([`delete`]);
 
 const props = withDefaults(
 	defineProps<{
@@ -43,8 +44,8 @@ const props = withDefaults(
 
 // Get profile of authorID
 const author = computed(() => profilesStore.getProfile(props.authorid));
+const showDelete = ref<boolean>(false);
 
-function deletePost() {}
 function openDeleteDropdown() {
 	showDelete.value = true;
 	window.addEventListener(`click`, (e) => {
@@ -103,7 +104,7 @@ function openDeleteDropdown() {
 					:style="`margin-top: 70px;margin-right: -10px;`"
 				>
 					<!-- Delete -->
-					<button class="focus:outline-none text-negative flex items-center" @click.self="deletePost">
+					<button class="focus:outline-none text-negative flex items-center" @click="emit(`delete`)">
 						<BinIcon class="m-1 w-4 h-4" />
 						<span class="text-negative self-center text-xs text-center w-full">Remove from feed</span>
 					</button>
