@@ -28,9 +28,7 @@ import Stats from '@/components/post/Stats.vue';
 import SharePopup from '@/components/popups/SharePopup.vue';
 import QuotePopup from '@/components/popups/QuotePopup.vue';
 import IpfsImage from '@/components/IpfsImage.vue';
-
-import RepostIcon from '@/components/icons/RepostIcon.vue';
-import QuoteIcon from '@/components/icons/QuoteIcon.vue';
+import RepostButton from '@/components/post/RepostButton.vue';
 import StatsIcon from '@/components/icons/StatsIcon.vue';
 import LinkIcon from '@/components/icons/LinkIcon.vue';
 import ShareIcon from '@/components/icons/ShareIcon.vue';
@@ -66,7 +64,6 @@ const postComments = computed(() => commentsStore.getCommentsOfPost(cid.value));
 // Local states
 const showShare = ref<boolean>(false);
 const showStats = ref<boolean>(false);
-const showReposts = ref<boolean>(false);
 const showQuote = ref<boolean>(false);
 const showPhoto = ref<boolean>(false);
 const lastScroll = ref<number>(0);
@@ -217,15 +214,6 @@ function handleScroll() {
 	}
 	lastScroll.value = currentScroll;
 }
-
-function isReposted() {
-	if (postMetadata.value?.reposted) {
-		if (postMetadata.value.reposted !== ``) {
-			return true;
-		}
-	}
-	return false;
-}
 </script>
 <template>
 	<div
@@ -267,7 +255,6 @@ function isReposted() {
 							<button
 								class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary ml-2 hover:fill-primary flex items-center"
 								:class="showShare ? `text-primary` : ``"
-								style="margin-top: 2px"
 								@click="showShare = !showShare"
 							>
 								<ShareIcon :is-active="showShare" />
@@ -383,41 +370,17 @@ function isReposted() {
 							<!-- Bookmark button -->
 							<BookmarkButton :has-bookmark="postMetadata.bookmarked" :postcid="postMetadata.post._id" />
 							<!-- Repost button -->
-							<button
-								class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary dark:hover:text-primary ml-4 flex items-center"
-								:class="showReposts ? `text-primary` : ``"
-								@click="showReposts = !showReposts"
-							>
-								<RepostIcon class="w-5 h-5" />
-								<span class="ml-1 text-sm">{{ postMetadata.repostCount }}</span>
-							</button>
-							<!-- Repost tooltip -->
-							<div
-								v-show="showReposts"
-								class="bg-lightBG dark:bg-darkBG text-lightPrimaryText dark:text-darkPrimaryText border-lightBorder modal-animation absolute z-20 flex w-40 flex-col rounded-lg border p-2 shadow-lg"
-								:class="settings.isDarkMode ? `dropdownRepostOpenDark` : `dropdownRepostOpen`"
-								style="left: 85px; bottom: -2px"
-							>
-								<!-- Simple Repost -->
-								<button class="hover:text-primary focus:outline-none text-gray5 dark:text-gray3 flex mr-4 items-center">
-									<RepostIcon :shrink="true" class="mr-2 p-1" :class="isReposted() ? `text-primary` : ``" />
-									<span v-if="isReposted()" class="self-center text-xs">Undo Repost</span>
-									<span v-else class="self-center text-xs">Repost to Feed</span>
-								</button>
-								<!-- Quote Repost -->
-								<button
-									class="hover:text-primary focus:outline-none text-gray5 dark:text-gray3 flex mr-4 items-center"
-									@click="showQuote = true"
-								>
-									<QuoteIcon class="mr-2 p-1" />
-									<span class="self-center text-xs">Quote</span>
-								</button>
-							</div>
+							<span class="px-2"></span>
+							<RepostButton
+								:repost="postMetadata.reposted"
+								:postcid="postMetadata.post._id"
+								:repost-count="postMetadata.repostCount"
+								@toggle-action="showQuote = true"
+							/>
 							<!-- Share popup button -->
 							<button
-								class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary ml-4 hover:fill-primary flex items-center"
+								class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary hover:fill-primary flex items-center"
 								:class="showShare ? `text-primary` : ``"
-								style="margin-top: 2px"
 								@click="showShare = true"
 							>
 								<ShareIcon :is-active="showShare" />
