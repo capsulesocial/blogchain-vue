@@ -223,6 +223,7 @@ onBeforeMount(() => {
 							:postcid="fetchedPost.post._id"
 							:repost="fetchedPost.reposted"
 							:repost-count="fetchedPost.repostCount"
+							@toggle-action="emit(`toggle-action`, `quote`)"
 						/>
 						<!-- Share popup button -->
 						<button
@@ -269,6 +270,7 @@ onBeforeMount(() => {
 					:postcid="fetchedPost.post._id"
 					:repost="fetchedPost.reposted"
 					:repost-count="fetchedPost.repostCount"
+					@toggle-action="emit(`toggle-action`, `quote`)"
 				/>
 				<!-- Share popup button -->
 				<button

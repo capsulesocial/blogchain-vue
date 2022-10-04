@@ -1,16 +1,21 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useStore } from '@/store/session';
+import { useConnectionsStore } from '@/store/connections';
 import { Tag } from '@/backend/post';
 import SimpleQuoteCard from '@/components/post/SimpleQuoteCard.vue';
 import Avatar from '@/components/Avatar.vue';
 import BrandedButton from '@/components/BrandedButton.vue';
 import XIcon from '@/components/icons/XIcon.vue';
 import SendIcon from '@/components/icons/SendIcon.vue';
+import { qualityComment } from '@/plugins/quality';
+import { isError } from '@/plugins/helpers';
+import { handleError, toastError, toastSuccess } from '@/plugins/toast';
 
 const emit = defineEmits([`close`, `stats`]);
 
 const store = useStore();
+const connectionsStore = useConnectionsStore();
 
 const props = withDefaults(
 	defineProps<{
@@ -34,11 +39,25 @@ const props = withDefaults(
 const quoteContent = ref<string>(``);
 const replyInputHeight = ref<number>(64);
 
-function handleSendRepost() {
-	if (quoteContent.value !== ``) {
-		emit(`close`);
+async function handleSendRepost() {
+	if (quoteContent.value === ``) {
+		return;
 	}
-	return;
+	quoteContent.value = quoteContent.value.trim();
+	const commentQuality = qualityComment(quoteContent.value);
+	if (isError(commentQuality)) {
+		toastError(commentQuality.error);
+		return;
+	}
+	try {
+		await connectionsStore.sendQuoteRepost(store.$state.id, props.id, quoteContent.value);
+	} catch (err) {
+		handleError(err);
+	} finally {
+		toastSuccess(`Your quote repost has been sent!`);
+		emit(`close`);
+		return;
+	}
 }
 
 function handleResize(e: any) {

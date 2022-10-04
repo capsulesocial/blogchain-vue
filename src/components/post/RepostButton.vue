@@ -13,6 +13,8 @@ const props = defineProps<{
 	repostCount: number;
 }>();
 
+const emit = defineEmits([`toggle-action`]);
+
 const settings = useStoreSettings();
 const connectionsStore = useConnectionsStore();
 const store = useStore();
@@ -38,7 +40,7 @@ async function toggleRepost() {
 	}
 	// send repost
 	try {
-		repostCID.value = await connectionsStore.sendSimpleRepost(store.$state.id, props.postcid, ``, `simple`);
+		repostCID.value = await connectionsStore.sendSimpleRepost(store.$state.id, props.postcid);
 	} catch (err) {
 		handleError(err);
 	} finally {
@@ -47,7 +49,9 @@ async function toggleRepost() {
 		return;
 	}
 }
-function toggleQuoteRepost() {}
+function toggleQuoteRepost() {
+	emit(`toggle-action`, `quote`);
+}
 
 onMounted(() => {
 	window.addEventListener(

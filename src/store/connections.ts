@@ -83,12 +83,12 @@ export const useConnectionsStore = defineStore(`connections`, {
 			}
 			return await getReposts({ authorID: id }, { sort: sort, offset: offset, limit: limit });
 		},
-		async sendSimpleRepost(authorID: string, postCID: string, content: string, type: string) {
+		async sendSimpleRepost(authorID: string, postCID: string) {
 			if (!authorID) {
 				return;
 			}
 			try {
-				const repostCID = await sendRepost(authorID, postCID, content, type);
+				const repostCID = await sendRepost(authorID, postCID, ``, `simple`);
 				toastSuccess(`You have successfully reposted this post`);
 				return repostCID;
 			} catch (err: unknown) {
@@ -100,6 +100,16 @@ export const useConnectionsStore = defineStore(`connections`, {
 				await sendPostDeletion(`HIDE`, postCID, authorID);
 				// soft delete the repost from the store
 				toastSuccess(`This repost has been successfully removed`);
+			} catch (err: unknown) {
+				handleError(err);
+			}
+		},
+		async sendQuoteRepost(authorID: string, postCID: string, content: string) {
+			if (!authorID || !content) {
+				return;
+			}
+			try {
+				await sendRepost(authorID, postCID, content, `quote`);
 			} catch (err: unknown) {
 				handleError(err);
 			}
