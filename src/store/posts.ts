@@ -137,13 +137,18 @@ export const usePostsStore = defineStore(`posts`, {
 			// Send request
 			try {
 				const posts = await getPosts({ authorID }, bookmarker, payload);
-				const postArr: string[] = [];
+				let postArr: string[] = [];
+				const existingArr = this.profilePosts.get(authorID);
+				if (typeof existingArr !== `undefined`) {
+					postArr = postArr.concat(existingArr);
+				}
 				// Add to store
 				for (const post of posts) {
 					this.$state.posts.set(post.post._id, post);
 					postArr.push(post.post._id);
 				}
 				this.profilePosts.set(authorID, postArr);
+				return posts;
 			} catch (err) {
 				handleError(err);
 				return [];

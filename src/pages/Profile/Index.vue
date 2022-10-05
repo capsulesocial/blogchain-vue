@@ -34,10 +34,6 @@ const route = useRoute();
 const profilesStore = useProfilesStore();
 const connectionsStore = useConnectionsStore();
 
-if (typeof route.params.id !== 'string') {
-	throw new Error('Invalid param type for id');
-}
-const profileExists = ref<boolean>(false);
 const authorID = computed(() => {
 	if (typeof route.params.id !== `string`) {
 		throw new Error(`route.params.id should be of type string!`);
@@ -49,51 +45,15 @@ connectionsStore.fetchConnections(authorID.value);
 const connections = computed(() => connectionsStore.getConnections(authorID.value));
 const paymentsProfile = ref<PaymentProfile>(paymentStore.paymentProfile(authorID.value));
 
+const totalPostsCount = ref<number>(0);
+const profileExists = ref<boolean>(false);
 const isActiveSub = ref<boolean>(false);
 const activeSub = ref<ISubscriptionWithProfile>();
-void useSubscription.fetchSubs(store.$state.id);
-// Check if payments are enabled
-useMeta({
-	title: profile.value.name ? `${profile.value.name} -  Blogchain` : `@${authorID.value} -  Blogchain`,
-	htmlAttrs: { lang: 'en', amp: true },
-});
-
-onBeforeMount(async () => {
-	const res = await paymentStore.fetchPaymentProfile(authorID.value);
-	paymentsProfile.value = res;
-});
-
-onMounted(async (): Promise<void> => {
-	try {
-		const nearUserInfo = await getUserInfoNEAR(authorID.value);
-		if (nearUserInfo.publicKey) {
-			profileExists.value = true;
-		}
-	} catch (err) {
-		handleError(err);
-		router.push(`/not-found`);
-	}
-	void profilesStore.fetchProfile(authorID.value);
-	void useConnectionsStore().fetchConnections(store.id);
-
-	const activeSubs = await useSubscription.$state.active;
-	activeSubs.forEach((sub: ISubscriptionWithProfile): void => {
-		if (sub.authorID === authorID.value) {
-			isActiveSub.value = true;
-			activeSub.value = sub;
-		}
-	});
-	if (settings.recentlyInSettings) {
-		showSettings.value = true;
-		settings.setRecentlyInSettings(false);
-	}
-});
-
 const fromExternalSite = ref<boolean>(false);
 const selfView = ref<boolean>(authorID.value === store.$state.id);
 const showAvatarPopup = ref<boolean>(false);
 const scrollingDown = ref<boolean>(false);
-const totalPostsCount = ref<number>(0);
+const lastScroll = ref<number>(0);
 const longBio = computed(() => profile.value.bio.length > 200);
 const expandBio = ref<boolean>(false);
 const openFollowersPopup = ref<boolean>(false);
@@ -101,6 +61,11 @@ const openFollowingPopup = ref<boolean>(false);
 const showSettings = ref<boolean>(false);
 const showSubscription = ref<boolean>(false);
 const showChangeTier = ref<boolean>(false);
+
+useMeta({
+	title: profile.value.name ? `${profile.value.name} -  Blogchain` : `@${authorID.value} -  Blogchain`,
+	htmlAttrs: { lang: 'en', amp: true },
+});
 
 // Check if coming from external site
 router.beforeEach((to, from, next): void => {
@@ -137,6 +102,61 @@ function getStyles(tab: string): string {
 	}
 	return res;
 }
+
+function handleScroll() {
+	const body = document.getElementById(`scrollable_content`);
+	if (!body) {
+		return;
+	}
+	const currentScroll = body.scrollTop;
+	// remove duplicates
+	if (currentScroll === lastScroll.value) {
+		return;
+	}
+	// scrolling down
+	if (currentScroll > lastScroll.value && !scrollingDown.value) {
+		scrollingDown.value = true;
+	} else {
+		scrollingDown.value = false;
+	}
+	// set new value at end
+	lastScroll.value = currentScroll;
+}
+
+onBeforeMount(async () => {
+	void useSubscription.fetchSubs(store.$state.id);
+	const res = await paymentStore.fetchPaymentProfile(authorID.value);
+	paymentsProfile.value = res;
+});
+
+onMounted(async (): Promise<void> => {
+	try {
+		const nearUserInfo = await getUserInfoNEAR(authorID.value);
+		if (nearUserInfo.publicKey) {
+			profileExists.value = true;
+		}
+	} catch (err) {
+		handleError(err);
+		router.push(`/not-found`);
+	}
+	void profilesStore.fetchProfile(authorID.value);
+	void useConnectionsStore().fetchConnections(store.id);
+	totalPostsCount.value = await profilesStore.fetchProfilePostCount(authorID.value);
+
+	const activeSubs = await useSubscription.$state.active;
+	activeSubs.forEach((sub: ISubscriptionWithProfile): void => {
+		if (sub.authorID === authorID.value) {
+			isActiveSub.value = true;
+			activeSub.value = sub;
+		}
+	});
+	if (settings.recentlyInSettings) {
+		showSettings.value = true;
+		settings.setRecentlyInSettings(false);
+	}
+	window.addEventListener('wheel', handleScroll);
+	window.addEventListener('touchmove', handleScroll);
+});
 </script>
 
 <template>
@@ -240,7 +260,7 @@ function getStyles(tab: string): string {
 						</div>
 						<!-- Tabs: posts, following, followers -->
 						<div class="text-gray5 -mr-12 flex flex-row pt-2 text-sm">
-							<div v-if="totalPostsCount === 1" class="text-sm text-gray5 dark:text-gray3">
+							<div v-if="totalPostsCount && totalPostsCount === 1" class="text-sm text-gray5 dark:text-gray3">
 								<span class="text-lightPrimaryText dark:text-darkPrimaryText font-bold">{{ totalPostsCount }}</span>
 								Post
 							</div>

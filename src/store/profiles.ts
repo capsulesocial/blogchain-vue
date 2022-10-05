@@ -24,6 +24,13 @@ export const useProfilesStore = defineStore(`profiles`, {
 		},
 	},
 	actions: {
+		async fetchProfilePostCount(id: string) {
+			const fetchedProfile = await getProfile(id);
+			if (fetchedProfile.totalPostsCount) {
+				return fetchedProfile.totalPostsCount;
+			}
+			return 0;
+		},
 		async fetchProfile(id: string) {
 			const fetchedProfile = await getProfile(id);
 			if (fetchedProfile.profile) {
