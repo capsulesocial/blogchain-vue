@@ -44,6 +44,19 @@ const emit = defineEmits([`toggle-comments`, `toggle-action`, `delete`, `hide`])
 
 // Get profile of authorID
 const author = computed(() => profilesStore.getProfile(props.fetchedPost.post.authorID));
+const repost = computed(() => {
+	if (props.fetchedPost.reposted) {
+		return props.fetchedPost.reposted;
+	}
+	if (
+		props.fetchedPost.repost &&
+		props.fetchedPost.repost.authorID === store.$state.id &&
+		props.fetchedPost.repost.type === `simple`
+	) {
+		return props.fetchedPost.repost._id;
+	}
+	return undefined;
+});
 
 // Fetch featured photo
 function openDeleteDropdown() {
@@ -220,7 +233,7 @@ onBeforeMount(() => {
 						<!-- Repost -->
 						<RepostButton
 							:postcid="fetchedPost.post._id"
-							:repost="fetchedPost.reposted"
+							:repost="repost"
 							:repost-count="fetchedPost.repostCount"
 							@toggle-action="emit(`toggle-action`, `quote`)"
 						/>
@@ -267,7 +280,7 @@ onBeforeMount(() => {
 				<!-- Repost popup -->
 				<RepostButton
 					:postcid="fetchedPost.post._id"
-					:repost="fetchedPost.reposted"
+					:repost="repost"
 					:repost-count="fetchedPost.repostCount"
 					@toggle-action="emit(`toggle-action`, `quote`)"
 				/>

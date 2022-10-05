@@ -4,7 +4,7 @@ import { useStore } from '@/store/session';
 import { useConnectionsStore } from '@/store/connections';
 import { useRoute, useRouter } from 'vue-router';
 
-import SimpleFeedCard from '@/components/post/SimpleFeedCard.vue';
+import PostCardContainer from '@/components/post/PostCardContainer.vue';
 import SecondaryButton from '@/components/SecondaryButton.vue';
 
 import { IRepostResponse, Algorithm } from '@/backend/post';
@@ -66,7 +66,7 @@ function toggleHomeFeed() {
 				/>
 			</article>
 			<article v-for="repost in reposts" :key="repost.post._id">
-				<SimpleFeedCard :fetched-post="repost" />
+				<PostCardContainer :fetched-post="repost" />
 			</article>
 			<p v-if="noMorePosts && reposts.length !== 0" class="text-gray5 dark:text-gray3 py-5 text-center text-sm">
 				No more posts
