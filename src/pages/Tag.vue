@@ -26,6 +26,9 @@ const tagPosts = computed(() => postsStore.getPostsWithTag(tag.value));
 const isLoading = ref<boolean>(true);
 const noMorePosts = ref<boolean>(false);
 const fromExternalSite = ref<boolean>(false);
+const scrollContainer = ref<HTMLElement | null>(null);
+const limit = ref<number>(10);
+const offset = ref<number>(0);
 
 // Check if coming from external site
 router.beforeEach((to, from, next) => {
@@ -45,12 +48,35 @@ function handleBack() {
 function toggleHomeFeed() {
 	router.push(`/home`);
 }
+const scrollListener = async (e: Event) => {
+	if (isLoading.value) {
+		return;
+	}
+	const { scrollTop, scrollHeight, clientHeight } = e.target as HTMLElement;
+	if (scrollTop + clientHeight >= scrollHeight - 5 && !isLoading.value && !noMorePosts.value) {
+		isLoading.value = true;
+		postsStore.fetchTagPosts(tag.value, offset.value, limit.value).then((res) => {
+			if (res && res.length < limit.value) {
+				noMorePosts.value = true;
+			}
+			offset.value += limit.value;
+			isLoading.value = false;
+		});
+	}
+};
 
 onMounted(() => {
-	postsStore.fetchTagPosts(tag.value);
+	if (scrollContainer.value) {
+		scrollContainer.value.addEventListener('scroll', scrollListener);
+	}
+	postsStore.fetchTagPosts(tag.value, offset.value, limit.value).then((res) => {
+		if (res && res.length < limit.value) {
+			noMorePosts.value = true;
+		}
+		offset.value += limit.value;
+		isLoading.value = false;
+	});
 });
-
-isLoading.value = false;
 </script>
 
 <template>
@@ -62,7 +88,11 @@ isLoading.value = false;
 		<h2 class="text-lightPrimaryText dark:text-darkPrimaryText text-2xl font-semibold">{{ tag }}</h2>
 	</div>
 	<!-- Posts loaded -->
-	<div id="scrollable_content" ref="container" class="min-h-130 h-130 xl:min-h-150 xl:h-150 w-full overflow-y-auto">
+	<div
+		id="scrollable_content"
+		ref="scrollContainer"
+		class="min-h-130 h-130 xl:min-h-150 xl:h-150 w-full overflow-y-auto"
+	>
 		<article
 			v-if="tagPosts?.length == 0 && !isLoading"
 			class="mt-10 grid justify-items-center overflow-y-hidden px-6 xl:px-0"
