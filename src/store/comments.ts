@@ -74,16 +74,21 @@ export const useCommentsStore = defineStore(`comments`, {
 				handleError(err);
 			}
 		},
-		async fetchCommentsOfAuthor(authorID: string, offset = 0) {
+		async fetchCommentsOfAuthor(authorID: string, offset = 0, limit = 10) {
 			try {
-				const res = await getCommentsOfUser(authorID, offset, 10);
-				const authorComments: string[] = [];
+				const res = await getCommentsOfUser(authorID, offset, limit);
+				let authorComments: string[] = [];
+				const existingArr = this.authorComments.get(authorID);
+				if (typeof existingArr !== `undefined`) {
+					authorComments = authorComments.concat(existingArr);
+				}
 				for (const c of res) {
 					const comment = await getComment(c._id);
 					this.$state.comments.set(c._id, comment);
 					authorComments.push(c._id);
 				}
 				this.authorComments.set(authorID, authorComments);
+				return res;
 			} catch (err) {
 				handleError(err);
 			}
