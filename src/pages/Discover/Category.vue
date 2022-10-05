@@ -75,8 +75,6 @@ function collapse() {
 			if (res && res.length < limit.value) {
 				noMorePosts.value = true;
 			}
-			console.log(res?.length);
-			console.log(limit.value);
 			offset.value += limit.value;
 			isLoading.value = false;
 		});

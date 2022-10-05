@@ -66,27 +66,32 @@ export const usePostsStore = defineStore(`posts`, {
 		},
 	},
 	actions: {
-		async fetchTagPosts(tag: string, offset = 0) {
+		async fetchTagPosts(tag: string, offset = 0, limit = 10) {
 			if (tag === ``) {
 				return [];
 			}
 			const id = useStore().$state.id;
 			const bookmarker = id !== `` ? id : `x`;
 			const payload = {
-				limit: 10,
+				limit,
 				offset,
 				following: id,
 			};
 			// Send request
 			try {
 				const posts = await getPosts({ tag: tag }, bookmarker, payload);
-				const postArr: string[] = [];
+				let postArr: string[] = [];
+				const existingArr = this.tagPosts.get(tag);
+				if (typeof existingArr !== `undefined`) {
+					postArr = postArr.concat(existingArr);
+				}
 				// Add to store
 				for (const post of posts) {
 					this.$state.posts.set(post.post._id, post);
 					postArr.push(post.post._id);
 				}
 				this.tagPosts.set(tag, postArr);
+				return posts;
 			} catch (err) {
 				handleError(err);
 				return [];
@@ -158,18 +163,18 @@ export const usePostsStore = defineStore(`posts`, {
 			// Send request
 			try {
 				const posts = await getPosts({ category: category }, bookmarker, payload);
-				const postArr: string[] = [];
+				let postArr: string[] = [];
+				const existingArr = this.categoryPosts.get(category);
+				if (typeof existingArr !== `undefined`) {
+					postArr = postArr.concat(existingArr);
+				}
 				// Add to store
 				for (const post of posts) {
 					this.$state.posts.set(post.post._id, post);
 					postArr.push(post.post._id);
 				}
-				const existingArr = this.categoryPosts.get(category);
-				if (typeof existingArr !== `undefined`) {
-					this.categoryPosts.set(category, [...existingArr, ...postArr]);
-					return posts;
-				}
 				this.categoryPosts.set(category, postArr);
+				return posts;
 			} catch (err) {
 				handleError(err);
 				return [];
