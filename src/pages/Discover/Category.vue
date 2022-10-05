@@ -13,6 +13,10 @@ const category = ref<string>(typeof route.params.category === `string` ? route.p
 const categoryPosts = computed(() => postsStore.getCategoryPosts(category.value));
 const lastScroll = ref<number>(0);
 const isScrollingDown = ref<boolean>(false);
+const offset = ref<number>(0);
+const limit = ref<number>(10);
+const isLoading = ref<boolean>(true);
+const noMorePosts = ref<boolean>(false);
 
 useMeta({
 	title: `${category.value.charAt(0).toUpperCase() + category.value.slice(1)} category on Blogchain`,
@@ -65,10 +69,24 @@ function collapse() {
 		hiddentitle.classList.add(opacity0);
 	}
 	lastScroll.value = currentScroll;
+	if (body.scrollTop + body.clientHeight >= body.scrollHeight - 5 && !isLoading.value && !noMorePosts.value) {
+		isLoading.value = true;
+		postsStore.fetchDiscoverPosts(category.value, offset.value, limit.value).then((res) => {
+			if (res && res.length < limit.value) {
+				noMorePosts.value = true;
+			}
+			console.log(res?.length);
+			console.log(limit.value);
+			offset.value += limit.value;
+			isLoading.value = false;
+		});
+	}
 }
 
 onMounted(() => {
-	postsStore.fetchDiscoverPosts(category.value);
+	postsStore.fetchDiscoverPosts(category.value, offset.value, limit.value);
+	offset.value += limit.value;
+	isLoading.value = false;
 	if (window.addEventListener) {
 		window.addEventListener('wheel', collapse);
 		window.addEventListener('touchmove', collapse);
@@ -135,6 +153,7 @@ onMounted(() => {
 			</p>
 			<SecondaryButton :text="`All categories`" :action="() => $router.push(`/discover`)" />
 		</div>
+		<p v-if="noMorePosts" class="text-gray5 dark:text-gray3 py-5 text-center text-sm">No more posts</p>
 	</article>
 </template>
 <style>

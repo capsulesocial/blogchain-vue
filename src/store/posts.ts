@@ -144,14 +144,14 @@ export const usePostsStore = defineStore(`posts`, {
 				return [];
 			}
 		},
-		async fetchDiscoverPosts(category: string, offset = 0) {
+		async fetchDiscoverPosts(category: string, offset = 0, limit = 10) {
 			if (category === ``) {
 				return [];
 			}
 			const id = useStore().$state.id;
 			const bookmarker = id !== `` ? id : `x`;
 			const payload = {
-				limit: 10,
+				limit,
 				offset,
 				following: id,
 			};
@@ -163,6 +163,11 @@ export const usePostsStore = defineStore(`posts`, {
 				for (const post of posts) {
 					this.$state.posts.set(post.post._id, post);
 					postArr.push(post.post._id);
+				}
+				const existingArr = this.categoryPosts.get(category);
+				if (typeof existingArr !== `undefined`) {
+					this.categoryPosts.set(category, [...existingArr, ...postArr]);
+					return posts;
 				}
 				this.categoryPosts.set(category, postArr);
 			} catch (err) {
