@@ -13,6 +13,7 @@ const props = defineProps<{
 	cid: string;
 }>();
 
+const emit = defineEmits([`updateReplies`]);
 const settings = useStoreSettings();
 const store = useStore();
 const profileStore = useProfilesStore();
@@ -39,8 +40,32 @@ watch(comment, (c) => {
 	profileStore.fetchProfile(c.authorID);
 });
 
+async function removeReply() {
+	showDelete.value = false;
+	await commentStore.removeUserComment(props.cid, store.$state.id);
+	replyDeleted.value = true;
+	emit(`updateReplies`);
+}
+
 onMounted(() => {
 	commentStore.fetchComment(props.cid);
+
+	window.addEventListener(
+		`click`,
+		(e: any): void => {
+			if (!e.target) {
+				return;
+			}
+			if (
+				e.target.parentNode === null ||
+				e.target.parentNode.classList === undefined ||
+				!e.target.parentNode.classList.contains(`toggleDelete`)
+			) {
+				showDelete.value = false;
+			}
+		},
+		false,
+	);
 });
 </script>
 <template>
@@ -69,7 +94,7 @@ onMounted(() => {
 				<!-- Three dots dropdown -->
 				<button
 					v-if="store.$state.id === author.id || store.$state.id === author.id"
-					class="focus:outline-none absolute top-0 right-0 flex-col justify-start text-gray5 dark:text-gray3 pt-2 pr-3"
+					class="focus:outline-none absolute top-0 right-0 flex-col justify-start text-gray5 dark:text-gray3 pt-2 pr-3 toggleDelete"
 					@click.stop="toggleDropdownDelete"
 				>
 					<MoreIcon />
@@ -81,7 +106,7 @@ onMounted(() => {
 					style="top: 40px; right: 0px"
 				>
 					<!-- Delete -->
-					<button class="focus:outline-none text-negative flex">
+					<button class="focus:outline-none text-negative flex" @click="removeReply()">
 						<BinIcon class="w-4 h-4" />
 						<span class="text-negative self-center text-xs ml-1 mr-1">Remove this reply</span>
 					</button>

@@ -76,10 +76,38 @@ async function sendReply() {
 	}
 }
 
+async function removeComment() {
+	showDelete.value = false;
+	if (!comment.value) {
+		return;
+	}
+	await commentsStore.removeUserComment(props.cid, store.$state.id, comment.value.parentCID);
+}
+
+async function updateReplies() {
+	await commentsStore.fetchCommentsOfPost(props.cid);
+}
 onMounted(async () => {
 	const c = await commentsStore.fetchComment(props.cid);
 	await profileStore.fetchProfile(c.authorID);
 	await commentsStore.fetchCommentsOfPost(props.cid);
+
+	window.addEventListener(
+		`click`,
+		(e: any): void => {
+			if (!e.target) {
+				return;
+			}
+			if (
+				e.target.parentNode === null ||
+				e.target.parentNode.classList === undefined ||
+				!e.target.parentNode.classList.contains(`toggleDelete`)
+			) {
+				showDelete.value = false;
+			}
+		},
+		false,
+	);
 });
 </script>
 
@@ -189,7 +217,7 @@ onMounted(async () => {
 					</div>
 					<button
 						v-if="store.$state.id === props.authorid || store.$state.id === comment.authorID"
-						class="focus:outline-none absolute top-0 right-0 flex-col justify-start text-gray5 dark:text-gray3 pt-2 pr-3"
+						class="focus:outline-none absolute top-0 right-0 flex-col justify-start text-gray5 dark:text-gray3 pt-2 pr-3 toggleDelete"
 						@click.stop="toggleDropdownDelete"
 					>
 						<MoreIcon />
@@ -201,7 +229,7 @@ onMounted(async () => {
 						style="top: 40px; right: 0px"
 					>
 						<!-- Delete -->
-						<button class="focus:outline-none text-negative flex">
+						<button class="focus:outline-none text-negative flex" @click="removeComment()">
 							<BinIcon class="w-4 h-4" />
 							<span class="text-negative self-center text-xs ml-1 mr-1">Remove this comment</span>
 						</button>
@@ -246,7 +274,7 @@ onMounted(async () => {
 					</div>
 					<!-- List replies -->
 					<div v-if="replies && replies?.length > 0" class="pl-5 mt-2">
-						<Reply v-for="r in replies" :key="r" :cid="r" />
+						<Reply v-for="r in replies" :key="r" :cid="r" @update-replies="updateReplies" />
 					</div>
 				</div>
 			</div>

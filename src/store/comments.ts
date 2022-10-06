@@ -1,4 +1,5 @@
 import { getCommentsOfPost, getCommentsOfUser, getComment, INewCommentData, sendComment } from '@/backend/comment';
+import { sendPostDeletion } from '@/backend/postDeletion';
 import { defineStore } from 'pinia';
 import { handleError, toastSuccess } from '@/plugins/toast';
 import { Emotions, EmotionCategories } from '@/config/config';
@@ -90,6 +91,24 @@ export const useCommentsStore = defineStore(`comments`, {
 				return res;
 			} catch (err) {
 				handleError(err);
+			}
+		},
+		async removeUserComment(commentId: string, username: string, parentCID?: string) {
+			if (!commentId || !username) {
+				return;
+			}
+
+			try {
+				await sendPostDeletion(`HIDE`, commentId, username);
+			} catch (error: unknown) {
+				handleError(error);
+			} finally {
+				if (parentCID) {
+					await this.fetchCommentsOfPost(parentCID);
+				}
+				toastSuccess(
+					parentCID ? `This comment has been successfully removed 🎉 ` : `This reply has been successfully removed 🎉 `,
+				);
 			}
 		},
 	},
