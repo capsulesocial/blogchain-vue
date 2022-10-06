@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
 import { getBGImage } from '@/plugins/background';
-import { IBackground, backgrounds } from '@/config/backgrounds';
+import { IBackground, getCurrentBG } from '@/config/backgrounds';
 import { initColors } from '@/plugins/colors';
 
 import ChangeBGPopup from '@/components/popups/ChangeBGPopup.vue';
@@ -18,15 +18,6 @@ const currentBG = ref<IBackground>(getCurrentBG(session.background));
 const showPopupBG = ref<boolean>(false);
 const showPopupMode = ref<boolean>(false);
 const showPopupColor = ref<boolean>(false);
-
-function getCurrentBG(id: string): IBackground {
-	for (const bg of backgrounds) {
-		if (bg.id === id) {
-			return bg;
-		}
-	}
-	return backgrounds[0];
-}
 
 function refreshCurrentBG() {
 	showPopupBG.value = false;

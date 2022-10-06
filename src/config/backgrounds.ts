@@ -189,11 +189,11 @@ export const backgrounds: IBackground[] = [
 	},
 ];
 
-export function getBackground(id: string): IBackground {
-	for (const i in backgrounds) {
-		if (backgrounds[i].id === id) {
-			return backgrounds[i];
-		}
+export function getCurrentBG(id: string): IBackground {
+	const bg = backgrounds.find((b) => b.id === id);
+	if (bg) {
+		return bg;
 	}
+
 	return backgrounds[0];
 }
