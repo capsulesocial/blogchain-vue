@@ -21,34 +21,33 @@ const authorID = computed(() => {
 	return route.params.id;
 });
 const reposts = ref<IRepostResponse[]>([]);
-const isLoading = ref<boolean>(false);
-const currentOffset = ref<number>(0);
-const limit = ref<number>(10);
-const algorithm = ref<Algorithm>(Algorithm.NEW);
-const noMorePosts = ref<boolean>(false);
+const isLoading = ref(false);
+const currentOffset = ref(0);
+const limit = ref(10);
+const algorithm = ref(Algorithm.NEW);
+const noMorePosts = ref(false);
 
 // methods
 function toggleHomeFeed() {
 	router.push(`/home`);
 }
 
-function fetchContent() {
+async function fetchContent() {
 	if (isLoading.value) {
 		return;
 	}
 	isLoading.value = true;
-	connectionsStore.fetchReposts(authorID.value, algorithm.value, currentOffset.value, limit.value).then((res) => {
-		if (!res) {
-			return;
-		}
-		reposts.value = reposts.value.concat(res);
+	const res = await connectionsStore.fetchReposts(authorID.value, algorithm.value, currentOffset.value, limit.value);
+	if (!res) {
+		return;
+	}
+	reposts.value = reposts.value.concat(res);
 
-		if (res.length < limit.value) {
-			noMorePosts.value = true;
-		}
-		currentOffset.value += limit.value;
-		isLoading.value = false;
-	});
+	if (res.length < limit.value) {
+		noMorePosts.value = true;
+	}
+	currentOffset.value += limit.value;
+	isLoading.value = false;
 }
 
 function handleScroll() {
