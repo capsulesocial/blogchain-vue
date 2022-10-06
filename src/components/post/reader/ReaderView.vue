@@ -31,6 +31,15 @@ const imageError = ref<string | null>();
 const displayImagePopup = ref<boolean>(false);
 const el = ref<HTMLElement>();
 
+const keys = computed(() => {
+	const map: Record<string, Pick<IPostImageKey, 'counter' | 'key'>> = {};
+	props.postImageKeys.forEach((k) => {
+		map[k.imageCID] = { counter: k.counter, key: k.key };
+	});
+
+	return map;
+});
+
 const htmlContent = computed(() => {
 	const html = marked.parse(props.content);
 	const sanitizedHtml = sanitizeHtml(html, ALLOWED_TAGS, ALLOWED_ATTR);
@@ -51,12 +60,12 @@ const lazyLoad = (image: HTMLImageElement) => {
 	getPhotoFromIPFS(cid)
 		.then(async (dataUrl) => {
 			if (dataUrl.startsWith(`data:encryptedImage:`) && props.encrypted) {
-				const keyData = props.postImageKeys.find((k) => k.imageCID === cid);
+				const keyData = keys.value[cid];
 				if (!keyData) {
 					toastError(`Key not found to decrypt image`);
 					return;
 				}
-				dataUrl = await decryptData(dataUrl.substring(`data.encryptedImage:`.length), keyData.key, keyData.counter);
+				dataUrl = await decryptData(dataUrl.substring(`data:encryptedImage:`.length), keyData.key, keyData.counter);
 				// To prevent linking to a malicious third party image
 				if (!isValidPhoto(dataUrl)) {
 					toastError(`invalid in-post image`);
