@@ -67,5 +67,8 @@ onMounted(() => {
 		<div v-for="post in posts" :key="`new_${post}`">
 			<PostCardContainer :fetched-post="postsStore.getPost(post)" />
 		</div>
+		<p v-if="noMorePosts && posts && posts.length !== 0" class="text-gray5 dark:text-gray3 py-5 text-center text-sm">
+			No more posts
+		</p>
 	</div>
 </template>
