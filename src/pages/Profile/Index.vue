@@ -94,12 +94,14 @@ function getStyles(tab: string): string {
 	let res = ``;
 	if (route.name === tab) {
 		res += ` text-primary font-bold`;
-	} else {
-		if (router.currentRoute.value.name !== `id-followers` && router.currentRoute.value.name !== `id-following`) {
-			res += ` text-grey1`;
-		}
-		res += ` text-gray5 dark:text-gray3`;
+		return res;
 	}
+
+	if (router.currentRoute.value.name !== `id-followers` && router.currentRoute.value.name !== `id-following`) {
+		res += ` text-grey1`;
+	}
+	res += ` text-gray5 dark:text-gray3`;
+
 	return res;
 }
 
@@ -114,22 +116,18 @@ function handleScroll() {
 		return;
 	}
 	// scrolling down
-	if (currentScroll > lastScroll.value && !scrollingDown.value) {
-		scrollingDown.value = true;
-	} else {
-		scrollingDown.value = false;
-	}
+	scrollingDown.value = currentScroll > lastScroll.value && !scrollingDown.value;
 	// set new value at end
 	lastScroll.value = currentScroll;
 }
 
 onBeforeMount(async () => {
-	void useSubscription.fetchSubs(store.$state.id);
+	useSubscription.fetchSubs(store.$state.id);
 	const res = await paymentStore.fetchPaymentProfile(authorID.value);
 	paymentsProfile.value = res;
 });
 
-onMounted(async (): Promise<void> => {
+onMounted(async () => {
 	try {
 		const nearUserInfo = await getUserInfoNEAR(authorID.value);
 		if (nearUserInfo.publicKey) {
@@ -138,13 +136,14 @@ onMounted(async (): Promise<void> => {
 	} catch (err) {
 		handleError(err);
 		router.push(`/not-found`);
+		return;
 	}
-	void profilesStore.fetchProfile(authorID.value);
-	void useConnectionsStore().fetchConnections(store.id);
+	profilesStore.fetchProfile(authorID.value);
+	useConnectionsStore().fetchConnections(store.id);
 	totalPostsCount.value = await profilesStore.fetchProfilePostCount(authorID.value);
 
-	const activeSubs = await useSubscription.$state.active;
-	activeSubs.forEach((sub: ISubscriptionWithProfile): void => {
+	const activeSubs = useSubscription.$state.active;
+	activeSubs.forEach((sub) => {
 		if (sub.authorID === authorID.value) {
 			isActiveSub.value = true;
 			activeSub.value = sub;
