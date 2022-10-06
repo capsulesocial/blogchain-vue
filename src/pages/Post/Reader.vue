@@ -400,8 +400,8 @@ function handleScroll() {
 					<!-- filters -->
 					<div class="flex w-full justify-between pb-5">
 						<div class="flex flex-row items-center">
-							<span v-if="postMetadata" class="pr-2 font-semibold dark:text-darkPrimaryText"
-								>{{ postMetadata.commentsCount }} {{ postMetadata.commentsCount === 1 ? 'comment' : 'comments' }}</span
+							<span v-if="postComments" class="pr-2 font-semibold dark:text-darkPrimaryText"
+								>{{ postComments?.length }} {{ postComments?.length === 1 ? 'comment' : 'comments' }}</span
 							>
 							<button class="focus:outline-none ml-2" @click="showStats = true"><StatsIcon /></button>
 						</div>

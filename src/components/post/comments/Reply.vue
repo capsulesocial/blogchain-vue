@@ -39,6 +39,11 @@ watch(comment, (c) => {
 	profileStore.fetchProfile(c.authorID);
 });
 
+async function removeReply(): Promise<void> {
+	showDelete.value = false;
+	await commentStore.removeUserComment(props.cid, store.$state.id);
+}
+
 onMounted(() => {
 	commentStore.fetchComment(props.cid);
 });
@@ -81,7 +86,7 @@ onMounted(() => {
 					style="top: 40px; right: 0px"
 				>
 					<!-- Delete -->
-					<button class="focus:outline-none text-negative flex">
+					<button class="focus:outline-none text-negative flex" @click="removeReply()">
 						<BinIcon class="w-4 h-4" />
 						<span class="text-negative self-center text-xs ml-1 mr-1">Remove this reply</span>
 					</button>

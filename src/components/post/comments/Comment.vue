@@ -78,6 +78,14 @@ async function sendReply() {
 	}
 }
 
+async function removeComment(): Promise<void> {
+	showDelete.value = false;
+	if (!comment.value) {
+		return;
+	}
+	await commentsStore.removeUserComment(props.cid, store.$state.id, comment.value.parentCID);
+}
+
 onMounted(async () => {
 	const c = await commentsStore.fetchComment(props.cid);
 	await profileStore.fetchProfile(c.authorID);
@@ -203,7 +211,7 @@ onMounted(async () => {
 						style="top: 40px; right: 0px"
 					>
 						<!-- Delete -->
-						<button class="focus:outline-none text-negative flex">
+						<button class="focus:outline-none text-negative flex" @click="removeComment()">
 							<BinIcon class="w-4 h-4" />
 							<span class="text-negative self-center text-xs ml-1 mr-1">Remove this comment</span>
 						</button>
