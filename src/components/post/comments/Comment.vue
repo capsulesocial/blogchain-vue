@@ -90,6 +90,23 @@ onMounted(async () => {
 	const c = await commentsStore.fetchComment(props.cid);
 	await profileStore.fetchProfile(c.authorID);
 	await commentsStore.fetchCommentsOfPost(props.cid);
+
+	window.addEventListener(
+		`click`,
+		(e: any): void => {
+			if (!e.target) {
+				return;
+			}
+			if (
+				e.target.parentNode === null ||
+				e.target.parentNode.classList === undefined ||
+				!e.target.parentNode.classList.contains(`toggleDelete`)
+			) {
+				showDelete.value = false;
+			}
+		},
+		false,
+	);
 });
 </script>
 
@@ -199,7 +216,7 @@ onMounted(async () => {
 					</div>
 					<button
 						v-if="store.$state.id === props.authorid || store.$state.id === comment.authorID"
-						class="focus:outline-none absolute top-0 right-0 flex-col justify-start text-gray5 dark:text-gray3 pt-2 pr-3"
+						class="focus:outline-none absolute top-0 right-0 flex-col justify-start text-gray5 dark:text-gray3 pt-2 pr-3 toggleDelete"
 						@click.stop="toggleDropdownDelete"
 					>
 						<MoreIcon />
