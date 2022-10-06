@@ -81,7 +81,7 @@ const fetchPostMetadata = async (cid: string, currentUser?: string) => {
 			deleted.value = true;
 			toastWarning(`This post has been hidden by the author`);
 		}
-		hasFeaturedPhoto.value = postMetadata.value.post.featuredPhotoCID ? true : false;
+		hasFeaturedPhoto.value = Boolean(postMetadata.value.post.featuredPhotoCID);
 	} catch (err: unknown) {
 		if (err instanceof Error) {
 			toastError(`Error loading post: ${err.message}`);
@@ -96,48 +96,51 @@ const setFilter = (f: string) => {
 };
 
 async function checkEncryption() {
-	if (post.value) {
-		if (isEncryptedPost(post.value.data)) {
-			if (store.$state.id === ``) {
-				showPaywall.value = true;
-			} else {
-				try {
-					const decrypted = await getDecryptedContent(cid.value, post.value.data.content, store.$state.id);
-					if (`content` in decrypted) {
-						content.value = decrypted.content;
-						excerpt.value = decrypted.content.slice(0, 100); // TODO refine
-						postImageKeys.value = decrypted.postImageKeys;
-					} else {
-						// show proper error message according to retrieval status
-						// decrypted.status is of type `INSUFFICIENT_TIER` | `NOT_SUBSCRIBED`
-						enabledTiers.value = decrypted.enabledTiers;
-						subscriptionStatus.value = decrypted.status;
-						// Display premium post paywall
-						showPaywall.value = true;
-					}
-				} catch (err) {
-					showPaywall.value = true;
-					if (err instanceof AxiosError && err.response && err.response.data.error) {
-						toastError(err.response.data.error);
-					} else {
-						throw err;
-					}
-				}
-			}
-		} else {
-			content.value = post.value.data.content;
-			excerpt.value = post.value.data.content.slice(0, 100); // TODO refine
+	if (!post.value) {
+		return;
+	}
+	if (!isEncryptedPost(post.value.data)) {
+		content.value = post.value.data.content;
+		excerpt.value = post.value.data.content.slice(0, 100); // TODO refine
+		return;
+	}
+	if (store.$state.id === ``) {
+		showPaywall.value = true;
+		return;
+	}
+
+	try {
+		const decrypted = await getDecryptedContent(cid.value, post.value.data.content, store.$state.id);
+		if (`content` in decrypted) {
+			content.value = decrypted.content;
+			excerpt.value = decrypted.content.slice(0, 100); // TODO refine
+			postImageKeys.value = decrypted.postImageKeys;
+			return;
 		}
+
+		// show proper error message according to retrieval status
+		// decrypted.status is of type `INSUFFICIENT_TIER` | `NOT_SUBSCRIBED`
+		enabledTiers.value = decrypted.enabledTiers;
+		subscriptionStatus.value = decrypted.status;
+	} catch (err) {
+		if (err instanceof AxiosError && err.response && err.response.data.error) {
+			toastError(err.response.data.error);
+			return;
+		}
+
+		throw err;
+	} finally {
+		showPaywall.value = true;
 	}
 }
 
-function checkAuthenticity() {
-	if (post.value) {
-		verifyPostAuthenticity(post.value.data, post.value.sig, post.value.public_key).then((verified) => {
-			if (!verified) {
-				toastError(`Post not verified!`);
-			}
-		});
+async function checkAuthenticity() {
+	if (!post.value) {
+		return;
+	}
+	const verified = await verifyPostAuthenticity(post.value.data, post.value.sig, post.value.public_key);
+	if (!verified) {
+		toastError(`Post not verified!`);
 	}
 }
 
