@@ -28,7 +28,7 @@ onMounted(() => {
 					</p>
 				</article>
 				<HorizontalBookmarkPreview v-for="b in bookmarks.slice(0, 2)" :key="b" :cid="b" />
-				<router-link to="/bookmarks" class="text-primary text-sm">Show more</router-link>
+				<router-link v-if="bookmarks.length > 2" to="/bookmarks" class="text-primary text-sm">Show more</router-link>
 			</div>
 		</div>
 		<div v-else class="text-gray5 dark:text-gray3 text-sm px-6 pb-4">
