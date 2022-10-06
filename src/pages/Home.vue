@@ -31,8 +31,10 @@ const scrollListener = async (e: Event) => {
 	}
 	const { scrollTop, scrollHeight, clientHeight } = e.target as HTMLElement;
 	if (scrollTop + clientHeight >= scrollHeight - 5) {
+		isLoading.value = true;
 		const newPosts = await usePostsStore().fetchHomePosts();
 		homePosts.value = homePosts.value.concat(newPosts);
+		isLoading.value = false;
 	}
 };
 
@@ -46,9 +48,11 @@ const handleFeedSwitch = async (alg: Algorithm, timeframe?: Timeframe) => {
 	if (postsStore.homeFeed.algorithm !== alg || timeframe) {
 		homePosts.value = [];
 	}
+	isLoading.value = true;
 	postsStore.setAlgorithm(alg);
 	const newPosts = await usePostsStore().fetchHomePosts();
 	homePosts.value = homePosts.value.concat(newPosts);
+	isLoading.value = false;
 };
 
 onMounted(async () => {
@@ -187,6 +191,12 @@ onMounted(async () => {
 		<p v-if="postsStore.homeFeed.noMorePosts" class="text-gray5 dark:text-gray3 py-5 text-center text-sm">
 			No more posts
 		</p>
+		<div v-show="isLoading" class="modal-animation flex w-full justify-center z-20 mt-24">
+			<div
+				class="loader m-5 border-2 border-gray1 dark:border-gray7 h-8 w-8 rounded-3xl"
+				:style="`border-top: 2px solid`"
+			></div>
+		</div>
 	</div>
 	<!-- Onboarding Wizard -->
 	<OnboardingWizard v-if="rootStore.$state.recentlyJoined" />

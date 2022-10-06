@@ -69,5 +69,11 @@ onMounted(() => {
 		<p v-if="noMorePosts && posts && posts.length !== 0" class="text-gray5 dark:text-gray3 py-5 text-center text-sm">
 			No more posts
 		</p>
+		<div v-show="isLoading" class="modal-animation flex w-full justify-center z-20 mt-24">
+			<div
+				class="loader m-5 border-2 border-gray1 dark:border-gray7 h-8 w-8 rounded-3xl"
+				:style="`border-top: 2px solid`"
+			></div>
+		</div>
 	</div>
 </template>
