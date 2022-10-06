@@ -1,37 +1,44 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { Post } from '@/backend/post';
+import { computed, onMounted } from 'vue';
+import { usePostsStore } from '@/store/posts';
+import { useProfilesStore } from '@/store/profiles';
+import IpfsImage from '@/components/IpfsImage.vue';
 
-withDefaults(
-	defineProps<{
-		bookmark: Post;
-	}>(),
-	{},
-);
+const props = defineProps<{
+	cid: string;
+}>();
 
-const cid = ref<string>(``);
-const featuredPhoto = ref<any>();
-const authorName = ref<string>(``);
-
+const postsStore = usePostsStore();
+const profileStore = useProfilesStore();
+const bookmark = computed(() => postsStore.getPost(props.cid));
+const author = computed(() => {
+	if (!bookmark.value) {
+		return;
+	}
+	return profileStore.getProfile(bookmark.value?.post.authorID);
+});
 // IF featuredPhotoCID: fetch featuredPhoto
+onMounted(() => {
+	console.log(bookmark.value);
+});
 </script>
 
 <template>
-	<router-link :to="`/post/` + cid" class="flex w-full flex-row items-center my-4">
-		<!-- Left side: title and author name -->
-		<div class="flex flex-grow flex-col">
-			<h5 class="font-semibold dark:text-darkSecondaryText">{{ bookmark.title }}</h5>
-			<h6 v-if="authorName !== ``" class="text-gray5 dark:text-gray3">By {{ authorName }}</h6>
-			<h6 v-else class="text-gray5 dark:text-gray3">By @{{ bookmark.authorID }}</h6>
-		</div>
-		<!-- Right side: featured photo -->
-		<div class="w-24 hidden xl:block">
-			<img
-				v-if="featuredPhoto !== null"
-				v-lazy="{ src: featuredPhoto }"
-				:alt="bookmark.title"
-				class="h-16 w-full flex-shrink-0 rounded-lg object-cover"
-			/>
-		</div>
-	</router-link>
+	<div v-if="bookmark">
+		<router-link :to="`/post/` + cid" class="flex w-full flex-row items-center my-4">
+			<!-- Left side: title and author name -->
+			<div class="flex flex-grow flex-col">
+				<h5 class="font-semibold dark:text-darkSecondaryText">{{ bookmark.post.title }}</h5>
+				<h6 v-if="author?.name !== ``" class="text-gray5 dark:text-gray3">By {{ author?.name }}</h6>
+				<h6 v-else class="text-gray5 dark:text-gray3">By @{{ author.id }}</h6>
+			</div>
+			<!-- Right side: featured photo -->
+			<div
+				v-if="bookmark.post.featuredPhotoCID"
+				class="w-24 h-16 object-contain overflow-hidden rounded-lg hidden xl:block"
+			>
+				<IpfsImage :cid="bookmark.post.featuredPhotoCID" :img-class="`h-16 w-full flex-shrink-0 rounded-lg`" />
+			</div>
+		</router-link>
+	</div>
 </template>
