@@ -13,6 +13,7 @@ const props = defineProps<{
 	cid: string;
 }>();
 
+const emit = defineEmits([`updateReplies`]);
 const settings = useStoreSettings();
 const store = useStore();
 const profileStore = useProfilesStore();
@@ -39,9 +40,11 @@ watch(comment, (c) => {
 	profileStore.fetchProfile(c.authorID);
 });
 
-async function removeReply(): Promise<void> {
+async function removeReply() {
 	showDelete.value = false;
 	await commentStore.removeUserComment(props.cid, store.$state.id);
+	replyDeleted.value = true;
+	emit(`updateReplies`);
 }
 
 onMounted(() => {

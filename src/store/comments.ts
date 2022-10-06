@@ -94,7 +94,7 @@ export const useCommentsStore = defineStore(`comments`, {
 				handleError(err);
 			}
 		},
-		async removeUserComment(commentId: string, username: string, parentCID?: string): Promise<void> {
+		async removeUserComment(commentId: string, username: string, parentCID?: string) {
 			if (!commentId || !username) {
 				return;
 			}

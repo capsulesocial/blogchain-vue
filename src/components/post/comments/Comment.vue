@@ -78,7 +78,7 @@ async function sendReply() {
 	}
 }
 
-async function removeComment(): Promise<void> {
+async function removeComment() {
 	showDelete.value = false;
 	if (!comment.value) {
 		return;
@@ -86,6 +86,9 @@ async function removeComment(): Promise<void> {
 	await commentsStore.removeUserComment(props.cid, store.$state.id, comment.value.parentCID);
 }
 
+async function updateReplies() {
+	await commentsStore.fetchCommentsOfPost(props.cid);
+}
 onMounted(async () => {
 	const c = await commentsStore.fetchComment(props.cid);
 	await profileStore.fetchProfile(c.authorID);
@@ -268,7 +271,7 @@ onMounted(async () => {
 					</div>
 					<!-- List replies -->
 					<div v-if="replies && replies?.length > 0" class="pl-5 mt-2">
-						<Reply v-for="r in replies" :key="r" :cid="r" />
+						<Reply v-for="r in replies" :key="r" :cid="r" @update-replies="updateReplies" />
 					</div>
 				</div>
 			</div>
