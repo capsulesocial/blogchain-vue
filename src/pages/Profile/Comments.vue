@@ -92,7 +92,7 @@ onMounted(async () => {
 			<SecondaryButton
 				v-if="store.$state.id === route.params.id"
 				:text="`Comment on a post`"
-				:action="() => router.push(`home`)"
+				:action="() => router.push(`/home`)"
 			/>
 			<img
 				v-if="store.$state.id === $route.params.id"

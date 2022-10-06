@@ -27,11 +27,6 @@ const limit = ref(10);
 const algorithm = ref(Algorithm.NEW);
 const noMorePosts = ref(false);
 
-// methods
-function toggleHomeFeed() {
-	router.push(`/home`);
-}
-
 async function fetchContent() {
 	if (isLoading.value || noMorePosts.value) {
 		return;
@@ -93,7 +88,11 @@ onMounted(() => {
 				<span v-if="route.params.id === store.$state.id">It seems you haven't reposted any content yet.</span>
 				<span v-else>{{ $route.params.id }} hasn't reposted any content yet</span>
 			</p>
-			<SecondaryButton v-if="store.$state.id === $route.params.id" :text="`Repost content`" :action="toggleHomeFeed" />
+			<SecondaryButton
+				v-if="store.$state.id === $route.params.id"
+				:text="`Repost content`"
+				:action="() => router.push(`/home`)"
+			/>
 			<img
 				v-if="store.$state.id === $route.params.id"
 				:src="require(`@/assets/images/brand/post.webp`)"
