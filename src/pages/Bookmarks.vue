@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, onMounted, ref } from 'vue';
+import { computed, watch, onMounted, ref } from 'vue';
 import SimpleFeedCard from '@/components/post/SimpleFeedCard.vue';
 import BookmarksFilter from '@/components/BookmarksFilter.vue';
 import BookmarksIcon from '@/components/icons/BookmarkIcon.vue';
@@ -16,6 +16,7 @@ const isLoading = ref<boolean>(false);
 const offset = ref<number>(0);
 const limit = ref<number>(10);
 const noMorePosts = ref<boolean>(false);
+const category = computed(() => postsStore.$state.bookmarksCategory);
 
 async function setSort(sort: BookmarkSort) {
 	posts.value = [];
@@ -24,11 +25,6 @@ async function setSort(sort: BookmarkSort) {
 	// When a user selects a filter
 	postsStore.setBookmarkFilter(sort);
 	await fetchContent();
-	// const pList = await postsStore.fetchBookmarkedPosts();
-	// if (!pList) {
-	// 	return;
-	// }
-	// posts.value = [...pList];
 }
 
 async function fetchContent() {
@@ -36,8 +32,7 @@ async function fetchContent() {
 		return;
 	}
 	isLoading.value = true;
-	// postsStore.getBookmarkedPosts();
-	const pList = await postsStore.fetchBookmarkedPosts(offset.value, limit.value);
+	const pList = await postsStore.fetchBookmarkedPosts(postsStore.bookmarksCategory, offset.value, limit.value);
 	isLoading.value = false;
 	if (pList && pList.length < limit.value) {
 		noMorePosts.value = true;
@@ -61,7 +56,10 @@ function handleScroll() {
 	}
 }
 
-onBeforeMount(() => {});
+watch(category, (c) => {
+	setSort(postsStore.bookmarkFilter);
+});
+
 onMounted(async () => {
 	await fetchContent();
 	// scrolling event handler

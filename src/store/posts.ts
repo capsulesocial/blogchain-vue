@@ -19,6 +19,7 @@ export interface Posts {
 	categoryPosts: Map<string, string[]>;
 	bookmarkedPosts: Map<string, string[]>;
 	bookmarkFilter: `BOOKMARK_ASC` | `BOOKMARK_DESC` | `POST_ASC` | `POST_DESC`;
+	bookmarksCategory: string | undefined;
 	tagPosts: Map<string, string[]>;
 }
 
@@ -38,6 +39,7 @@ export const usePostsStore = defineStore(`posts`, {
 			categoryPosts: new Map<string, string[]>(),
 			bookmarkedPosts: new Map<string, string[]>(),
 			bookmarkFilter: `BOOKMARK_DESC`,
+			bookmarksCategory: undefined,
 			tagPosts: new Map<string, string[]>(),
 		};
 	},
@@ -100,7 +102,10 @@ export const usePostsStore = defineStore(`posts`, {
 		setBookmarkFilter(filter: `BOOKMARK_ASC` | `BOOKMARK_DESC` | `POST_ASC` | `POST_DESC`) {
 			this.bookmarkFilter = filter;
 		},
-		async fetchBookmarkedPosts(offset = 0, limit = 10) {
+		setBookmarkCategory(category: string | undefined) {
+			this.bookmarksCategory = category;
+		},
+		async fetchBookmarkedPosts(category: string | undefined = undefined, offset = 0, limit = 10) {
 			// Set up payload
 			const id = useStore().$state.id;
 			if (id === ``) {
@@ -108,7 +113,7 @@ export const usePostsStore = defineStore(`posts`, {
 			}
 			// Send request
 			try {
-				const posts = await getBookmarksOfUser(id, undefined, this.bookmarkFilter, limit, offset);
+				const posts = await getBookmarksOfUser(id, category, this.bookmarkFilter, limit, offset);
 				const postArr: string[] = [];
 				// Add to store
 				for (const post of posts) {
@@ -239,7 +244,7 @@ export const usePostsStore = defineStore(`posts`, {
 			} catch (err) {
 				throw new Error(err as string);
 			} finally {
-				this.fetchBookmarkedPosts(0);
+				this.fetchBookmarkedPosts(undefined, 0);
 			}
 		},
 		async removePost(postCID: string, authorID: string) {
