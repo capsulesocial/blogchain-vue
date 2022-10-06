@@ -17,33 +17,26 @@ const profilesStore = useProfilesStore();
 const paymentStore = usePaymentsStore();
 const useSubscription = useSubscriptionStore();
 
-const props = withDefaults(
-	defineProps<{
-		id: string;
-		hasFeaturedPhoto: boolean;
-		subscriptionStatus: string;
-		enabledTiers: string[];
-	}>(),
-	{},
-);
+const props = defineProps<{
+	id: string;
+	hasFeaturedPhoto: boolean;
+	subscriptionStatus: string;
+	enabledTiers: string[];
+}>();
 
 const profile = computed(() => profilesStore.getProfile(props.id));
 const enabledTierNames = ref<Array<string>>([]);
 const toPreSelectTiers = ref<Array<SubscriptionTier>>([]);
 const availableTiers = ref<SubscriptionTier[]>([]);
-const showSubscription = ref<boolean>(false);
-const showChangeTier = ref<boolean>(false);
+const showSubscription = ref(false);
+const showChangeTier = ref(false);
 const activeSub = ref<ISubscriptionWithProfile>();
 
 onMounted(async () => {
-	void profilesStore.fetchProfile(props.id);
+	profilesStore.fetchProfile(props.id);
 	await getTiers();
-	const activeSubs = await useSubscription.$state.active;
-	activeSubs.forEach((sub: ISubscriptionWithProfile): void => {
-		if (sub.authorID === profile.value.id) {
-			activeSub.value = sub;
-		}
-	});
+	const activeSubs = useSubscription.$state.active;
+	activeSub.value = activeSubs.find((sub) => sub.authorID === profile.value.id);
 });
 
 async function getTiers() {
@@ -52,7 +45,7 @@ async function getTiers() {
 	if (paymentProfile) {
 		availableTiers.value = paymentProfile.tiers;
 	}
-	props.enabledTiers.forEach((tId: any) => {
+	props.enabledTiers.forEach((tId) => {
 		const foundTier = availableTiers.value.find((tier: SubscriptionTier) => tier._id === tId);
 		if (foundTier) {
 			enabledTierNames.value.push(foundTier.name);
