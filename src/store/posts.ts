@@ -100,7 +100,7 @@ export const usePostsStore = defineStore(`posts`, {
 		setBookmarkFilter(filter: `BOOKMARK_ASC` | `BOOKMARK_DESC` | `POST_ASC` | `POST_DESC`) {
 			this.bookmarkFilter = filter;
 		},
-		async fetchBookmarkedPosts(offset = 0) {
+		async fetchBookmarkedPosts(offset = 0, limit = 10) {
 			// Set up payload
 			const id = useStore().$state.id;
 			if (id === ``) {
@@ -108,7 +108,7 @@ export const usePostsStore = defineStore(`posts`, {
 			}
 			// Send request
 			try {
-				const posts = await getBookmarksOfUser(id, undefined, this.bookmarkFilter, 10, offset);
+				const posts = await getBookmarksOfUser(id, undefined, this.bookmarkFilter, limit, offset);
 				const postArr: string[] = [];
 				// Add to store
 				for (const post of posts) {

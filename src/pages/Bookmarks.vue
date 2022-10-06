@@ -10,27 +10,63 @@ import { useStore } from '@/store/session';
 
 const postsStore = usePostsStore();
 const store = useStore();
-// const bookmarkedPosts = computed(() => postsStore.getBookmarkedPosts());
+
 const posts = ref<string[]>([]);
+const isLoading = ref<boolean>(false);
+const offset = ref<number>(0);
+const limit = ref<number>(10);
+const noMorePosts = ref<boolean>(false);
+
 async function setSort(sort: BookmarkSort) {
 	posts.value = [];
+	offset.value = 0;
+	noMorePosts.value = false;
 	// When a user selects a filter
 	postsStore.setBookmarkFilter(sort);
-	postsStore.getBookmarkedPosts();
-	const pList = await postsStore.fetchBookmarkedPosts();
+	await fetchContent();
+	// const pList = await postsStore.fetchBookmarkedPosts();
+	// if (!pList) {
+	// 	return;
+	// }
+	// posts.value = [...pList];
+}
+
+async function fetchContent() {
+	if (isLoading.value || noMorePosts.value) {
+		return;
+	}
+	isLoading.value = true;
+	// postsStore.getBookmarkedPosts();
+	const pList = await postsStore.fetchBookmarkedPosts(offset.value, limit.value);
+	isLoading.value = false;
+	if (pList && pList.length < limit.value) {
+		noMorePosts.value = true;
+	}
+	offset.value += limit.value;
 	if (!pList) {
 		return;
 	}
-	posts.value = [...pList];
+	posts.value = posts.value.concat(pList);
 }
+
+function handleScroll() {
+	const body = document.getElementById(`scrollable_content`);
+	if (!body) {
+		return;
+	}
+	const currentScroll = body.scrollTop;
+	// infinite scrolling
+	if (currentScroll + body.clientHeight >= body.scrollHeight - 5) {
+		fetchContent();
+	}
+}
+
 onBeforeMount(() => {});
 onMounted(async () => {
-	postsStore.getBookmarkedPosts();
-	const pList = await postsStore.fetchBookmarkedPosts();
-	if (!pList) {
-		return;
-	}
-	posts.value = pList;
+	await fetchContent();
+	// scrolling event handler
+	window.addEventListener('wheel', handleScroll);
+	window.addEventListener('touchmove', handleScroll);
 });
 </script>
 
@@ -76,5 +112,17 @@ onMounted(async () => {
 			</div>
 			<img v-lazy="{ src: require(`@/assets/images/brand/bookmarks.webp`) }" class="w-full" alt="Getting help" />
 		</div>
+		<p
+			v-if="noMorePosts && posts && posts.length !== 0 && !isLoading"
+			class="text-gray5 dark:text-gray3 py-5 text-center text-sm"
+		>
+			No more posts
+		</p>
+		<article v-show="isLoading" class="flex justify-center">
+			<div
+				class="loader m-10 border-2 border-gray1 dark:border-gray7 h-8 w-8 rounded-3xl"
+				:style="`border-top: 2px solid`"
+			></div>
+		</article>
 	</article>
 </template>
