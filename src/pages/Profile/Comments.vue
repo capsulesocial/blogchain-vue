@@ -73,7 +73,9 @@ onMounted(async () => {
 		<div v-for="c in comments" :key="c._id">
 			<Comment :cid="c._id" :authorid="c.authorID" class="mb-4" />
 		</div>
-		<p v-show="noMoreComments" class="text-gray5 dark:text-gray3 py-5 mb-12 text-center text-sm">No more comments</p>
+		<p v-show="noMoreComments && comments.length > 0" class="text-gray5 dark:text-gray3 py-5 mb-12 text-center text-sm">
+			No more comments
+		</p>
 		<!-- Loading spinner -->
 		<div v-show="isLoading" class="modal-animation flex w-full justify-center z-20 mt-24">
 			<div
