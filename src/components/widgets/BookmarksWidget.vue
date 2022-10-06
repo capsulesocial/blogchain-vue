@@ -1,40 +1,17 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useStore } from '@/store/session';
-import { Post } from '@/backend/post';
+import { usePostsStore } from '@/store/posts';
 import HorizontalBookmarkPreview from '@/components/HorizontalBookmarkPreview.vue';
 
 const store = useStore();
+const postsStore = usePostsStore();
 
 // TODO: fetch followers from store / backend
-const bookmarks = ref<Post[]>([
-	{
-		authorID: `johndoe`,
-		title: `First Bookmark`,
-		subtitle: ``,
-		content: ``,
-		featuredPhotoCID: null,
-		featuredPhotoCaption: null,
-		tags: [],
-		category: ``,
-		timestamp: 0,
-		postImages: [],
-		encrypted: false,
-	},
-	{
-		authorID: `johndoe`,
-		title: `Second Bookmark`,
-		subtitle: ``,
-		content: ``,
-		featuredPhotoCID: null,
-		featuredPhotoCaption: null,
-		tags: [],
-		category: ``,
-		timestamp: 1,
-		postImages: [],
-		encrypted: false,
-	},
-]);
+const bookmarks = computed(() => postsStore.getBookmarkedPosts());
+onMounted(() => {
+	postsStore.fetchBookmarkedPosts();
+});
 </script>
 
 <template>
@@ -42,7 +19,7 @@ const bookmarks = ref<Post[]>([
 		<h3 class="text-lightPrimaryText dark:text-darkPrimaryText text-base font-semibold">Recent Bookmarks</h3>
 		<!-- Loading spinner -->
 		<div v-if="store.$state.id !== ``">
-			<div>
+			<div v-if="bookmarks">
 				<article v-if="bookmarks.length == 0">
 					<p class="text-gray5 dark:text-gray3 mb-4 text-sm">
 						<span>
@@ -50,7 +27,7 @@ const bookmarks = ref<Post[]>([
 						</span>
 					</p>
 				</article>
-				<HorizontalBookmarkPreview v-for="bookmark in bookmarks" :key="bookmark.timestamp" :bookmark="bookmark" />
+				<HorizontalBookmarkPreview v-for="b in bookmarks.slice(0, 2)" :key="b" :cid="b" />
 				<router-link to="/bookmarks" class="text-primary text-sm">Show more</router-link>
 			</div>
 		</div>
