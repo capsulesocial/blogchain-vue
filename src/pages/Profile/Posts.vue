@@ -15,25 +15,24 @@ const authorID = computed(() => {
 });
 const posts = computed(() => postsStore.getProfilePosts(authorID.value));
 
-const isLoading = ref<boolean>(false);
-const offset = ref<number>(0);
-const limit = ref<number>(10);
-const noMorePosts = ref<boolean>(false);
+const isLoading = ref(false);
+const offset = ref(0);
+const limit = ref(10);
+const noMorePosts = ref(false);
 
-function fetchContent() {
+async function fetchContent() {
 	if (isLoading.value) {
 		return;
 	}
 	isLoading.value = true;
-	usePostsStore()
-		.fetchProfilePosts(authorID.value, offset.value)
-		.then((res) => {
-			if (res && res.length < limit.value) {
-				noMorePosts.value = true;
-			}
-			offset.value += limit.value;
-			isLoading.value = false;
-		});
+
+	const res = await usePostsStore().fetchProfilePosts(authorID.value, offset.value);
+
+	if (res && res.length < limit.value) {
+		noMorePosts.value = true;
+	}
+	offset.value += limit.value;
+	isLoading.value = false;
 }
 
 function handleScroll() {
