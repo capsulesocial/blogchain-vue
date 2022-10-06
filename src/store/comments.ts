@@ -83,8 +83,7 @@ export const useCommentsStore = defineStore(`comments`, {
 					authorComments = authorComments.concat(existingArr);
 				}
 				for (const c of res) {
-					const comment = await getComment(c._id);
-					this.$state.comments.set(c._id, comment);
+					this.fetchComment(c._id);
 					authorComments.push(c._id);
 				}
 				this.authorComments.set(authorID, authorComments);

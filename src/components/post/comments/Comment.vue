@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import { faces, IFace } from '@/config/faces';
+import { faces } from '@/config/faces';
 import { useStoreSettings } from '@/store/settings';
 import { emotionCategories } from '@/config/config';
 import { formatDate } from '@/helpers/helpers';
@@ -15,20 +15,18 @@ import { qualityComment } from '@/plugins/quality';
 import { isError } from '@/plugins/helpers';
 import { toastError, handleError } from '@/plugins/toast';
 import { createComment } from '@/backend/comment';
+import { useRoute } from 'vue-router';
 
 const commentsStore = useCommentsStore();
 const settings = useStoreSettings();
 const store = useStore();
+const route = useRoute();
 const profileStore = useProfilesStore();
 
-const props = withDefaults(
-	defineProps<{
-		cid: string;
-		authorid: string;
-	}>(),
-	{},
-);
-
+const props = defineProps<{
+	cid: string;
+	authorid: string;
+}>();
 // comment
 const showLabel = ref<boolean>(false);
 
@@ -38,12 +36,12 @@ const commentDeleted = ref<boolean>(false);
 const comment = computed(() => commentsStore.getCommentData(props.cid));
 const replies = computed(() => commentsStore.getCommentsOfPost(props.cid));
 const author = computed(() => {
-	if (typeof comment.value?.authorID !== `string`) {
-		throw new Error(`authorID should be a string`);
+	if (typeof props.authorid !== `string`) {
+		console.log(`error`);
+		throw new Error(`authorID prop should be a string`);
 	}
-	return profileStore.getProfile(comment.value?.authorID);
+	return profileStore.getProfile(props.authorid);
 });
-const emotion = ref<IFace>(typeof comment.value?.emotion === `string` ? faces[comment.value?.emotion] : faces.default);
 
 // replies
 const reply = ref<string>(``);
@@ -141,10 +139,10 @@ onMounted(async () => {
 									<!-- Reaction face image -->
 									<div class="flex float-right flex-shrink-0 items-center justify-center overflow-hidden">
 										<img
-											:src="settings.isDarkMode ? emotion.dark : emotion.light"
+											:src="settings.isDarkMode ? faces[comment.emotion].dark : faces[comment.emotion].light"
 											class="-mb-1 mt-2 h-24 w-24 bg-transparent"
-											:class="emotion.label === `default` ? `animate-pulse` : ``"
-											:style="emotion.label === `default` ? `filter: blur(5px)` : ``"
+											:class="faces[comment.emotion].label === `default` ? `animate-pulse` : ``"
+											:style="faces[comment.emotion].label === `default` ? `filter: blur(5px)` : ``"
 											@mouseover="showLabel = true"
 											@mouseleave="showLabel = false"
 										/>
@@ -153,7 +151,7 @@ onMounted(async () => {
 											class="border-lightBorder modal-animation-delay absolute top-0 mt-2 z-40 flex flex-col rounded-lg border bg-lightBG dark:bg-darkBG p-2 shadow-lg"
 										>
 											<p class="text-sm text-gray5 dark:text-gray3">
-												{{ emotion.label.replace(/_/g, ' ') }}
+												{{ faces[comment.emotion].label.replace(/_/g, ' ') }}
 											</p>
 										</div>
 									</div>
@@ -209,6 +207,11 @@ onMounted(async () => {
 						</button>
 					</div>
 				</div>
+				<p v-if="route.name === `Comments`" class="mt-1 text-right">
+					<router-link :to="`/post/` + comment?.parentCID" class="text-gray5 dark:text-gray3 text-xs"
+						>View Post</router-link
+					>
+				</p>
 				<!-- Replies -->
 				<div v-if="showReplies" class="modal-animation mr-5 mt-4 border-l border-gray3 pl-2">
 					<!-- Reply Input box -->

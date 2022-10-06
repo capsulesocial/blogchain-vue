@@ -2,10 +2,15 @@
 import Comment from '@/components/post/comments/Comment.vue';
 import { computed, onMounted, ref } from 'vue';
 import { useCommentsStore } from '@/store/comments';
-import { useRoute } from 'vue-router';
+import { useStore } from '@/store/session';
+import { useRoute, useRouter } from 'vue-router';
+import SecondaryButton from '@/components/SecondaryButton.vue';
+import { ICommentData } from '@/backend/comment';
 
 const commentsStore = useCommentsStore();
+const store = useStore();
 const route = useRoute();
+const router = useRouter();
 const authorID = computed(() => {
 	const id = route.params.id;
 	if (Array.isArray(id)) {
@@ -13,27 +18,34 @@ const authorID = computed(() => {
 	}
 	return id;
 });
-const comments = computed(() => commentsStore.getCommentsOfAuthor(authorID.value));
+const comments = ref<ICommentData[]>([]);
+// const comments = computed(() => commentsStore.getCommentsOfAuthor(authorID.value));
 const isLoading = ref<boolean>(false);
 const offset = ref<number>(0);
 const limit = ref<number>(10);
 const noMoreComments = ref<boolean>(false);
 
-function fetchContent() {
+async function fetchContent() {
 	if (isLoading.value) {
 		return;
 	}
 	isLoading.value = true;
-	commentsStore.fetchCommentsOfAuthor(authorID.value, offset.value).then((res) => {
-		if (res && res.length < limit.value) {
-			noMoreComments.value = true;
-		}
-		offset.value += limit.value;
-		isLoading.value = false;
-	});
+	const res = await commentsStore.fetchCommentsOfAuthor(authorID.value, offset.value);
+	if (res && res.length < limit.value) {
+		noMoreComments.value = true;
+	}
+	offset.value += limit.value;
+	isLoading.value = false;
+	if (!res) {
+		return;
+	}
+	comments.value = comments.value.concat(res);
 }
 
-function handleScroll() {
+async function handleScroll() {
+	if (noMoreComments.value) {
+		return;
+	}
 	const body = document.getElementById(`scrollable_content`);
 	if (!body) {
 		return;
@@ -41,12 +53,12 @@ function handleScroll() {
 	const currentScroll = body.scrollTop;
 	// infinite scrolling
 	if (currentScroll + body.clientHeight >= body.scrollHeight - 5) {
-		fetchContent();
+		await fetchContent();
 	}
 }
 
-onMounted(() => {
-	fetchContent();
+onMounted(async () => {
+	await fetchContent();
 	// scrolling event handler
 	window.addEventListener('wheel', handleScroll);
 	window.addEventListener('touchmove', handleScroll);
@@ -58,9 +70,36 @@ onMounted(() => {
 		id="scrollable_content"
 		class="min-h-115 h-115 lg:min-h-210 lg:h-210 xl:min-h-220 xl:h-220 overflow-y-auto lg:overflow-y-hidden relative w-full px-4"
 	>
-		<div v-for="c in comments" :key="c">
-			<Comment :cid="c" :authorid="authorID" class="mb-4" />
+		<div v-for="c in comments" :key="c._id">
+			<Comment :cid="c._id" :authorid="c.authorID" class="mb-4" />
 		</div>
-		<p v-if="noMoreComments" class="text-gray5 dark:text-gray3 py-5 text-center text-sm">No more comments</p>
+		<p v-show="noMoreComments && comments.length > 0" class="text-gray5 dark:text-gray3 py-5 mb-12 text-center text-sm">
+			No more comments
+		</p>
+		<!-- Loading spinner -->
+		<div v-show="isLoading" class="modal-animation flex w-full justify-center z-20 mt-24">
+			<div
+				class="loader m-5 border-2 border-gray1 dark:border-gray7 h-8 w-8 rounded-3xl"
+				:style="`border-top: 2px solid`"
+			></div>
+		</div>
+		<!-- No comments -->
+		<div v-if="comments && comments.length === 0 && !isLoading" class="mt-24 grid justify-items-center px-10 xl:px-0">
+			<p class="text-gray5 dark:text-gray3 mb-5 text-sm">
+				<span v-if="authorID === store.$state.id"> It seems you haven't written any comments yet. </span>
+				<span v-else> {{ route.params.id }} hasn't written any comments yet </span>
+			</p>
+			<SecondaryButton
+				v-if="store.$state.id === route.params.id"
+				:text="`Comment on a post`"
+				:action="() => router.push(`/home`)"
+			/>
+			<img
+				v-if="store.$state.id === $route.params.id"
+				:src="require(`@/assets/images/brand/post.webp`)"
+				loading="lazy"
+				class="top-0 hidden lg:block"
+			/>
+		</div>
 	</div>
 </template>
