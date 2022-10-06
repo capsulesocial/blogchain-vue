@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue';
 import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
-import { IBackground, backgrounds } from '@/config/backgrounds';
+import { IBackground, backgrounds, getCurrentBG } from '@/config/backgrounds';
 import XIcon from '@/components/icons/CloseIcon.vue';
 
 const store = useStore();
@@ -10,15 +10,6 @@ const settings = useStoreSettings();
 const emit = defineEmits([`close`]);
 
 const selectedBG = ref<IBackground>(getCurrentBG(store.background));
-
-function getCurrentBG(id: string): IBackground {
-	for (const bg of backgrounds) {
-		if (bg.id === id) {
-			return bg;
-		}
-	}
-	return backgrounds[0];
-}
 
 function setBackgroundImage(background: IBackground) {
 	selectedBG.value = background;
