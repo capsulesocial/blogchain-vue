@@ -9,19 +9,16 @@ import FriendButton from '@/components/FriendButton.vue';
 const store = useStore();
 const profilesStore = useProfilesStore();
 
-const props = withDefaults(
-	defineProps<{
-		id: string;
-	}>(),
-	{},
-);
+const props = defineProps<{
+	id: string;
+}>();
 
 const profile = computed(() => profilesStore.getProfile(props.id));
-const longBio = ref<boolean>(profile.value.bio.length > 200);
-const expandBio = ref<boolean>(false);
+const longBio = ref(profile.value.bio.length > 200);
+const expandBio = ref(false);
 
-onMounted(async () => {
-	void profilesStore.fetchProfile(props.id);
+onMounted(() => {
+	profilesStore.fetchProfile(props.id);
 });
 </script>
 

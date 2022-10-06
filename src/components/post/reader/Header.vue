@@ -28,7 +28,7 @@ const props = withDefaults(
 
 const profile = computed(() => profilesStore.getProfile(props.id));
 
-onMounted(async () => {
+onMounted(() => {
 	profilesStore.fetchProfile(props.id);
 });
 
