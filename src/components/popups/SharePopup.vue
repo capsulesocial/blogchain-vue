@@ -115,7 +115,7 @@ function mailShare() {
 		),
 	);
 }
-onMounted(async (): Promise<void> => {
+onMounted(async () => {
 	generateShareableLink();
 });
 </script>

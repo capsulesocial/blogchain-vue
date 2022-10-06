@@ -31,7 +31,7 @@ const username = ref<string | null>(null);
 const keyFileTarget = ref<HTMLInputElement | null>(null);
 
 // methods
-async function walletLogin(): Promise<void> {
+async function walletLogin() {
 	try {
 		username.value = await getUsernameNEAR(accountIdInput.value);
 		// If no account found
@@ -85,12 +85,12 @@ async function walletVerify() {
 	}
 }
 
-function handleKeyClick(): void {
+function handleKeyClick() {
 	if (key.value) {
 		key.value.click();
 	}
 }
-function handleKey(e: Event): void {
+function handleKey(e: Event) {
 	keyFileTarget.value = e.target as HTMLInputElement;
 	const target = keyFileTarget.value;
 	const files = target.files;

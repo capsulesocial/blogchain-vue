@@ -56,7 +56,7 @@ function toggleQuoteRepost() {
 onMounted(() => {
 	window.addEventListener(
 		`click`,
-		(e: any): void => {
+		(e: any) => {
 			if (!e.target) {
 				return;
 			}

@@ -34,16 +34,16 @@ const currency = ref<string>(getCurrencySymbol(props.sub.currency));
 
 const emit = defineEmits(['close', 'switchPopup']);
 
-onMounted(async (): Promise<void> => {
+onMounted(async () => {
 	paymentProfile.value = await usePayment.fetchPaymentProfile(props.sub.authorID);
 	transactions.value = await useSubscription.getSubsTransactions(store.$state.id, props.sub.subscriptionId);
 });
 
 // methods
-function downloadReceipt(url: string): void {
+function downloadReceipt(url: string) {
 	window.open(url, `_blank`, `noopener,noreferrer`);
 }
-async function manageBilling(): Promise<void> {
+async function manageBilling() {
 	try {
 		const portalUrl = await getBillingPortalUrl(store.$state.id, props.sub.subscriptionId);
 		window.open(portalUrl, `_blank`);
@@ -51,14 +51,14 @@ async function manageBilling(): Promise<void> {
 		handleError(err);
 	}
 }
-function toggleCancelAlert(): void {
+function toggleCancelAlert() {
 	showAlert.value = !showAlert.value;
 }
-function toggleSwitchPopup(subProfile: ISubscriptionWithProfile): void {
+function toggleSwitchPopup(subProfile: ISubscriptionWithProfile) {
 	emit(`switchPopup`, { sub: subProfile, avatar: subProfile.avatar });
 	emit(`close`);
 }
-async function cancelSubscription(): Promise<void> {
+async function cancelSubscription() {
 	const cancelSub = await useSubscription.cancelSub(store.$state.id, props.sub.subscriptionId);
 	if (cancelSub) {
 		toastSuccess(`Subscription cancellation was successful`);

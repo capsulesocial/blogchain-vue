@@ -36,7 +36,7 @@ const canSwitchTier = ref<boolean>(true);
 
 defineEmits([`close`]);
 
-onMounted(async (): Promise<void> => {
+onMounted(async () => {
 	// Fetch updated payment profile of author
 	await usePayment.fetchPaymentProfile(props.author.id).then(() => {
 		initializeProfile();
@@ -54,7 +54,7 @@ onMounted(async (): Promise<void> => {
 	}
 });
 // methods
-function initializeProfile(): void {
+function initializeProfile() {
 	if (!props.author) {
 		toastError(`Author profile is missing`);
 		return;
@@ -75,7 +75,7 @@ function initializeProfile(): void {
 		toastError(`Author hasn't set-up subscriptions`);
 	}
 }
-function nextStep(selectTier: SubscriptionTier, selectPeriod: string): void {
+function nextStep(selectTier: SubscriptionTier, selectPeriod: string) {
 	selectedTier.value = selectTier;
 	selectedPeriod.value = selectPeriod;
 	step.value += 1;

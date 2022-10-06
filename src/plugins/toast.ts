@@ -6,7 +6,7 @@ import ErrorAvatar from '../assets/images/util/error.png';
 import MesageAvatar from '../assets/images/util/message.png';
 import { AxiosError } from 'axios';
 
-export function toastSuccess(text: string): void {
+export function toastSuccess(text: string) {
 	Toastify({
 		text,
 		duration: 4000,
@@ -37,7 +37,7 @@ export function toastSuccess(text: string): void {
 	}).showToast();
 }
 
-export function toastWarning(text: string): void {
+export function toastWarning(text: string) {
 	Toastify({
 		text,
 		duration: 4000,
@@ -67,7 +67,7 @@ export function toastWarning(text: string): void {
 	}).showToast();
 }
 
-export function toastError(text: string): void {
+export function toastError(text: string) {
 	Toastify({
 		text,
 		duration: 4000,
@@ -98,7 +98,7 @@ export function toastError(text: string): void {
 	}).showToast();
 }
 
-export function handleError(err: unknown, situation = ''): void {
+export function handleError(err: unknown, situation = '') {
 	if (err instanceof AxiosError) {
 		if (!err.response) {
 			toastError(`Network error, please try again`);
@@ -118,7 +118,7 @@ export function handleError(err: unknown, situation = ''): void {
 	throw err;
 }
 
-export function toastMessage(text: string): void {
+export function toastMessage(text: string) {
 	Toastify({
 		text,
 		duration: 4000,

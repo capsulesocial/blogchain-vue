@@ -44,7 +44,7 @@ async function initReposters() {
 	}
 }
 
-onMounted(async (): Promise<void> => {
+onMounted(async () => {
 	await initReposters();
 });
 </script>

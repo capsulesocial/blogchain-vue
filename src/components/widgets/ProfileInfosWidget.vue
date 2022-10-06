@@ -21,7 +21,7 @@ const profile = computed(() => profilesStore.getProfile(id.value));
 
 profilesStore.fetchProfile(id.value);
 
-function redirectWebsite(): void {
+function redirectWebsite() {
 	if (profile.value.website?.substr(0, 7) !== `http://` && profile.value.website?.substr(0, 8) !== `https://`) {
 		window.open(`https://` + profile.value.website, `_blank`, `noopener,noreferrer`);
 		window.opener = null;

@@ -45,7 +45,7 @@ if (store.$state.email !== ``) {
 	newEmail.value = store.$state.email;
 }
 // methods
-function handleImageClick(): void {
+function handleImageClick() {
 	const b = uploadedPic.value as HTMLElement;
 	b.click();
 }

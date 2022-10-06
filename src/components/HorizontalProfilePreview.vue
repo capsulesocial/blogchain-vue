@@ -19,7 +19,7 @@ const props = withDefaults(
 const profile = computed(() => useProfilesStore().getProfile(props.id));
 
 onMounted(() => {
-	void useProfilesStore().fetchProfile(props.id);
+	useProfilesStore().fetchProfile(props.id);
 });
 </script>
 

@@ -66,7 +66,7 @@ function openDeleteDropdown() {
 	});
 }
 
-function triggerProfileCardFalse(): void {
+function triggerProfileCardFalse() {
 	setTimeout(() => {
 		if (hasEntered.value !== true) {
 			showProfileCard.value = false;
@@ -76,7 +76,7 @@ function triggerProfileCardFalse(): void {
 	hasEntered.value = false;
 }
 
-function triggerProfileCardTrue(): void {
+function triggerProfileCardTrue() {
 	hasEntered.value = true;
 	showProfileCard.value = true;
 }
