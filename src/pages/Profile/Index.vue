@@ -68,7 +68,7 @@ useMeta({
 });
 
 // Check if coming from external site
-router.beforeEach((to, from, next): void => {
+router.beforeEach((to, from, next) => {
 	next((vm: any) => {
 		if (to && from.name === null) {
 			fromExternalSite.value = true;
@@ -77,20 +77,20 @@ router.beforeEach((to, from, next): void => {
 });
 
 // methods
-function handleBack(): void {
+function handleBack() {
 	if (fromExternalSite.value) {
 		router.push(`/home`);
 		return;
 	}
 	router.go(-1);
 }
-function toggleEdit(): void {
+function toggleEdit() {
 	showSettings.value = !showSettings.value;
 }
-function updateProfileMethod(): void {
+function updateProfileMethod() {
 	store.updateFromProfile();
 }
-function getStyles(tab: string): string {
+function getStyles(tab: string) {
 	let res = ``;
 	if (route.name === tab) {
 		res += ` text-primary font-bold`;

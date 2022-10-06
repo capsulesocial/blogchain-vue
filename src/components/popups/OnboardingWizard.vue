@@ -64,7 +64,7 @@ function getText(): string {
 			return `out of scope`;
 	}
 }
-function handleClose(e: any): void {
+function handleClose(e: any) {
 	if (!e.target || e.target.firstChild === null || e.target.firstChild.classList === undefined) {
 		return;
 	}
@@ -80,7 +80,7 @@ async function getMyProfile(update = false) {
 		});
 	}
 }
-function updateFromWizard(): void {
+function updateFromWizard() {
 	if (route.name !== `help`) {
 		if (!settings.value) {
 			throw new Error(`This shouldn't happen`);
@@ -88,7 +88,7 @@ function updateFromWizard(): void {
 		settings.value.updateFromProfile();
 	}
 }
-function closeWizard(): void {
+function closeWizard() {
 	rootStore.setWelcome(false);
 	emit(`closePopup`);
 }

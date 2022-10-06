@@ -31,12 +31,12 @@ useMeta({
 	htmlAttrs: { lang: 'en', amp: true },
 });
 
-function showSubInfoPopup(subscription: any): void {
+function showSubInfoPopup(subscription: any) {
 	toggleSubInfoPopup.value = true;
 	subscriptionInfo.value = subscription;
 }
 
-function toggleChangeTierPopup(author: { sub: ISubscriptionWithProfile; avatar: string }): void {
+function toggleChangeTierPopup(author: { sub: ISubscriptionWithProfile; avatar: string }) {
 	subscriptionProfile.value = createDefaultProfile(author.sub.authorID);
 	subscriptionProfileAvatar.value = author.avatar;
 	authorPaymentProfile.value = author.sub;

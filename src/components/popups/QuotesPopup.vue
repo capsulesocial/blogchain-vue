@@ -19,7 +19,7 @@ const props = withDefaults(
 const isLoading = ref<boolean>(true);
 const reposts = ref<IRepostResponse[]>([]);
 
-onMounted(async (): Promise<void> => {
+onMounted(async () => {
 	const options: IGetRepostsOptions = { sort: Algorithm.NEW, offset: 0, limit: 1000, type: `quote` };
 	reposts.value = await getReposts({ postCID: props.cid }, options);
 	isLoading.value = false;

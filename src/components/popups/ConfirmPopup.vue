@@ -9,7 +9,7 @@ const isPosting = ref<boolean>(false);
 const emit = defineEmits(['close', 'post']);
 const settingsStore = useStoreSettings();
 
-function handlePost(): void {
+function handlePost() {
 	if (isPosting.value) {
 		return;
 	}

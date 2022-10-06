@@ -51,7 +51,7 @@ export const useConnectionsStore = defineStore(`connections`, {
 			this.$state.profiles.set(id, { followers, following });
 			return this.$state.profiles.get(id);
 		},
-		async toggleFollowing(id: string): Promise<void> {
+		async toggleFollowing(id: string) {
 			const store = useStore();
 			const isFollowing = await this.getFollowStatus(store.$state.id, id);
 			if (id !== store.$state.id) {

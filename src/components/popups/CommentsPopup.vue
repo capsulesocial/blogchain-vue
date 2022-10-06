@@ -21,7 +21,7 @@ const filter = ref<string>(``);
 const commentsStore = useCommentsStore();
 const postComments = computed(() => commentsStore.getCommentsOfPost(props.fetchedPost.post._id));
 
-function setFilter(reaction: string): void {
+function setFilter(reaction: string) {
 	filter.value = reaction;
 	// filter comments
 }

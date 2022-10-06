@@ -20,7 +20,7 @@ const encryptionKey = ref<string>(``);
 const encrypted = ref<boolean>(false);
 const showEncrypted = ref(false);
 
-async function downloadPrivateKey(): Promise<void> {
+async function downloadPrivateKey() {
 	try {
 		const accountId = window.localStorage.getItem(`accountId`);
 		if (!accountId) {

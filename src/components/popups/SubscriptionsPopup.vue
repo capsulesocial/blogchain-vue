@@ -69,7 +69,7 @@ onMounted(() => {
 		initializeProfile();
 	});
 	// Check for saved email
-	void retrieveReaderProfile(store.$state.id).then(({ email }) => {
+	retrieveReaderProfile(store.$state.id).then(({ email }) => {
 		customerEmail.value = email ?? ``;
 	});
 });
@@ -91,7 +91,7 @@ function startReading() {
 function displayCurrency(currency: string): string {
 	return getCurrencySymbol(currency);
 }
-function initializeProfile(): void {
+function initializeProfile() {
 	if (!props.author) {
 		toastError(`Author profile is missing`);
 		return;
@@ -112,19 +112,19 @@ function initializeProfile(): void {
 		toastError(`Author hasn't set-up subscriptions`);
 	}
 }
-function switchPeriod(): void {
+function switchPeriod() {
 	if (selectedPeriod.value === `month`) {
 		useSubscription.updateSelectedPeriod(`year`);
 	} else {
 		useSubscription.updateSelectedPeriod(`month`);
 	}
 }
-function showPaymentButtons(period: string): void {
+function showPaymentButtons(period: string) {
 	if (selectedTier.value !== null) {
 		_showPaymentButtons(period);
 	}
 }
-async function _showPaymentButtons(period: string): Promise<void> {
+async function _showPaymentButtons(period: string) {
 	nextStep();
 	useSubscription.updateSelectedPeriod(period);
 	if (!useSubscription.$state.selectedTier || !period) {
@@ -180,7 +180,7 @@ async function _showPaymentButtons(period: string): Promise<void> {
 		useSubscription.updateCardMessage(`null`);
 	});
 }
-function selectPaymentType(paymentType: string): void {
+function selectPaymentType(paymentType: string) {
 	if (!paymentRequest) {
 		useSubscription.updateCardMessage(`Unexpected error with payment request`);
 		return;
@@ -211,13 +211,13 @@ function selectPaymentType(paymentType: string): void {
 	cardElement.mount(`#card-element`);
 	nextStep();
 }
-function nextStep(): void {
+function nextStep() {
 	useSubscription.nextStep();
 }
-function previousStep(): void {
+function previousStep() {
 	useSubscription.previousStep();
 }
-async function submitCardPayment(): Promise<void> {
+async function submitCardPayment() {
 	isLoading.value = true;
 	const stripe = await useSubscription.stripeClient();
 	if (!cardElement) {
@@ -250,7 +250,7 @@ async function submitCardPayment(): Promise<void> {
 	isLoading.value = false;
 }
 async function toggleFriend() {}
-function toggleSaveEmail(): void {
+function toggleSaveEmail() {
 	useSubscription.updateEmail(!useSubscription.$state.saveEmail);
 }
 </script>

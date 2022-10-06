@@ -34,10 +34,10 @@ const emit = defineEmits([`close`, 'nextStep']);
 const text = ref(`Next`);
 const toEmit = ref(`nextStep`);
 
-function selectTier(tier: SubscriptionTier): void {
+function selectTier(tier: SubscriptionTier) {
 	selectedTier.value = tier;
 }
-function switchPeriod(): void {
+function switchPeriod() {
 	if (selectedPeriod.value === `month`) {
 		selectedPeriod.value = `year`;
 	} else {
@@ -65,7 +65,7 @@ function getStyles(DisplayedTier: SubscriptionTier): string {
 	return res;
 }
 
-function nextStep(): void {
+function nextStep() {
 	emit(`nextStep`, selectedTier.value, selectedPeriod.value);
 }
 </script>

@@ -19,8 +19,8 @@ const props = withDefaults(
 const showSubscription = ref<boolean>(false);
 const profile = computed(() => profilesStore.getProfile(props.subscription.authorID));
 
-onMounted(async (): Promise<void> => {
-	void profilesStore.fetchProfile(props.subscription.authorID);
+onMounted(async () => {
+	profilesStore.fetchProfile(props.subscription.authorID);
 });
 </script>
 

@@ -34,7 +34,7 @@ const emit = defineEmits([`close`]);
 function displayCurrency(currency: string): string {
 	return getCurrencySymbol(currency);
 }
-async function switchTier(): Promise<void> {
+async function switchTier() {
 	if (props.selectedTier === null) {
 		return;
 	}

@@ -48,7 +48,7 @@ export const useSubscriptionStore = defineStore(`subscriptions`, {
 		};
 	},
 	actions: {
-		async fetchSubs(id: string): Promise<void> {
+		async fetchSubs(id: string) {
 			if (!id) {
 				return;
 			}
@@ -81,7 +81,7 @@ export const useSubscriptionStore = defineStore(`subscriptions`, {
 			const transactions = await getSubscriptionTransactions(id, subscriptionId);
 			return transactions;
 		},
-		async cancelSub(username: string, subid: string): Promise<true | void> {
+		async cancelSub(username: string, subid: string) {
 			try {
 				await cancelSubscription(username, subid);
 				return true;
@@ -98,22 +98,22 @@ export const useSubscriptionStore = defineStore(`subscriptions`, {
 			const response = await switchSubscriptionTier(username, subscriptionId, newTier, period);
 			return response;
 		},
-		nextStep(): void {
+		nextStep() {
 			this.step += 1;
 		},
-		previousStep(): void {
+		previousStep() {
 			this.step -= 1;
 		},
-		updateSelectedTier(tier: SubscriptionTier): void {
+		updateSelectedTier(tier: SubscriptionTier) {
 			this.selectedTier = tier;
 		},
-		updateSelectedPeriod(period: string): void {
+		updateSelectedPeriod(period: string) {
 			this.selectedPeriod = period;
 		},
-		updateEmail(toSave: boolean): void {
+		updateEmail(toSave: boolean) {
 			this.saveEmail = toSave;
 		},
-		updateCardMessage(message: string): void {
+		updateCardMessage(message: string) {
 			this.cardErrorMessage = message;
 		},
 		async submitPayment(paymentMethod: PaymentMethod, email: string): Promise<boolean> {
