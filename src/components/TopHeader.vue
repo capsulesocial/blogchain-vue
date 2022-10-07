@@ -19,9 +19,9 @@ const sessionStore = useStore();
 const settings = useStoreSettings();
 const router = useRouter();
 
-const showMobileMenu = ref<boolean>(false);
-const showDropdown = ref<boolean>(false);
-const url = ref<string>(window.location.origin);
+const showMobileMenu = ref(false);
+const showDropdown = ref(false);
+const url = ref(window.location.origin);
 
 // Auto-close event listener (only works with @click.stop to prevent bubbling)
 onMounted(() => {

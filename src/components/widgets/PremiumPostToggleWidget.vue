@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import PremiumSwitch from '@/components/PremiumSwitch.vue';
 
 //should correspond to draft.encrypted
-const dummyencrypted = ref<boolean>(false);
+const dummyencrypted = ref(false);
 </script>
 <template>
 	<!-- check if user has activated his premium profile to display this one -->

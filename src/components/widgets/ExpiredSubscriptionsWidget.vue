@@ -6,8 +6,8 @@ import HorizontalSubscriptionPreview from '@/components/HorizontalSubscriptionPr
 const subStore = useSubscriptionStore();
 const expiredSubscriptions = ref();
 
-onMounted(async () => {
-	expiredSubscriptions.value = await subStore.$state.inActive;
+onMounted(() => {
+	expiredSubscriptions.value = subStore.$state.inActive;
 });
 </script>
 

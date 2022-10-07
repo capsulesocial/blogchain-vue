@@ -4,8 +4,8 @@ import { ref } from 'vue';
 import UploadIcon from '@/components/icons/UploadIcon.vue';
 
 const featuredPhoto = ref<any>(null);
-const waitingImage = ref<boolean>(false);
-const caption = ref<string>(``);
+const waitingImage = ref(false);
+const caption = ref(``);
 </script>
 <template>
 	<article class="bg-lightBG dark:bg-darkBGStop border-lightBorder mb-5 rounded-lg border px-6 py-4 shadow-lg">

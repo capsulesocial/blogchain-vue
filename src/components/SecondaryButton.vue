@@ -9,9 +9,6 @@ const props = withDefaults(
 		action: () => {},
 		text: `Text`,
 		thin: false,
-		action: () => {
-			return null;
-		},
 	},
 );
 

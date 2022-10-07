@@ -10,17 +10,14 @@ import BinIcon from '@/components/icons/BinIcon.vue';
 
 type DraftPost = Omit<Post, `authorID`>;
 
-withDefaults(
-	defineProps<{
-		draft: DraftPost;
-	}>(),
-	{},
-);
+defineProps<{
+	draft: DraftPost;
+}>();
 
 const settings = useStoreSettings();
 const featuredPhoto = ref<any>();
-const inWidget = ref<boolean>(true);
-const showDelete = ref<boolean>(false);
+const inWidget = ref(true);
+const showDelete = ref(false);
 
 function setActiveDraft(draft: DraftPost) {
 	return;
