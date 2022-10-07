@@ -29,8 +29,10 @@ const openFollowersPopup = ref<boolean>(false);
 				<span> It seems no one is following {{ authorID === store.id ? `you` : authorID }} yet </span>
 			</p>
 			<div v-else>
-				<HorizontalProfilePreview v-for="follower in followersList" :id="follower" :key="follower" />
-				<button class="text-primary text-sm mt-2" @click="openFollowersPopup = true">Show more</button>
+				<HorizontalProfilePreview v-for="follower in [...followersList].slice(0, 2)" :id="follower" :key="follower" />
+				<button v-if="followersList.size > 2" class="text-primary text-sm mt-2" @click="openFollowersPopup = true">
+					Show more
+				</button>
 			</div>
 		</div>
 	</div>
