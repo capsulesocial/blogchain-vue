@@ -9,7 +9,14 @@ import SecondaryButton from '@/components/SecondaryButton.vue';
 
 const route = useRoute();
 const postsStore = usePostsStore();
-const category = ref<string>(typeof route.params.category === `string` ? route.params.category : ``);
+const category = computed(() => {
+	if (typeof route.params.category === `string`) {
+		return route.params.category;
+	}
+
+	throw new Error(`route.params.category can't be an array`);
+});
+
 const categoryPosts = computed(() => postsStore.getCategoryPosts(category.value));
 const lastScroll = ref<number>(0);
 const isScrollingDown = ref<boolean>(false);
@@ -99,7 +106,7 @@ onMounted(() => {
 		class="bg-darkBG dark:bg-lightBG animatefast flex h-56 w-full flex-row items-center rounded-lg shadow-lg"
 		:style="{
 			background: `linear-gradient(180deg, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.8) 100%), url(${require(`@/assets/images/category/` +
-				$route.params.category +
+				category +
 				`/` +
 				`header.webp`)})`,
 			backgroundSize: 'cover',

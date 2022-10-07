@@ -69,7 +69,7 @@ useMeta({
 
 // Check if coming from external site
 router.beforeEach((to, from, next) => {
-	next((vm: any) => {
+	next(() => {
 		if (to && from.name === null) {
 			fromExternalSite.value = true;
 		}
@@ -334,13 +334,13 @@ onMounted(async () => {
 			<div id="divider" class="w-full bg-lightBorder dark:bg-darkBorder my-4 rounded" style="height: 1px"></div>
 			<!-- Tabs -->
 			<div id="tabs" class="text-gray5 dark:text-gray3 text-sm header-profile flex w-full justify-between pb-3 xl:px-6">
-				<router-link :to="'/id/' + $route.params.id" class="pb-1" :class="getStyles('Posts')">
+				<router-link :to="'/id/' + authorID" class="pb-1" :class="getStyles('Posts')">
 					<span class="px-4">Posts</span>
 				</router-link>
-				<router-link :to="'/id/' + $route.params.id + '/comments'" class="pb-1" :class="getStyles('Comments')">
+				<router-link :to="'/id/' + authorID + '/comments'" class="pb-1" :class="getStyles('Comments')">
 					<span class="px-4">Comments</span>
 				</router-link>
-				<router-link :to="'/id/' + $route.params.id + '/reposts'" class="pb-1" :class="getStyles('Reposts')">
+				<router-link :to="'/id/' + authorID + '/reposts'" class="pb-1" :class="getStyles('Reposts')">
 					<span class="px-4">Reposts</span>
 				</router-link>
 			</div>

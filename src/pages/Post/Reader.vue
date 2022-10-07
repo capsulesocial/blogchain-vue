@@ -44,9 +44,14 @@ const store = useStore();
 const settings = useStoreSettings();
 const commentsStore = useCommentsStore();
 const router = useRouter();
-const cid = ref<string>(
-	typeof router.currentRoute.value.params.post === `string` ? router.currentRoute.value.params.post : ``,
-);
+const cid = computed(() => {
+	if (typeof router.currentRoute.value.params.post === `string`) {
+		return router.currentRoute.value.params.post;
+	}
+
+	throw new Error(`post should be a string!`);
+});
+
 const post = ref<ISignedIPFSObject<Post>>();
 const postMetadata = ref<IPostResponseWithHidden>();
 const deleted = ref<boolean>(false);
@@ -355,12 +360,12 @@ function handleScroll() {
 						<!-- IPFS CID -->
 						<div class="mt-3">
 							<a
-								:href="`https://ipfs.io/api/v0/dag/get?arg=` + $route.params.post"
+								:href="`https://ipfs.io/api/v0/dag/get?arg=` + cid"
 								target="_blank"
 								class="bg-gray1 dark:bg-gray7 text-gray5 dark:text-gray1 flex flex-row justify-between rounded-lg px-3 py-1"
 							>
 								<span class="mr-4" style="flex-shrink: 0">IPFS address </span>
-								<span class="overflow-hidden" style="text-overflow: ellipsis">{{ $route.params.post }}</span>
+								<span class="overflow-hidden" style="text-overflow: ellipsis">{{ cid }}</span>
 								<span class="block"><LinkIcon class="py-1" /></span>
 							</a>
 						</div>

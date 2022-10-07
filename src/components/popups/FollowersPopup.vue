@@ -43,7 +43,7 @@ const followersList = computed(() => connections.getConnections(authorID.value)?
 			>
 				<div class="sticky flex items-center justify-between mb-6">
 					<h2
-						v-if="$route.name === `Home` || $route.params.id === store.$state.id"
+						v-if="$route.name === `Home` || authorID === store.$state.id"
 						class="text-lightPrimaryText dark:text-darkPrimaryText text-xl font-semibold"
 					>
 						Your followers
@@ -63,7 +63,7 @@ const followersList = computed(() => connections.getConnections(authorID.value)?
 				</div>
 				<article v-if="followersList.size == 0" class="mt-24 grid justify-items-center px-10 xl:px-0">
 					<p class="text-gray5 dark:text-gray3 mb-5 text-center text-sm">
-						<span v-if="$route.name === `home` || $route.params.id === store.$state.id">
+						<span v-if="$route.name === `home` || authorID === store.$state.id">
 							It seems you don't have any followers yet!
 						</span>
 						<span v-else-if="profile.name !== ``">
