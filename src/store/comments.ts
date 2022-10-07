@@ -77,16 +77,16 @@ export const useCommentsStore = defineStore(`comments`, {
 		},
 		async fetchCommentsOfAuthor(authorID: string, offset = 0, limit = 10) {
 			try {
-				const res = await getCommentsOfUser(authorID, offset, limit);
-				let authorComments: string[] = [];
 				const existingArr = this.authorComments.get(authorID);
-				if (typeof existingArr !== `undefined`) {
-					authorComments = authorComments.concat(existingArr);
-				}
-				for (const c of res) {
-					this.fetchComment(c._id);
-					authorComments.push(c._id);
-				}
+				const authorComments = typeof existingArr !== `undefined` ? existingArr : [];
+
+				const res = await getCommentsOfUser(authorID, offset, limit);
+				res.forEach((c) => {
+					const { _id } = c;
+
+					this.fetchComment(_id);
+					authorComments.push(_id);
+				});
 				this.authorComments.set(authorID, authorComments);
 				return res;
 			} catch (err) {
