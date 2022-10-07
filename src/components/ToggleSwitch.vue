@@ -10,7 +10,7 @@ const props = withDefaults(
 	},
 );
 
-const active = ref<boolean>(false);
+const active = ref(false);
 const emit = defineEmits([`toggle`]);
 
 // methods

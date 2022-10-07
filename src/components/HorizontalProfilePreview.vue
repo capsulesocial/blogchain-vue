@@ -9,12 +9,9 @@ import FriendButton from '@/components/FriendButton.vue';
 
 const store = useStore();
 
-const props = withDefaults(
-	defineProps<{
-		id: string;
-	}>(),
-	{},
-);
+const props = defineProps<{
+	id: string;
+}>();
 
 const profile = computed(() => useProfilesStore().getProfile(props.id));
 

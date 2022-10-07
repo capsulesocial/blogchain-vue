@@ -1,11 +1,8 @@
 <script setup lang="ts">
-withDefaults(
-	defineProps<{
-		text: string;
-		bgImage: string;
-	}>(),
-	{},
-);
+defineProps<{
+	text: string;
+	bgImage: string;
+}>();
 </script>
 
 <template>

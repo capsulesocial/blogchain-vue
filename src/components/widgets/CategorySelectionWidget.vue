@@ -8,8 +8,8 @@ import ChevronDown from '@/components/icons/ChevronDown.vue';
 
 const settings = useStoreSettings();
 const categoryList = categories;
-const category = ref<string>(``);
-const showCategoryDropdown = ref<boolean>(false);
+const category = ref(``);
+const showCategoryDropdown = ref(false);
 </script>
 
 <template>

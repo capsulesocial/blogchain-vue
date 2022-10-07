@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import { avatars } from './../config/avatars';
 import IpfsImage from './IpfsImage.vue';
 
@@ -19,8 +18,6 @@ const props = withDefaults(
 		noClick: false,
 	},
 );
-
-const avatarList = ref<Array<undefined>>(avatars);
 
 function usernameToPicture(username: string, buckets = 11): number {
 	let x = 0;
@@ -43,7 +40,7 @@ function usernameToPicture(username: string, buckets = 11): number {
 		<IpfsImage
 			v-else
 			:cid="cid"
-			:default-image="avatarList[usernameToPicture(props.authorid)]"
+			:default-image="avatars[usernameToPicture(props.authorid)]"
 			:img-class="'border border-lightBorder dark:border-darkBorder rounded-lg ' + props.size"
 		/>
 	</button>
@@ -57,7 +54,7 @@ function usernameToPicture(username: string, buckets = 11): number {
 		<IpfsImage
 			v-else
 			:cid="cid"
-			:default-image="avatarList[usernameToPicture(props.authorid)]"
+			:default-image="avatars[usernameToPicture(props.authorid)]"
 			:img-class="'border border-lightBorder dark:border-darkBorder rounded-lg ' + props.size"
 		/>
 	</span>

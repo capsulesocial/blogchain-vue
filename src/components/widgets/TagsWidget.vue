@@ -6,7 +6,7 @@ import TagCard from '@/components/TagCard.vue';
 const settings = useStoreSettings();
 
 // TODO: fetch tags from store / backend
-const tags = ref<string[]>([`test`]);
+const tags = ref([`test`]);
 </script>
 <template>
 	<div class="bg-lightBG dark:bg-darkBGStop mb-5 rounded-lg border border-lightBorder shadow-lg">

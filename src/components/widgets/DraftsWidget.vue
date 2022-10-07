@@ -9,9 +9,9 @@ import DraftsPopup from '@/components/popups/DraftsPopup.vue';
 
 const settings = useStoreSettings();
 const store = useStore();
-const showInfo = ref<boolean>(false);
+const showInfo = ref(false);
 
-const openDraftPopup = ref<boolean>(false);
+const openDraftPopup = ref(false);
 
 type DraftPost = Omit<Post, `authorID`>;
 

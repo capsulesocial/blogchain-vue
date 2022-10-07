@@ -68,7 +68,7 @@ async function getTiers() {
 				<h4 class="text-2xl font-semibold text-neutral mb-4 text-center">This post is for Paid subscribers</h4>
 				<p class="my-4 text-center text-gray5 dark:text-gray3">
 					Become a subscriber of
-					<span v-if="profile && profile.name !== ``" class="font-semibold text-primary">{{ profile.name }}</span>
+					<span v-if="profile.name !== ``" class="font-semibold text-primary">{{ profile.name }}</span>
 					<span v-else class="font-semibold text-primary">@{{ profile.id }}</span> to access
 					<br class="hidden lg:block" />
 					this post and other subscriber-only content
@@ -92,7 +92,7 @@ async function getTiers() {
 						tier
 					}}</span>
 					tier of
-					<span v-if="profile && profile.name !== ``" class="font-semibold text-primary">{{ profile.name }}</span>
+					<span v-if="profile.name !== ``" class="font-semibold text-primary">{{ profile.name }}</span>
 					<span v-else class="font-semibold text-primary">@{{ profile.id }}</span> to access
 					<br class="hidden lg:block" />
 					this post and other posts of this tier.

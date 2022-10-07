@@ -10,7 +10,7 @@ const postsStore = usePostsStore();
 const store = useStore();
 const categoryList = categories;
 
-const activeFilter = ref<string | undefined>(postsStore.$state.bookmarksCategory);
+const activeFilter = ref(postsStore.$state.bookmarksCategory);
 
 function setFilter(category: string | undefined) {
 	if (store.$state.id === ``) {

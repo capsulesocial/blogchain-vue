@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import CrownIcon from '@/components/icons/CrownIcon.vue';
-withDefaults(
-	defineProps<{
-		enabled?: boolean;
-		onBG?: boolean;
-	}>(),
-	{},
-);
+
+defineProps<{
+	enabled?: boolean;
+	onBG?: boolean;
+}>();
 
 const emit = defineEmits([`toggle`]);
 

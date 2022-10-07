@@ -9,14 +9,11 @@ import SubscriptionsPopup from '@/components/popups/SubscriptionsPopup.vue';
 
 const profilesStore = useProfilesStore();
 
-const props = withDefaults(
-	defineProps<{
-		subscription: ISubscriptionWithProfile;
-	}>(),
-	{},
-);
+const props = defineProps<{
+	subscription: ISubscriptionWithProfile;
+}>();
 
-const showSubscription = ref<boolean>(false);
+const showSubscription = ref(false);
 const profile = computed(() => profilesStore.getProfile(props.subscription.authorID));
 
 onMounted(async () => {

@@ -5,9 +5,9 @@ import PreviewIcon from '@/components/icons/PreviewIcon.vue';
 
 const settings = useStoreSettings();
 
-const hoverPreview = ref<boolean>(false);
+const hoverPreview = ref(false);
 //should correspond to draft.wordcount
-const dummyWordcount = ref<number>(0);
+const dummyWordcount = ref(0);
 </script>
 <template>
 	<article class="bg-lightBG dark:bg-darkBGStop border-lightBorder mb-5 rounded-lg border p-6 shadow-lg">

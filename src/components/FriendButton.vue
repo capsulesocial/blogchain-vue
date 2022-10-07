@@ -5,12 +5,9 @@ import { useStore } from '@/store/session';
 import { useConnectionsStore } from '@/store/connections';
 import { computed } from 'vue';
 
-const props = withDefaults(
-	defineProps<{
-		authorid: string;
-	}>(),
-	{},
-);
+const props = defineProps<{
+	authorid: string;
+}>();
 
 const store = useStore();
 const connectionsStore = useConnectionsStore();

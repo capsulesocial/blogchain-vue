@@ -6,12 +6,12 @@ import { useStoreSettings } from '../store/settings';
 import CapsuleIcon from './icons/CapsuleIcon.vue';
 
 const settings = useStoreSettings();
-const showInfo = ref<boolean>(false);
-const loadingIPFS = ref<boolean>(true);
-const initIPFS = ref<boolean>(false);
-const startIPFS = ref<boolean>(false);
-const initNodes = ref<boolean>(false);
-const nodes = ref<number>(0);
+const showInfo = ref(false);
+const loadingIPFS = ref(true);
+const initIPFS = ref(false);
+const startIPFS = ref(false);
+const initNodes = ref(false);
+const nodes = ref(0);
 
 function updateLoop() {
 	setTimeout(async () => {
