@@ -58,7 +58,7 @@ const longBio = computed(() => profile.value.bio.length > 200);
 const expandBio = ref<boolean>(false);
 const openFollowersPopup = ref<boolean>(false);
 const openFollowingPopup = ref<boolean>(false);
-const showSettings = ref<boolean>(false);
+const showEditProfile = ref<boolean>(false);
 const showSubscription = ref<boolean>(false);
 const showChangeTier = ref<boolean>(false);
 
@@ -85,7 +85,7 @@ function handleBack() {
 	router.go(-1);
 }
 function toggleEdit() {
-	showSettings.value = !showSettings.value;
+	showEditProfile.value = !showEditProfile.value;
 }
 function updateProfileMethod() {
 	store.updateFromProfile();
@@ -150,7 +150,7 @@ onMounted(async () => {
 		}
 	});
 	if (settings.recentlyInSettings) {
-		showSettings.value = true;
+		showEditProfile.value = true;
 		settings.setRecentlyInSettings(false);
 	}
 	window.addEventListener('wheel', handleScroll);
@@ -346,10 +346,11 @@ onMounted(async () => {
 			</div>
 		</article>
 		<router-view></router-view>
-		<!-- Settings popup -->
+		<!-- editProfile popup -->
 		<div
-			v-if="showSettings"
+			v-if="showEditProfile"
 			class="bg-darkBG dark:bg-gray5 modal-animation fixed top-0 bottom-0 left-0 right-0 z-30 flex h-screen w-full items-center justify-center bg-opacity-50 dark:bg-opacity-50"
+			@click.self="toggleEdit"
 		>
 			<EditProfile
 				class="overflow-y-auto min-h-40 max-h-90 w-full lg:w-600 bg-lightBG dark:bg-darkBGStop card-animation rounded-lg shadow-lg"
