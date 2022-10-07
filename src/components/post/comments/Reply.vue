@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
 import { useProfilesStore } from '@/store/profiles';
@@ -8,9 +8,13 @@ import { useCommentsStore } from '@/store/comments';
 import MoreIcon from '@/components/icons/MoreIcon.vue';
 import BinIcon from '@/components/icons/BinIcon.vue';
 import Avatar from '@/components/Avatar.vue';
+import { getComment } from '@/backend/comment';
 
 const props = defineProps<{
 	cid: string;
+	parentcid: string;
+	timestamp: number;
+	authorid: string;
 }>();
 
 const emit = defineEmits([`updateReplies`]);
@@ -21,24 +25,12 @@ const commentStore = useCommentsStore();
 
 const replyDeleted = ref<boolean>(false);
 const showDelete = ref<boolean>(false);
-const comment = computed(() => commentStore.getCommentData(props.cid));
-const author = computed(() => {
-	if (!comment.value) {
-		return;
-	}
-	return profileStore.getProfile(comment.value.authorID);
-});
+const content = ref<string>('');
+const author = computed(() => profileStore.getProfile(props.authorid));
 
 function toggleDropdownDelete() {
 	showDelete.value = !showDelete.value;
 }
-
-watch(comment, (c) => {
-	if (!c) {
-		return;
-	}
-	profileStore.fetchProfile(c.authorID);
-});
 
 async function removeReply() {
 	showDelete.value = false;
@@ -48,7 +40,9 @@ async function removeReply() {
 }
 
 onMounted(() => {
-	commentStore.fetchComment(props.cid);
+	getComment(props.cid).then((c) => {
+		content.value = c.content;
+	});
 
 	window.addEventListener(
 		`click`,
@@ -69,9 +63,9 @@ onMounted(() => {
 });
 </script>
 <template>
-	<div v-if="!replyDeleted && author && comment" class="flex relative pt-1 mt-2">
+	<div v-if="!replyDeleted" class="flex relative pt-1 mt-2">
 		<div class="flex-shrink-0 mr-2">
-			<Avatar :cid="author.avatar" :author-i-d="author.id" size="w-10 h-10" />
+			<Avatar :cid="author.avatar" :author-i-d="props.authorid" size="w-10 h-10" />
 		</div>
 		<div class="ml-2 flex-1 leading-relaxed">
 			<div class="flex flex-col sm:flex-row items-start sm:items-center">
@@ -84,16 +78,16 @@ onMounted(() => {
 				<strong v-else class="bold mr-2 font-semibold text-gray5 dark:text-gray3">
 					{{ author.id }}
 				</strong>
-				<router-link :to="`/id/` + author.id" class="mr-3 text-sm text-gray5 dark:text-gray3">
+				<router-link :to="`/id/` + props.authorid" class="mr-3 text-sm text-gray5 dark:text-gray3">
 					@{{ author.id }}
 				</router-link>
 				<div class="h-1 w-1 bg-gray5 mr-2 rounded-xl"></div>
-				<span v-if="comment.timestamp" class="text-xs text-gray5 dark:text-gray3">
-					{{ formatDate(comment.timestamp) }}
+				<span class="text-xs text-gray5 dark:text-gray3">
+					{{ formatDate(props.timestamp) }}
 				</span>
 				<!-- Three dots dropdown -->
 				<button
-					v-if="store.$state.id === author.id || store.$state.id === author.id"
+					v-if="store.$state.id === props.authorid"
 					class="focus:outline-none absolute top-0 right-0 flex-col justify-start text-gray5 dark:text-gray3 pt-2 pr-3 toggleDelete"
 					@click.stop="toggleDropdownDelete"
 				>
@@ -116,7 +110,7 @@ onMounted(() => {
 				class="leading-relaxed w-full py-1 text-sm text-lightPrimaryText dark:text-darkSecondaryText"
 				style="word-break: break-word"
 			>
-				<span style="white-space: pre-line">{{ comment.content }}</span>
+				<span style="white-space: pre-line">{{ content }}</span>
 			</p>
 		</div>
 	</div>

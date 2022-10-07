@@ -92,6 +92,7 @@ onMounted(async () => {
 	getComment(props.cid).then((c) => {
 		content.value = c.content;
 	});
+	await commentsStore.fetchCommentsOfPost(props.cid);
 	profileStore.fetchProfile(props.authorid);
 
 	window.addEventListener(
@@ -275,7 +276,15 @@ onMounted(async () => {
 					</div>
 					<!-- List replies -->
 					<div v-if="replies && replies?.length > 0" class="pl-5 mt-2">
-						<Reply v-for="r in replies" :key="r._id" :cid="r._id" @update-replies="updateReplies" />
+						<Reply
+							v-for="r in replies"
+							:key="r._id"
+							:cid="r._id"
+							:authorid="r.authorID"
+							:timestamp="r.timestamp"
+							:parentcid="props.cid"
+							@update-replies="updateReplies"
+						/>
 					</div>
 				</div>
 			</div>
