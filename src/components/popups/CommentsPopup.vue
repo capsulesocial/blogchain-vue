@@ -54,8 +54,16 @@ onMounted(async () => {
 			<!-- Comment editor -->
 			<CommentEditor :comments-count="props.fetchedPost.commentsCount" :parentcid="fetchedPost.post._id" class="px-6" />
 			<!-- Comments -->
-			<div v-for="c in postComments" :key="c">
-				<Comment :cid="c" :authorid="props.fetchedPost.post.authorID" class="px-6 mb-4" />
+			<div v-for="c in postComments" :key="c._id">
+				<Comment
+					:cid="c._id"
+					:authorid="c.authorID"
+					:timestamp="c.timestamp"
+					:emotion="c.emotion"
+					:parentcid="c.parentCID"
+					:parentauthorid="fetchedPost.post.authorID"
+					class="px-6 mb-4"
+				/>
 			</div>
 		</div>
 	</div>
