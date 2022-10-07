@@ -20,10 +20,10 @@ const authorID = computed(() => {
 });
 const comments = ref<ICommentData[]>([]);
 // const comments = computed(() => commentsStore.getCommentsOfAuthor(authorID.value));
-const isLoading = ref<boolean>(false);
-const offset = ref<number>(0);
-const limit = ref<number>(10);
-const noMoreComments = ref<boolean>(false);
+const isLoading = ref(false);
+const offset = ref(0);
+const limit = ref(10);
+const noMoreComments = ref(false);
 
 async function fetchContent() {
 	if (isLoading.value) {

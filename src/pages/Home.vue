@@ -14,14 +14,14 @@ import { useStore } from '@/store/session';
 import { useConnectionsStore } from '@/store/connections';
 
 // refs
-const showAlgorithmDropdown = ref<boolean>(false);
+const showAlgorithmDropdown = ref(false);
 const postsStore = usePostsStore();
 const rootStore = useRootStore();
 const store = useStore();
 const connectionsStore = useConnectionsStore();
 const { homeFeed, displayTimeframe } = storeToRefs(postsStore);
 const scrollContainer = ref<HTMLElement | null>(null);
-const isLoading = ref<boolean>(false);
+const isLoading = ref(false);
 const homePosts = ref<IGenericPostResponse[]>([]);
 const following = computed(() => connectionsStore.getConnections(store.$state.id)?.following);
 

@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
 import { getBGImage } from '@/plugins/background';
-import { IBackground, getCurrentBG } from '@/config/backgrounds';
+import { getCurrentBG } from '@/config/backgrounds';
 import { initColors } from '@/plugins/colors';
 
 import ChangeBGPopup from '@/components/popups/ChangeBGPopup.vue';
@@ -13,11 +13,11 @@ import ChangeColorPopup from '@/components/popups/ChangeColorPopup.vue';
 const settings = useStoreSettings();
 const session = useStore();
 
-const currentBG = ref<IBackground>(getCurrentBG(session.background));
+const currentBG = ref(getCurrentBG(session.background));
 
-const showPopupBG = ref<boolean>(false);
-const showPopupMode = ref<boolean>(false);
-const showPopupColor = ref<boolean>(false);
+const showPopupBG = ref(false);
+const showPopupMode = ref(false);
+const showPopupColor = ref(false);
 
 function refreshCurrentBG() {
 	showPopupBG.value = false;
