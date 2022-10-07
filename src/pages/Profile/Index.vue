@@ -69,7 +69,7 @@ useMeta({
 
 // Check if coming from external site
 router.beforeEach((to, from, next) => {
-	next((vm: any) => {
+	next(() => {
 		if (to && from.name === null) {
 			fromExternalSite.value = true;
 		}
