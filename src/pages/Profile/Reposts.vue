@@ -85,16 +85,16 @@ onMounted(() => {
 		<!-- No reposts -->
 		<article v-if="reposts.length === 0 && !isLoading" class="mt-24 grid justify-items-center px-10 xl:px-0">
 			<p class="text-gray5 dark:text-gray3 mb-5 text-sm">
-				<span v-if="route.params.id === store.$state.id">It seems you haven't reposted any content yet.</span>
-				<span v-else>{{ $route.params.id }} hasn't reposted any content yet</span>
+				<span v-if="authorID === store.$state.id">It seems you haven't reposted any content yet.</span>
+				<span v-else>{{ authorID }} hasn't reposted any content yet</span>
 			</p>
 			<SecondaryButton
-				v-if="store.$state.id === $route.params.id"
+				v-if="store.$state.id === authorID"
 				:text="`Repost content`"
 				:action="() => router.push(`/home`)"
 			/>
 			<img
-				v-if="store.$state.id === $route.params.id"
+				v-if="store.$state.id === authorID"
 				:src="require(`@/assets/images/brand/post.webp`)"
 				loading="lazy"
 				class="top-0 hidden lg:block"

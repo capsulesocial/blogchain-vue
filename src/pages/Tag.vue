@@ -11,17 +11,18 @@ const router = useRouter();
 const route = useRoute();
 const postsStore = usePostsStore();
 
-useMeta({
-	title: `${route.params.tag} posts on Blogchain`,
-	htmlAttrs: { lang: 'en', amp: true },
-});
-
 const tag = computed(() => {
 	if (typeof route.params.tag !== `string`) {
-		throw new Error(`route.params.id should be a string!`);
+		throw new Error(`route.params.tag should be a string!`);
 	}
 	return route.params.tag;
 });
+
+useMeta({
+	title: `${tag.value} posts on Blogchain`,
+	htmlAttrs: { lang: 'en', amp: true },
+});
+
 const tagPosts = computed(() => postsStore.getPostsWithTag(tag.value));
 const isLoading = ref<boolean>(true);
 const noMorePosts = ref<boolean>(false);
