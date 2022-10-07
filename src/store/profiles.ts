@@ -2,9 +2,7 @@ import { createDefaultProfile, getProfile, Profile } from '@/backend/profile';
 import { defineStore } from 'pinia';
 
 export interface Profiles {
-	profileMap: {
-		[key: string]: Profile;
-	};
+	profileMap: Record<string, Profile>;
 }
 
 export const useProfilesStore = defineStore(`profiles`, {

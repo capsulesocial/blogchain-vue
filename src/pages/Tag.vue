@@ -24,12 +24,12 @@ useMeta({
 });
 
 const tagPosts = computed(() => postsStore.getPostsWithTag(tag.value));
-const isLoading = ref<boolean>(true);
-const noMorePosts = ref<boolean>(false);
-const fromExternalSite = ref<boolean>(false);
+const isLoading = ref(true);
+const noMorePosts = ref(false);
+const fromExternalSite = ref(false);
 const scrollContainer = ref<HTMLElement | null>(null);
-const limit = ref<number>(10);
-const offset = ref<number>(0);
+const limit = ref(10);
+const offset = ref(0);
 
 // Check if coming from external site
 router.beforeEach((to, from, next) => {
@@ -51,6 +51,9 @@ function toggleHomeFeed() {
 }
 const scrollListener = async (e: Event) => {
 	if (isLoading.value) {
+		return;
+	}
+	if (!e.target) {
 		return;
 	}
 	const { scrollTop, scrollHeight, clientHeight } = e.target as HTMLElement;

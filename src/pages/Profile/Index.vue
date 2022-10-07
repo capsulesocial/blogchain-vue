@@ -45,22 +45,22 @@ connectionsStore.fetchConnections(authorID.value);
 const connections = computed(() => connectionsStore.getConnections(authorID.value));
 const paymentsProfile = ref<PaymentProfile>(paymentStore.paymentProfile(authorID.value));
 
-const totalPostsCount = ref<number>(0);
-const profileExists = ref<boolean>(false);
-const isActiveSub = ref<boolean>(false);
+const totalPostsCount = ref(0);
+const profileExists = ref(false);
+const isActiveSub = ref(false);
 const activeSub = ref<ISubscriptionWithProfile>();
-const fromExternalSite = ref<boolean>(false);
-const selfView = ref<boolean>(authorID.value === store.$state.id);
-const showAvatarPopup = ref<boolean>(false);
-const scrollingDown = ref<boolean>(false);
-const lastScroll = ref<number>(0);
+const fromExternalSite = ref(false);
+const selfView = ref(authorID.value === store.$state.id);
+const showAvatarPopup = ref(false);
+const scrollingDown = ref(false);
+const lastScroll = ref(0);
 const longBio = computed(() => profile.value.bio.length > 200);
-const expandBio = ref<boolean>(false);
-const openFollowersPopup = ref<boolean>(false);
-const openFollowingPopup = ref<boolean>(false);
-const showEditProfile = ref<boolean>(false);
-const showSubscription = ref<boolean>(false);
-const showChangeTier = ref<boolean>(false);
+const expandBio = ref(false);
+const openFollowersPopup = ref(false);
+const openFollowingPopup = ref(false);
+const showEditProfile = ref(false);
+const showSubscription = ref(false);
+const showChangeTier = ref(false);
 
 useMeta({
 	title: profile.value.name ? `${profile.value.name} -  Blogchain` : `@${authorID.value} -  Blogchain`,

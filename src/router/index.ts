@@ -230,7 +230,7 @@ router.beforeEach(async (to) => {
 		window.location.href = window.location.origin + '/login';
 	}
 	if (to.meta.title) {
-		(document as any).title = to.meta.title;
+		document.title = to.meta.title as string;
 	}
 });
 

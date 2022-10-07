@@ -8,8 +8,8 @@ import SubscriptionPreview from '@/components/subscriptions/SubscriptionPreview.
 import SubInfosPopup from '@/components/popups/SubInfosPopup.vue';
 import ChangeTierPopup from '@/components/popups/ChangeTierPopup.vue';
 import SpinnerIcon from '@/components/icons/SpinnerIcon.vue';
-import { createDefaultProfile, Profile } from '@/backend/profile';
-const isLoading = ref<boolean>(true);
+import { createDefaultProfile } from '@/backend/profile';
+const isLoading = ref(true);
 const store = useStore();
 const settings = useStoreSettings();
 const subStore = useSubscriptionStore();
@@ -17,10 +17,10 @@ subStore.fetchSubs(store.$state.id);
 isLoading.value = false;
 
 const subscriptions = ref<ISubscriptionWithProfile[]>([]);
-const toggleSubInfoPopup = ref<boolean>(false);
+const toggleSubInfoPopup = ref(false);
 const subscriptionInfo = ref();
-const showChangeTier = ref<boolean>(false);
-const subscriptionProfile = ref<Profile>(createDefaultProfile(store.$state.id));
+const showChangeTier = ref(false);
+const subscriptionProfile = ref(createDefaultProfile(store.$state.id));
 const subscriptionProfileAvatar = ref<string | undefined>();
 const authorPaymentProfile = ref<ISubscriptionWithProfile | undefined>();
 

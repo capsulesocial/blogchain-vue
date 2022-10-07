@@ -5,8 +5,15 @@ import Plus from '@/components/icons/PlusIcon.vue';
 import Minus from '@/components/icons/MinusIcon.vue';
 import OnboardingWizard from '@/components/popups/OnboardingWizard.vue';
 
+interface IQuestion {
+	id: number;
+	title: string;
+	question: string;
+	isOpen: boolean;
+}
+
 const displayOnboarding = ref<boolean>(true);
-const questions = ref<{ id: number; title: string; question: string; isOpen: boolean }[]>([
+const questions = ref<IQuestion[]>([
 	{
 		id: 0,
 		title: `How do I get started?`,

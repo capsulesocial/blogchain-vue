@@ -16,8 +16,8 @@ import EncryptKeyPopup from '@/components/popups/EncryptKeyPopup.vue';
 const router = useRouter();
 const store = useStore();
 const settings = useStoreSettings();
-const encryptionKey = ref<string>(``);
-const encrypted = ref<boolean>(false);
+const encryptionKey = ref(``);
+const encrypted = ref(false);
 const showEncrypted = ref(false);
 
 async function downloadPrivateKey() {

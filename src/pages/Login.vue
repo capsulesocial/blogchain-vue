@@ -16,17 +16,17 @@ import { getDecryptedPrivateKey } from '@/backend/privateKey';
 // import { walletLogin } from '@/backend/near';
 
 // refs
-const isLoading = ref<boolean>(false);
-const showInfo = ref<boolean>(false);
-const currentYear = ref<string>(new Date().getFullYear().toString());
-const noAccount = ref<boolean>(false);
+const isLoading = ref(false);
+const showInfo = ref(false);
+const currentYear = ref(new Date().getFullYear().toString());
+const noAccount = ref(false);
 const key = ref<HTMLInputElement>();
-const showPasswordPopup = ref<boolean>(false);
+const showPasswordPopup = ref(false);
 const passwordInput = ref<HTMLInputElement>();
-const password = ref<string>(``);
+const password = ref(``);
 const store = useStore();
-const accountIdInput = ref<string>(``);
-const privateKey = ref<string>(``);
+const accountIdInput = ref(``);
+const privateKey = ref(``);
 const username = ref<string | null>(null);
 const keyFileTarget = ref<HTMLInputElement | null>(null);
 

@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 export interface RootState {
 	nodeURL: string;
 	backgroundImage: string | null;
-	reposts: { [key: string]: string };
+	reposts: Record<string, string>;
 	recentlyJoined: boolean;
 }
 

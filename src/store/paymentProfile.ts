@@ -17,9 +17,7 @@ export interface PaymentProfile {
 	tiers: SubscriptionTier[];
 }
 export interface PaymentProfileMap {
-	paymentProfiles: {
-		[key: string]: PaymentProfile;
-	};
+	paymentProfiles: Record<string, PaymentProfile>;
 }
 
 export const usePaymentsStore = defineStore(`payments`, {

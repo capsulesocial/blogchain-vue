@@ -12,10 +12,10 @@ const postsStore = usePostsStore();
 const store = useStore();
 
 const posts = ref<string[]>([]);
-const isLoading = ref<boolean>(false);
-const offset = ref<number>(0);
-const limit = ref<number>(10);
-const noMorePosts = ref<boolean>(false);
+const isLoading = ref(false);
+const offset = ref(0);
+const limit = ref(10);
+const noMorePosts = ref(false);
 const category = computed(() => postsStore.$state.bookmarksCategory);
 
 async function setSort(sort: BookmarkSort) {
