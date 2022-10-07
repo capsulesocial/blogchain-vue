@@ -413,8 +413,16 @@ function handleScroll() {
 					<!-- Comment editor -->
 					<CommentEditor :comments-count="postMetadata.commentsCount" :parentcid="postMetadata.post._id" />
 					<!-- Comments -->
-					<div v-for="c in postComments" :key="c">
-						<Comment :cid="c" :authorid="postMetadata.post.authorID" class="mb-4" />
+					<div v-for="c in postComments" :key="c._id">
+						<Comment
+							:cid="c._id"
+							:authorid="c.authorID"
+							:emotion="c.emotion"
+							:timestamp="c.timestamp"
+							:parentcid="c.parentCID"
+							:parentauthorid="postMetadata.post.authorID"
+							class="mb-4"
+						/>
 					</div>
 				</article>
 				<!-- Stats -->

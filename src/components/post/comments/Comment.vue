@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from 'vue';
 import { faces } from '@/config/faces';
 import { useStoreSettings } from '@/store/settings';
-import { emotionCategories } from '@/config/config';
+import { emotionCategories, Emotions } from '@/config/config';
 import { formatDate } from '@/helpers/helpers';
 import { useStore } from '@/store/session';
 import BinIcon from '@/components/icons/BinIcon.vue';
@@ -14,7 +14,7 @@ import { useProfilesStore } from '@/store/profiles';
 import { qualityComment } from '@/plugins/quality';
 import { isError } from '@/plugins/helpers';
 import { toastError, handleError } from '@/plugins/toast';
-import { createComment } from '@/backend/comment';
+import { createComment, getComment } from '@/backend/comment';
 import { useRoute } from 'vue-router';
 
 const commentsStore = useCommentsStore();
@@ -26,6 +26,10 @@ const profileStore = useProfilesStore();
 const props = defineProps<{
 	cid: string;
 	authorid: string;
+	timestamp: number;
+	emotion: Emotions;
+	parentcid: string;
+	parentauthorid?: string;
 }>();
 // comment
 const showLabel = ref<boolean>(false);
@@ -33,7 +37,7 @@ const showLabel = ref<boolean>(false);
 const showReplies = ref<boolean>(false);
 const showDelete = ref<boolean>(false);
 const commentDeleted = ref<boolean>(false);
-const comment = computed(() => commentsStore.getCommentData(props.cid));
+const content = ref<string>('');
 const replies = computed(() => commentsStore.getCommentsOfPost(props.cid));
 const author = computed(() => {
 	if (typeof props.authorid !== `string`) {
@@ -78,19 +82,17 @@ async function sendReply() {
 
 async function removeComment() {
 	showDelete.value = false;
-	if (!comment.value) {
-		return;
-	}
-	await commentsStore.removeUserComment(props.cid, store.$state.id, comment.value.parentCID);
+	await commentsStore.removeUserComment(props.cid, store.$state.id, props.parentcid);
 }
 
 async function updateReplies() {
 	await commentsStore.fetchCommentsOfPost(props.cid);
 }
 onMounted(async () => {
-	const c = await commentsStore.fetchComment(props.cid);
-	await profileStore.fetchProfile(c.authorID);
-	await commentsStore.fetchCommentsOfPost(props.cid);
+	getComment(props.cid).then((c) => {
+		content.value = c.content;
+	});
+	profileStore.fetchProfile(props.authorid);
 
 	window.addEventListener(
 		`click`,
@@ -127,12 +129,11 @@ onMounted(async () => {
 			<div class="flex flex-col w-full">
 				<!-- Comment -->
 				<div
-					v-if="comment"
 					class="relative flex flex-row w-full overflow-x-auto justify-between rounded-lg bg-opacity-5"
 					:class="
-						emotionCategories.positive.has(comment.emotion)
+						emotionCategories.positive.has(props.emotion)
 							? `bg-positive`
-							: emotionCategories.negative.has(comment.emotion)
+							: emotionCategories.negative.has(props.emotion)
 							? `bg-negative`
 							: `bg-neutral`
 					"
@@ -146,18 +147,18 @@ onMounted(async () => {
 								<span v-if="author.name != ``" class="font-semibold dark:text-darkPrimaryText">
 									{{ author.name }}
 								</span>
-								<span v-else class="text-gray5 dark:text-gray3 font-semibold">{{ author.id }}</span>
-								<span class="text-gray5 dark:text-gray3 ml-2 text-sm"> @{{ author.id }} </span>
+								<span v-else class="text-gray5 dark:text-gray3 font-semibold">{{ props.authorid }}</span>
+								<span class="text-gray5 dark:text-gray3 ml-2 text-sm"> @{{ props.authorid }} </span>
 								<span
-									v-if="author.id === props.authorid"
+									v-if="props.authorid === props.parentauthorid"
 									class="bg-gray1 dark:bg-lightBG dark:text-darkPrimaryText ml-2 rounded-2xl dark:bg-opacity-25 py-1 px-2 text-xs"
 								>
 									Author
 								</span>
 							</router-link>
 							<div class="h-1 w-1 bg-gray5 mr-2 rounded-xl"></div>
-							<span v-if="comment.timestamp" class="self-center text-xs dark:text-gray3 mb-2 lg:mt-2">
-								{{ formatDate(comment.timestamp) }}
+							<span v-if="props.timestamp" class="self-center text-xs dark:text-gray3 mb-2 lg:mt-2">
+								{{ formatDate(props.timestamp) }}
 							</span>
 						</div>
 						<!-- Content -->
@@ -167,10 +168,10 @@ onMounted(async () => {
 									<!-- Reaction face image -->
 									<div class="flex float-right flex-shrink-0 items-center justify-center overflow-hidden">
 										<img
-											:src="settings.isDarkMode ? faces[comment.emotion].dark : faces[comment.emotion].light"
+											:src="settings.isDarkMode ? faces[props.emotion].dark : faces[props.emotion].light"
 											class="-mb-1 mt-2 h-24 w-24 bg-transparent"
-											:class="faces[comment.emotion].label === `default` ? `animate-pulse` : ``"
-											:style="faces[comment.emotion].label === `default` ? `filter: blur(5px)` : ``"
+											:class="faces[props.emotion].label === `default` ? `animate-pulse` : ``"
+											:style="faces[props.emotion].label === `default` ? `filter: blur(5px)` : ``"
 											@mouseover="showLabel = true"
 											@mouseleave="showLabel = false"
 										/>
@@ -179,13 +180,13 @@ onMounted(async () => {
 											class="border-lightBorder modal-animation-delay absolute top-0 mt-2 z-40 flex flex-col rounded-lg border bg-lightBG dark:bg-darkBG p-2 shadow-lg"
 										>
 											<p class="text-sm text-gray5 dark:text-gray3">
-												{{ faces[comment.emotion].label.replace(/_/g, ' ') }}
+												{{ faces[props.emotion].label.replace(/_/g, ' ') }}
 											</p>
 										</div>
 									</div>
 									<!-- Text comment -->
 									<p class="break-words w-4/5 py-1 mb-6 font-sans leading-relaxed dark:text-darkPrimaryText">
-										<span style="white-space: pre-line">{{ comment.content }}</span>
+										<span style="white-space: pre-line">{{ content }}</span>
 									</p>
 
 									<!-- Reply button -->
@@ -216,7 +217,7 @@ onMounted(async () => {
 						</div>
 					</div>
 					<button
-						v-if="store.$state.id === props.authorid || store.$state.id === comment.authorID"
+						v-if="store.$state.id === props.authorid"
 						class="focus:outline-none absolute top-0 right-0 flex-col justify-start text-gray5 dark:text-gray3 pt-2 pr-3 toggleDelete"
 						@click.stop="toggleDropdownDelete"
 					>
@@ -236,7 +237,7 @@ onMounted(async () => {
 					</div>
 				</div>
 				<p v-if="route.name === `Comments`" class="mt-1 text-right">
-					<router-link :to="`/post/` + comment?.parentCID" class="text-gray5 dark:text-gray3 text-xs"
+					<router-link :to="`/post/` + props.parentcid" class="text-gray5 dark:text-gray3 text-xs"
 						>View Post</router-link
 					>
 				</p>
@@ -274,7 +275,7 @@ onMounted(async () => {
 					</div>
 					<!-- List replies -->
 					<div v-if="replies && replies?.length > 0" class="pl-5 mt-2">
-						<Reply v-for="r in replies" :key="r" :cid="r" @update-replies="updateReplies" />
+						<Reply v-for="r in replies" :key="r._id" :cid="r._id" @update-replies="updateReplies" />
 					</div>
 				</div>
 			</div>
