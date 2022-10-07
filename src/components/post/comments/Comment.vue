@@ -41,7 +41,6 @@ const content = ref<string>('');
 const replies = computed(() => commentsStore.getCommentsOfPost(props.cid));
 const author = computed(() => {
 	if (typeof props.authorid !== `string`) {
-		console.log(`error`);
 		throw new Error(`authorID prop should be a string`);
 	}
 	return profileStore.getProfile(props.authorid);

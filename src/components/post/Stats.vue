@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, onBeforeMount, ref } from 'vue';
 import { useStoreSettings } from '@/store/settings';
-import { ICommentsStats, getCommentsStats } from '@/backend/comment';
 import { IFaceWithoutDefault, faces } from '@/config/faces';
 import { emotionCategories } from '@/config/config';
 import RepostersPopup from '@/components/popups/RepostersPopup.vue';
@@ -10,24 +9,7 @@ import ChevronLeft from '@/components/icons/ChevronLeft.vue';
 import RepostIcon from '@/components/icons/RepostIcon.vue';
 import QuoteIcon from '@/components/icons/QuoteIcon.vue';
 import QuotesPopup from '../popups/QuotesPopup.vue';
-
-interface FaceStat {
-	face: IFaceWithoutDefault;
-	count: number;
-}
-
-const settings = useStoreSettings();
-const commentsStats = ref<ICommentsStats>({
-	total: 0,
-	positive: 0,
-	neutral: 0,
-	negative: 0,
-	faceStats: {},
-});
-const facePercentage = ref<FaceStat[]>([]);
-const page = ref<number>(0);
-const showReposters = ref<boolean>(false);
-const showQuotes = ref<boolean>(false);
+import { useCommentsStore } from '@/store/comments';
 
 // const emit = defineEmits([`close`]);
 const props = withDefaults(
@@ -39,9 +21,22 @@ const props = withDefaults(
 	{},
 );
 
+interface FaceStat {
+	face: IFaceWithoutDefault;
+	count: number;
+}
+
+const settings = useStoreSettings();
+const commentsStore = useCommentsStore();
+const facePercentage = ref<FaceStat[]>([]);
+const page = ref<number>(0);
+const showReposters = ref<boolean>(false);
+const showQuotes = ref<boolean>(false);
+const commentsStats = computed(() => commentsStore.getCommentStats(props.id));
+
 async function updateCommentsStats() {
-	commentsStats.value = await getCommentsStats(props.id);
-	const { faceStats } = commentsStats.value;
+	await commentsStore.fetchCommentsStats(props.id);
+	const faceStats = commentsStats.value?.faceStats;
 	const stats: Record<string, FaceStat> = {};
 
 	for (const face in faceStats) {
@@ -55,12 +50,13 @@ async function updateCommentsStats() {
 		return a.count - b.count;
 	});
 }
-
-updateCommentsStats();
+onBeforeMount(() => {
+	updateCommentsStats();
+});
 </script>
 <template>
 	<!-- container -->
-	<div class="pb-6">
+	<div v-if="commentsStats" class="pb-6">
 		<!-- Global Activity -->
 		<div class="flex h-32 justify-between items-center border-b pt-5">
 			<!-- Stats image -->

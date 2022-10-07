@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { emotionCategories, EmotionCategories } from '@/config/config';
 import { faceGroupings, IFace } from '@/config/faces';
 import { useStore } from '@/store/session';
@@ -20,7 +20,6 @@ const commentsStore = useCommentsStore();
 
 const props = withDefaults(
 	defineProps<{
-		commentsCount: number;
 		parentcid: string;
 	}>(),
 	{},
@@ -31,6 +30,7 @@ const selectedEmotionColor = ref<EmotionCategories | `neutralLightest`>(`neutral
 const selectedEmotion = ref<IFace | null>(null);
 const activeEmotion = ref<IFace | null>(null);
 const comment = ref<string>(``);
+const commentsStats = computed(() => commentsStore.getCommentStats(props.parentcid));
 
 function sleep(ms: any) {
 	return new Promise((resolve) => setTimeout(resolve, ms));
@@ -38,7 +38,7 @@ function sleep(ms: any) {
 
 async function toggleShowEmotions() {
 	showEmotions.value = !showEmotions.value;
-	if (props.commentsCount === 0) {
+	if (commentsStats.value?.total === 0) {
 		await sleep(100);
 	}
 	const body = document.getElementById(`faceSelector`);
@@ -105,9 +105,11 @@ async function sendComment() {
 	try {
 		const c = createComment(store.$state.id, comment.value, selectedEmotion.value.label, props.parentcid);
 		await commentsStore.sendResponse(c, `comment`);
+		commentsStore.fetchCommentsOfPost(c.parentCID);
 	} catch (err) {
 		handleError(err);
 	} finally {
+		commentsStore.fetchCommentsStats(props.parentcid);
 		comment.value = ``;
 		selectedEmotion.value = null;
 		activeEmotion.value = null;
@@ -196,18 +198,14 @@ async function sendComment() {
 								/></span>
 							</button>
 							<textarea
-								v-if="props.commentsCount > 0"
 								v-model="comment"
 								class="focus:outline-none placeholder-gray5 dark:placeholder-gray3 dark:text-darkPrimaryText h-40 w-full resize-none overflow-y-auto mr-2 py-4 pl-2 leading-normal bg-transparent"
 								name="body"
-								placeholder="What's your response?"
-							/>
-							<textarea
-								v-else
-								v-model="comment"
-								class="focus:outline-none placeholder-gray5 dark:placeholder-gray3 dark:text-darkPrimaryText h-40 w-full resize-none overflow-y-auto mr-2 py-4 pl-2 leading-normal bg-transparent"
-								name="body"
-								placeholder="Be the first one to comment on this post..."
+								:placeholder="
+									commentsStats && commentsStats.total > 0
+										? `What's your response?`
+										: `Be the first one to comment on this post...`
+								"
 							/>
 							<span class="flex flex-col justify-end relative">
 								<button

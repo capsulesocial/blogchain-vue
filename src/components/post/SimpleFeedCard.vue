@@ -21,7 +21,9 @@ import { useProfilesStore } from '@/store/profiles';
 import { createPostExcerpt } from '@/helpers/post';
 import TimestampAndReadingTime from '@/components/TimestampAndReadingTime.vue';
 import RepostButton from '@/components/post/RepostButton.vue';
+import { useCommentsStore } from '@/store/comments';
 
+const commentsStore = useCommentsStore();
 const store = useStore();
 const settings = useStoreSettings();
 const profilesStore = useProfilesStore();
@@ -42,7 +44,7 @@ const props = withDefaults(
 
 const emit = defineEmits([`toggle-comments`, `toggle-action`, `delete`, `hide`]);
 
-// Get profile of authorID
+const commentsStats = computed(() => commentsStore.getCommentStats(props.fetchedPost.post._id));
 const author = computed(() => profilesStore.getProfile(props.fetchedPost.post.authorID));
 const repost = computed(() => {
 	if (props.fetchedPost.reposted) {
@@ -83,6 +85,7 @@ function triggerProfileCardTrue() {
 
 onBeforeMount(() => {
 	profilesStore.fetchProfile(props.fetchedPost.post.authorID);
+	commentsStore.fetchCommentsStats(props.fetchedPost.post._id);
 });
 </script>
 
@@ -228,7 +231,7 @@ onBeforeMount(() => {
 							@click="emit(`toggle-action`, `comments`)"
 						>
 							<CommentIcon :is-active="activeAction === `comments`" class="w-5 h-5" />
-							<span class="ml-1 text-sm">{{ fetchedPost.commentsCount }}</span>
+							<span class="ml-1 text-sm">{{ commentsStats?.total }}</span>
 						</button>
 						<!-- Repost -->
 						<RepostButton
@@ -275,7 +278,7 @@ onBeforeMount(() => {
 					@click="emit(`toggle-action`, `comments`)"
 				>
 					<CommentIcon :is-active="activeAction === `comments`" class="w-5 h-5" />
-					<span class="ml-1 text-sm">{{ fetchedPost.commentsCount }}</span>
+					<span class="ml-1 text-sm">{{ commentsStats?.total }}</span>
 				</button>
 				<!-- Repost popup -->
 				<RepostButton

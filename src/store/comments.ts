@@ -1,12 +1,21 @@
-import { getCommentsOfPost, getCommentsOfUser, INewCommentData, sendComment, ICommentData } from '@/backend/comment';
+import {
+	getCommentsOfPost,
+	getCommentsOfUser,
+	INewCommentData,
+	sendComment,
+	ICommentData,
+	getCommentsStats,
+} from '@/backend/comment';
 import { sendPostDeletion } from '@/backend/postDeletion';
 import { defineStore } from 'pinia';
 import { handleError, toastSuccess } from '@/plugins/toast';
 import { Emotions, EmotionCategories } from '@/config/config';
+import { ICommentsStats } from '@/backend/comment';
 
 export interface Comments {
 	postComments: Map<string, ICommentData[]>;
 	authorComments: Map<string, ICommentData[]>;
+	commentsStats: Map<string, ICommentsStats>;
 }
 
 export const useCommentsStore = defineStore(`comments`, {
@@ -14,9 +23,13 @@ export const useCommentsStore = defineStore(`comments`, {
 		return {
 			postComments: new Map<string, ICommentData[]>(),
 			authorComments: new Map<string, ICommentData[]>(),
+			commentsStats: new Map<string, ICommentsStats>(),
 		};
 	},
 	getters: {
+		getCommentStats: (state: Comments) => (postCID: string) => {
+			return state.commentsStats.get(postCID);
+		},
 		getCommentsOfPost: (state: Comments) => (postCID: string) => {
 			return state.postComments.get(postCID);
 		},
@@ -25,6 +38,14 @@ export const useCommentsStore = defineStore(`comments`, {
 		},
 	},
 	actions: {
+		async fetchCommentsStats(postCID: string) {
+			try {
+				const stats = await getCommentsStats(postCID);
+				this.commentsStats.set(postCID, stats);
+			} catch (err) {
+				handleError(err);
+			}
+		},
 		async sendResponse(content: INewCommentData, type: `comment` | `reply`) {
 			if (!content || !type) {
 				return;

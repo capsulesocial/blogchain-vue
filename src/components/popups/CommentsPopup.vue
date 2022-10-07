@@ -20,6 +20,7 @@ const props = withDefaults(
 const filter = ref<string>(``);
 const commentsStore = useCommentsStore();
 const postComments = computed(() => commentsStore.getCommentsOfPost(props.fetchedPost.post._id));
+const commentsStats = computed(() => commentsStore.getCommentStats(props.fetchedPost.post._id));
 
 function setFilter(reaction: string) {
 	filter.value = reaction;
@@ -45,14 +46,14 @@ onMounted(async () => {
 			<div class="flex w-full justify-between px-6 py-5">
 				<div class="flex flex-row items-center">
 					<span v-if="fetchedPost" class="pr-2 font-semibold dark:text-darkPrimaryText"
-						>{{ fetchedPost.commentsCount }} {{ fetchedPost.commentsCount === 1 ? 'comment' : 'comments' }}</span
+						>{{ commentsStats?.total }} {{ commentsStats?.total === 1 ? 'comment' : 'comments' }}</span
 					>
 					<button class="focus:outline-none ml-2" @click="emit(`stats`)"><StatsIcon /></button>
 				</div>
 				<CommentFilter :filter="filter" class="modal-animation" @clicked="setFilter" />
 			</div>
 			<!-- Comment editor -->
-			<CommentEditor :comments-count="props.fetchedPost.commentsCount" :parentcid="fetchedPost.post._id" class="px-6" />
+			<CommentEditor :comments-count="commentsStats?.total" :parentcid="fetchedPost.post._id" class="px-6" />
 			<!-- Comments -->
 			<div v-for="c in postComments" :key="c._id">
 				<Comment
