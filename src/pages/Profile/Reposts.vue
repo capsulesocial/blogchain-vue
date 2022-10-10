@@ -57,8 +57,8 @@ function handleScroll() {
 	}
 }
 
-onMounted(() => {
-	fetchContent();
+onMounted(async () => {
+	await fetchContent();
 	// scrolling event handler
 	window.addEventListener('wheel', handleScroll);
 	window.addEventListener('touchmove', handleScroll);
@@ -66,14 +66,11 @@ onMounted(() => {
 </script>
 
 <template>
-	<div
-		id="scrollable_content"
-		class="min-h-115 h-115 lg:min-h-210 lg:h-210 xl:min-h-220 xl:h-220 overflow-y-auto lg:overflow-y-hidden relative w-full px-4"
-	>
+	<div id="scrollable_content" class="min-h-88 h-88 overflow-y-auto lg:overflow-y-hidden relative w-full px-4">
 		<article v-for="repost in reposts" :key="repost.post._id">
 			<PostCardContainer :fetched-post="repost" />
 		</article>
-		<p v-if="noMorePosts && reposts.length !== 0" class="text-gray5 dark:text-gray3 py-5 text-center text-sm">
+		<p v-if="noMorePosts && reposts.length !== 0" class="text-gray5 dark:text-gray3 py-5 mb-36 text-center text-sm">
 			No more posts
 		</p>
 		<article v-show="isLoading" class="flex justify-center">
@@ -83,7 +80,10 @@ onMounted(() => {
 			></div>
 		</article>
 		<!-- No reposts -->
-		<article v-if="reposts.length === 0 && !isLoading" class="mt-24 grid justify-items-center px-10 xl:px-0">
+		<article
+			v-if="reposts.length === 0 && !isLoading"
+			class="text-gray5 dark:text-gray3 py-5 mb-36 text-center text-sm"
+		>
 			<p class="text-gray5 dark:text-gray3 mb-5 text-sm">
 				<span v-if="authorID === store.$state.id">It seems you haven't reposted any content yet.</span>
 				<span v-else>{{ authorID }} hasn't reposted any content yet</span>

@@ -159,7 +159,7 @@ onMounted(async () => {
 </script>
 
 <template>
-	<section class="w-full">
+	<section>
 		<!-- collapsed -->
 		<article
 			v-show="scrollingDown"
@@ -167,7 +167,11 @@ onMounted(async () => {
 			class="min-h-fit header-profile z-20 w-full px-4 pt-3 xl:px-6 xl:pt-4"
 		>
 			<div class="flex flex-row items-center pb-4">
-				<button class="focus:outline-none flex flex-row items-center" @click="handleBack">
+				<button
+					v-if="authorID !== store.$state.id"
+					class="focus:outline-none flex flex-row items-center"
+					@click="handleBack"
+				>
 					<span class="bg-gray1 dark:bg-gray5 rounded-full p-1"><BackButton :reduce-size="true" /></span>
 					<h6 class="ml-2 font-sans font-semibold dark:text-darkPrimaryText hidden lg:block">Back</h6>
 				</button>
@@ -242,7 +246,11 @@ onMounted(async () => {
 			ref="topContainer"
 			class="min-h-fit header-profile z-20 w-full px-4 pt-3 xl:px-6 xl:pt-4"
 		>
-			<button class="focus:outline-none flex flex-row items-center" @click="handleBack">
+			<button
+				v-if="authorID !== store.$state.id"
+				class="focus:outline-none flex flex-row items-center pb-4"
+				@click="handleBack"
+			>
 				<span class="bg-gray1 dark:bg-gray5 rounded-full p-1"><BackButton :reduce-size="true" /></span>
 				<h6 class="ml-2 font-sans font-semibold dark:text-darkPrimaryText hidden lg:block">Back</h6>
 			</button>
