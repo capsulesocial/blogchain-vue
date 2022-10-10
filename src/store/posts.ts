@@ -256,5 +256,15 @@ export const usePostsStore = defineStore(`posts`, {
 				toastSuccess(`Post has been hidden from feed`);
 			}
 		},
+		async retrieveTags(timeframe: string): Promise<string[] | undefined> {
+			if (!timeframe) {
+				return;
+			}
+			try {
+				return;
+			} catch (error: unknown) {
+				handleError(error);
+			}
+		},
 	},
 });
