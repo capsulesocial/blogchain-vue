@@ -66,10 +66,7 @@ onMounted(async () => {
 </script>
 
 <template>
-	<div
-		id="scrollable_content"
-		class="min-h-115 h-115 lg:min-h-210 lg:h-210 xl:min-h-220 xl:h-220 overflow-y-auto lg:overflow-y-hidden relative w-full px-4"
-	>
+	<div id="scrollable_content" class="min-h-88 h-88 overflow-y-auto lg:overflow-y-hidden relative w-full px-4">
 		<div v-for="c in comments" :key="c._id">
 			<Comment
 				:cid="c._id"
@@ -80,7 +77,7 @@ onMounted(async () => {
 				class="mb-4"
 			/>
 		</div>
-		<p v-show="noMoreComments && comments.length > 0" class="text-gray5 dark:text-gray3 py-5 mb-12 text-center text-sm">
+		<p v-show="noMoreComments && comments.length > 0" class="text-gray5 dark:text-gray3 py-5 mb-36 text-center text-sm">
 			No more comments
 		</p>
 		<!-- Loading spinner -->

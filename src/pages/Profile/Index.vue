@@ -7,7 +7,7 @@ import { useSubscriptionStore, ISubscriptionWithProfile } from '@/store/subscrip
 import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
 import { useConnectionsStore } from '@/store/connections';
-import { PaymentProfile, usePaymentsStore } from '@/store/paymentProfile';
+import { usePaymentsStore } from '@/store/paymentProfile';
 import { getUserInfoNEAR } from '@/backend/near';
 import { handleError } from '@/plugins/toast';
 
@@ -43,18 +43,18 @@ const authorID = computed(() => {
 const profile = computed(() => profilesStore.getProfile(authorID.value));
 connectionsStore.fetchConnections(authorID.value);
 const connections = computed(() => connectionsStore.getConnections(authorID.value));
-const paymentsProfile = ref<PaymentProfile>(paymentStore.paymentProfile(authorID.value));
+const paymentsProfile = computed(() => paymentStore.paymentProfile(authorID.value));
 
 const totalPostsCount = ref(0);
 const profileExists = ref(false);
 const isActiveSub = ref(false);
 const activeSub = ref<ISubscriptionWithProfile>();
 const fromExternalSite = ref(false);
-const selfView = ref(authorID.value === store.$state.id);
+const selfView = computed(() => authorID.value === store.$state.id);
+const longBio = computed(() => profile.value.bio.length > 200);
 const showAvatarPopup = ref(false);
 const scrollingDown = ref(false);
 const lastScroll = ref(0);
-const longBio = computed(() => profile.value.bio.length > 200);
 const expandBio = ref(false);
 const openFollowersPopup = ref(false);
 const openFollowingPopup = ref(false);
@@ -116,15 +116,15 @@ function handleScroll() {
 		return;
 	}
 	// scrolling down
-	scrollingDown.value = currentScroll > lastScroll.value && !scrollingDown.value;
+	console.log(currentScroll, ` `, lastScroll.value);
+	scrollingDown.value = currentScroll > lastScroll.value;
 	// set new value at end
 	lastScroll.value = currentScroll;
 }
 
 onBeforeMount(async () => {
 	useSubscription.fetchSubs(store.$state.id);
-	const res = await paymentStore.fetchPaymentProfile(authorID.value);
-	paymentsProfile.value = res;
+	paymentStore.fetchPaymentProfile(authorID.value);
 });
 
 onMounted(async () => {
@@ -159,20 +159,24 @@ onMounted(async () => {
 </script>
 
 <template>
-	<section id="subPopup" class="w-full">
-		<!-- top -->
-		<article id="header" ref="topContainer" class="min-h-fit header-profile z-20 w-full px-4 pt-3 xl:px-6 xl:pt-4">
-			<!-- Back button -->
-			<div v-if="!selfView" class="flex flex-row items-center pb-4">
-				<!-- IF viewing someone elses profile -->
-				<button class="focus:outline-none flex flex-row items-center" @click="handleBack">
+	<section>
+		<!-- collapsed -->
+		<article
+			v-show="scrollingDown"
+			ref="topContainer"
+			class="min-h-fit header-profile z-20 w-full px-4 pt-3 xl:px-6 xl:pt-4"
+		>
+			<div class="flex flex-row items-center pb-4">
+				<button
+					v-if="authorID !== store.$state.id"
+					class="focus:outline-none flex flex-row items-center"
+					@click="handleBack"
+				>
 					<span class="bg-gray1 dark:bg-gray5 rounded-full p-1"><BackButton :reduce-size="true" /></span>
-					<h6 class="ml-2 font-sans font-semibold dark:text-darkPrimaryText">Back</h6>
+					<h6 class="ml-2 font-sans font-semibold dark:text-darkPrimaryText hidden lg:block">Back</h6>
 				</button>
-
-				<!-- <div
-					id="small"
-					class="header-profile flex w-full flex-row items-center justify-between z-40 opacity0"
+				<div
+					class="header-profile flex w-full flex-row items-center justify-between z-40"
 					:class="selfView ? `` : `ml-6`"
 				>
 					<div class="flex flex-row items-center">
@@ -183,34 +187,34 @@ onMounted(async () => {
 							@click="showAvatarPopup = true"
 						>
 							<Avatar
-								:avatar="visitAvatar"
-								:author-i-d="$route.params.id"
+								:authorid="profile.id"
+								:cid="profile.avatar"
 								:size="`w-8 h-8`"
 								:no-click="true"
 								class="rounded-base flex-shrink-0"
-								:class="!visitAvatar ? `cursor-default` : ``"
+								:class="!profile.avatar ? `cursor-default` : ``"
 							/>
 						</button>
 						<button
 							class="focus:outline-none"
 							:class="scrollingDown ? `cursor-pointer` : `cursor-default`"
 							:disabled="!scrollingDown"
-							@click="openHeader(true)"
+							@click="scrollingDown = false"
 						>
-							<h6 v-if="visitProfile.name != ``" class="ml-2 font-sans font-semibold dark:text-darkPrimaryText">
-								{{ visitProfile.name }}
+							<h6 v-if="profile.name != ``" class="ml-2 font-sans font-semibold dark:text-darkPrimaryText">
+								{{ profile.name }}
 							</h6>
-							<h6 v-else class="text-gray5 dark:text-gray3 ml-2 font-sans font-semibold">{{ visitProfile.id }}</h6>
+							<h6 v-else class="text-gray5 dark:text-gray3 ml-2 font-sans font-semibold">{{ profile.id }}</h6>
 						</button>
 					</div>
 					<div class="flex items-center">
 						<span v-if="selfView" class="w-full h-full">
-							<button class="bg-darkBG focus:outline-none rounded-lg xl:hidden" @click="toggleSettings">
+							<button class="bg-darkBG focus:outline-none rounded-lg xl:hidden" @click="toggleEdit">
 								<PencilIcon class="text-white" />
 							</button>
 							<SecondaryButton
 								:text="`Edit Profile`"
-								:action="toggleSettings"
+								:action="toggleEdit"
 								class="hidden xl:block"
 								:class="scrollingDown ? `cursor-pointer` : `cursor-default`"
 								:disabled="!scrollingDown"
@@ -218,23 +222,39 @@ onMounted(async () => {
 						</span>
 						<FriendButton
 							v-else
-							:toggle-friend="toggleFriend"
-							:user-is-followed="userIsFollowed"
+							:authorid="authorID"
 							class="header-profile"
 							:class="scrollingDown ? `cursor-pointer` : `cursor-default`"
 							:disabled="!scrollingDown"
 						/>
 						<SubscribeButton
-							v-if="selfView && paymentsEnabled"
-							:toggle-subscription="showSubscription"
-							:user-is-subscribed="activeSubscription"
+							v-if="!selfView && paymentsProfile.paymentsEnabled"
+							:is-subscribed="isActiveSub"
+							:action="() => (showSubscription = !showSubscription)"
 							class="header-profile ml-2"
 							:class="scrollingDown ? `cursor-pointer` : `cursor-default`"
 							:disabled="!scrollingDown"
 						/>
 					</div>
-				</div> -->
+				</div>
 			</div>
+		</article>
+		<!-- top -->
+		<article
+			v-show="!scrollingDown"
+			id="header"
+			ref="topContainer"
+			class="min-h-fit header-profile z-20 w-full px-4 pt-3 xl:px-6 xl:pt-4"
+		>
+			<button
+				v-if="authorID !== store.$state.id"
+				class="focus:outline-none flex flex-row items-center pb-4"
+				@click="handleBack"
+			>
+				<span class="bg-gray1 dark:bg-gray5 rounded-full p-1"><BackButton :reduce-size="true" /></span>
+				<h6 class="ml-2 font-sans font-semibold dark:text-darkPrimaryText hidden lg:block">Back</h6>
+			</button>
+
 			<!-- Name, socials, follow, bio -->
 			<div class="flex flex-row justify-between">
 				<div id="infos" class="header-profile flex items-center">
@@ -385,3 +405,23 @@ onMounted(async () => {
 		<BioPopup v-if="expandBio" :id="authorID" @close="expandBio = false" />
 	</Teleport>
 </template>
+
+<style>
+.header-profile {
+	transition: all 0.4s;
+	/* z-index: 50; */
+}
+.headercollapsed {
+	min-height: 1rem !important;
+	height: 4rem !important;
+}
+.headernotcollapsed {
+	opacity: 1;
+}
+.opacity0 {
+	opacity: 0;
+}
+.opacity1 {
+	opacity: 1;
+}
+</style>
