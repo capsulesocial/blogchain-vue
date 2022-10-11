@@ -4,6 +4,7 @@ export interface RootState {
 	backgroundImage: string | null;
 	reposts: Record<string, string>;
 	recentlyJoined: boolean;
+	showUnauthPopup: boolean;
 }
 
 export const useRootStore = defineStore(`rootStore`, {
@@ -13,11 +14,15 @@ export const useRootStore = defineStore(`rootStore`, {
 			backgroundImage: `@/assets/images/backgrounds/mainBG.webp`,
 			reposts: {},
 			recentlyJoined: true,
+			showUnauthPopup: false,
 		};
 	},
 	actions: {
 		setWelcome(dec: boolean) {
 			this.recentlyJoined = dec;
+		},
+		toggleUnauthPopup(condition: boolean) {
+			this.showUnauthPopup = condition;
 		},
 	},
 });

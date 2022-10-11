@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import FriendAddIcon from '@/components/icons/FriendAdd.vue';
 import FriendRemoveIcon from '@/components/icons/FriendRemove.vue';
+
 import { useStore } from '@/store/session';
 import { useConnectionsStore } from '@/store/connections';
+import { useRootStore } from '@/store/index';
+
 import { computed } from 'vue';
 
 const props = defineProps<{
@@ -11,12 +14,21 @@ const props = defineProps<{
 
 const store = useStore();
 const connectionsStore = useConnectionsStore();
+const rootStore = useRootStore();
 
 const isFollowing = computed(() => connectionsStore.getFollowStatus(store.id, props.authorid));
+
+function handleFollowUnfollow() {
+	if (store.$state.id === ``) {
+		rootStore.toggleUnauthPopup(true);
+		return;
+	}
+	connectionsStore.toggleFollowing(props.authorid);
+}
 </script>
 
 <template>
-	<button class="focus:outline-none block rounded-lg" @click="connectionsStore.toggleFollowing(props.authorid)">
+	<button class="focus:outline-none block rounded-lg" @click="handleFollowUnfollow()">
 		<div v-if="isFollowing">
 			<!-- Desktop -->
 			<div
