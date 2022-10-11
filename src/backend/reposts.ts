@@ -91,7 +91,7 @@ export async function getReposters(postCID: string, options: IGetRepostsOptions)
 		},
 	});
 
-	const reposts = data.data as Array<IRepostResponse>;
+	const reposts: Array<IRepostResponse> = data.data;
 	const authorsSet = new Set<string>();
 	reposts.forEach((r) => authorsSet.add(r.repost.authorID));
 	return Array.from(authorsSet);

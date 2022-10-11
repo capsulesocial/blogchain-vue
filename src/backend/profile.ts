@@ -82,10 +82,10 @@ export function addProfileToIPFS(content: Profile) {
 	return ipfs().sendJSONData(content);
 }
 
-async function _getProfile(authorID: string) {
+async function _getProfile(authorID: string): Promise<{ profile: Profile | null; totalPostsCount: number }> {
 	const response = await axios.get(`${nodeUrl()}/profile/${authorID}`);
 	if (response.data.data) {
-		return response.data.data as { profile: Profile | null; totalPostsCount: number };
+		return response.data.data;
 	}
 	throw new Error(`Error finding profile!`);
 }

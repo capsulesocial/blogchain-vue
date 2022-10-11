@@ -148,8 +148,11 @@ export const useSubscriptionStore = defineStore(`subscriptions`, {
 				}
 				this.step = 4;
 				return true;
-			} catch (err) {
-				this.cardErrorMessage = (err as Error).message ?? `Unknown error`;
+			} catch (err: unknown) {
+				if (err instanceof Error) {
+					this.cardErrorMessage = err.message;
+				}
+				this.cardErrorMessage = `Unknown error`;
 				return false;
 			}
 		},
@@ -184,8 +187,11 @@ export const useSubscriptionStore = defineStore(`subscriptions`, {
 				}
 				this.step = 4;
 				return true;
-			} catch (err) {
-				this.cardErrorMessage = (err as Error).message ?? `Unkwon error`;
+			} catch (err: unknown) {
+				if (err instanceof Error) {
+					this.cardErrorMessage = err.message;
+				}
+				this.cardErrorMessage = `Unknown error`;
 				return false;
 			}
 		},

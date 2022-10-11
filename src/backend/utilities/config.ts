@@ -29,7 +29,8 @@ const parsedTorusNetwork = process.env.VUE_APP_TORUS_NETWORK;
 if (parsedTorusNetwork && parsedTorusNetwork !== `mainnet` && parsedTorusNetwork !== `testnet`) {
 	throw new Error(`Unexpected Torus Network!`);
 }
-export const torusNetwork: TORUS_NETWORK_TYPE = (parsedTorusNetwork as `mainnet` | `testnet` | undefined) || `testnet`;
+export const torusNetwork: TORUS_NETWORK_TYPE =
+	(parsedTorusNetwork as `mainnet` | `testnet` | `cyan` | undefined) || `testnet`;
 
 export const nearNetwork = process.env.VUE_APP_NEAR_NETWORK || `testnet`;
 

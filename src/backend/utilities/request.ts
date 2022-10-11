@@ -40,14 +40,14 @@ export async function genericRequest<B, P, R = any>(config: IFullRequestConfig<B
 
 	try {
 		const res = await axios({ ...reqConfig, headers: authToken ? { authorization: `Bearer ${authToken}` } : {} });
-		return res.data as R;
+		return res.data;
 	} catch (err) {
 		if (err instanceof AxiosError) {
 			// Try again once with a new token
 			if (err.response && err.response.status === 401 && username) {
 				authToken = await getToken(username, true);
 				const res = await axios({ ...reqConfig, headers: authToken ? { authorization: `Bearer ${authToken}` } : {} });
-				return res.data as R;
+				return res.data;
 			}
 		}
 

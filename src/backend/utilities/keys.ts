@@ -23,7 +23,11 @@ async function getNearPrivateKey() {
 	}
 
 	const keystore = new keyStores.BrowserLocalStorageKeyStore();
-	const keypair = (await keystore.getKey(nearConfig.networkId, accountId)) as KeyPairEd25519;
+	const keypair = await keystore.getKey(nearConfig.networkId, accountId);
+
+	if (!(keypair instanceof KeyPairEd25519)) {
+		throw new Error(`malformed keypair!`);
+	}
 
 	const privateKey = keypair.secretKey;
 	const privateKeyBytes = new Uint8Array(baseDecode(privateKey));
