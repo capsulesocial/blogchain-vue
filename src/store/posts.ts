@@ -207,7 +207,7 @@ export const usePostsStore = defineStore(`posts`, {
 				const res = await getPosts(timePayload, bookmarker, payload);
 				// Add to store
 				for (const post of res) {
-					this.$state.posts.set(post.post._id as string, post);
+					this.$state.posts.set(post.post._id, post);
 				}
 				if (res.length < this.homeFeed.limit) {
 					this.homeFeed.noMorePosts = true;
@@ -241,8 +241,6 @@ export const usePostsStore = defineStore(`posts`, {
 			const action: `ADD` | `REMOVE` = bookmark ? `ADD` : `REMOVE`;
 			try {
 				await sendBookmarkEvent(action, authorID, postCID);
-			} catch (err) {
-				throw new Error(err as string);
 			} finally {
 				this.fetchBookmarkedPosts(undefined, 0);
 			}

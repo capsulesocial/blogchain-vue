@@ -81,7 +81,12 @@ async function walletVerify() {
 		location.reload();
 	} catch (err: unknown) {
 		isLoading.value = false;
-		toastError(err as string);
+		if (err instanceof Error) {
+			toastError(err.message);
+			return;
+		}
+
+		throw err;
 	}
 }
 
@@ -104,7 +109,7 @@ function handleKey(e: Event) {
 		reader.onload = (i: Event) => {
 			if (i.target !== null && reader.result !== null) {
 				try {
-					const key = JSON.parse(reader.result as string);
+					const key = JSON.parse(reader.result.toString());
 					accountIdInput.value = key.accountId;
 					privateKey.value = key.privateKey;
 					if (privateKey.value.startsWith(`encrypted:`)) {
@@ -116,11 +121,16 @@ function handleKey(e: Event) {
 					}
 					// Login with non-encrypted key
 					walletLogin();
-				} catch (err) {
+				} catch (err: unknown) {
 					if (keyFileTarget.value) {
 						keyFileTarget.value = null;
 					}
-					toastError(err as string);
+					if (err instanceof Error) {
+						toastError(err.message);
+						return;
+					}
+
+					throw err;
 				}
 			}
 		};

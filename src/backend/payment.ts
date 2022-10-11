@@ -120,7 +120,7 @@ export async function getBillingPortalUrl(username: string, subscriptionId: stri
 		body,
 	});
 
-	return response.url as string;
+	return response.url;
 }
 
 export async function retrievePaymentProfile(username: string) {
