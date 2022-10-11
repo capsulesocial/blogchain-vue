@@ -1,14 +1,12 @@
 <script setup lang="ts">
 import TopHeader from './components/TopHeader.vue';
 import WidgetsContainer from './components/WidgetsContainer.vue';
-import UnauthPopup from '@/components/popups/UnauthPopup.vue';
 import '@/assets/css/tailwind.css';
 import TitleContainer from './components/TitleContainer.vue';
 
 import { useStore } from './store/session';
 import { useStoreSettings } from './store/settings';
 import { useConnectionsStore } from '@/store/connections';
-import { useRootStore } from '@/store/index';
 import { initColors } from './plugins/colors';
 import { getBGImage } from './plugins/background';
 import { onBeforeMount, ref } from 'vue';
@@ -24,7 +22,6 @@ const store = useStore();
 const settings = useStoreSettings();
 const connections = useConnectionsStore();
 const profile = useProfilesStore();
-const rootStore = useRootStore();
 
 const unauthRoutes = ref<string[]>([`Login`, `Register`]);
 const fullPageRoutes = ref<string[]>([`Payment Policy`, `Content Policy`, `Not Found`, `Post Reader`]);
@@ -105,7 +102,6 @@ watch(router.currentRoute, () => {
 			</div>
 		</div>
 	</main>
-	<UnauthPopup v-if="rootStore.$state.showUnauthPopup" />
 	<div id="popup"></div>
 </template>
 
