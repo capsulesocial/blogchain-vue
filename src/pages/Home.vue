@@ -39,6 +39,10 @@ const scrollListener = async (e: Event) => {
 };
 
 const handleFeedSwitch = async (alg: Algorithm, timeframe?: Timeframe) => {
+	if (alg === `FOLLOWING` && store.$state.id === ``) {
+		rootStore.toggleUnauthPopup(true);
+		return;
+	}
 	if (alg === postsStore.homeFeed.algorithm && !timeframe) {
 		return;
 	}

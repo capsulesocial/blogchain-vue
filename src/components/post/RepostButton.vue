@@ -5,6 +5,7 @@ import QuoteIcon from '@/components/icons/QuoteIcon.vue';
 import { useStoreSettings } from '@/store/settings';
 import { useStore } from '@/store/session';
 import { useConnectionsStore } from '@/store/connections';
+import { useRootStore } from '@/store/index';
 import { handleError } from '@/plugins/toast';
 
 const props = defineProps<{
@@ -18,6 +19,7 @@ const emit = defineEmits([`toggle-action`]);
 const settings = useStoreSettings();
 const connectionsStore = useConnectionsStore();
 const store = useStore();
+const rootStore = useRootStore();
 
 const isReposted = ref<boolean>(props.repost !== undefined);
 const repostsCount = ref<number>(props.repostCount);
@@ -40,6 +42,10 @@ async function toggleRepost() {
 	}
 	// send repost
 	try {
+		if (store.$state.id === ``) {
+			rootStore.toggleUnauthPopup(true);
+			return;
+		}
 		repostCID.value = await connectionsStore.sendSimpleRepost(store.$state.id, props.postcid);
 	} catch (err) {
 		handleError(err);
@@ -50,6 +56,10 @@ async function toggleRepost() {
 	}
 }
 function toggleQuoteRepost() {
+	if (store.$state.id === ``) {
+		rootStore.toggleUnauthPopup(true);
+		return;
+	}
 	emit(`toggle-action`, `quote`);
 }
 
