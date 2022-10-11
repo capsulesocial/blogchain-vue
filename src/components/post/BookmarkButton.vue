@@ -3,6 +3,8 @@ import BookmarkIcon from '@/components/icons/BookmarkIcon.vue';
 import { ref } from 'vue';
 import { usePostsStore } from '@/store/posts';
 import { useStore } from '@/store/session';
+import { useRootStore } from '@/store/index';
+
 import { toastError, toastSuccess } from '@/plugins/toast';
 const props = withDefaults(
 	defineProps<{
@@ -13,8 +15,16 @@ const props = withDefaults(
 );
 const postsStore = usePostsStore();
 const store = useStore();
+const rootStore = useRootStore();
+
 const isBookmarked = ref<boolean>(props.hasBookmark);
+
 const handleBookmark = async () => {
+	if (store.$state.id === ``) {
+		rootStore.toggleUnauthPopup(true);
+		return;
+	}
+
 	try {
 		await postsStore.handleBookmark(!isBookmarked.value, store.$state.id, props.postcid);
 	} catch (err) {
