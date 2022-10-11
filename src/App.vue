@@ -15,7 +15,7 @@ import { onBeforeMount, ref } from 'vue';
 import { useMeta } from 'vue-meta';
 import { setThumbHeight, initScroll } from '@/helpers/scrolling';
 import { useRouter } from 'vue-router';
-import { watch } from 'vue';
+import { watch, computed } from 'vue';
 import { nextTick } from 'process';
 import { useProfilesStore } from '@/store/profiles';
 
@@ -48,6 +48,15 @@ onBeforeMount(() => {
 	profile.fetchProfile(store.id);
 });
 
+const routeName = computed(() => {
+	const name = router.currentRoute.value.name;
+	if (name && typeof name !== `string`) {
+		throw new Error(`router name should be a string`);
+	}
+
+	return name;
+});
+
 const setScroll = () => {
 	// Scrolling event listener
 	document.removeEventListener('DOMContentLoaded', initScroll);
@@ -66,7 +75,7 @@ watch(router.currentRoute, () => {
 	</metainfo>
 
 	<!-- Full screen pages -->
-	<router-view v-if="unauthRoutes.includes($route.name as string)" :key="$route.path" />
+	<router-view v-if="unauthRoutes.includes(routeName)" :key="$route.path" />
 	<!-- wrapper -->
 	<main
 		v-else
@@ -92,15 +101,15 @@ watch(router.currentRoute, () => {
 			<div class="flex flex-col w-full lg:w-11/12 xl:w-10/12 max-w-1220">
 				<TopHeader />
 				<!-- Body -->
-				<TitleContainer v-if="routesWithTitle.includes($route.name as string)" />
+				<TitleContainer v-if="routesWithTitle.includes(routeName)" />
 				<section class="modal-animation flex flex-row">
 					<div
-						:class="fullPageRoutes.includes($route.name as string) ? `w-full` : `lg:w-7.5`"
+						:class="fullPageRoutes.includes(routeName) ? `w-full` : `lg:w-7.5`"
 						class="min-h-61 h-61 bg-lightBG dark:bg-darkBGStop border border-lightBorder z-10 w-full overflow-y-hidden rounded-t-lg shadow-lg relative"
 					>
 						<router-view :key="$route.path" />
 					</div>
-					<WidgetsContainer v-if="!fullPageRoutes.includes($route.name as string)" />
+					<WidgetsContainer v-if="!fullPageRoutes.includes(routeName)" />
 				</section>
 			</div>
 		</div>
