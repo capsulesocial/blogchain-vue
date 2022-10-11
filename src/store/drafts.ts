@@ -41,5 +41,8 @@ export const useDraftStore = defineStore(`draftStore`, {
 		setTitle(title: string) {
 			this.drafts[this.activeIndex].title = title;
 		},
+		setSubtitle(subtitle: string) {
+			this.drafts[this.activeIndex].subtitle = subtitle;
+		},
 	},
 });

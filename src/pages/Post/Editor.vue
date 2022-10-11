@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeMount, ref } from 'vue';
+import { computed, onBeforeMount, onMounted, ref } from 'vue';
 import { useMeta } from 'vue-meta';
 import { useDraftStore } from '@/store/drafts';
 import XIcon from '@/components/icons/XIcon.vue';
@@ -19,19 +19,30 @@ const titleInput = ref<HTMLTextAreaElement>();
 const subtitleInput = ref<HTMLTextAreaElement>();
 
 function handleTitle(e: any) {
-	console.log(!subtitleInput.value);
 	if (!titleInput.value || !subtitleInput.value || !e) {
 		return;
 	}
 	if (e.inputType === `insertLineBreak` || (e.inputType === `insertText` && e.data === null)) {
-		console.log(`enter pressed`);
 		e.preventDefault();
+		titleInput.value.value.replace(/\n*$/, '');
 		subtitleInput.value.focus();
 	}
-	// titleInput.value.style.height = `60px`;
-	// titleInput.value.style.height = `${titleInput.value.scrollHeight}px`;
-	const title: string = titleInput.value.value;
+	titleInput.value.style.height = `60px`;
+	titleInput.value.style.height = `${titleInput.value.scrollHeight}px`;
+	const title: string = titleInput.value.value.replace(/\n*$/, '');
 	draftStore.setTitle(title);
+}
+
+function handleSubtitle(e: any) {
+	if (!subtitleInput.value || !e) {
+		return;
+	}
+	if (e.inputType === `insertLineBreak` || (e.inputType === `insertText` && e.data === null)) {
+		e.preventDefault();
+		// focus on editor
+	}
+	const subtitle: string = subtitleInput.value.value.replace(/\n*$/, '');
+	draftStore.setSubtitle(subtitle);
 }
 
 function handleSave() {}
@@ -41,6 +52,18 @@ onBeforeMount(() => {
 	if (draftStore.drafts.length <= 0) {
 		draftStore.createNewDraft();
 	}
+});
+
+onMounted(() => {
+	if (!titleInput.value || !subtitleInput.value) {
+		return;
+	}
+	titleInput.value.value = draft.value.title;
+	titleInput.value.style.height = `60px`;
+	titleInput.value.style.height = `${titleInput.value.scrollHeight}px`;
+	subtitleInput.value.value = draft.value.subtitle ? draft.value.subtitle : ``;
+	subtitleInput.value.style.height = `60px`;
+	subtitleInput.value.style.height = `${subtitleInput.value.scrollHeight}px`;
 });
 </script>
 
@@ -86,6 +109,7 @@ onBeforeMount(() => {
 				placeholder="Subtitle"
 				class="text-h2 text-gray5 dark:text-gray2 placeholder-gray5 dark:placeholder-gray2 focus:outline-none mt-2 w-full break-words bg-transparent font-serif"
 				wrap="soft"
+				style="resize: none"
 				@input="handleSubtitle"
 			/>
 		</article>
