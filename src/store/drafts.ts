@@ -19,8 +19,18 @@ export const useDraftStore = defineStore(`draftStore`, {
 		getActiveDraft: (state: DraftStore) => {
 			return state.drafts[state.activeIndex];
 		},
+		getDraftIndex: (state: DraftStore) => (draft: Post) => {
+			return state.drafts.indexOf(draft);
+		},
 	},
 	actions: {
+		setActiveDraft(index: number) {
+			this.activeIndex = index;
+		},
+		deleteDraft(index: number) {
+			this.drafts.splice(index, 1);
+			this.activeIndex = this.drafts.length;
+		},
 		createNewDraft() {
 			const date = new Date().getTime();
 			const blank: Post = {

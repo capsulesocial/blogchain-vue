@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeMount, onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useMeta } from 'vue-meta';
 import { useDraftStore } from '@/store/drafts';
 import XIcon from '@/components/icons/XIcon.vue';
@@ -47,12 +47,6 @@ function handleSubtitle(e: any) {
 
 function handleSave() {}
 function saveContent() {}
-
-onBeforeMount(() => {
-	if (draftStore.drafts.length <= 0) {
-		draftStore.createNewDraft();
-	}
-});
 
 onMounted(() => {
 	if (!titleInput.value || !subtitleInput.value) {

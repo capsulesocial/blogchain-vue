@@ -1,48 +1,28 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
-import { Post } from '@/backend/post';
+import { useDraftStore } from '@/store/drafts';
 import HorizontalDraftPreview from '@/components/HorizontalDraftPreview.vue';
 import InfoIcon from '@/components/icons/Info.vue';
 import DraftsPopup from '@/components/popups/DraftsPopup.vue';
+import { useRouter } from 'vue-router';
 
 const settings = useStoreSettings();
 const store = useStore();
-const showInfo = ref(false);
+const draftStore = useDraftStore();
+const router = useRouter();
+const drafts = computed(() => draftStore.$state.drafts);
 
+const showInfo = ref(false);
 const openDraftPopup = ref(false);
 
-type DraftPost = Omit<Post, `authorID`>;
-
-// TODO: fetch followers from store / backend
-const drafts = ref<DraftPost[]>([
-	{
-		title: `First Draft`,
-		subtitle: ``,
-		content: ``,
-		featuredPhotoCID: null,
-		featuredPhotoCaption: null,
-		tags: [],
-		category: ``,
-		timestamp: 0,
-		postImages: [],
-		encrypted: false,
-	},
-	{
-		title: `Second Draft`,
-		subtitle: ``,
-		content: ``,
-		featuredPhotoCID: null,
-		featuredPhotoCaption: null,
-		tags: [],
-		category: ``,
-		timestamp: 1,
-		postImages: [],
-		encrypted: false,
-	},
-]);
+function newPost() {
+	draftStore.createNewDraft();
+	router.push(`/write`);
+}
 </script>
+
 <template>
 	<div class="bg-lightBG dark:bg-darkBGStop mb-5 rounded-lg border border-lightBorder shadow-lg px-6 py-4 relative">
 		<div class="flex flex-row justify-between items-center">
@@ -55,11 +35,11 @@ const drafts = ref<DraftPost[]>([
 			<div v-if="drafts.length === 0" class="text-gray5 dark:text-gray3 mb-4 mt-3 text-sm">
 				<p class="text-gray5 dark:text-gray3 pt-3 text-sm mb-4">
 					You don't have any drafts yet,
-					<button class="text-primary focus:outline-none ml-1" @click="$router.push(`/post`)">write a new draft</button>
+					<button class="text-primary focus:outline-none ml-1" @click="newPost">write a new draft</button>
 				</p>
 			</div>
-			<HorizontalDraftPreview v-for="draft in drafts" :key="draft.timestamp" :draft="draft" />
-			<button class="text-primary text-sm" @click="openDraftPopup = true">Show more</button>
+			<HorizontalDraftPreview v-for="draft in drafts.slice(0, 2)" :key="draft.timestamp" :draft="draft" />
+			<button v-if="drafts.length > 2" class="text-primary text-sm" @click="openDraftPopup = true">Show more</button>
 		</div>
 		<div v-else class="text-gray5 dark:text-gray3 pt-3 text-sm">
 			<button class="text-primary focus:outline-none" @click="$router.push(`/register`)">Sign up</button>
