@@ -1,5 +1,5 @@
 export function handle(delta: number) {
-	let OS = navigator.platform as string;
+	let OS = navigator.platform;
 	const target = document.getElementById(`scrollable_content`) as HTMLElement;
 	const thumb = document.getElementById('thumb') as HTMLElement;
 	let speed;
