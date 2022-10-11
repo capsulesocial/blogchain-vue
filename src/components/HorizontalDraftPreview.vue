@@ -7,24 +7,28 @@ import MoreIcon from '@/components/icons/MoreIcon.vue';
 import ImageIcon from '@/components/icons/ImageIcon.vue';
 import PencilIcon from '@/components/icons/Pencil.vue';
 import BinIcon from '@/components/icons/BinIcon.vue';
+import { useDraftStore } from '@/store/drafts';
+import router from '@/router';
 
-type DraftPost = Omit<Post, `authorID`>;
-
-defineProps<{
-	draft: DraftPost;
+const props = defineProps<{
+	draft: Post;
 }>();
 
 const settings = useStoreSettings();
+const draftStore = useDraftStore();
 const featuredPhoto = ref<any>();
 const inWidget = ref(true);
 const showDelete = ref(false);
 
-function setActiveDraft(draft: DraftPost) {
-	return;
+function setActiveDraft() {
+	const i = draftStore.getDraftIndex(props.draft);
+	draftStore.setActiveDraft(i);
+	router.push(`/write`);
 }
 
-function deleteDraft(draft: DraftPost) {
-	return;
+function deleteDraft() {
+	const i = draftStore.getDraftIndex(props.draft);
+	draftStore.deleteDraft(i);
 }
 
 function toggleDropdownDelete() {
@@ -37,7 +41,7 @@ function toggleDropdownDelete() {
 <template>
 	<div class="my-2 w-full flex flex-row items-center justify-between cursor-pointer">
 		<!-- Title -->
-		<button class="flex flex-grow flex-col overflow-hidden focus:outline-none" @click="setActiveDraft(draft)">
+		<button class="flex flex-grow flex-col overflow-hidden focus:outline-none" @click="setActiveDraft">
 			<h6
 				class="truncate text-base font-semibold dark:text-darkPrimaryText"
 				:style="$route.name === `home` && inWidget ? `max-width: 259px` : `max-width: 390px`"
@@ -50,7 +54,7 @@ function toggleDropdownDelete() {
 		<button
 			class="mx-4 w-24 flex-shrink-0 items-center focus:outline-none"
 			:class="inWidget ? `hidden xl:flex` : `flex`"
-			@click="setActiveDraft(draft)"
+			@click="setActiveDraft"
 		>
 			<img
 				v-if="featuredPhoto !== null"
@@ -75,12 +79,12 @@ function toggleDropdownDelete() {
 				:class="settings.isDarkMode ? `dropdownDraftOpenDark` : `dropdownDraftOpen`"
 				style="top: 35px; right: -5px"
 			>
-				<button class="focus:outline-none text-primary flex" @click="setActiveDraft(draft)">
+				<button class="focus:outline-none text-primary flex" @click="setActiveDraft">
 					<PencilIcon class="fill-current p-1" />
 					<span class="text-primary ml-1 self-center text-sm">Edit this draft</span>
 				</button>
 				<!-- Delete -->
-				<button class="focus:outline-none text-negative mt-2 flex" @click="deleteDraft(draft)">
+				<button class="focus:outline-none text-negative mt-2 flex" @click="deleteDraft">
 					<BinIcon class="p-1" />
 					<span class="text-negative ml-1 self-center text-sm">Delete this draft</span>
 				</button>

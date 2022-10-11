@@ -14,10 +14,12 @@ import { useStoreSettings } from '@/store/settings';
 import ProfileIcon from './icons/ProfileIcon.vue';
 import SettingsIcon from './icons/SettingsIcon.vue';
 import LogoutIcon from './icons/LogoutIcon.vue';
+import { useDraftStore } from '@/store/drafts';
 
 const sessionStore = useStore();
 const settings = useStoreSettings();
 const router = useRouter();
+const draftStore = useDraftStore();
 
 const showMobileMenu = ref(false);
 const showDropdown = ref(false);
@@ -37,6 +39,11 @@ onMounted(() => {
 		}
 	});
 });
+
+function goWrite() {
+	draftStore.createNewDraft();
+	router.push(`/write`);
+}
 
 function toggleDropdown() {
 	showDropdown.value = !showDropdown.value;
@@ -97,12 +104,14 @@ function logout() {
 					:style="router.currentRoute.value.name === `Bookmarks` ? `padding: 0` : `padding: 0 0.111rem`"
 					>Bookmarks</router-link
 				>
-				<router-link
+				<button
 					to="/write"
 					style="padding: 0.6rem 1.7rem"
 					class="mx-4 bg-primary dark:bg-secondary text-lightButtonText focus:outline-none transform rounded-lg font-bold transition duration-500 ease-in-out hover:shadow-lg"
-					>Write a Post</router-link
+					@click="goWrite"
 				>
+					Write a Post
+				</button>
 			</div>
 			<!-- Right side: avatar & icons -->
 			<div class="relative flex flex-row">

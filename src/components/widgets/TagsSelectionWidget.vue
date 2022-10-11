@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Tag } from '@/backend/post';
 import { ref } from 'vue';
+import XIcon from '@/components/icons/XIcon.vue';
 
 const tag = ref<string>(``);
 const dummyTags = ref<Array<Tag>>([]);

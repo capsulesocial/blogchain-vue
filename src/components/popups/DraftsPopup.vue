@@ -1,41 +1,13 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { Post } from '@/backend/post';
+import { useDraftStore } from '@/store/drafts';
 import HorizontalDraftPreview from '@/components/HorizontalDraftPreview.vue';
 import SecondaryButton from '@/components/SecondaryButton.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
-
-type DraftPost = Omit<Post, `authorID`>;
+import { computed } from 'vue';
 
 const emit = defineEmits([`close`]);
-
-// TODO: fetch followers from store / backend
-const drafts = ref<DraftPost[]>([
-	{
-		title: `First Draft`,
-		subtitle: ``,
-		content: ``,
-		featuredPhotoCID: null,
-		featuredPhotoCaption: null,
-		tags: [],
-		category: ``,
-		timestamp: 0,
-		postImages: [],
-		encrypted: false,
-	},
-	{
-		title: `Second Draft`,
-		subtitle: ``,
-		content: ``,
-		featuredPhotoCID: null,
-		featuredPhotoCaption: null,
-		tags: [],
-		category: ``,
-		timestamp: 1,
-		postImages: [],
-		encrypted: false,
-	},
-]);
+const draftStore = useDraftStore();
+const drafts = computed(() => draftStore.$state.drafts);
 </script>
 <template>
 	<div
@@ -61,6 +33,7 @@ const drafts = ref<DraftPost[]>([
 						:text="`Write a post`"
 						:action="
 							() => {
+								draftStore.createNewDraft();
 								$router.push(`/post`);
 							}
 						"
