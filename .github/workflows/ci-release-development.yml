@@ -2,6 +2,7 @@ name: Development Deploy
 on:
   push:
     tags:
+      - alpha2
       - payments
 
 jobs:
