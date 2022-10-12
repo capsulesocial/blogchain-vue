@@ -1,4 +1,5 @@
 import { Account, connect, Contract, keyStores, Near, providers, WalletConnection } from 'near-api-js';
+import { QueryResponseKind } from 'near-api-js/lib/providers/provider';
 import { KeyPairEd25519 } from 'near-api-js/lib/utils';
 import { base_decode as baseDecode, base_encode as baseEncode } from 'near-api-js/lib/utils/serialize';
 import { getNearConfig, domain } from './utilities/config';
@@ -39,8 +40,12 @@ function getRpcProviderUrl() {
 
 const provider = new providers.JsonRpcProvider({ url: getRpcProviderUrl() });
 
+interface IProviderQueryResult extends QueryResponseKind {
+	result: string;
+}
+
 export async function getUsernameNEAR(accountId: string): Promise<string | null> {
-	const rawResult = await provider.query({
+	const rawResult = await provider.query<IProviderQueryResult>({
 		request_type: `call_function`,
 		account_id: nearConfig.contractName,
 		method_name: `getUsername`,
@@ -51,7 +56,7 @@ export async function getUsernameNEAR(accountId: string): Promise<string | null>
 	if (`result` in rawResult) {
 		// format result
 		// res = [accountId, base58_encode_public_key]
-		const res = JSON.parse(Buffer.from((rawResult as any).result).toString());
+		const res = JSON.parse(Buffer.from(rawResult.result).toString());
 		return res;
 	}
 
@@ -59,7 +64,7 @@ export async function getUsernameNEAR(accountId: string): Promise<string | null>
 }
 
 export async function getIsAccountIdOnboarded(accountId: string): Promise<boolean> {
-	const rawResult = await provider.query({
+	const rawResult = await provider.query<IProviderQueryResult>({
 		request_type: `call_function`,
 		account_id: nearConfig.contractName,
 		method_name: `isAccountOnboarded`,
@@ -70,7 +75,7 @@ export async function getIsAccountIdOnboarded(accountId: string): Promise<boolea
 	if (`result` in rawResult) {
 		// format result
 		// res = [accountId, base58_encode_public_key]
-		const res = JSON.parse(Buffer.from((rawResult as any).result).toString());
+		const res = JSON.parse(Buffer.from(rawResult.result).toString());
 		return res;
 	}
 
@@ -165,10 +170,13 @@ export async function getNearPrivateKey(nearAccountId?: string) {
 	}
 
 	const keystore = new keyStores.BrowserLocalStorageKeyStore();
-	const keypair = (await keystore.getKey(nearConfig.networkId, accountId)) as KeyPairEd25519 | null;
-
+	const keypair = await keystore.getKey(nearConfig.networkId, accountId);
 	if (!keypair) {
 		return null;
+	}
+
+	if (!(keypair instanceof KeyPairEd25519)) {
+		throw new Error(`malformed keypair!`);
 	}
 
 	return keypair.secretKey;
@@ -212,8 +220,8 @@ export async function removeNearPrivateKey(nearAccountId?: string | null) {
 export async function getUserInfoNEAR(
 	username: string,
 ): Promise<{ accountId: string; publicKey: Uint8Array; blocked?: true }> {
-	const contract = getContract() as any;
-	const userInfo = (await contract.getUserInfo({ username })) as null | Array<string>;
+	const contract: any = getContract();
+	const userInfo: null | Array<string> = await contract.getUserInfo({ username });
 	if (!userInfo) {
 		throw new Error(`Username not found on NEAR!`);
 	}
@@ -245,8 +253,8 @@ enum SetUserInfoStatus {
 }
 
 export async function setUserInfoNEAR(username: string) {
-	const contract = getContract() as any;
-	const status = (await contract.setUserInfo({ args: { username } })) as SetUserInfoStatus;
+	const contract: any = getContract();
+	const status: SetUserInfoStatus = await contract.setUserInfo({ args: { username } });
 	switch (status) {
 		case SetUserInfoStatus.Success:
 			return { success: true };
@@ -270,8 +278,8 @@ export async function setUserInfoNEAR(username: string) {
 }
 
 export async function validateUsernameNEAR(username: string) {
-	const contract = getContract() as any;
-	const status = (await contract.validateUsername({ username })) as 1 | 2 | 3 | 4 | 7 | 8;
+	const contract: any = getContract();
+	const status: 1 | 2 | 3 | 4 | 7 | 8 = await contract.validateUsername({ username });
 	switch (status) {
 		case 1:
 			return { success: true };
