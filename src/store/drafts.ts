@@ -69,5 +69,11 @@ export const useDraftStore = defineStore(`draftStore`, {
 		changeCategory(c: string) {
 			this.drafts[this.activeIndex].category = c;
 		},
+		updateFeaturedPhotoCID(cid: string | null) {
+			this.drafts[this.activeIndex].featuredPhotoCID = cid;
+		},
+		updateFeaturedPhotoCaption(caption: string | null) {
+			this.drafts[this.activeIndex].featuredPhotoCaption = caption;
+		},
 	},
 });
