@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue';
 import { useMeta } from 'vue-meta';
 import { useDraftStore } from '@/store/drafts';
 import XIcon from '@/components/icons/XIcon.vue';
+import Quill from '@/components/Editor/Quill.vue';
 import { qualitySubtitle, qualityTitle } from '@/plugins/quality';
 import { isError } from '@/plugins/helpers';
 
@@ -140,6 +141,9 @@ onMounted(() => {
 				style="resize: none"
 				@input="handleSubtitle"
 			/>
+
+			<!-- WYSIWYG -->
+			<Quill />
 		</article>
 	</div>
 </template>
