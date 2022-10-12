@@ -294,8 +294,10 @@ export async function getPosts(
 	return res.data.data;
 }
 
-export async function getTags(): Promise<string[]> {
-	const res = await axios.get(`${nodeUrl()}/content/tags`);
+export async function getTags(timeframe = Timeframe.WEEK): Promise<string[]> {
+	const url =
+		timeframe === Timeframe.ALL_TIME ? `${nodeUrl()}/content/tags` : `${nodeUrl()}/content/tags?timeframe=${timeframe}`;
+	const res = await axios.get(url);
 	return res.data.data;
 }
 

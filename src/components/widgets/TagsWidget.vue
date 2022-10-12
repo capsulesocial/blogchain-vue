@@ -13,12 +13,12 @@ const settings = useStoreSettings();
 const postsStore = usePostsStore();
 
 // TODO: fetch tags from store / backend
-const tags = ref<string[]>([`test`]);
+const tags = ref<string[]>([]);
 const showAlgorithmDropdown = ref<boolean>(false);
 const timeFrames = [Timeframe.WEEK, Timeframe.MONTH, Timeframe.YEAR, Timeframe.ALL_TIME];
 const selectedTimeframe = ref<Timeframe>(Timeframe.MONTH);
 
-async function handleTagFeed(timeframe?: Timeframe): Promise<void> {
+async function handleTagFeed(timeframe: Timeframe): Promise<void> {
 	if (!timeframe) {
 		return;
 	}
@@ -36,7 +36,7 @@ window.addEventListener(`click`, (e: Event): void => {
 });
 
 onMounted(async () => {
-	handleTagFeed();
+	handleTagFeed(Timeframe.MONTH);
 });
 </script>
 <template>
@@ -47,7 +47,7 @@ onMounted(async () => {
 			</h3>
 			<button
 				id="filter"
-				class="toggle focus:outline-none lg:ml-4 flex items-center justify-between rounded-lg border dark:border-gray3 text-sm shadow-lg dark:text-gray3"
+				class="toggle focus:outline-none lg:ml-4 flex items-center justify-between rounded-lg border dark:border-gray3 text-sm shadow-lg dark:text-gray3 mt-2"
 				@click.stop="showAlgorithmDropdown = !showAlgorithmDropdown"
 			>
 				<span class="toggle font-bold capitalize pl-4">
