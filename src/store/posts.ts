@@ -257,10 +257,10 @@ export const usePostsStore = defineStore(`posts`, {
 			}
 		},
 		async retrieveTags(timeframe: Timeframe) {
+			if (!timeframe) {
+				return;
+			}
 			try {
-				if (!timeframe) {
-					return;
-				}
 				return await getTags(timeframe);
 			} catch (error: unknown) {
 				handleError(error);
