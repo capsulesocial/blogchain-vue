@@ -136,7 +136,7 @@ onBeforeMount(() => {
 					/>
 				</div>
 				<div class="ml-4 flex flex-grow flex-col">
-					<div class="flex flex-row">
+					<router-link :to="`/id/` + author.id" class="flex flex-row">
 						<span
 							v-if="author.name !== ``"
 							class="text-base dark:text-darkPrimaryText transition ease-in-out hover:underline mr-2 font-medium"
@@ -147,7 +147,7 @@ onBeforeMount(() => {
 							{{ author.id }}
 						</span>
 						<span class="text-gray5 dark:text-gray3"> @{{ author.id }} </span>
-					</div>
+					</router-link>
 					<!-- Timestamp and reading time -->
 					<TimestampAndReadingTime
 						class="flex flex-row mt-1 items-center"
