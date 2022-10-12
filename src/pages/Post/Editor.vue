@@ -3,6 +3,8 @@ import { computed, onMounted, ref } from 'vue';
 import { useMeta } from 'vue-meta';
 import { useDraftStore } from '@/store/drafts';
 import XIcon from '@/components/icons/XIcon.vue';
+import { qualitySubtitle, qualityTitle } from '@/plugins/quality';
+import { isError } from '@/plugins/helpers';
 
 useMeta({
 	title: `dynamicPostTitle`,
@@ -13,8 +15,8 @@ const draftStore = useDraftStore();
 const draft = computed(() => draftStore.getActiveDraft);
 
 const isSaving = ref<boolean>(false);
-const titleError = ref<string>(`titleError`);
-const subtitleError = ref<string>(`subtitleError`);
+const titleError = ref<string>(``);
+const subtitleError = ref<string>(``);
 const titleInput = ref<HTMLTextAreaElement>();
 const subtitleInput = ref<HTMLTextAreaElement>();
 
@@ -29,7 +31,16 @@ function handleTitle(e: any) {
 	}
 	titleInput.value.style.height = `60px`;
 	titleInput.value.style.height = `${titleInput.value.scrollHeight}px`;
-	const title: string = titleInput.value.value.replace(/\n*$/, '');
+	const title: string = titleInput.value.value.trim();
+	const titleQualityCheck = qualityTitle(title);
+	if (isError(titleQualityCheck)) {
+		if (titleQualityCheck.error === `Please enter a title.`) {
+			return;
+		}
+		titleError.value = titleQualityCheck.error;
+	} else {
+		titleError.value = ``;
+	}
 	draftStore.setTitle(title);
 }
 
@@ -39,13 +50,36 @@ function handleSubtitle(e: any) {
 	}
 	if (e.inputType === `insertLineBreak` || (e.inputType === `insertText` && e.data === null)) {
 		e.preventDefault();
+		subtitleInput.value.value.replace(/\n*$/, '');
 		// focus on editor
 	}
-	const subtitle: string = subtitleInput.value.value.replace(/\n*$/, '');
+	subtitleInput.value.style.height = `60px`;
+	subtitleInput.value.style.height = `${subtitleInput.value.scrollHeight}px`;
+	const subtitle: string = subtitleInput.value.value.trim();
+	const subtitleQualityCheck = qualitySubtitle(subtitle);
+	if (isError(subtitleQualityCheck)) {
+		subtitleError.value = subtitleQualityCheck.error;
+	} else {
+		subtitleError.value = ``;
+	}
 	draftStore.setSubtitle(subtitle);
 }
 
-function handleSave() {}
+async function sleep(ms: any) {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function handleSave() {
+	isSaving.value = true;
+	// this.updateContent()
+	await sleep(600);
+	console.log(`done sleeping`);
+	// isSaving.value = `done`
+	await sleep(800);
+	isSaving.value = false;
+	// const editor = this.$refs.editor as any
+	// editor?.setupEditor()
+}
 function saveContent() {}
 
 onMounted(() => {
@@ -62,10 +96,10 @@ onMounted(() => {
 </script>
 
 <template>
-	<div id="scrollable_content">
+	<div id="scrollable_content" class="p-8">
 		<!-- Title, subtitle -->
 		<article class="flex flex-col px-2">
-			<div v-if="isSaving && $route.name !== 'home'" class="absolute right-0 top-0 flex flex-row items-center m-8">
+			<div v-if="!isSaving && $route.name !== 'home'" class="absolute right-0 top-0 flex flex-row items-center m-8">
 				<p class="mr-5 cursor-pointer text-primary" @click="handleSave">Save</p>
 				<button class="bg-gray1 dark:bg-gray5 focus:outline-none rounded-full p-1" @click="saveContent">
 					<XIcon />
