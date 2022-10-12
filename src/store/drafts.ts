@@ -2,8 +2,12 @@ import { defineStore } from 'pinia';
 import type { Post, Tag } from '@/backend/post';
 import { useStore } from '@/store/session';
 
+interface DraftPost extends Post {
+	accessTiers: Array<string>;
+}
+
 export interface DraftStore {
-	drafts: Post[];
+	drafts: DraftPost[];
 	activeIndex: number;
 }
 
@@ -19,7 +23,7 @@ export const useDraftStore = defineStore(`draftStore`, {
 		getActiveDraft: (state: DraftStore) => {
 			return state.drafts[state.activeIndex];
 		},
-		getDraftIndex: (state: DraftStore) => (draft: Post) => {
+		getDraftIndex: (state: DraftStore) => (draft: DraftPost) => {
 			return state.drafts.indexOf(draft);
 		},
 		getDraftTags: (state: DraftStore) => {
@@ -36,7 +40,7 @@ export const useDraftStore = defineStore(`draftStore`, {
 		},
 		createNewDraft() {
 			const date = new Date().getTime();
-			const blank: Post = {
+			const blank: DraftPost = {
 				authorID: useStore().$state.id,
 				title: ``,
 				subtitle: ``,
@@ -47,6 +51,8 @@ export const useDraftStore = defineStore(`draftStore`, {
 				featuredPhotoCaption: null,
 				postImages: [],
 				timestamp: date,
+				encrypted: false,
+				accessTiers: [],
 			};
 			this.drafts.push(blank);
 			this.activeIndex = this.drafts.indexOf(blank);
@@ -74,6 +80,16 @@ export const useDraftStore = defineStore(`draftStore`, {
 		},
 		updateFeaturedPhotoCaption(caption: string | null) {
 			this.drafts[this.activeIndex].featuredPhotoCaption = caption;
+		},
+		toggleEncrypted() {
+			this.drafts[this.activeIndex].encrypted = !this.drafts[this.activeIndex].encrypted;
+		},
+		addTier(t: string) {
+			this.drafts[this.activeIndex].accessTiers.push(t);
+		},
+		removeTier(t: string) {
+			const i = this.drafts[this.activeIndex].accessTiers.indexOf(t);
+			this.drafts[this.activeIndex].accessTiers.splice(i, 1);
 		},
 	},
 });
