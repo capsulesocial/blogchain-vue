@@ -1,17 +1,28 @@
 <script setup lang="ts">
 import { Tag } from '@/backend/post';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import XIcon from '@/components/icons/XIcon.vue';
+import { useDraftStore } from '@/store/drafts';
+import { qualityTags } from '@/plugins/quality';
+import { toastError } from '@/plugins/toast';
+import { isError } from '@/plugins/helpers';
 
+const draftStore = useDraftStore();
 const tag = ref<string>(``);
-const dummyTags = ref<Array<Tag>>([]);
+const tags = computed(() => draftStore.getDraftTags);
 
 function addTag() {
-	return;
+	const quality: { error: string } | { success: boolean } = qualityTags(tag.value, draftStore.getDraftTags);
+	if (isError(quality)) {
+		toastError(quality.error);
+		return;
+	}
+	draftStore.addTag(tag.value);
+	tag.value = ``;
 }
 
 function removeTag(tag: Tag) {
-	return;
+	draftStore.removeTag(tag);
 }
 </script>
 <template>
@@ -31,7 +42,7 @@ function removeTag(tag: Tag) {
 		</div>
 		<div class="flex flex-row flex-wrap">
 			<button
-				v-for="t in dummyTags"
+				v-for="t in tags"
 				:key="t.name"
 				class="focus:outline-none bg-gray1 dark:bg-gray7 z-10 mr-4 mt-2 flex flex-row items-center rounded-lg px-3 py-1"
 				@click="removeTag(t)"

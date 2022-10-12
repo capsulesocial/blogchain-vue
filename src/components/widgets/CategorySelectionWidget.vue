@@ -2,14 +2,19 @@
 import { ref } from 'vue';
 import { useStoreSettings } from '@/store/settings';
 import { categories } from '@/config/config';
-
+import { useDraftStore } from '@/store/drafts';
 import ChevronUp from '@/components/icons/ChevronUp.vue';
 import ChevronDown from '@/components/icons/ChevronDown.vue';
 
 const settings = useStoreSettings();
+const draftStore = useDraftStore();
 const categoryList = categories;
-const category = ref(``);
 const showCategoryDropdown = ref(false);
+
+function setCategory(c: string) {
+	draftStore.changeCategory(c);
+	showCategoryDropdown.value = false;
+}
 </script>
 
 <template>
@@ -20,18 +25,22 @@ const showCategoryDropdown = ref(false);
 			@click="showCategoryDropdown = !showCategoryDropdown"
 		>
 			<div class="flex items-center justify-between">
-				<div v-if="category" class="flex flex-row items-center">
-					<!-- <img
+				<div v-if="draftStore.drafts[draftStore.activeIndex].category !== ``" class="flex flex-row items-center">
+					<img
 						:src="
 							settings.isDarkMode
-								? require(`@/assets/images/category/` + $store.state.draft.drafts[$store.state.draft.activeIndex].category + `/dark/icon.webp`)
-								: require(`@/assets/images/category/` + $store.state.draft.drafts[$store.state.draft.activeIndex].category + `/light/icon.webp`)
+								? require(`@/assets/images/category/` +
+										draftStore.drafts[draftStore.activeIndex].category +
+										`/dark/icon.webp`)
+								: require(`@/assets/images/category/` +
+										draftStore.drafts[draftStore.activeIndex].category +
+										`/light/icon.webp`)
 						"
 						class="hotzone mr-1 h-8 w-8"
 					/>
 					<span class="text-primary dark:text-gray1 text-base capitalize">{{
-						$store.state.draft.drafts[$store.state.draft.activeIndex].category.replace(`-`, ` `)
-					}}</span> -->
+						draftStore.drafts[draftStore.activeIndex].category.replace(`-`, ` `)
+					}}</span>
 				</div>
 				<div v-else class="text-gray5 dark:text-gray3">Select a Category</div>
 				<ChevronUp v-if="showCategoryDropdown" />
@@ -43,6 +52,7 @@ const showCategoryDropdown = ref(false);
 				v-for="c in categoryList"
 				:key="c"
 				class="focus:outline-none modal-animation flex h-10 w-full items-center px-2 capitalize"
+				@click="setCategory(c)"
 			>
 				<img
 					:src="
@@ -52,7 +62,14 @@ const showCategoryDropdown = ref(false);
 					"
 					class="hotzone mr-1 h-8 w-8"
 				/>
-				<span class="ml-2" :class="category === c ? ' font-semibold text-primary' : ' text-gray5 dark:text-gray3'">
+				<span
+					class="ml-2"
+					:class="
+						draftStore.drafts[draftStore.activeIndex].category === c
+							? ' font-semibold text-primary'
+							: ' text-gray5 dark:text-gray3'
+					"
+				>
 					{{ c.replace(`-`, ` `) }}</span
 				>
 			</button>

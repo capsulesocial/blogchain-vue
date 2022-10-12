@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import type { Post } from '@/backend/post';
+import type { Post, Tag } from '@/backend/post';
 import { useStore } from '@/store/session';
 
 export interface DraftStore {
@@ -21,6 +21,9 @@ export const useDraftStore = defineStore(`draftStore`, {
 		},
 		getDraftIndex: (state: DraftStore) => (draft: Post) => {
 			return state.drafts.indexOf(draft);
+		},
+		getDraftTags: (state: DraftStore) => {
+			return state.drafts[state.activeIndex].tags;
 		},
 	},
 	actions: {
@@ -53,6 +56,18 @@ export const useDraftStore = defineStore(`draftStore`, {
 		},
 		setSubtitle(subtitle: string) {
 			this.drafts[this.activeIndex].subtitle = subtitle;
+		},
+		addTag(tag: string) {
+			this.drafts[this.activeIndex].tags.push({ name: tag });
+		},
+		removeTag(tag: Tag) {
+			const i = this.drafts[this.activeIndex].tags.indexOf(tag);
+			if (i > -1) {
+				this.drafts[this.activeIndex].tags.splice(i, 1);
+			}
+		},
+		changeCategory(c: string) {
+			this.drafts[this.activeIndex].category = c;
 		},
 	},
 });
