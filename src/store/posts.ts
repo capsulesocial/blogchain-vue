@@ -1,4 +1,4 @@
-import { Algorithm, getPosts, IGenericPostResponse, readableTimeframe, Timeframe } from '@/backend/post';
+import { Algorithm, getPosts, IGenericPostResponse, readableTimeframe, Timeframe, getTags } from '@/backend/post';
 import { getBookmarksOfUser, sendBookmarkEvent } from '@/backend/bookmarks';
 import { sendPostDeletion } from '@/backend/postDeletion';
 import { handleError, toastSuccess } from '@/plugins/toast';
@@ -252,6 +252,16 @@ export const usePostsStore = defineStore(`posts`, {
 				handleError(err);
 			} finally {
 				toastSuccess(`Post has been hidden from feed`);
+			}
+		},
+		async retrieveTags(timeframe: Timeframe) {
+			if (!timeframe) {
+				return;
+			}
+			try {
+				return await getTags(timeframe);
+			} catch (error: unknown) {
+				handleError(error);
 			}
 		},
 	},
