@@ -141,7 +141,8 @@ export const useSubscriptionStore = defineStore(`subscriptions`, {
 					const res = this.handleAuthenticatedPayment(paymentAttemptId, clientSecret);
 					this.isLoading = false;
 					return res;
-				} else if (status !== `succeeded`) {
+				}
+				if (status !== `succeeded`) {
 					this.cardErrorMessage = `Payment is in invalid state`;
 					this.isLoading = false;
 					return false;
