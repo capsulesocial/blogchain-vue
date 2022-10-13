@@ -16,8 +16,9 @@ import {
 	ImageBlotFactory,
 	EditorImages,
 } from '@/helpers/editor';
-import { onMounted, ref } from 'vue';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { handleError } from '@/plugins/toast';
+import { useDraftStore } from '@/store/drafts';
 
 const toolbarOptions = [
 	[`bold`, `italic`, `underline`, `strike`],
@@ -43,6 +44,7 @@ const options = {
 	},
 };
 
+defineExpose({ updateContent });
 const emit = defineEmits([`onError`, `isWriting`, `editorImageUpdates`, `updateWordCount`]);
 
 const props = withDefaults(
@@ -64,6 +66,7 @@ const props = withDefaults(
 	},
 );
 
+const draftStore = useDraftStore();
 const toggleAddContent = ref(false);
 const addContentPosTop = ref(0);
 const addContentPosLeft = ref(0);
@@ -132,6 +135,13 @@ function getInputHTML(): string {
 	}
 	// Sanitize HTML
 	return sanitize(input);
+}
+
+function updateContent() {
+	const editorHtml = getInputHTML();
+	if (editorHtml !== ``) {
+	}
+	draftStore.updateContent(editorHtml);
 }
 
 function calculateAddPos(index: number) {
@@ -433,6 +443,10 @@ onMounted(() => {
 		editorImages.value = props.initialEditorImages;
 	}
 	setupEditor();
+});
+
+onBeforeUnmount(() => {
+	updateContent();
 });
 </script>
 

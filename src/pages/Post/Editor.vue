@@ -9,6 +9,7 @@ import { isError } from '@/plugins/helpers';
 import { validMimeTypes } from '@/backend/utilities/helpers';
 import { uploadPhoto } from '@/backend/photos';
 import { BASE_ALLOWED_TAGS } from '@/helpers/helpers';
+import router from '@/router';
 
 useMeta({
 	title: `dynamicPostTitle`,
@@ -22,6 +23,7 @@ const titleError = ref(``);
 const subtitleError = ref(``);
 const titleInput = ref<HTMLTextAreaElement>();
 const subtitleInput = ref<HTMLTextAreaElement>();
+const editor = ref();
 
 function handleTitle(e: any) {
 	if (!titleInput.value || !subtitleInput.value || !e) {
@@ -74,16 +76,16 @@ async function sleep(ms: any) {
 
 async function handleSave() {
 	isSaving.value = true;
-	// this.updateContent()
+	editor.value.updateContent();
 	await sleep(600);
 	console.log(`done sleeping`);
-	// isSaving.value = `done`
 	await sleep(800);
 	isSaving.value = false;
-	// const editor = this.$refs.editor as any
-	// editor?.setupEditor()
 }
-function saveContent() {}
+function saveContent() {
+	editor.value.updateContent();
+	router.go(-1);
+}
 
 onMounted(() => {
 	if (!titleInput.value || !subtitleInput.value) {
@@ -146,6 +148,7 @@ onMounted(() => {
 
 			<!-- WYSIWYG -->
 			<Quill
+				ref="editor"
 				:initial-content="draft.content"
 				:valid-image-types="validMimeTypes"
 				:image-uploader="uploadPhoto"

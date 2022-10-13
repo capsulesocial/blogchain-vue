@@ -91,5 +91,8 @@ export const useDraftStore = defineStore(`draftStore`, {
 			const i = this.drafts[this.activeIndex].accessTiers.indexOf(t);
 			this.drafts[this.activeIndex].accessTiers.splice(i, 1);
 		},
+		updateContent(c: string) {
+			this.drafts[this.activeIndex].content = c;
+		},
 	},
 });
