@@ -17,22 +17,10 @@ function promiseCache<T>() {
 }
 
 export default function cache<T>(fetchFunction: (key: string) => Promise<T>) {
-	const _cache = new Map<string, T>();
 	const _promiseCache = promiseCache<T>();
 
-	return async function (key: string, update = false): Promise<T> {
-		if (!update) {
-			const cached = _cache.get(key);
-			if (cached !== undefined) {
-				if (typeof cached === `object`) {
-					return { ...cached };
-				}
-				return cached;
-			}
-		}
-
+	return async function (key: string): Promise<T> {
 		const result = await _promiseCache(key, fetchFunction);
-		_cache.set(key, result);
 		if (typeof result === `object`) {
 			return { ...result };
 		}

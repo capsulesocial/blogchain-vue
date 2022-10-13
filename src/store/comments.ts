@@ -27,13 +27,13 @@ export const useCommentsStore = defineStore(`comments`, {
 		};
 	},
 	getters: {
-		getCommentStats: (state: Comments) => (postCID: string) => {
+		getCommentStats: (state) => (postCID: string) => {
 			return state.commentsStats.get(postCID);
 		},
-		getCommentsOfPost: (state: Comments) => (postCID: string) => {
+		getCommentsOfPost: (state) => (postCID: string) => {
 			return state.postComments.get(postCID);
 		},
-		getCommentsOfAuthor: (state: Comments) => (authorID: string) => {
+		getCommentsOfAuthor: (state) => (authorID: string) => {
 			return state.authorComments.get(authorID);
 		},
 	},

@@ -132,7 +132,7 @@ async function updateFromProfile() {
 	// Update Avatar
 	if (newAvatarCID.value !== ``) {
 		store.setAvatar(newAvatarCID.value);
-		getProfile(store.$state.id, true); // Update cached profile
+		getProfile(store.$state.id);
 	}
 	try {
 		const profileUpdated = await store.updateFromProfile();
