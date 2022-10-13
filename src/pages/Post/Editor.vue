@@ -3,8 +3,13 @@ import { computed, onMounted, ref } from 'vue';
 import { useMeta } from 'vue-meta';
 import { useDraftStore } from '@/store/drafts';
 import XIcon from '@/components/icons/XIcon.vue';
+import Quill from '@/components/Editor/Quill.vue';
 import { qualitySubtitle, qualityTitle } from '@/plugins/quality';
 import { isError } from '@/plugins/helpers';
+import { validMimeTypes } from '@/backend/utilities/helpers';
+import { uploadPhoto } from '@/backend/photos';
+import { BASE_ALLOWED_TAGS } from '@/helpers/helpers';
+import router from '@/router';
 
 useMeta({
 	title: `dynamicPostTitle`,
@@ -13,12 +18,12 @@ useMeta({
 
 const draftStore = useDraftStore();
 const draft = computed(() => draftStore.getActiveDraft);
-
-const isSaving = ref<boolean>(false);
-const titleError = ref<string>(``);
-const subtitleError = ref<string>(``);
+const isSaving = ref(false);
+const titleError = ref(``);
+const subtitleError = ref(``);
 const titleInput = ref<HTMLTextAreaElement>();
 const subtitleInput = ref<HTMLTextAreaElement>();
+const editor = ref();
 
 function handleTitle(e: any) {
 	if (!titleInput.value || !subtitleInput.value || !e) {
@@ -71,16 +76,16 @@ async function sleep(ms: any) {
 
 async function handleSave() {
 	isSaving.value = true;
-	// this.updateContent()
+	editor.value.updateContent();
 	await sleep(600);
 	console.log(`done sleeping`);
-	// isSaving.value = `done`
 	await sleep(800);
 	isSaving.value = false;
-	// const editor = this.$refs.editor as any
-	// editor?.setupEditor()
 }
-function saveContent() {}
+function saveContent() {
+	editor.value.updateContent();
+	router.go(-1);
+}
 
 onMounted(() => {
 	if (!titleInput.value || !subtitleInput.value) {
@@ -96,7 +101,7 @@ onMounted(() => {
 </script>
 
 <template>
-	<div id="scrollable_content" class="p-8">
+	<div id="scrollable_content" class="min-h-61 h-61 w-full overflow-y-auto lg:overflow-y-hidden relative">
 		<!-- Title, subtitle -->
 		<article class="flex flex-col px-2">
 			<div v-if="!isSaving && $route.name !== 'home'" class="absolute right-0 top-0 flex flex-row items-center m-8">
@@ -139,6 +144,16 @@ onMounted(() => {
 				wrap="soft"
 				style="resize: none"
 				@input="handleSubtitle"
+			/>
+
+			<!-- WYSIWYG -->
+			<Quill
+				ref="editor"
+				:initial-content="draft.content"
+				:valid-image-types="validMimeTypes"
+				:image-uploader="uploadPhoto"
+				:is-primary-widget="false"
+				:allowed-tags="BASE_ALLOWED_TAGS"
 			/>
 		</article>
 	</div>

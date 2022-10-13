@@ -2,6 +2,7 @@
 import TopHeader from './components/TopHeader.vue';
 import WidgetsContainer from './components/WidgetsContainer.vue';
 import '@/assets/css/tailwind.css';
+import '@/assets/css/quill.css';
 import TitleContainer from './components/TitleContainer.vue';
 import UnauthPopup from '@/components/popups/UnauthPopup.vue';
 
@@ -51,7 +52,7 @@ onBeforeMount(() => {
 const routeName = computed(() => {
 	const name = router.currentRoute.value.name;
 	if (name && typeof name !== `string`) {
-		throw new Error(`router name should be a string`);
+		throw new Error(`route name should be a string`);
 	}
 
 	return name;
@@ -75,7 +76,7 @@ watch(router.currentRoute, () => {
 	</metainfo>
 
 	<!-- Full screen pages -->
-	<router-view v-if="unauthRoutes.includes(routeName)" :key="$route.path" />
+	<router-view v-if="unauthRoutes.includes(routeName ? routeName : ``)" :key="$route.path" />
 	<!-- wrapper -->
 	<main
 		v-else
@@ -101,15 +102,15 @@ watch(router.currentRoute, () => {
 			<div class="flex flex-col w-full lg:w-11/12 xl:w-10/12 max-w-1220">
 				<TopHeader />
 				<!-- Body -->
-				<TitleContainer v-if="routesWithTitle.includes(routeName)" />
+				<TitleContainer v-if="routesWithTitle.includes(routeName ? routeName : ``)" />
 				<section class="modal-animation flex flex-row">
 					<div
-						:class="fullPageRoutes.includes(routeName) ? `w-full` : `lg:w-7.5`"
+						:class="fullPageRoutes.includes(routeName ? routeName : ``) ? `w-full` : `lg:w-7.5`"
 						class="min-h-61 h-61 bg-lightBG dark:bg-darkBGStop border border-lightBorder z-10 w-full overflow-y-hidden rounded-t-lg shadow-lg relative"
 					>
 						<router-view :key="$route.path" />
 					</div>
-					<WidgetsContainer v-if="!fullPageRoutes.includes(routeName)" />
+					<WidgetsContainer v-if="!fullPageRoutes.includes(routeName ? routeName : ``)" />
 				</section>
 			</div>
 		</div>
