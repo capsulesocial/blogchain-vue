@@ -69,7 +69,7 @@ const addContentPosTop = ref(0);
 const addContentPosLeft = ref(0);
 const waitingImage = ref(false);
 const qeditor = ref<Quill>();
-const editor = ref(null);
+const editor = ref<QuillMarkdown>();
 const editorImages = ref(new Map());
 
 async function handleCutPaste(range: RangeStatic, pastedText: string) {
