@@ -17,10 +17,9 @@ useMeta({
 
 const draftStore = useDraftStore();
 const draft = computed(() => draftStore.getActiveDraft);
-
-const isSaving = ref<boolean>(false);
-const titleError = ref<string>(``);
-const subtitleError = ref<string>(``);
+const isSaving = ref(false);
+const titleError = ref(``);
+const subtitleError = ref(``);
 const titleInput = ref<HTMLTextAreaElement>();
 const subtitleInput = ref<HTMLTextAreaElement>();
 
@@ -100,7 +99,7 @@ onMounted(() => {
 </script>
 
 <template>
-	<div id="scrollable_content" class="p-8">
+	<div id="scrollable_content" class="min-h-61 h-61 w-full overflow-y-auto lg:overflow-y-hidden relative">
 		<!-- Title, subtitle -->
 		<article class="flex flex-col px-2">
 			<div v-if="!isSaving && $route.name !== 'home'" class="absolute right-0 top-0 flex flex-row items-center m-8">
