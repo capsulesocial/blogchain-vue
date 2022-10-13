@@ -51,7 +51,7 @@ const isActiveSub = ref(false);
 const activeSub = ref<ISubscriptionWithProfile>();
 const fromExternalSite = ref(false);
 const selfView = computed(() => authorID.value === store.$state.id);
-const longBio = computed(() => profile.value.bio.length > 200);
+const longBio = computed(() => profile.value.bio.trim().length > 230);
 const showAvatarPopup = ref(false);
 const scrollingDown = ref(false);
 const lastScroll = ref(0);
@@ -116,7 +116,6 @@ function handleScroll() {
 		return;
 	}
 	// scrolling down
-	console.log(currentScroll, ` `, lastScroll.value);
 	scrollingDown.value = currentScroll > lastScroll.value;
 	// set new value at end
 	lastScroll.value = currentScroll;
@@ -340,7 +339,7 @@ onMounted(async () => {
 				class="header-profile px-1 pt-4 dark:text-darkPrimaryText"
 				:style="expandBio ? `` : `max-height: 5.5rem; overflow: hidden`"
 			>
-				<p>{{ profile.bio.slice(0, 260) + (profile.bio.length > 260 ? '...' : '') }}<br /></p>
+				<p>{{ profile.bio.trim().slice(0, 230) + (profile.bio.trim().length > 230 ? '...' : '') }}<br /></p>
 			</div>
 			<button
 				v-show="longBio"
