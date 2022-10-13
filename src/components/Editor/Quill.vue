@@ -1,22 +1,23 @@
 <script setup lang="ts">
 import DOMPurify from 'dompurify';
-// import type { RangeStatic, Quill } from 'quill';
+import type { RangeStatic, Quill } from 'quill';
 // import type { PropType } from 'vue';
-// import QuillMarkdown from 'quilljs-markdown';
+import QuillMarkdown from 'quilljs-markdown';
 import hljs from 'highlight.js';
-// import turndownService from './TurndownService';
+import turndownService from '@/helpers/turndownService';
 import EditorActions from './EditorActions.vue';
 import {
 	getBlobExtension,
-	// getContentImages,
-	// InsertContent,
-	// isError,
-	// createEditorImageSet,
-	// counterModuleFactory,
-	// ImageBlotFactory,
+	getContentImages,
+	InsertContent,
+	isError,
+	createEditorImageSet,
+	counterModuleFactory,
+	ImageBlotFactory,
 	EditorImages,
 } from '@/helpers/editor';
 import { onMounted, ref } from 'vue';
+import { handleError } from '@/plugins/toast';
 
 const toolbarOptions = [
 	[`bold`, `italic`, `underline`, `strike`],
@@ -42,7 +43,7 @@ const options = {
 	},
 };
 
-const emit = defineEmits([`onError`]);
+const emit = defineEmits([`onError`, `isWriting`, `editorImageUpdates`, `updateWordCount`]);
 
 const props = withDefaults(
 	defineProps<{
@@ -67,11 +68,33 @@ const toggleAddContent = ref(false);
 const addContentPosTop = ref(0);
 const addContentPosLeft = ref(0);
 const waitingImage = ref(false);
-const qeditor = ref(null);
+const qeditor = ref<Quill>();
 const editor = ref(null);
 const editorImages = ref(new Map());
 
-function setupEditor() {}
+async function handleCutPaste(range: RangeStatic, pastedText: string) {
+	const { default: QuillClass } = await import(`quill`);
+	const Delta = QuillClass.import(`delta`);
+	const delta = new Delta().compose(new Delta().retain(range.index + range.length).insert(pastedText));
+	qeditor.value?.updateContents(delta);
+	setTimeout(() => qeditor.value?.setSelection(range.index + pastedText.length, 0, `user`), 0);
+}
+
+async function handleImage(e: Event) {
+	e.stopPropagation();
+	e.preventDefault();
+	const eventTarget = e.target;
+	if (!eventTarget) {
+		return;
+	}
+	const target = eventTarget as HTMLInputElement;
+	const { files } = target;
+	if (!files || files.length !== 1) {
+		return;
+	}
+	await handleFile(files[0]);
+	target.value = ``;
+}
 
 async function urlToFile(url: string): Promise<{ file: File } | { error: string }> {
 	try {
@@ -131,312 +154,279 @@ function calculateAddPos(index: number) {
 	}
 }
 
+function insertContent(content: InsertContent | null, plainText = false) {
+	try {
+		if (!qeditor.value || !content) {
+			return;
+		}
+		const range = qeditor.value.getSelection(true);
+		if (typeof content === `string`) {
+			if (plainText) {
+				qeditor.value.insertText(range.index, content, `user`);
+			} else {
+				qeditor.value.clipboard.dangerouslyPasteHTML(range.index, content, `user`);
+			}
+		} else {
+			const { cid, url } = content;
+			qeditor.value.insertEmbed(range.index, `image`, { alt: cid.toString(), url }, `user`);
+		}
+		const contentLength = qeditor.value.getContents().length();
+		setTimeout(() => {
+			qeditor.value?.setSelection(contentLength, 0, `user`);
+			calculateAddPos(contentLength);
+		}, 0);
+	} catch (error: any) {
+		emit(`onError`, error);
+	}
+}
+
+function updatePostImages(
+	cid: string,
+	image: Blob,
+	imageName: string,
+	encryptionData?: { key: string; counter: string },
+): { error: string } | { success: boolean } {
+	if (!editorImages.value) {
+		return { error: `no images in the editor` };
+	}
+	// If we have already added this image in the past, we don't need to reupload it to the server
+	if (editorImages.value.has(cid)) {
+		return { success: true };
+	}
+	if (editorImages.value.size === props.maxPostImages) {
+		waitingImage.value = false;
+		return { error: `Cannot add more than ${props.maxPostImages} images in a post` };
+	}
+	editorImages.value.set(cid, encryptionData ?? {});
+	emit(`editorImageUpdates`, {
+		editorImages: editorImages.value,
+		newImage: { cid, image, imageName },
+	});
+	return { success: true };
+}
+
+async function handleFile(file: File) {
+	if (props.validImageTypes && !props.validImageTypes.includes(file.type)) {
+		emit(`onError`, new Error(`image of type ${file.type} is invalid`));
+		return;
+	}
+	try {
+		waitingImage.value = true;
+		toggleAddContent.value = false;
+		const res = await props.imageUploader(file, props.encryptedContent);
+		const { cid, url, image, imageName } = res;
+		const updatedPostImages = updatePostImages(cid, image, imageName);
+		if (isError(updatedPostImages)) {
+			emit(`onError`, new Error(updatedPostImages.error));
+			waitingImage.value = false;
+			return;
+		}
+		insertContent({ cid, url });
+		waitingImage.value = false;
+	} catch (err: unknown) {
+		waitingImage.value = false;
+		handleError(err);
+	}
+}
+
+async function handleHtml(pastedContent: string) {
+	const domParser = new DOMParser();
+	const content = domParser.parseFromString(pastedContent, `text/html`);
+	const contentImgs = content.getElementsByTagName(`img`);
+	if (contentImgs.length > props.maxPostImages) {
+		waitingImage.value = false;
+		emit(`onError`, new Error(`Cannot add more than ${props.maxPostImages} images in a post`));
+		return null;
+	}
+	for (const img of contentImgs) {
+		waitingImage.value = true;
+		toggleAddContent.value = false;
+		const f = await urlToFile(img.src);
+		if (isError(f)) {
+			emit(`onError`, new Error(f.error));
+			img.remove();
+			continue;
+		}
+		try {
+			const res = await props.imageUploader(f.file, props.encryptedContent);
+			const { cid, url, image, imageName } = res;
+			const updatedPostImages = updatePostImages(cid, image, imageName);
+			if (isError(updatedPostImages)) {
+				emit(`onError`, new Error(updatedPostImages.error));
+				return null;
+			}
+			const newImg = document.createElement(`img`);
+			newImg.setAttribute(`src`, url.toString());
+			newImg.setAttribute(`alt`, cid);
+			img.replaceWith(newImg);
+		} catch (err: any) {
+			waitingImage.value = false;
+			emit(`onError`, err);
+			return null;
+		}
+	}
+	waitingImage.value = false;
+	return content.body.innerHTML;
+}
+
+async function handleDroppedContent(e: DragEvent) {
+	e.stopPropagation();
+	e.preventDefault();
+	if (!e.dataTransfer) {
+		return;
+	}
+	const droppedHtml = sanitize(e.dataTransfer.getData(`text/html`));
+	const droppedText = sanitize(e.dataTransfer.getData(`text/plain`));
+	const { files } = e.dataTransfer;
+	const file = files[0];
+
+	// handle dropped file
+	if (file) {
+		await handleFile(file);
+		return;
+	}
+
+	if (!file && (droppedHtml || droppedHtml !== ``)) {
+		const content = await handleHtml(droppedHtml);
+		insertContent(content);
+		return;
+	}
+
+	if (!file && !droppedHtml) {
+		insertContent(droppedText, true);
+	}
+}
+
+async function handlePastedContent(e: ClipboardEvent) {
+	e.stopPropagation();
+	e.preventDefault();
+
+	if (!qeditor.value) {
+		emit(`onError`, new Error(`Something went wrong while pasting the content`));
+		return;
+	}
+	if (!e.clipboardData) {
+		return;
+	}
+	const clipboard = e.clipboardData;
+	const items = Array.from(clipboard.items);
+	const pastedContent = sanitize(clipboard.getData(`text/html`));
+	const pastedText = sanitize(clipboard.getData(`text/plain`));
+	const pastedFile = items.length > 0 ? items[0].getAsFile() : null;
+	const contentImgs = getContentImages(pastedContent);
+	const range = qeditor.value.getSelection(true);
+
+	function scrollToBottom(e: ClipboardEvent) {
+		const scrollContainer = document.getElementById(`editor`);
+		if (e && e.target && scrollContainer) {
+			const target = e.target as HTMLElement;
+			if (target.outerHTML === `<br>`) {
+				scrollContainer.scrollTop = addContentPosTop.value;
+				return;
+			}
+
+			target.scrollIntoView();
+		}
+	}
+
+	// handle cut and paste
+	if (qeditor.value.getLength() !== range.index + 1 && contentImgs.length === 0 && !pastedFile) {
+		handleCutPaste(range, pastedText);
+		scrollToBottom(e);
+		return;
+	}
+
+	// handle pasted content
+	if (pastedContent || pastedContent !== ``) {
+		const content = await handleHtml(pastedContent);
+		insertContent(content);
+		scrollToBottom(e);
+		return;
+	}
+
+	// handle pasted file
+	if (pastedFile) {
+		await handleFile(pastedFile);
+		return;
+	}
+	// handle if text only
+	if (!pastedFile && (!pastedContent || pastedContent === ``)) {
+		insertContent(pastedText, true);
+	}
+	scrollToBottom(e);
+}
+
 async function setupEditor() {
 	const { default: QuillClass } = await import(`quill`);
 	const Link = QuillClass.import(`formats/link`);
 	const builtInFunc = Link.sanitize;
+	// Handle link validation
+	Link.sanitize = function customSanitizeLinkInput(linkValueInput: string) {
+		let val = linkValueInput;
+		if (/^\w+:/.test(val)) {
+			// do nothing, since this implies user's already using a custom protocol
+		} else if (!/^https?:/.test(val)) {
+			val = `https://` + val;
+		}
+		return builtInFunc.call(this, val); // retain the built-in logic
+	};
+	// Handle updates to body
+	const onTextChange = (_delta?: any, oldDelta?: any, source?: string) => {
+		if (qeditor.value && source === `user`) {
+			const currentContent = qeditor.value.getContents();
+			const diff = currentContent.diff(oldDelta);
+			const imageInCurrentContent = currentContent.ops.find((op: any) => op.insert && op.insert.image);
+			const imageInDiff = diff.ops.find((op: any) => op.insert && op.insert.image);
+			if ((imageInCurrentContent || imageInDiff) && editorImages.value) {
+				const clean = turndownService.turndown(getInputHTML());
+				editorImages.value = createEditorImageSet(clean, editorImages.value);
+				emit(`editorImageUpdates`, { editorImages: editorImages.value });
+			}
+		}
+		emit(`isWriting`, true);
+		const text = getInputHTML().replace(/(<([^>]+)>)/gi, ` `);
+		const n = text.split(/\s+/).length;
+		emit(`updateWordCount`, n);
+	};
+	// Handles draft overlay
+	const onSelectionChange = (range: RangeStatic) => {
+		if (!range) {
+			emit(`isWriting`, false);
+		}
+	};
+	// Handles add content button
+	const onEditorChange = (eventName: string, ...args: any[]) => {
+		if (eventName === `selection-change`) {
+			if (!args[0]) {
+				toggleAddContent.value = false;
+				return;
+			}
+			calculateAddPos(args[0].index);
+		}
+	};
+
+	QuillClass.register(ImageBlotFactory(QuillClass), true);
+	QuillClass.register(
+		`modules/counter`,
+		counterModuleFactory(QuillClass, onTextChange.bind(this), onSelectionChange.bind(this), onEditorChange.bind(this)),
+		true,
+	);
+	const e = new QuillClass(`#editor`, options);
+	qeditor.value = e;
+	qeditor.value.root.addEventListener(`drop`, (ev: DragEvent) => {
+		handleDroppedContent(ev);
+	});
+	qeditor.value.root.addEventListener(`paste`, (ev: ClipboardEvent) => {
+		handlePastedContent(ev);
+	});
+	qeditor.value.focus();
+	// Set link placeholder
+	const qe: HTMLElement | null = document.querySelector(`.ql-tooltip-editor input`);
+	if (qe) {
+		qe.setAttribute(`data-link`, `https://capsule.social`);
+	}
+	editor.value = new QuillMarkdown(e, {});
 }
-
-export default Vue.extend({
-	methods: {
-		async setupEditor() {
-			// Handle link validation
-			const { default: QuillClass } = await import(`quill`);
-			const Link = QuillClass.import(`formats/link`);
-			const builtInFunc = Link.sanitize;
-			Link.sanitize = function customSanitizeLinkInput(linkValueInput: string) {
-				let val = linkValueInput;
-				if (/^\w+:/.test(val)) {
-					// do nothing, since this implies user's already using a custom protocol
-				} else if (!/^https?:/.test(val)) {
-					val = `https://` + val;
-				}
-				return builtInFunc.call(this, val); // retain the built-in logic
-			};
-			// Handle updates to body
-			const onTextChange = (_delta?: any, oldDelta?: any, source?: string) => {
-				if (this.qeditor && source === `user`) {
-					const currentContent = this.qeditor.getContents();
-					const diff = currentContent.diff(oldDelta);
-					const imageInCurrentContent = currentContent.ops.find((op: any) => op.insert && op.insert.image);
-					const imageInDiff = diff.ops.find((op: any) => op.insert && op.insert.image);
-					if ((imageInCurrentContent || imageInDiff) && this.editorImages) {
-						const clean = turndownService.turndown(this.getInputHTML());
-						this.editorImages = createEditorImageSet(clean, this.editorImages);
-						this.$emit(`editorImageUpdates`, { editorImages: this.editorImages });
-					}
-				}
-				this.$emit(`isWriting`, true);
-				const text = this.getInputHTML().replace(/(<([^>]+)>)/gi, ` `);
-				const n = text.split(/\s+/).length;
-				this.$emit(`updateWordCount`, n);
-			};
-			// Handles draft overlay
-			const onSelectionChange = (range: RangeStatic) => {
-				if (!range) {
-					this.$emit(`isWriting`, false);
-				}
-			};
-			// Handles add content button
-			const onEditorChange = (eventName: string, ...args: any[]) => {
-				if (eventName === `selection-change`) {
-					if (!args[0]) {
-						this.toggleAddContent = false;
-						return;
-					}
-					this.calculateAddPos(args[0].index);
-				}
-			};
-
-			QuillClass.register(ImageBlotFactory(QuillClass), true);
-			QuillClass.register(
-				`modules/counter`,
-				counterModuleFactory(
-					QuillClass,
-					onTextChange.bind(this),
-					onSelectionChange.bind(this),
-					onEditorChange.bind(this),
-				),
-				true,
-			);
-			const editor = new QuillClass(`#editor`, options);
-			this.qeditor = editor;
-			this.qeditor.root.addEventListener(`drop`, (ev: DragEvent) => {
-				this.handleDroppedContent(ev);
-			});
-			this.qeditor.root.addEventListener(`paste`, (ev: ClipboardEvent) => {
-				this.handlePastedContent(ev);
-			});
-			this.qeditor.focus();
-			// Set link placeholder
-			const qe: HTMLElement | null = document.querySelector(`.ql-tooltip-editor input`);
-			if (qe) {
-				qe.setAttribute(`data-link`, `https://capsule.social`);
-			}
-			this.editor = new QuillMarkdown(editor, {});
-		},
-		updatePostImages(
-			cid: string,
-			image: Blob,
-			imageName: string,
-			encryptionData?: { key: string; counter: string },
-		): { error: string } | { success: boolean } {
-			if (!this.editorImages) {
-				return { error: `no images in the editor` };
-			}
-			// If we have already added this image in the past, we don't need to reupload it to the server
-			if (this.editorImages.has(cid)) {
-				return { success: true };
-			}
-			if (this.editorImages.size === this.maxPostImages) {
-				this.waitingImage = false;
-				return { error: `Cannot add more than ${this.maxPostImages} images in a post` };
-			}
-			this.editorImages.set(cid, encryptionData ?? {});
-			this.$emit(`editorImageUpdates`, {
-				editorImages: this.editorImages,
-				newImage: { cid, image, imageName },
-			});
-			return { success: true };
-		},
-		async handleHtml(pastedContent: string) {
-			const domParser = new DOMParser();
-			const content = domParser.parseFromString(pastedContent, `text/html`);
-			const contentImgs = content.getElementsByTagName(`img`);
-			if (contentImgs.length > this.maxPostImages) {
-				this.waitingImage = false;
-				this.$emit(`onError`, new Error(`Cannot add more than ${this.maxPostImages} images in a post`));
-				return null;
-			}
-			for (const img of contentImgs) {
-				this.waitingImage = true;
-				this.toggleAddContent = false;
-				const f = await this.urlToFile(img.src);
-				if (isError(f)) {
-					this.$emit(`onError`, new Error(f.error));
-					img.remove();
-					continue;
-				}
-				try {
-					const res = await this.imageUploader(f.file, this.encryptedContent);
-					const { cid, url, image, imageName } = res;
-					const updatedPostImages = this.updatePostImages(cid, image, imageName);
-					if (isError(updatedPostImages)) {
-						this.$emit(`onError`, new Error(updatedPostImages.error));
-						return null;
-					}
-					const newImg = document.createElement(`img`);
-					newImg.setAttribute(`src`, url.toString());
-					newImg.setAttribute(`alt`, cid);
-					img.replaceWith(newImg);
-				} catch (err: any) {
-					this.waitingImage = false;
-					this.$emit(`onError`, err);
-					return null;
-				}
-			}
-			this.waitingImage = false;
-			return content.body.innerHTML;
-		},
-		async handleImage(e: Event) {
-			e.stopPropagation();
-			e.preventDefault();
-			const eventTarget = e.target;
-			if (!eventTarget) {
-				return;
-			}
-
-			const target = eventTarget as HTMLInputElement;
-
-			const { files } = target;
-			if (!files || files.length !== 1) {
-				return;
-			}
-
-			await this.handleFile(files[0]);
-			target.value = ``;
-		},
-		insertContent(content: InsertContent | null, plainText = false) {
-			try {
-				if (!this.qeditor || !content) {
-					return;
-				}
-				const range = this.qeditor.getSelection(true);
-				if (typeof content === `string`) {
-					if (plainText) {
-						this.qeditor.insertText(range.index, content, `user`);
-					} else {
-						this.qeditor.clipboard.dangerouslyPasteHTML(range.index, content, `user`);
-					}
-				} else {
-					const { cid, url } = content;
-					this.qeditor.insertEmbed(range.index, `image`, { alt: cid.toString(), url }, `user`);
-				}
-				const contentLength = this.qeditor.getContents().length();
-				setTimeout(() => {
-					this.qeditor?.setSelection(contentLength, 0, `user`);
-					this.calculateAddPos(contentLength);
-				}, 0);
-			} catch (error: any) {
-				this.$emit(`onError`, error);
-			}
-		},
-		async handleFile(file: File) {
-			if (this.validImageTypes && !this.validImageTypes.includes(file.type)) {
-				this.$emit(`onError`, new Error(`image of type ${file.type} is invalid`));
-				return;
-			}
-			try {
-				this.waitingImage = true;
-				this.toggleAddContent = false;
-				const res = await this.imageUploader(file, this.encryptedContent);
-				const { cid, url, image, imageName } = res;
-				const updatedPostImages = this.updatePostImages(cid, image, imageName);
-				if (isError(updatedPostImages)) {
-					this.$emit(`onError`, new Error(updatedPostImages.error));
-					this.waitingImage = false;
-					return;
-				}
-				this.insertContent({ cid, url });
-				this.waitingImage = false;
-			} catch (err: unknown) {
-				this.waitingImage = false;
-				this.$handleError(err);
-			}
-		},
-		async handleDroppedContent(e: DragEvent) {
-			e.stopPropagation();
-			e.preventDefault();
-			if (!e.dataTransfer) {
-				return;
-			}
-			const droppedHtml = this.sanitize(e.dataTransfer.getData(`text/html`));
-			const droppedText = this.sanitize(e.dataTransfer.getData(`text/plain`));
-			const { files } = e.dataTransfer;
-			const file = files[0];
-
-			// handle dropped file
-			if (file) {
-				await this.handleFile(file);
-				return;
-			}
-
-			if (!file && (droppedHtml || droppedHtml !== ``)) {
-				const content = await this.handleHtml(droppedHtml);
-				this.insertContent(content);
-				return;
-			}
-
-			if (!file && !droppedHtml) {
-				this.insertContent(droppedText, true);
-			}
-		},
-		async handleCutPaste(range: RangeStatic, pastedText: string) {
-			const { default: QuillClass } = await import(`quill`);
-			const Delta = QuillClass.import(`delta`);
-			const delta = new Delta().compose(new Delta().retain(range.index + range.length).insert(pastedText));
-			this.qeditor?.updateContents(delta);
-			setTimeout(() => this.qeditor?.setSelection(range.index + pastedText.length, 0, `user`), 0);
-		},
-		scrollToBottom(e: ClipboardEvent) {
-			const scrollContainer = document.getElementById(`editor`);
-			if (e && e.target && scrollContainer) {
-				const target = e.target as HTMLElement;
-				if (target.outerHTML === `<br>`) {
-					scrollContainer.scrollTop = this.addContentPosTop;
-					return;
-				}
-
-				target.scrollIntoView();
-			}
-		},
-		async handlePastedContent(e: ClipboardEvent) {
-			e.stopPropagation();
-			e.preventDefault();
-
-			if (!this.qeditor) {
-				this.$emit(`onError`, new Error(`Something went wrong while pasting the content`));
-				return;
-			}
-			if (!e.clipboardData) {
-				return;
-			}
-			const clipboard = e.clipboardData;
-			const items = Array.from(clipboard.items);
-			const pastedContent = this.sanitize(clipboard.getData(`text/html`));
-			const pastedText = this.sanitize(clipboard.getData(`text/plain`));
-			const pastedFile = items.length > 0 ? items[0].getAsFile() : null;
-			const contentImgs = getContentImages(pastedContent);
-			const range = this.qeditor.getSelection(true);
-
-			// handle cut and paste
-			if (this.qeditor.getLength() !== range.index + 1 && contentImgs.length === 0 && !pastedFile) {
-				this.handleCutPaste(range, pastedText);
-				this.scrollToBottom(e);
-				return;
-			}
-
-			// handle pasted content
-			if (pastedContent || pastedContent !== ``) {
-				const content = await this.handleHtml(pastedContent);
-				this.insertContent(content);
-				this.scrollToBottom(e);
-				return;
-			}
-
-			// handle pasted file
-			if (pastedFile) {
-				await this.handleFile(pastedFile);
-				return;
-			}
-			// handle if text only
-			if (!pastedFile && (!pastedContent || pastedContent === ``)) {
-				this.insertContent(pastedText, true);
-			}
-			this.scrollToBottom(e);
-		},
-	},
-});
 
 onMounted(() => {
 	if (props.initialEditorImages) {
