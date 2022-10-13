@@ -116,7 +116,6 @@ function handleScroll() {
 		return;
 	}
 	// scrolling down
-	console.log(currentScroll, ` `, lastScroll.value);
 	scrollingDown.value = currentScroll > lastScroll.value;
 	// set new value at end
 	lastScroll.value = currentScroll;
