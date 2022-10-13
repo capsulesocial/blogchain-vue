@@ -4,18 +4,14 @@ export interface ISignedIPFSObject<T> {
 	public_key: string;
 }
 
-export const validFileTypes = [`png`, `jpeg`, `jpg`, `avif`, `webp`];
-export const validMimeTypes = validFileTypes.map((t) => `image/${t}`);
+export type ValidFileTypes = `png` | `jpeg` | `jpg` | `avif` | `webp`;
+export type ValidMimeTypes = `image/${ValidFileTypes}`;
+export type ValidExtensions = `.${ValidFileTypes}`;
 
-export function uint8ArrayToHexString(uint8Array: Uint8Array): string {
-	return Buffer.from(uint8Array).toString(`hex`);
-}
+export const validFileTypes: ValidFileTypes[] = [`png`, `jpeg`, `jpg`, `avif`, `webp`];
+export const validMimeTypes: ValidMimeTypes[] = validFileTypes.map<ValidMimeTypes>((t) => `image/${t}`);
 
-export function hexStringToUint8Array(hexString: string): Uint8Array {
-	return new Uint8Array(Buffer.from(hexString, `hex`));
-}
-
-export function getBlobExtension(blob: Blob): string | null {
+export function getBlobExtension(blob: Blob): ValidExtensions | null {
 	switch (blob.type) {
 		case `image/png`:
 			return `.png`;
@@ -30,6 +26,14 @@ export function getBlobExtension(blob: Blob): string | null {
 		default:
 			return null;
 	}
+}
+
+export function uint8ArrayToHexString(uint8Array: Uint8Array): string {
+	return Buffer.from(uint8Array).toString(`hex`);
+}
+
+export function hexStringToUint8Array(hexString: string): Uint8Array {
+	return new Uint8Array(Buffer.from(hexString, `hex`));
 }
 
 export function getExpTimestamp() {
