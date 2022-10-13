@@ -18,12 +18,12 @@ const category = computed(() => {
 });
 
 const categoryPosts = computed(() => postsStore.getCategoryPosts(category.value));
-const lastScroll = ref<number>(0);
-const isScrollingDown = ref<boolean>(false);
-const offset = ref<number>(0);
-const limit = ref<number>(10);
-const isLoading = ref<boolean>(true);
-const noMorePosts = ref<boolean>(false);
+const lastScroll = ref(0);
+const isScrollingDown = ref(false);
+const offset = ref(0);
+const limit = ref(10);
+const isLoading = ref(true);
+const noMorePosts = ref(false);
 
 useMeta({
 	title: `${category.value.charAt(0).toUpperCase() + category.value.slice(1)} category on Blogchain`,
@@ -32,48 +32,32 @@ useMeta({
 
 function collapse() {
 	const body = document.getElementById(`scrollable_content`);
-	const header = document.getElementById(`header`);
 	const buttontitle = document.getElementById(`buttontitle`);
 	const buttonbg = document.getElementById(`buttonbg`);
 	const title = document.getElementById(`title`);
-	const hiddentitle = document.getElementById(`hiddentitle`);
-	const scrollUp = `scrollup`;
-	const scrollDown = `scrolldown`;
 	const opacity0 = `opacity0`;
 	const opacity1 = `opacity1`;
-	if (!body || !buttontitle || !buttonbg || !title || !hiddentitle || !header) {
+	if (!body || !buttontitle || !buttonbg || !title) {
 		return;
 	}
 	const currentScroll = body.scrollTop;
-	if (currentScroll > lastScroll.value && !header.classList.contains(scrollDown)) {
+	if (currentScroll > lastScroll.value) {
 		// down
 		isScrollingDown.value = true;
-		header.classList.remove(scrollUp);
 		buttontitle.classList.remove(opacity1);
 		buttonbg.classList.remove(opacity1);
 		title.classList.remove(opacity1);
-		hiddentitle.classList.remove(opacity0);
-		header.classList.add(scrollDown);
 		buttontitle.classList.add(opacity0);
 		buttonbg.classList.add(opacity0);
 		title.classList.add(opacity0);
-		hiddentitle.classList.add(opacity1);
-	} else if (
-		currentScroll < lastScroll.value &&
-		header.classList.contains(scrollDown) &&
-		body.scrollTop + body.clientHeight !== body.scrollHeight
-	) {
+	} else if (currentScroll < lastScroll.value && body.scrollTop + body.clientHeight !== body.scrollHeight) {
 		// up
-		isScrollingDown.value = true;
-		header.classList.remove(scrollDown);
+		isScrollingDown.value = false;
 		buttontitle.classList.remove(opacity0);
 		buttonbg.classList.remove(opacity0);
 		title.classList.remove(opacity0);
-		hiddentitle.classList.remove(opacity1);
-		header.classList.add(scrollUp);
 		buttontitle.classList.add(opacity1);
 		title.classList.add(opacity1);
-		hiddentitle.classList.add(opacity0);
 	}
 	lastScroll.value = currentScroll;
 	if (body.scrollTop + body.clientHeight >= body.scrollHeight - 5 && !isLoading.value && !noMorePosts.value) {
@@ -102,8 +86,8 @@ onMounted(() => {
 <template>
 	<!-- Header -->
 	<div
-		id="header"
-		class="bg-darkBG dark:bg-lightBG animatefast flex h-56 w-full flex-row items-center rounded-lg shadow-lg"
+		class="bg-darkBG dark:bg-lightBG animatefast flex w-full flex-row items-center rounded-lg shadow-lg"
+		:class="isScrollingDown ? `scrolldown h-16` : `scrollup h-56`"
 		:style="{
 			background: `linear-gradient(180deg, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.8) 100%), url(${require(`@/assets/images/category/` +
 				category +
@@ -124,8 +108,8 @@ onMounted(() => {
 					All categories
 				</p>
 				<h2
-					id="hiddentitle"
-					class="text-lightPrimaryText dark:text-darkPrimaryText animatelong absolute ml-8 -mt-1 px-2 text-xl font-semibold capitalize opacity-0"
+					class="text-lightPrimaryText dark:text-darkPrimaryText animatelong absolute ml-8 -mt-1 px-2 text-xl font-semibold capitalize"
+					:class="isScrollingDown ? `opacity-1` : `opacity-0`"
 				>
 					{{ category.replace(`-`, ` `) }}
 				</h2>
@@ -171,7 +155,6 @@ onMounted(() => {
 }
 .scrolldown {
 	background: linear-gradient(180deg, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, 0.25) 100%), none !important;
-	height: 4rem;
 }
 .scrollup {
 	opacity: 1;
