@@ -14,11 +14,11 @@ const postsStore = usePostsStore();
 
 // TODO: fetch tags from store / backend
 const tags = ref<string[]>([]);
-const showAlgorithmDropdown = ref<boolean>(false);
+const showAlgorithmDropdown = ref(false);
 const timeFrames = [Timeframe.WEEK, Timeframe.MONTH, Timeframe.YEAR, Timeframe.ALL_TIME];
-const selectedTimeframe = ref<Timeframe>(Timeframe.MONTH);
+const selectedTimeframe = ref(Timeframe.MONTH);
 
-async function handleTagFeed(timeframe: Timeframe): Promise<void> {
+async function handleTagFeed(timeframe: Timeframe) {
 	if (!timeframe) {
 		return;
 	}
@@ -28,7 +28,7 @@ async function handleTagFeed(timeframe: Timeframe): Promise<void> {
 		tags.value = trendingTags;
 	}
 }
-window.addEventListener(`click`, (e: Event): void => {
+window.addEventListener(`click`, (e: Event) => {
 	if (!showAlgorithmDropdown.value) {
 		return;
 	}
@@ -41,7 +41,7 @@ onMounted(async () => {
 </script>
 <template>
 	<div class="bg-lightBG dark:bg-darkBGStop mb-5 rounded-lg border border-lightBorder shadow-lg">
-		<div class="flex items-center relative modal-animation lg:pr-6">
+		<div class="flex justify-between items-center relative modal-animation lg:pr-6">
 			<h3 class="text-lightPrimaryText dark:text-darkPrimaryText text-base font-semibold mb-2 px-6 pt-4">
 				Trending topics
 			</h3>
@@ -58,7 +58,7 @@ onMounted(async () => {
 			</button>
 			<div
 				v-if="showAlgorithmDropdown"
-				class="hotzone border-lightBorder modal-animation absolute top-0 right-20 z-20 rounded-lg border bg-lightBG dark:bg-darkBG px-4 py-3 shadow-lg mr-0 lg:mr-6"
+				class="hotzone border-lightBorder modal-animation absolute top-0 right-0 z-20 rounded-lg border bg-lightBG dark:bg-darkBG px-4 py-3 shadow-lg mr-0 lg:mr-6"
 				style="margin-top: 40px"
 			>
 				<div
