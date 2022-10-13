@@ -5,7 +5,7 @@ import type { RangeStatic, Quill } from 'quill';
 import QuillMarkdown from 'quilljs-markdown';
 import hljs from 'highlight.js';
 import turndownService from '@/helpers/turndownService';
-import EditorActions from './EditorActions.vue';
+import EditorActions from '@/components/Editor/EditorActions.vue';
 import {
 	getBlobExtension,
 	getContentImages,
@@ -356,7 +356,7 @@ async function handlePastedContent(e: ClipboardEvent) {
 	scrollToBottom(e);
 }
 
-async function setupEditor() {
+async function setupEditor(this: any) {
 	const { default: QuillClass } = await import(`quill`);
 	const Link = QuillClass.import(`formats/link`);
 	const builtInFunc = Link.sanitize;

@@ -6,6 +6,9 @@ import XIcon from '@/components/icons/XIcon.vue';
 import Quill from '@/components/Editor/Quill.vue';
 import { qualitySubtitle, qualityTitle } from '@/plugins/quality';
 import { isError } from '@/plugins/helpers';
+import { validMimeTypes } from '@/backend/utilities/helpers';
+import { uploadPhoto } from '@/backend/photos';
+import { BASE_ALLOWED_TAGS } from '@/helpers/helpers';
 
 useMeta({
 	title: `dynamicPostTitle`,
@@ -143,7 +146,13 @@ onMounted(() => {
 			/>
 
 			<!-- WYSIWYG -->
-			<Quill />
+			<Quill
+				:initial-content="draft.content"
+				:valid-image-types="validMimeTypes"
+				:image-uploader="uploadPhoto"
+				:is-primary-widget="false"
+				:allowed-tags="BASE_ALLOWED_TAGS"
+			/>
 		</article>
 	</div>
 </template>

@@ -2,6 +2,7 @@
 import TopHeader from './components/TopHeader.vue';
 import WidgetsContainer from './components/WidgetsContainer.vue';
 import '@/assets/css/tailwind.css';
+import '@/assets/css/quill.css';
 import TitleContainer from './components/TitleContainer.vue';
 import UnauthPopup from '@/components/popups/UnauthPopup.vue';
 
