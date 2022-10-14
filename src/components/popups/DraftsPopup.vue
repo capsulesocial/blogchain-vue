@@ -34,7 +34,7 @@ const drafts = computed(() => draftStore.$state.drafts);
 						:action="
 							() => {
 								draftStore.createNewDraft();
-								$router.push(`/post`);
+								$router.push(`/write`);
 							}
 						"
 					/>
