@@ -147,7 +147,7 @@ onMounted(() => {
 			/>
 		</article>
 		<!-- WYSIWYG -->
-		<article class="absolute w-full">
+		<article class="w-full">
 			<Quill
 				ref="editor"
 				:initial-content="draft.content"
