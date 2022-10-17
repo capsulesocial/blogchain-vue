@@ -1,11 +1,15 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+
 import CloseIcon from '@/components/icons/XIcon.vue';
 import Avatar from '@/components/Avatar.vue';
-import { useStore } from '@/store/session';
-import { useRoute } from 'vue-router';
 import PencilIcon from '@/components/icons/Pencil.vue';
 import BrandedButton from '../BrandedButton.vue';
+
+import { useStore } from '@/store/session';
+import { useProfilesStore } from '@/store/profiles';
+import { useRoute } from 'vue-router';
+
 import { preUploadPhoto, uploadPhoto } from '@/backend/photos';
 import { getProfile } from '@/backend/profile';
 import { URLRegex, qualityBio, qualityLocation, qualityEmail } from '@/plugins/quality';
@@ -15,6 +19,7 @@ import { toastError, toastWarning, toastSuccess } from '@/plugins/toast';
 
 const store = useStore();
 const route = useRoute();
+const profilesStore = useProfilesStore();
 
 // refs
 const newName = ref<string>(``);
@@ -26,6 +31,12 @@ const uploadedPic = ref<HTMLElement>();
 const newEmail = ref<string>(``);
 const location = ref<string>(``);
 const website = ref<string>(``);
+const authorId = computed(() => {
+	if (typeof route.params.id !== `string`) {
+		throw new Error('route.params.id should not be an array!');
+	}
+	return route.params.id;
+});
 
 const emit = defineEmits(['close', 'updateProfileMethod']);
 
@@ -140,6 +151,7 @@ async function updateFromProfile() {
 			emit(`close`);
 			// Use HTML DOM styles: https://www.w3schools.com/jsref/dom_obj_style.asp
 			toastSuccess(`Your profile has been successfully updated`);
+			await profilesStore.fetchProfile(authorId.value);
 		}
 		emit(`updateProfileMethod`);
 	} catch (err) {
