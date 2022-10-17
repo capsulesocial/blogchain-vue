@@ -8,7 +8,7 @@ import TagCard from '@/components/TagCard.vue';
 import CommentIcon from '@/components/icons/CommentIcon.vue';
 import RepostIcon from '@/components/icons/RepostIcon.vue';
 import ShareIcon from '@/components/icons/ShareIcon.vue';
-import CrownIcon from '@/components/icons/Crown.vue';
+import CrownIcon from '@/components/icons/CrownIcon.vue';
 import StatsIcon from '@/components/icons/StatsIcon.vue';
 import IpfsImage from '@/components/IpfsImage.vue';
 import FriendButton from '@/components/FriendButton.vue';

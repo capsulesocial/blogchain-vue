@@ -8,7 +8,7 @@ import { getAmountFromTier, getCurrencySymbol, getZeroDecimalAmount, retrieveRea
 import Avatar from '@/components/Avatar.vue';
 import SecondaryButton from '@/components/SecondaryButton.vue';
 import CloseIcon from '@/components/icons/XIcon.vue';
-import CrownIcon from '@/components/icons/Crown.vue';
+import CrownIcon from '@/components/icons/CrownIcon.vue';
 import CheckCircleIcon from '@/components/icons/CheckCircle.vue';
 import ChevronLeft from '@/components/icons/ChevronLeft.vue';
 import CreditCardIcon from '@/components/icons/CreditCard.vue';

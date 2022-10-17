@@ -13,7 +13,7 @@ import IpfsImage from '@/components/IpfsImage.vue';
 
 import MoreIcon from '@/components/icons/MoreIcon.vue';
 import BinIcon from '@/components/icons/BinIcon.vue';
-import CrownIcon from '@/components/icons/Crown.vue';
+import CrownIcon from '@/components/icons/CrownIcon.vue';
 import TimestampAndReadingTime from '@/components/TimestampAndReadingTime.vue';
 
 const store = useStore();

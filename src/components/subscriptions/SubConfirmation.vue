@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import FriendButton from '@/components/FriendButton.vue';
 import Avatar from '@/components/Avatar.vue';
-import CrownIcon from '@/components/icons/Crown.vue';
+import CrownIcon from '@/components/icons/CrownIcon.vue';
 import { Profile } from '@/backend/profile';
 import { darkMode } from '@/plugins/colors';
 import { SubscriptionTier } from '@/store/paymentProfile';

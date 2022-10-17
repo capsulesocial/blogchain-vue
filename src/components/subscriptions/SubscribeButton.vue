@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import CrownIcon from '@/components/icons/Crown.vue';
+import CrownIcon from '@/components/icons/CrownIcon.vue';
 import PenIcon from '@/components/icons/Pencil.vue';
 
 const props = withDefaults(

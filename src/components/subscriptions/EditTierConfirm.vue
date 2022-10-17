@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import CrownIcon from '@/components/icons/Crown.vue';
+import CrownIcon from '@/components/icons/CrownIcon.vue';
 import CheckCircleIcon from '@/components/icons/CheckCircle.vue';
 import ChevronDownIcon from '@/components/icons/ChevronDown.vue';
 import TierSwitchButton from '@/components/subscriptions/TierSwitchButton.vue';

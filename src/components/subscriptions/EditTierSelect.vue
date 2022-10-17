@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import SwitchPeriod from '@/components/ToggleSwitch.vue';
-import CrownIcon from '@/components/icons/Crown.vue';
+import CrownIcon from '@/components/icons/CrownIcon.vue';
 import CheckCircleIcon from '@/components/icons/CheckCircle.vue';
 import TierSwitchButton from '@/components/subscriptions/TierSwitchButton.vue';
 import { ISubscriptionWithProfile } from '@/store/subscriptions';
