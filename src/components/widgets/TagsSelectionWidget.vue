@@ -44,7 +44,7 @@ function removeTag(tag: Tag) {
 			<button
 				v-for="t in tags"
 				:key="t.name"
-				class="focus:outline-none bg-gray1 dark:bg-gray7 z-10 mr-4 mt-2 flex flex-row items-center rounded-lg px-3 py-1"
+				class="focus:outline-none bg-gray1 dark:bg-gray7 mr-4 mt-2 flex flex-row items-center rounded-lg px-3 py-1"
 				@click="removeTag(t)"
 			>
 				<span class="text-gray5 dark:text-gray1 text-sm font-semibold">{{ t.name }}</span

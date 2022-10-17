@@ -87,8 +87,6 @@ async function sleep(ms: any) {
 async function handleSave() {
 	isSaving.value = true;
 	editor.value.updateContent();
-	await sleep(600);
-	console.log(`done sleeping`);
 	await sleep(800);
 	isSaving.value = false;
 }
