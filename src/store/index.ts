@@ -5,6 +5,7 @@ export interface RootState {
 	reposts: Record<string, string>;
 	recentlyJoined: boolean;
 	showUnauthPopup: boolean;
+	showDraftPreview: boolean;
 }
 
 export const useRootStore = defineStore(`rootStore`, {
@@ -15,6 +16,7 @@ export const useRootStore = defineStore(`rootStore`, {
 			reposts: {},
 			recentlyJoined: true,
 			showUnauthPopup: false,
+			showDraftPreview: false,
 		};
 	},
 	actions: {
@@ -23,6 +25,9 @@ export const useRootStore = defineStore(`rootStore`, {
 		},
 		toggleUnauthPopup(condition: boolean) {
 			this.showUnauthPopup = condition;
+		},
+		toggleDraftPreview(condition: boolean) {
+			this.showDraftPreview = condition;
 		},
 	},
 });

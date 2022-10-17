@@ -4,8 +4,8 @@ import { useStoreSettings } from '@/store/settings';
 import InfoIcon from '@/components/icons/Info.vue';
 import CloseIcon from '@/components/icons/XIcon.vue';
 
-const showInfoBubble = ref<boolean>(false);
-const isPosting = ref<boolean>(false);
+const showInfoBubble = ref(false);
+const isPosting = ref(false);
 const emit = defineEmits(['close', 'post']);
 const settingsStore = useStoreSettings();
 
@@ -21,7 +21,7 @@ function handlePost() {
 <template>
 	<div
 		class="popup bg-darkBG dark:bg-gray5 modal-animation fixed top-0 bottom-0 left-0 right-0 z-30 flex h-screen w-full items-center justify-center bg-opacity-50 dark:bg-opacity-50"
-		@click.stop="$emit(`close`)"
+		@click.self="$emit(`close`)"
 	>
 		<!-- Container -->
 		<section>
