@@ -22,15 +22,15 @@ const route = useRoute();
 const profilesStore = useProfilesStore();
 
 // refs
-const newName = ref<string>(``);
+const newName = ref(``);
 const profilePic = ref<null | string | ArrayBuffer>(null);
-const bio = ref<string>(``);
-const maxCharBio = ref<number>(textLimits.bio.max);
-const newAvatarCID = ref<string>(store.$state.avatar);
+const bio = ref(``);
+const maxCharBio = ref(textLimits.bio.max);
+const newAvatarCID = ref(store.$state.avatar);
 const uploadedPic = ref<HTMLElement>();
-const newEmail = ref<string>(``);
-const location = ref<string>(``);
-const website = ref<string>(``);
+const newEmail = ref(``);
+const location = ref(``);
+const website = ref(``);
 const authorId = computed(() => {
 	if (typeof route.params.id !== `string`) {
 		throw new Error('route.params.id should not be an array!');
