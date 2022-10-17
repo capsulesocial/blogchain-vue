@@ -5,7 +5,6 @@ const props = withDefaults(
 		noClick: boolean;
 	}>(),
 	{
-		tag: ``,
 		noClick: false,
 	},
 );
