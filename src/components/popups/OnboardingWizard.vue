@@ -81,7 +81,7 @@ async function getMyProfile(update = false) {
 	}
 }
 function updateFromWizard() {
-	if (route.name !== `help`) {
+	if (route.name !== `Help`) {
 		if (!settings.value) {
 			throw new Error(`This shouldn't happen`);
 		}
@@ -127,7 +127,7 @@ function closeWizard() {
 				</video>
 				<h6 class="mb-5 text-xl font-bold dark:text-darkPrimaryText">{{ getTitle() }}</h6>
 				<EditProfile
-					v-if="$route.name != `help` && step === 5"
+					v-if="$route.name != `Help` && step === 5"
 					ref="settings"
 					:update-profile-method="getMyProfile"
 					class="mb-4"
@@ -159,14 +159,14 @@ function closeWizard() {
 						@click="step = 4"
 					></button>
 					<button
-						v-if="$route.name != `help`"
+						v-if="$route.name != `Help`"
 						:class="step > 4 ? `bg-primary` : `bg-gray3`"
 						class="focus:outline-none mx-1 rounded-full p-1"
 						@click="step = 5"
 					></button>
 				</div>
 				<!-- Next button -->
-				<div v-if="(route.name === `help` && step === 4) || step === 5" class="mb-2">
+				<div v-if="(route.name === `Help` && step === 4) || step === 5" class="mb-2">
 					<BrandedButton
 						:action="
 							() => {
