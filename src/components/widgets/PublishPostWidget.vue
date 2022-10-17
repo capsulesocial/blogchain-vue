@@ -23,6 +23,9 @@ function togglePreview() {
 
 function sendPost() {
 	//send post to backend from store and redirect to the the published post
+	if (draftStore.checkPost) {
+		draftStore.sendPost();
+	}
 }
 </script>
 <template>
