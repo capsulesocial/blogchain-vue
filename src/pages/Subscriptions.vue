@@ -50,19 +50,19 @@ onMounted(async () => {
 		<h2 class="text-lightPrimaryText dark:text-darkPrimaryText text-lg font-semibold xl:text-xl">My subscriptions</h2>
 		<p class="text-gray5 dark:text-gray3">Here you can manage your active subscriptions to your favorite authors</p>
 	</div>
-	<article
-		id="scrollable_content"
-		class="min-h-115 h-115 w-full overflow-y-auto px-5 sm:px-4 xl:px-5 pt-2 lg:overflow-y-hidden relative"
-	>
+	<article id="scrollable_content" class="min-h-115 h-115 w-full overflow-y-auto pt-2 lg:overflow-y-hidden relative">
 		<!-- loading spinner -->
-		<div v-if="isLoading" class="modal-animation flex w-full justify-center z-20 mt-24">
+		<div v-if="isLoading" class="modal-animation flex w-full justify-center z-20 mt-24 px-5 sm:px-4 xl:px-5">
 			<div
 				class="loader m-5 border-2 border-gray1 dark:border-gray7 h-8 w-8 rounded-3xl"
 				:style="`border-top: 2px solid`"
 			></div>
 		</div>
 		<!-- show subscriptions -->
-		<div v-if="!isLoading && subscriptions.length > 0 && store.$state.id !== ``" class="flex flex-wrap items-start">
+		<div
+			v-if="!isLoading && subscriptions.length > 0 && store.$state.id !== ``"
+			class="flex flex-wrap items-start px-5 sm:px-4 xl:px-5"
+		>
 			<SubscriptionPreview
 				v-for="subscription in subscriptions"
 				:key="subscription.subscriptionId"
