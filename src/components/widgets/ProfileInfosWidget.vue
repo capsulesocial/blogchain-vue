@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useStore } from '@/store/session';
 import { useProfilesStore } from '@/store/profiles';
 import { useRoute } from 'vue-router';
@@ -11,15 +11,15 @@ import MailIcon from '@/components/icons/MailIcon.vue';
 const store = useStore();
 const route = useRoute();
 const profilesStore = useProfilesStore();
-const id = computed(() => {
+
+const authorId = computed(() => {
 	if (typeof route.params.id !== `string`) {
 		throw new Error('route.params.id should not be an array!');
 	}
 	return route.params.id;
 });
-const profile = computed(() => profilesStore.getProfile(id.value));
 
-profilesStore.fetchProfile(id.value);
+const profile = computed(() => profilesStore.getProfile(authorId.value));
 
 function redirectWebsite() {
 	if (profile.value.website?.substring(0, 7) !== `http://` && profile.value.website?.substring(0, 8) !== `https://`) {
@@ -30,6 +30,10 @@ function redirectWebsite() {
 	window.open(profile.value.website, `_blank`, `noopener,noreferrer`);
 	window.opener = null;
 }
+
+onMounted(async () => {
+	await profilesStore.fetchProfile(authorId.value);
+});
 </script>
 
 <template>
