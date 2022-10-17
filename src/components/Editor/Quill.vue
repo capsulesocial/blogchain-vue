@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import DOMPurify from 'dompurify';
 import type { RangeStatic, Quill } from 'quill';
-// import type { PropType } from 'vue';
 import QuillMarkdown from 'quilljs-markdown';
 import hljs from 'highlight.js';
-import turndownService from '@/helpers/turndownService';
-import EditorActions from '@/components/Editor/EditorActions.vue';
+import turndownService from './TurndownService';
+import EditorActions from './EditorActions.vue';
 import {
 	getBlobExtension,
 	getContentImages,
@@ -15,10 +14,8 @@ import {
 	counterModuleFactory,
 	ImageBlotFactory,
 	EditorImages,
-} from '@/helpers/editor';
-import { onBeforeUnmount, onMounted, ref } from 'vue';
-import { handleError } from '@/plugins/toast';
-import { useDraftStore } from '@/store/drafts';
+} from './helpers';
+import { onMounted, ref } from 'vue';
 
 const toolbarOptions = [
 	[`bold`, `italic`, `underline`, `strike`],
@@ -44,29 +41,25 @@ const options = {
 	},
 };
 
-defineExpose({ updateContent, setupEditor });
-const emit = defineEmits([`onError`, `isWriting`, `editorImageUpdates`]);
+const emit = defineEmits([`onError`, `isWriting`, `editorImageUpdates`, `updateWordCount`]);
 
 const props = withDefaults(
 	defineProps<{
 		initialContent: string;
-		initialEditorImages?: Map<string, EditorImages> | null;
+		initialEditorImages: Map<string, EditorImages> | null;
 		validImageTypes: string[] | undefined;
 		imageUploader: (file: File, encrypt?: boolean) => Promise<any>;
-		isPrimaryWidget?: boolean;
 		allowedTags: string[];
-		maxPostImages?: number;
-		encryptedContent?: boolean;
+		maxPostImages: number;
+		encryptedContent: boolean;
 	}>(),
 	{
 		initialEditorImages: null,
-		isPrimaryWidget: false,
 		maxPostImages: 10,
 		encryptedContent: false,
 	},
 );
 
-const draftStore = useDraftStore();
 const toggleAddContent = ref(false);
 const addContentPosTop = ref(0);
 const addContentPosLeft = ref(0);
@@ -137,13 +130,6 @@ function getInputHTML(): string {
 	return sanitize(input);
 }
 
-function updateContent() {
-	const editorHtml = getInputHTML();
-	if (editorHtml !== ``) {
-	}
-	draftStore.updateContent(editorHtml, draftStore.activeIndex);
-}
-
 function calculateAddPos(index: number) {
 	if (!qeditor.value) {
 		return;
@@ -194,7 +180,7 @@ function updatePostImages(
 	cid: string,
 	image: Blob,
 	imageName: string,
-	encryptionData?: { key: string; counter: string },
+	encryptionData: { key: string; counter: string } | Record<string, unknown>,
 ): { error: string } | { success: boolean } {
 	if (!editorImages.value) {
 		return { error: `no images in the editor` };
@@ -224,8 +210,8 @@ async function handleFile(file: File) {
 		waitingImage.value = true;
 		toggleAddContent.value = false;
 		const res = await props.imageUploader(file, props.encryptedContent);
-		const { cid, url, image, imageName } = res;
-		const updatedPostImages = updatePostImages(cid, image, imageName);
+		const { cid, url, image, imageName, key, counter } = res;
+		const updatedPostImages = updatePostImages(cid, image, imageName, props.encryptedContent ? { counter, key } : {});
 		if (isError(updatedPostImages)) {
 			emit(`onError`, new Error(updatedPostImages.error));
 			waitingImage.value = false;
@@ -235,7 +221,7 @@ async function handleFile(file: File) {
 		waitingImage.value = false;
 	} catch (err: unknown) {
 		waitingImage.value = false;
-		handleError(err);
+		emit(`onError`, err);
 	}
 }
 
@@ -259,8 +245,8 @@ async function handleHtml(pastedContent: string) {
 		}
 		try {
 			const res = await props.imageUploader(f.file, props.encryptedContent);
-			const { cid, url, image, imageName } = res;
-			const updatedPostImages = updatePostImages(cid, image, imageName);
+			const { cid, url, image, imageName, key, counter } = res;
+			const updatedPostImages = updatePostImages(cid, image, imageName, props.encryptedContent ? { key, counter } : {});
 			if (isError(updatedPostImages)) {
 				emit(`onError`, new Error(updatedPostImages.error));
 				return null;
@@ -307,6 +293,19 @@ async function handleDroppedContent(e: DragEvent) {
 	}
 }
 
+function scrollToBottom(e: ClipboardEvent) {
+	const scrollContainer = document.getElementById(`editor`);
+	if (e && e.target && scrollContainer) {
+		const target = e.target as HTMLElement;
+		if (target.outerHTML === `<br>`) {
+			scrollContainer.scrollTop = addContentPosTop.value;
+			return;
+		}
+
+		target.scrollIntoView();
+	}
+}
+
 async function handlePastedContent(e: ClipboardEvent) {
 	e.stopPropagation();
 	e.preventDefault();
@@ -325,19 +324,6 @@ async function handlePastedContent(e: ClipboardEvent) {
 	const pastedFile = items.length > 0 ? items[0].getAsFile() : null;
 	const contentImgs = getContentImages(pastedContent);
 	const range = qeditor.value.getSelection(true);
-
-	function scrollToBottom(e: ClipboardEvent) {
-		const scrollContainer = document.getElementById(`editor`);
-		if (e && e.target && scrollContainer) {
-			const target = e.target as HTMLElement;
-			if (target.outerHTML === `<br>`) {
-				scrollContainer.scrollTop = addContentPosTop.value;
-				return;
-			}
-
-			target.scrollIntoView();
-		}
-	}
 
 	// handle cut and paste
 	if (qeditor.value.getLength() !== range.index + 1 && contentImgs.length === 0 && !pastedFile) {
@@ -443,10 +429,6 @@ onMounted(() => {
 		editorImages.value = props.initialEditorImages;
 	}
 	setupEditor();
-});
-
-onBeforeUnmount(() => {
-	updateContent();
 });
 </script>
 
