@@ -14,12 +14,13 @@ import { computed } from 'vue';
 
 const props = withDefaults(
 	defineProps<{
-		wordCount: number | undefined;
+		wordCount?: number | undefined;
 		numberOfPostImages?: number;
 		timestamp: number;
 	}>(),
 	{
 		numberOfPostImages: 0,
+		wordCount: undefined,
 	},
 );
 

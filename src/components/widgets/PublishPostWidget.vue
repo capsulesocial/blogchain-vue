@@ -1,18 +1,20 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 import { useStoreSettings } from '@/store/settings';
 import { useRootStore } from '@/store/index';
 
 import PreviewIcon from '@/components/icons/PreviewIcon.vue';
 import ConfirmPopup from '@/components/popups/ConfirmPopup.vue';
+import { useDraftStore } from '@/store/drafts';
 
 const settings = useStoreSettings();
 const rootStore = useRootStore();
+const draftStore = useDraftStore();
 
 const hoverPreview = ref(false);
 //should correspond to draft.wordcount
-const dummyWordcount = ref(0);
+const wordCount = computed(() => draftStore.getWordCount);
 const showConfirmPopup = ref(false);
 
 function togglePreview() {
@@ -27,8 +29,8 @@ function sendPost() {
 	<article class="bg-lightBG dark:bg-darkBGStop border-lightBorder mb-5 rounded-lg border p-6 shadow-lg">
 		<div class="flex flex-row items-center justify-between">
 			<div>
-				<h5 v-show="dummyWordcount > 1" class="text-gray5 dark:text-gray3 text-sm">
-					<span class="text-primary">{{ dummyWordcount }}</span> words
+				<h5 v-show="wordCount > 1" class="text-gray5 dark:text-gray3 text-sm">
+					<span class="text-primary">{{ wordCount }}</span> words
 				</h5>
 				<h5 class="text-gray5 dark:text-gray3 text-sm">Auto-save on close.</h5>
 			</div>

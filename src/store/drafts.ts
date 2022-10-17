@@ -4,6 +4,7 @@ import { useStore } from '@/store/session';
 
 interface DraftPost extends Post {
 	accessTiers: Array<string>;
+	wordCount: number;
 }
 
 export interface DraftStore {
@@ -29,6 +30,9 @@ export const useDraftStore = defineStore(`draftStore`, {
 		getDraftTags: (state: DraftStore) => {
 			return state.drafts[state.activeIndex].tags;
 		},
+		getWordCount: (state: DraftStore) => {
+			return state.drafts[state.activeIndex].wordCount - 2;
+		},
 	},
 	actions: {
 		setActiveDraft(index: number) {
@@ -53,6 +57,7 @@ export const useDraftStore = defineStore(`draftStore`, {
 				timestamp: date,
 				encrypted: false,
 				accessTiers: [],
+				wordCount: 0,
 			};
 			this.drafts.push(blank);
 			this.activeIndex = this.drafts.indexOf(blank);
@@ -93,6 +98,9 @@ export const useDraftStore = defineStore(`draftStore`, {
 		},
 		updateContent(c: string) {
 			this.drafts[this.activeIndex].content = c;
+		},
+		updateWordCount(n: number) {
+			this.drafts[this.activeIndex].wordCount = n;
 		},
 	},
 });
