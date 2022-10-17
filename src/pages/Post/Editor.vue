@@ -123,7 +123,7 @@ onMounted(() => {
 </script>
 
 <template>
-	<div id="scrollable_content" class="min-h-88 h-88 w-full overflow-y-auto lg:overflow-y-hidden relative">
+	<div id="scrollable_content" class="min-h-88 h-88 w-full overflow-y-auto lg:overflow-y-hidden relative p-8">
 		<!-- Title, subtitle -->
 		<article class="flex flex-col px-2">
 			<div v-if="!isSaving && $route.name !== 'home'" class="absolute right-0 top-0 flex flex-row items-center m-8">

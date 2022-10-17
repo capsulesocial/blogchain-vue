@@ -8,7 +8,7 @@ import TagCard from '@/components/TagCard.vue';
 import CommentIcon from '@/components/icons/CommentIcon.vue';
 import RepostIcon from '@/components/icons/RepostIcon.vue';
 import ShareIcon from '@/components/icons/ShareIcon.vue';
-import CrownIcon from '@/components/icons/Crown.vue';
+import CrownIcon from '@/components/icons/CrownIcon.vue';
 import StatsIcon from '@/components/icons/StatsIcon.vue';
 import IpfsImage from '@/components/IpfsImage.vue';
 import FriendButton from '@/components/FriendButton.vue';
@@ -92,7 +92,7 @@ onBeforeMount(() => {
 <template>
 	<div
 		v-if="fetchedPost"
-		class="bg-lightBG dark:bg-darkBGStop dark:border-darkBG dark:border-opacity-25 border-opacity-75 py-4 px-5 xl:py-5 xl:px-6 transition ease-in-out hover:bg-hoverPost dark:hover:bg-darkBG dark:hover:bg-opacity-25"
+		class="bg-lightBG dark:bg-darkBGStop border-b dark:border-darkBG dark:border-opacity-25 border-opacity-75 py-4 px-5 xl:py-5 xl:px-6 transition ease-in-out hover:bg-hoverPost dark:hover:bg-darkBG dark:hover:bg-opacity-25"
 	>
 		<!-- Simple repost -->
 		<div
@@ -126,7 +126,7 @@ onBeforeMount(() => {
 			"
 		>
 			<!-- Card profile header -->
-			<div class="flex w-full justify-between">
+			<div class="flex w-full justify-between relative">
 				<div class="flex" @mouseover="triggerProfileCardTrue" @mouseleave="triggerProfileCardFalse">
 					<Avatar
 						:authorid="author.id"
@@ -140,10 +140,17 @@ onBeforeMount(() => {
 						<span
 							v-if="author.name !== ``"
 							class="text-base dark:text-darkPrimaryText transition ease-in-out hover:underline mr-2 font-medium"
+							@mouseover="triggerProfileCardTrue"
+							@mouseleave="triggerProfileCardFalse"
 						>
 							{{ author.name }}
 						</span>
-						<span v-else class="text-gray5 dark:text-gray3 text-base transition ease-in-out hover:underline mr-2">
+						<span
+							v-else
+							class="text-gray5 dark:text-gray3 text-base transition ease-in-out hover:underline mr-2"
+							@mouseover="triggerProfileCardTrue"
+							@mouseleave="triggerProfileCardFalse"
+						>
 							{{ author.id }}
 						</span>
 						<span class="text-gray5 dark:text-gray3"> @{{ author.id }} </span>
@@ -160,6 +167,7 @@ onBeforeMount(() => {
 				<div
 					v-show="showProfileCard"
 					class="border-lightBorder modal-animation-delay absolute z-40 flex w-72 flex-col rounded-lg border bg-lightBG dark:bg-darkBG p-4 shadow-lg"
+					style="top: 60px"
 					@mouseover="triggerProfileCardTrue"
 					@mouseleave="showProfileCard = false"
 				>
@@ -220,7 +228,13 @@ onBeforeMount(() => {
 					</router-link>
 					<!-- Display tags (Desktop) -->
 					<div class="my-2 hidden overflow-x-auto xl:flex xl:flex-wrap text-lg">
-						<TagCard v-for="t in fetchedPost.post.tags" :key="t.name" :tag="t.name" class="my-2 mr-4" />
+						<TagCard
+							v-for="t in fetchedPost.post.tags"
+							:key="t.name"
+							:tag="t.name"
+							:no-click="false"
+							class="my-2 mr-4"
+						/>
 					</div>
 					<!-- Actions buttons (Desktop) -->
 					<div class="text-gray5 dark:text-gray3 mt-1 hidden xl:flex xl:items-center relative">
@@ -268,7 +282,7 @@ onBeforeMount(() => {
 			</div>
 			<!-- Display tags (Mobile) -->
 			<div class="my-2 flex flex-wrap overflow-x-auto xl:hidden">
-				<TagCard v-for="t in fetchedPost.post.tags" :key="t.name" :tag="t.name" class="my-2 mr-4" />
+				<TagCard v-for="t in fetchedPost.post.tags" :key="t.name" :tag="t.name" :no-click="false" class="my-2 mr-4" />
 			</div>
 			<!-- Comment and share (Mobile) -->
 			<div class="text-gray5 dark:text-gray3 mt-1 flex xl:hidden relative">

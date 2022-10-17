@@ -74,7 +74,6 @@ function redirectProfile() {
 	<div id="scrollable_content" class="px-6 pt-4">
 		<!-- Account Security -->
 		<h3 class="text-lightPrimaryText dark:text-darkPrimaryText pb-4 text-base font-semibold">Account Security</h3>
-		{{ encrypted }}
 		<!-- ID -->
 		<div class="mb-4 flex w-full flex-col sm:flex-row items-start sm:items-center">
 			<label for="id" class="w-48 font-semibold text-gray5 dark:text-gray3 text-sm mb-2 sm:mb-0">Identifier</label>
