@@ -6,9 +6,11 @@ import { useDraftStore } from '@/store/drafts';
 import { useRootStore } from '@/store/index';
 
 import XIcon from '@/components/icons/XIcon.vue';
+import PencilIcon from '@/components/icons/Pencil.vue';
 import Quill from '@/components/Editor/Quill.vue';
 import PreviewPopup from '@/components/post/PreviewPopup.vue';
 import ConfirmPopup from '@/components/popups/ConfirmPopup.vue';
+import DraftsPopup from '@/components/popups/DraftsPopup.vue';
 import { qualitySubtitle, qualityTitle } from '@/plugins/quality';
 
 import { isError } from '@/plugins/helpers';
@@ -34,6 +36,8 @@ const subtitleInput = ref<HTMLTextAreaElement>();
 const editor = ref();
 const showPostPreview = computed(() => rootStore.$state.showDraftPreview);
 const showConfirmPopup = ref(false);
+const showDrafts = ref(false);
+const draftButtonHidden = ref(false);
 
 function handleTitle(e: any) {
 	if (!titleInput.value || !subtitleInput.value || !e) {
@@ -80,6 +84,20 @@ function handleSubtitle(e: any) {
 	draftStore.setSubtitle(subtitle);
 }
 
+function hideDraftButton(value: boolean) {
+	const draftButton = document.getElementById(`draftButton`);
+	if (!draftButton) {
+		return;
+	}
+	if (value === true) {
+		draftButton.classList.add(`hidedraftButton`);
+		draftButtonHidden.value = true;
+	} else {
+		draftButton.classList.remove(`hidedraftButton`);
+		draftButtonHidden.value = false;
+	}
+}
+
 async function sleep(ms: any) {
 	return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -123,8 +141,8 @@ onMounted(() => {
 </script>
 
 <template>
-	<div id="scrollable_content" class="min-h-88 h-88 w-full overflow-y-auto lg:overflow-y-hidden relative p-8">
-		<!-- Title, subtitle -->
+	<div id="scrollable_content" class="min-h-88 h-88 w-full relative p-8">
+		<!-- Title, dave, close -->
 		<article class="flex flex-col px-2">
 			<div v-if="!isSaving && $route.name !== 'home'" class="absolute right-0 top-0 flex flex-row items-center m-8">
 				<p class="mr-5 cursor-pointer text-primary" @click="handleSave">Save</p>
@@ -154,7 +172,7 @@ onMounted(() => {
 			/>
 		</article>
 
-		<!-- Subtitle input -->
+		<!-- Subtitle -->
 		<article class="flex flex-col px-2">
 			<p class="text-negative text-xs">{{ subtitleError }}</p>
 			<label for="subtitle" class="hidden">Subtitle</label>
@@ -177,9 +195,33 @@ onMounted(() => {
 				:image-uploader="uploadPhoto"
 				:is-primary-widget="false"
 				:allowed-tags="BASE_ALLOWED_TAGS"
+				@is-writing="hideDraftButton"
 			/>
 		</article>
 	</div>
+	<div
+		id="draftButton"
+		class="animatedraftButton bg-lightBG dark:bg-darkBG border-lightBorder text-xs text-gray5 dark:text-gray3 modal-animation card-animation-delay1 absolute bottom-0 z-10 m-4 flex rounded-lg py-3 shadow-lg"
+		:class="draftButtonHidden ? `px-3` : `px-5`"
+	>
+		<p v-if="!draftButtonHidden" class="mr-2">Resume writing?</p>
+		<button v-if="!draftButtonHidden" class="text-primary focus:outline-none" @click="showDrafts = true">
+			Show drafts
+		</button>
+		<button v-else class="text-primary focus:outline-none" @click="showDrafts = true">
+			<PencilIcon class="fill-current p-1" />
+		</button>
+	</div>
 	<PreviewPopup v-if="showPostPreview" @close="closePostPreview" @confirm="checkPostPreview" />
 	<ConfirmPopup v-if="showConfirmPopup" @close="showConfirmPopup = false" @post="sendPost" />
+	<DraftsPopup v-if="showDrafts" @close="showDrafts = false" />
 </template>
+<style>
+.animatedraftButton {
+	transition: all 0.4s;
+}
+.hidedraftButton {
+	transform: translateX(-2rem);
+	padding: 0.7rem;
+}
+</style>
