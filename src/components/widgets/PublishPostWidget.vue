@@ -1,13 +1,27 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+
 import { useStoreSettings } from '@/store/settings';
+import { useRootStore } from '@/store/index';
+
 import PreviewIcon from '@/components/icons/PreviewIcon.vue';
+import ConfirmPopup from '@/components/popups/ConfirmPopup.vue';
 
 const settings = useStoreSettings();
+const rootStore = useRootStore();
 
 const hoverPreview = ref(false);
 //should correspond to draft.wordcount
 const dummyWordcount = ref(0);
+const showConfirmPopup = ref(false);
+
+function togglePreview() {
+	rootStore.toggleDraftPreview(true);
+}
+
+function sendPost() {
+	//send post to backend from store and redirect to the the published post
+}
 </script>
 <template>
 	<article class="bg-lightBG dark:bg-darkBGStop border-lightBorder mb-5 rounded-lg border p-6 shadow-lg">
@@ -23,6 +37,7 @@ const dummyWordcount = ref(0);
 					class="mr-5 text-gray5 dark:text-gray3 transition duration-500 ease-in-out hover:text-primary"
 					@mouseenter="hoverPreview = true"
 					@mouseleave="hoverPreview = false"
+					@click="togglePreview"
 				>
 					<PreviewIcon />
 				</button>
@@ -37,10 +52,12 @@ const dummyWordcount = ref(0);
 				</div>
 				<button
 					class="focus:outline-none bg-primary text-lightButtonText transform rounded-lg px-12 py-2 font-bold shadow-lg transition duration-500 ease-in-out hover:scale-105"
+					@click="showConfirmPopup = true"
 				>
 					Publish
 				</button>
 			</div>
 		</div>
 	</article>
+	<ConfirmPopup v-if="showConfirmPopup" @close="showConfirmPopup = false" @post="sendPost" />
 </template>

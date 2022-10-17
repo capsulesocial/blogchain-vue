@@ -1,10 +1,16 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { useMeta } from 'vue-meta';
+
 import { useDraftStore } from '@/store/drafts';
+import { useRootStore } from '@/store/index';
+
 import XIcon from '@/components/icons/XIcon.vue';
 import Quill from '@/components/Editor/Quill.vue';
+import PreviewPopup from '@/components/post/PreviewPopup.vue';
+import ConfirmPopup from '@/components/popups/ConfirmPopup.vue';
 import { qualitySubtitle, qualityTitle } from '@/plugins/quality';
+
 import { isError } from '@/plugins/helpers';
 import { validMimeTypes } from '@/backend/utilities/helpers';
 import { uploadPhoto } from '@/backend/photos';
@@ -17,6 +23,8 @@ useMeta({
 });
 
 const draftStore = useDraftStore();
+const rootStore = useRootStore();
+
 const draft = computed(() => draftStore.getActiveDraft);
 const isSaving = ref(false);
 const titleError = ref(``);
@@ -24,6 +32,8 @@ const subtitleError = ref(``);
 const titleInput = ref<HTMLTextAreaElement>();
 const subtitleInput = ref<HTMLTextAreaElement>();
 const editor = ref();
+const showPostPreview = computed(() => rootStore.$state.showDraftPreview);
+const showConfirmPopup = ref(false);
 
 function handleTitle(e: any) {
 	if (!titleInput.value || !subtitleInput.value || !e) {
@@ -77,8 +87,6 @@ async function sleep(ms: any) {
 async function handleSave() {
 	isSaving.value = true;
 	editor.value.updateContent();
-	await sleep(600);
-	console.log(`done sleeping`);
 	await sleep(800);
 	isSaving.value = false;
 }
@@ -87,6 +95,20 @@ function saveContent() {
 	router.go(-1);
 }
 
+function closePostPreview() {
+	rootStore.toggleDraftPreview(false);
+}
+
+function checkPostPreview() {
+	showConfirmPopup.value = true;
+	rootStore.toggleDraftPreview(false);
+}
+
+function sendPost() {
+	showConfirmPopup.value = false;
+	//send post to backend from store and redirect to the the published post
+	editor.value.updateContent();
+}
 onMounted(() => {
 	if (!titleInput.value || !subtitleInput.value) {
 		return;
@@ -158,4 +180,6 @@ onMounted(() => {
 			/>
 		</article>
 	</div>
+	<PreviewPopup v-if="showPostPreview" @close="closePostPreview" @confirm="checkPostPreview" />
+	<ConfirmPopup v-if="showConfirmPopup" @close="showConfirmPopup = false" @post="sendPost" />
 </template>
