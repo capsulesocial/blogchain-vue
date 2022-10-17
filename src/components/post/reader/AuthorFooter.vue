@@ -29,15 +29,24 @@ onMounted(() => {
 				<h6 class="text-gray5 dark:text-gray3 mb-4 font-sans text-sm">Written By:</h6>
 				<div class="flex pr-5">
 					<Avatar :cid="profile.avatar" :authorid="profile.id" size="w-16 h-16" class="flex-shrink-0 self-start" />
-					<div class="mx-4">
-						<router-link
-							v-if="profile.name !== ``"
-							:to="'/id/' + profile.id"
-							class="text-2xl dark:text-darkPrimaryText"
-						>
-							{{ profile.name }}
-						</router-link>
-						<router-link v-else :to="'/id/' + profile.id" class="text-gray5 text-2xl"> {{ profile.id }} </router-link>
+					<div class="mx-4 flex flex-col">
+						<div class="flex items-center">
+							<router-link
+								v-if="profile.name !== ``"
+								:to="'/id/' + profile.id"
+								class="text-2xl dark:text-darkPrimaryText"
+							>
+								{{ profile.name }}
+							</router-link>
+							<router-link v-else :to="'/id/' + profile.id" class="text-gray5 text-2xl"> {{ profile.id }} </router-link>
+							<router-link
+								v-if="profile.bio"
+								:to="`/id/` + profile.id"
+								class="text-gray5 dark:text-darkSecondaryText w-full ml-1"
+							>
+								@{{ profile.id }}</router-link
+							>
+						</div>
 						<div v-show="profile.bio" id="bio" ref="bio" style="max-height: 6rem; overflow: hidden">
 							<p class="text-gray5 dark:text-darkSecondaryText w-full">
 								{{ profile.bio.slice(0, 180) + (profile.bio.length > 180 ? '...' : '') }}<br />
@@ -46,6 +55,13 @@ onMounted(() => {
 						<button v-if="longBio" class="focus:outline-none text-xs text-primary py-1" @click="expandBio = true">
 							Read more
 						</button>
+						<router-link
+							v-if="!profile.bio"
+							:to="`/id/` + profile.id"
+							class="text-gray5 dark:text-darkSecondaryText w-full ml-1"
+						>
+							@{{ profile.id }}</router-link
+						>
 					</div>
 				</div>
 			</div>

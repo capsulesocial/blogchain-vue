@@ -85,7 +85,7 @@ onMounted(() => {
 
 <template>
 	<button
-		class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary dark:hover:text-primary mr-4 flex toggleRepost items-center"
+		class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary dark:hover:text-primary mr-4 pt-1 flex toggleRepost items-center"
 		:class="isReposted ? `text-primary` : ``"
 		@click.stop="repostDropdown = !repostDropdown"
 	>

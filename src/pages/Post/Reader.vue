@@ -261,7 +261,7 @@ function handleScroll() {
 							<BookmarkButton :has-bookmark="postMetadata.bookmarked" :postcid="postMetadata.post._id" />
 							<!-- Share popup button -->
 							<button
-								class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary ml-2 hover:fill-primary flex items-center"
+								class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary ml-4 mt-1 hover:fill-primary flex items-center"
 								:class="showShare ? `text-primary` : ``"
 								@click="showShare = !showShare"
 							>
@@ -378,7 +378,7 @@ function handleScroll() {
 							<!-- Bookmark button -->
 							<BookmarkButton :has-bookmark="postMetadata.bookmarked" :postcid="postMetadata.post._id" />
 							<!-- Repost button -->
-							<span class="px-2"></span>
+							<span class="pl-5"></span>
 							<RepostButton
 								:repost="postMetadata.reposted"
 								:postcid="postMetadata.post._id"
@@ -387,7 +387,7 @@ function handleScroll() {
 							/>
 							<!-- Share popup button -->
 							<button
-								class="focus:outline-none text-gray5 dark:text-gray3 hover:text-primary hover:fill-primary flex items-center"
+								class="focus:outline-none pt-1.5 text-gray5 dark:text-gray3 hover:text-primary hover:fill-primary flex items-center"
 								:class="showShare ? `text-primary` : ``"
 								@click="showShare = true"
 							>
