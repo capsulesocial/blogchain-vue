@@ -287,23 +287,21 @@ onMounted(async () => {
 								Posts
 							</div>
 							<button
-								class="pl-5 text-sm text-gray5 dark:text-gray3 hover:text-primary dark:hover:text-primary hover:font-bold"
+								class="pl-5 text-sm text-gray5 dark:text-gray3 hover:text-primary dark:hover:text-primary transition duration-500 ease-in-out"
 								@click="openFollowersPopup = true"
 							>
-								<span
-									class="text-lightPrimaryText dark:text-darkPrimaryText hover:text-primary dark:hover:text-primary font-bold"
-									>{{ connections?.followers.size }}</span
-								>
+								<span class="text-lightPrimaryText dark:text-darkPrimaryText font-bold">{{
+									connections?.followers.size
+								}}</span>
 								Followers
 							</button>
 							<button
-								class="pl-5 text-sm text-gray5 dark:text-gray3 hover:text-primary dark:hover:text-primary hover:font-bold"
+								class="pl-5 text-sm text-gray5 dark:text-gray3 hover:text-primary dark:hover:text-primary transition duration-500 ease-in-out"
 								@click="openFollowingPopup = true"
 							>
-								<span
-									class="text-lightPrimaryText dark:text-darkPrimaryText hover:text-primary dark:hover:text-primary font-bold"
-									>{{ connections?.following.size }}</span
-								>
+								<span class="text-lightPrimaryText dark:text-darkPrimaryText font-bold">{{
+									connections?.following.size
+								}}</span>
 								Following
 							</button>
 						</div>
