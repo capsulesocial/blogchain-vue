@@ -80,7 +80,7 @@ onMounted(async () => {
 			<p v-if="tags.length === 0" class="text-gray5 dark:text-gray3 mb-4 mt-3 text-sm">
 				<span> It seems no trending topics are available at the moment </span>
 			</p>
-			<TagCard v-for="t in tags" v-else :key="t" :tag="t" class="my-2 mr-4 text-lg" />
+			<TagCard v-for="t in tags" v-else :key="t" :tag="t" :no-click="false" class="my-2 mr-4 text-lg" />
 		</div>
 		<img
 			v-if="$route.name === `Discover`"

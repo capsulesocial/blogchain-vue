@@ -158,7 +158,7 @@ onMounted(async () => {
 						</article>
 						<!-- Tags -->
 						<article class="mt-5 text-lg">
-							<TagCard v-for="t in post.tags" :key="t.name" class="mr-2 mb-2" :tag="t.name" />
+							<TagCard v-for="t in post.tags" :key="t.name" class="mr-2 mb-2" :tag="t.name" :no-click="true" />
 						</article>
 						<!-- Ready to post footer -->
 						<article class="my-5 border-t border-b py-5 dark:border-gray7">

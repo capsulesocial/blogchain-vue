@@ -355,7 +355,13 @@ function handleScroll() {
 						</article>
 						<!-- Tags -->
 						<article class="mt-5 text-lg">
-							<TagCard v-for="t in postMetadata.post.tags" :key="t.name" class="mr-2 mb-2" :tag="t.name" />
+							<TagCard
+								v-for="t in postMetadata.post.tags"
+								:key="t.name"
+								class="mr-2 mb-2"
+								:tag="t.name"
+								:no-click="false"
+							/>
 						</article>
 						<!-- IPFS CID -->
 						<div class="mt-3">
@@ -379,12 +385,14 @@ function handleScroll() {
 							<BookmarkButton :has-bookmark="postMetadata.bookmarked" :postcid="postMetadata.post._id" />
 							<!-- Repost button -->
 							<span class="pl-5"></span>
-							<RepostButton
-								:repost="postMetadata.reposted"
-								:postcid="postMetadata.post._id"
-								:repost-count="postMetadata.repostCount"
-								@toggle-action="showQuote = true"
-							/>
+							<div class="pt-1">
+								<RepostButton
+									:repost="postMetadata.reposted"
+									:postcid="postMetadata.post._id"
+									:repost-count="postMetadata.repostCount"
+									@toggle-action="showQuote = true"
+								/>
+							</div>
 							<!-- Share popup button -->
 							<button
 								class="focus:outline-none pt-1.5 text-gray5 dark:text-gray3 hover:text-primary hover:fill-primary flex items-center"

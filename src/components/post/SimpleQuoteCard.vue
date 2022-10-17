@@ -1,26 +1,17 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import { useStore } from '@/store/session';
-import { useStoreSettings } from '@/store/settings';
+import { computed } from 'vue';
 import { useProfilesStore } from '@/store/profiles';
 import { createPostExcerpt } from '@/helpers/post';
 import { Tag } from '@/backend/post';
 
 import Avatar from '@/components/Avatar.vue';
-import BookmarkButton from '@/components/post/BookmarkButton.vue';
 import TagCard from '@/components/TagCard.vue';
 import IpfsImage from '@/components/IpfsImage.vue';
 
-import MoreIcon from '@/components/icons/MoreIcon.vue';
-import BinIcon from '@/components/icons/BinIcon.vue';
 import CrownIcon from '@/components/icons/CrownIcon.vue';
 import TimestampAndReadingTime from '@/components/TimestampAndReadingTime.vue';
 
-const store = useStore();
-const settings = useStoreSettings();
 const profilesStore = useProfilesStore();
-
-const emit = defineEmits([`delete`]);
 
 const props = withDefaults(
 	defineProps<{
@@ -44,14 +35,6 @@ const props = withDefaults(
 
 // Get profile of authorID
 const author = computed(() => profilesStore.getProfile(props.authorid));
-const showDelete = ref<boolean>(false);
-
-function openDeleteDropdown() {
-	showDelete.value = true;
-	window.addEventListener(`click`, (e) => {
-		showDelete.value = false;
-	});
-}
 </script>
 <template>
 	<!-- container -->
@@ -87,29 +70,6 @@ function openDeleteDropdown() {
 					/>
 				</div>
 			</div>
-			<div class="relative flex w-full items-center justify-center lg:w-1/5 lg:justify-end">
-				<!-- Bookmarks button -->
-				<BookmarkButton :has-bookmark="props.bookmarked" :postcid="props.id" />
-				<button
-					v-if="author.id === store.$state.id"
-					class="focus:outline-none text-gray5 dark:text-gray3 ml-2"
-					@click.stop="openDeleteDropdown"
-				>
-					<MoreIcon />
-				</button>
-				<div
-					v-if="showDelete"
-					class="dropdownDeleteOpen border-lightBorder modal-animation absolute z-10 right-0 flex w-36 flex-col rounded-lg border bg-lightBG dark:bg-darkBG p-1 shadow-lg"
-					:class="settings.isDarkMode ? `dropdownDeleteOpenDark` : `dropdownDeleteOpen`"
-					:style="`margin-top: 70px;margin-right: -10px;`"
-				>
-					<!-- Delete -->
-					<button class="focus:outline-none text-negative flex items-center" @click="emit(`delete`)">
-						<BinIcon class="m-1 w-4 h-4" />
-						<span class="text-negative self-center text-xs text-center w-full">Remove from feed</span>
-					</button>
-				</div>
-			</div>
 		</div>
 		<!-- Content -->
 		<div class="mt-4 flex flex-col justify-between xl:flex-row">
@@ -127,7 +87,7 @@ function openDeleteDropdown() {
 				</div>
 				<!-- Display tags (Desktop) -->
 				<div class="my-2 hidden overflow-x-auto xl:flex xl:flex-wrap text-lg">
-					<TagCard v-for="t in props.tags" :key="t.name" :tag="t.name" class="my-2 mr-4" />
+					<TagCard v-for="t in props.tags" :key="t.name" :tag="t.name" :no-click="true" class="my-2 mr-4" />
 				</div>
 			</div>
 			<!-- Right side: Image -->
