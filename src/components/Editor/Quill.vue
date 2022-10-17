@@ -45,7 +45,7 @@ const options = {
 };
 
 defineExpose({ updateContent });
-const emit = defineEmits([`onError`, `isWriting`, `editorImageUpdates`, `updateWordCount`]);
+const emit = defineEmits([`onError`, `isWriting`, `editorImageUpdates`]);
 
 const props = withDefaults(
 	defineProps<{
@@ -396,7 +396,7 @@ async function setupEditor(this: any) {
 		emit(`isWriting`, true);
 		const text = getInputHTML().replace(/(<([^>]+)>)/gi, ` `);
 		const n = text.split(/\s+/).length;
-		emit(`updateWordCount`, n);
+		draftStore.updateWordCount(n);
 	};
 	// Handles draft overlay
 	const onSelectionChange = (range: RangeStatic) => {
