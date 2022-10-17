@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import { useRootStore } from '@/store/index';
 
 import Plus from '@/components/icons/PlusIcon.vue';
 import Minus from '@/components/icons/MinusIcon.vue';
 import OnboardingWizard from '@/components/popups/OnboardingWizard.vue';
+
+const rootStore = useRootStore();
 
 interface IQuestion {
 	id: number;
@@ -12,7 +15,7 @@ interface IQuestion {
 	isOpen: boolean;
 }
 
-const displayOnboarding = ref<boolean>(true);
+const displayOnboarding = computed(() => rootStore.$state.recentlyJoined);
 const questions = ref<IQuestion[]>([
 	{
 		id: 0,
@@ -310,9 +313,6 @@ const questions = ref<IQuestion[]>([
 function toggleAccordion(id: number) {
 	questions.value[id].isOpen = !questions.value[id].isOpen;
 }
-function openOnboarding() {
-	displayOnboarding.value = !displayOnboarding.value;
-}
 </script>
 
 <template>
@@ -344,7 +344,7 @@ function openOnboarding() {
 			</div>
 		</article>
 		<!-- Onboarding Wizard -->
-		<OnboardingWizard v-if="displayOnboarding" @close-popup="openOnboarding" />
+		<OnboardingWizard v-if="displayOnboarding" />
 	</div>
 </template>
 

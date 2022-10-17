@@ -14,7 +14,7 @@ export const useRootStore = defineStore(`rootStore`, {
 			nodeURL: ``,
 			backgroundImage: `@/assets/images/backgrounds/mainBG.webp`,
 			reposts: {},
-			recentlyJoined: true,
+			recentlyJoined: false,
 			showUnauthPopup: false,
 			showDraftPreview: false,
 		};
