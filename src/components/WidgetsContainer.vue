@@ -11,7 +11,7 @@ import TagsWidgets from './widgets/pages/TagsWidgets.vue';
 import EditorWidgets from './widgets/pages/EditorWidgets.vue';
 </script>
 <template>
-	<aside class="w-5/12 -mr-5 -mt-4 hidden overflow-y-auto p-4 pb-32 lg:block min-h-61 h-61">
+	<aside class="w-5/12 -mr-5 -mt-4 hidden overflow-y-auto p-4 pb-32 lg:block min-h-88 h-88">
 		<HomeWidgets v-if="$route.name === `Home`" />
 		<DiscoverWidgets v-if="$route.name === `Discover`" />
 		<BookmarksWidgets v-if="$route.name === `Bookmarks`" />

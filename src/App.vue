@@ -106,7 +106,7 @@ watch(router.currentRoute, () => {
 				<section class="modal-animation flex flex-row">
 					<div
 						:class="fullPageRoutes.includes(routeName ? routeName : ``) ? `w-full` : `lg:w-7.5`"
-						class="min-h-61 h-61 bg-lightBG dark:bg-darkBGStop border border-lightBorder z-10 w-full overflow-y-hidden rounded-t-lg shadow-lg relative"
+						class="min-h-88 h-88 bg-lightBG dark:bg-darkBGStop border border-lightBorder z-10 w-full overflow-y-hidden rounded-t-lg shadow-lg relative"
 					>
 						<router-view :key="$route.path" />
 					</div>

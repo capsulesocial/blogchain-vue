@@ -232,7 +232,7 @@ async function sendComment() {
 						<div
 							v-show="showEmotions"
 							ref="scrollContainer"
-							class="modal-animation w-full overflow-y-scroll bg-lightBG dark:bg-darkBG px-4 lg:px-6 flex justify-center"
+							class="popup modal-animation w-full overflow-y-scroll bg-lightBG dark:bg-darkBG px-4 lg:px-6 flex justify-center"
 							style="height: 320px; scroll-snap-type: y mandatory; scroll-snap-stop: always"
 						>
 							<!-- Middle selector area -->

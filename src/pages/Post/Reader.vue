@@ -226,7 +226,7 @@ function handleScroll() {
 <template>
 	<div
 		id="scrollable_content"
-		class="w-full flex flex-col items-center pb-10 h-screen max-h-screen overflow-y-auto lg:overflow-y-hidden"
+		class="min-h-88 h-88 w-full flex flex-col items-center overflow-y-auto lg:overflow-y-hidden"
 	>
 		<!-- loader -->
 		<article v-if="!postMetadata" class="modal-animation fixed mt-20 flex w-full justify-center">
