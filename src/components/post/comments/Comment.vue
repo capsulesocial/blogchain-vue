@@ -80,8 +80,14 @@ async function sendReply() {
 }
 
 async function removeComment() {
-	showDelete.value = false;
-	await commentsStore.removeUserComment(props.cid, store.$state.id, props.parentcid);
+	try {
+		await commentsStore.removeUserComment(props.cid, store.$state.id, props.parentcid);
+	} catch (err) {
+		handleError(err);
+	} finally {
+		showDelete.value = false;
+		commentDeleted.value = true;
+	}
 }
 
 async function updateReplies() {
