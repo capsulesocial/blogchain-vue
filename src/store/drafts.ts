@@ -43,7 +43,12 @@ export const useDraftStore = defineStore(`draftStore`, {
 		},
 		deleteDraft(index: number) {
 			this.drafts.splice(index, 1);
-			this.activeIndex = this.drafts.length;
+			// deleting only draft
+			if (this.drafts.length === 0) {
+				this.createNewDraft();
+				return;
+			}
+			this.activeIndex = this.drafts.length - 1;
 		},
 		createNewDraft() {
 			const date = new Date().getTime();

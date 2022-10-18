@@ -40,7 +40,7 @@ useMeta({
 });
 
 function handleDrafts() {
-	if (draftStore.activeIndex > draftStore.drafts.length) {
+	if (draftStore.activeIndex > draftStore.drafts.length - 1) {
 		draftStore.setActiveDraft(0);
 	}
 	if (draftStore.drafts.length === 0) {

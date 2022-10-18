@@ -8,6 +8,10 @@ import { computed } from 'vue';
 const emit = defineEmits([`close`]);
 const draftStore = useDraftStore();
 const drafts = computed(() => draftStore.$state.drafts);
+
+function handleClose() {
+	emit(`close`);
+}
 </script>
 <template>
 	<div
@@ -40,7 +44,12 @@ const drafts = computed(() => draftStore.$state.drafts);
 					/>
 				</div>
 				<div class="flex w-full flex-col-reverse items-center">
-					<HorizontalDraftPreview v-for="draft in drafts" :key="draft.timestamp" :draft="draft" />
+					<HorizontalDraftPreview
+						v-for="draft in drafts"
+						:key="draft.timestamp"
+						:draft="draft"
+						@close-drafts-popup="handleClose"
+					/>
 				</div>
 			</div>
 		</section>
