@@ -1,5 +1,5 @@
 <script setup lang="ts">
-withDefaults(defineProps<{ reduceSize: boolean }>(), { reduceSize: false });
+withDefaults(defineProps<{ reduceSize?: boolean }>(), { reduceSize: false });
 </script>
 <template>
 	<svg

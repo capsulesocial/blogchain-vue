@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { computed, watch, onMounted, ref } from 'vue';
-import SimpleFeedCard from '@/components/post/SimpleFeedCard.vue';
 import BookmarksFilter from '@/components/BookmarksFilter.vue';
 import BookmarksIcon from '@/components/icons/BookmarkIcon.vue';
 import SecondaryButton from '@/components/SecondaryButton.vue';
 import { BookmarkSort } from '@/backend/bookmarks';
 import { usePostsStore } from '@/store/posts';
 import { useStore } from '@/store/session';
+import PostCardContainer from '@/components/post/PostCardContainer.vue';
 
 const postsStore = usePostsStore();
 const store = useStore();
@@ -82,7 +82,7 @@ onMounted(async () => {
 		class="min-h-115 h-115 lg:min-h-210 lg:h-210 xl:min-h-220 xl:h-220 w-full overflow-y-auto lg:overflow-y-hidden relative"
 	>
 		<div v-if="posts && posts.length > 0">
-			<SimpleFeedCard v-for="post in posts" :key="`new_${post}`" :fetched-post="postsStore.getPost(post)" />
+			<PostCardContainer v-for="post in posts" :key="`new_${post}`" :fetched-post="postsStore.getPost(post)" />
 		</div>
 		<!-- No bookmarks present -->
 		<div v-else class="mt-12 grid justify-items-center overflow-y-hidden px-6 xl:px-0">
