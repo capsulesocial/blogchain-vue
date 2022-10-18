@@ -33,6 +33,9 @@ export const useDraftStore = defineStore(`draftStore`, {
 		getWordCount: (state: DraftStore) => {
 			return state.drafts[state.activeIndex].wordCount - 2;
 		},
+		getActiveIndex: (state: DraftStore) => {
+			return state.activeIndex;
+		},
 	},
 	actions: {
 		setActiveDraft(index: number) {

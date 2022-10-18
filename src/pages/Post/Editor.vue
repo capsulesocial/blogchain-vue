@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useMeta } from 'vue-meta';
 
 import { useDraftStore } from '@/store/drafts';
@@ -28,6 +28,7 @@ const draftStore = useDraftStore();
 const rootStore = useRootStore();
 
 const draft = computed(() => draftStore.getActiveDraft);
+const activeIndex = computed(() => draftStore.getActiveIndex);
 const isSaving = ref(false);
 const titleError = ref(``);
 const subtitleError = ref(``);
@@ -108,6 +109,7 @@ async function handleSave() {
 	await sleep(800);
 	isSaving.value = false;
 }
+
 function saveContent() {
 	editor.value.updateContent();
 	router.go(-1);
@@ -127,7 +129,8 @@ function sendPost() {
 	//send post to backend from store and redirect to the the published post
 	editor.value.updateContent();
 }
-onMounted(() => {
+
+function initDraft() {
 	if (!titleInput.value || !subtitleInput.value) {
 		return;
 	}
@@ -137,6 +140,19 @@ onMounted(() => {
 	subtitleInput.value.value = draft.value.subtitle ? draft.value.subtitle : ``;
 	subtitleInput.value.style.height = `60px`;
 	subtitleInput.value.style.height = `${subtitleInput.value.scrollHeight}px`;
+}
+
+function handleCloseDrafts() {
+	showDrafts.value = false;
+	editor.value.setupEditor();
+}
+
+watch(activeIndex, () => {
+	initDraft();
+});
+
+onMounted(() => {
+	initDraft();
 });
 </script>
 
@@ -214,7 +230,7 @@ onMounted(() => {
 	</div>
 	<PreviewPopup v-if="showPostPreview" @close="closePostPreview" @confirm="checkPostPreview" />
 	<ConfirmPopup v-if="showConfirmPopup" @close="showConfirmPopup = false" @post="sendPost" />
-	<DraftsPopup v-if="showDrafts" @close="showDrafts = false" />
+	<DraftsPopup v-if="showDrafts" @close="handleCloseDrafts" />
 </template>
 <style>
 .animatedraftButton {
