@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, onBeforeMount, onBeforeUnmount, ref, watch } from 'vue';
 import { useMeta } from 'vue-meta';
+import { useRoute, useRouter } from 'vue-router';
 
 import { useDraftStore } from '@/store/drafts';
 import { useRootStore } from '@/store/index';
+import { useStore as useSessionStore } from '@/store/session';
+import { useStoreSettings as useSettingsStore } from '@/store/settings';
 
 import XIcon from '@/components/icons/XIcon.vue';
 import PencilIcon from '@/components/icons/Pencil.vue';
@@ -11,22 +14,31 @@ import Quill from '@/components/Editor/Quill.vue';
 import PreviewPopup from '@/components/post/PreviewPopup.vue';
 import ConfirmPopup from '@/components/popups/ConfirmPopup.vue';
 import DraftsPopup from '@/components/popups/DraftsPopup.vue';
-import { qualitySubtitle, qualityTitle } from '@/plugins/quality';
+import { qualityContent, qualityFeaturedPhotoCaption, qualitySubtitle, qualityTitle } from '@/plugins/quality';
 
 import { isError } from '@/plugins/helpers';
 import { validMimeTypes } from '@/backend/utilities/helpers';
-import { uploadPhoto } from '@/backend/photos';
+import { preUploadPhoto, uploadPhoto } from '@/backend/photos';
 import { BASE_ALLOWED_TAGS } from '@/helpers/helpers';
-import router from '@/router';
-import { IKeyData } from '@/backend/post';
+import { createRegularPost, IKeyData, sendEncryptedPost, sendRegularPost, Tag } from '@/backend/post';
+import { toastError } from '@/plugins/toast';
+import turndownService from '@/components/Editor/TurndownService';
+import { createEditorImageSet } from '@/components/Editor/helpers';
+import textLimits from '@/backend/utilities/text_limits';
+import { createEncryptedPost } from '../../backend/post';
 
 useMeta({
 	title: `dynamicPostTitle`,
 	htmlAttrs: { lang: 'en', amp: true },
 });
 
+const emit = defineEmits([`isWriting`, `updateWordCount`]);
+
+const router = useRouter();
 const draftStore = useDraftStore();
 const rootStore = useRootStore();
+const sessionStore = useSessionStore();
+const settingsStore = useSettingsStore();
 
 const draft = computed(() => draftStore.getActiveDraft);
 const activeIndex = computed(() => draftStore.getActiveIndex);
@@ -39,12 +51,7 @@ const subtitleInput = ref<HTMLTextAreaElement>();
 const wordCount = ref(0);
 const hasPosted = ref(false);
 const isX = ref(false);
-const isCollapsed = ref(false);
-const postImageKeys = ref<Map<string, IKeyData>>(new Map());
-const toggleAddContent = ref(false);
-const addContentPosTop = ref(0);
-const addContentPosLeft = ref(0);
-const waitingImage = ref(false);
+const postImageKeys = ref<Map<string, IKeyData | Record<string, unknown>>>(new Map());
 const editor = ref();
 const showPostPreview = computed(() => rootStore.$state.showDraftPreview);
 const showConfirmPopup = ref(false);
@@ -54,6 +61,44 @@ const isWriting = ref(false);
 
 function updateDraftPostImages() {
 	draftStore.updatePostImages(Array.from(postImageKeys.value.keys()));
+}
+
+function editorImageUpdated(updates: any) {
+	postImageKeys.value = updates.editorImages;
+	updateDraftPostImages();
+	if (updates.newImage) {
+		const { cid, image, imageName } = updates.newImage;
+		preUploadPhoto(cid, image, imageName, sessionStore.id, draft.value.encrypted);
+	}
+}
+
+function handleEditorError(error: unknown) {
+	// $handlError(error)
+}
+
+function editorHtml() {
+	return editor.value.getInputHTML() as string;
+}
+
+function doSave() {
+	const title = titleInput.value?.value.trim();
+	const subtitle = subtitleInput.value?.value.trim();
+	updateContent();
+	draftStore.setTimestamp(new Date().getTime());
+	if (title && title !== ``) {
+		draftStore.setTitle(title);
+	}
+	if (subtitle && subtitle !== ``) {
+		draftStore.setSubtitle(subtitle);
+	}
+	if (draftStore.draftWidget) {
+		draftStore.createNewDraft();
+		draftStore.handleDraftWidget(false);
+	}
+}
+
+function updateContent() {
+	draftStore.updateContent(editorHtml(), activeIndex.value);
 }
 
 function handleTitle(e: any) {
@@ -68,6 +113,14 @@ function handleTitle(e: any) {
 	titleInput.value.style.height = `60px`;
 	titleInput.value.style.height = `${titleInput.value.scrollHeight}px`;
 	const title: string = titleInput.value.value.trim();
+	updateTitle(title);
+}
+
+function updateTitle(title: string, updateStore = true) {
+	if (updateStore) {
+		draftStore.setTitle(title);
+	}
+
 	const titleQualityCheck = qualityTitle(title);
 	if (isError(titleQualityCheck)) {
 		if (titleQualityCheck.error === `Please enter a title.`) {
@@ -77,7 +130,6 @@ function handleTitle(e: any) {
 	} else {
 		titleError.value = ``;
 	}
-	draftStore.setTitle(title);
 }
 
 function handleSubtitle(e: any) {
@@ -92,13 +144,20 @@ function handleSubtitle(e: any) {
 	subtitleInput.value.style.height = `60px`;
 	subtitleInput.value.style.height = `${subtitleInput.value.scrollHeight}px`;
 	const subtitle: string = subtitleInput.value.value.trim();
+	updateSubtitle(subtitle);
+}
+
+function updateSubtitle(subtitle: string, updateStore = true) {
+	if (updateStore) {
+		draftStore.setSubtitle(subtitle);
+	}
+
 	const subtitleQualityCheck = qualitySubtitle(subtitle);
 	if (isError(subtitleQualityCheck)) {
 		subtitleError.value = subtitleQualityCheck.error;
 	} else {
 		subtitleError.value = ``;
 	}
-	draftStore.setSubtitle(subtitle);
 }
 
 function hideDraftButton(value: boolean) {
@@ -121,7 +180,7 @@ async function sleep(ms: any) {
 
 async function handleSave() {
 	isSaving.value = true;
-	editor.value.updateContent();
+	updateContent();
 	await sleep(600);
 	showSaved.value = true;
 	await sleep(800);
@@ -140,6 +199,11 @@ async function saveContent() {
 	router.go(-1);
 }
 
+function updateWordCount(n: number) {
+	wordCount.value = n;
+	emit(`updateWordCount`, wordCount.value);
+}
+
 function closePostPreview() {
 	rootStore.toggleDraftPreview(false);
 }
@@ -149,10 +213,143 @@ function checkPostPreview() {
 	rootStore.toggleDraftPreview(false);
 }
 
-function sendPost() {
+function checkPost(checksOnly = false) {
+	const title = titleInput.value?.value.trim();
+	const subtitle = subtitleInput.value?.value.trim();
+	if (!title || !subtitle) {
+		return false;
+	}
+	const { category, tags, featuredPhotoCID, featuredPhotoCaption, encrypted } = draft.value;
+
+	// Check for tiers on premium post
+	if (draft.value.encrypted && draft.value.accessTiers.length === 0) {
+		toastError(`At least one subscription tier must be selected`);
+		return false;
+	}
+
+	// Check for quality title
+	const titleCheck = qualityTitle(title);
+	if (isError(titleCheck)) {
+		toastError(titleCheck.error);
+		return false;
+	}
+
+	// Check for subtitle on encrypted posts
+	if (encrypted && subtitle === ``) {
+		toastError(`Subtitles are required on encrypted premium posts`);
+		return false;
+	}
+
+	// Check if using a subtitle and is a quality subtitle
+	const subtitleCheck = qualitySubtitle(subtitle);
+	if (isError(subtitleCheck)) {
+		toastError(subtitleCheck.error);
+		return false;
+	}
+
+	// Check for quality featuredPhotoCaption
+	if (featuredPhotoCaption) {
+		const featuredPhotoCaptionCheck = qualityFeaturedPhotoCaption(featuredPhotoCaption);
+		if (isError(featuredPhotoCaptionCheck)) {
+			toastError(featuredPhotoCaptionCheck.error);
+			return false;
+		}
+	}
+
+	if (category === ``) {
+		toastError(`Missing category`);
+		return false;
+	}
+
+	for (const { name } of tags) {
+		if (name.replace(/\s/, ``).trim() !== name) {
+			toastError(`Tag with spaces is not allowed`);
+			return false;
+		}
+	}
+
+	const clean = turndownService.turndown(editorHtml());
+	// Check content quality
+	const contentQualityCheck = qualityContent(clean);
+	if (isError(contentQualityCheck)) {
+		toastError(contentQualityCheck.error);
+		return false;
+	}
+	if (hasPosted.value) {
+		return false;
+	}
+	const postImages = createEditorImageSet(clean, postImageKeys.value);
+	if (postImages.size > textLimits.post_images.max) {
+		toastError(`Cannot add more than ${textLimits.post_images.max} images in a post`);
+		return false;
+	}
+	if (checksOnly) {
+		return true;
+	}
+	sendPost(title, subtitle, clean, category, tags, featuredPhotoCID, featuredPhotoCaption, postImages);
+	return true;
+}
+
+async function sendPost(
+	title: string,
+	subtitle: string,
+	content: string,
+	category: string,
+	tags: Tag[],
+	featuredPhotoCID?: string | null,
+	featuredPhotoCaption?: string | null,
+	postImages?: Map<string, IKeyData | Record<string, unknown>>,
+) {
+	const isEncrypted = draft.value.encrypted;
+	const images = postImages ? Array.from(postImages.keys()) : undefined;
+
+	if (isEncrypted) {
+		const p = createEncryptedPost(
+			title,
+			subtitle,
+			content,
+			category,
+			tags,
+			sessionStore.id,
+			featuredPhotoCID,
+			featuredPhotoCaption,
+			images,
+		);
+		try {
+			const tiers = draft.value.accessTiers;
+			const cid = await sendEncryptedPost(p, tiers, postImages);
+			router.push(`/post/${cid}`);
+		} catch (error) {
+			console.log(error);
+			// handleError(err)
+		}
+	} else {
+		const p = createRegularPost(
+			title,
+			subtitle === `` ? null : subtitle,
+			content,
+			category,
+			tags,
+			sessionStore.id,
+			featuredPhotoCID,
+			featuredPhotoCaption,
+			images,
+		);
+
+		try {
+			hasPosted.value = true;
+			const cid = await sendRegularPost(p);
+			// draftStore.resetDraft()
+			// settingsStore.setRecentlyPosted(true)
+			router.push(`/post/${cid}`);
+		} catch (error) {
+			hasPosted.value = false;
+			// handleError(error)
+		}
+	}
 	showConfirmPopup.value = false;
 	//send post to backend from store and redirect to the the published post
-	editor.value.updateContent();
+	updateContent();
 }
 
 function initDraft() {
@@ -165,7 +362,24 @@ function initDraft() {
 	subtitleInput.value.value = draft.value.subtitle ? draft.value.subtitle : ``;
 	subtitleInput.value.style.height = `60px`;
 	subtitleInput.value.style.height = `${subtitleInput.value.scrollHeight}px`;
+	handleTitle(titleInput.value.value);
+	updateTitle(titleInput.value.value, false);
+	handleSubtitle(subtitleInput.value.value);
+	updateSubtitle(subtitleInput.value.value, false);
 }
+
+onBeforeMount(async () => {
+	const { postImages } = draft.value;
+	if (postImages) {
+		postImages.forEach((p) => {
+			postImageKeys.value.set(p, {});
+		});
+	}
+});
+
+onMounted(() => {
+	initDraft();
+});
 
 function handleCloseDrafts() {
 	showDrafts.value = false;
@@ -177,9 +391,20 @@ watch(activeIndex, () => {
 	initDraft();
 });
 
-onMounted(() => {
-	initDraft();
+onBeforeUnmount(() => {
+	if (isX.value || settingsStore.recentlyPosted || !titleInput.value || !subtitleInput.value) {
+		return;
+	}
+	const title = titleInput.value.value.trim();
+	const subtitle = subtitleInput.value.value.trim();
+	if (editorHtml().length > 11 || title !== `` || subtitle !== ``) {
+		doSave();
+	} else {
+		draftStore.deleteDraft(draftStore.activeIndex);
+	}
 });
+
+defineExpose({ checkPost });
 </script>
 
 <template>
@@ -242,6 +467,9 @@ onMounted(() => {
 				:is-primary-widget="false"
 				:allowed-tags="BASE_ALLOWED_TAGS"
 				@is-writing="hideDraftButton"
+				@editor-image-updates="editorImageUpdated"
+				@update-word-count="updateWordCount"
+				@on-error="handleEditorError"
 			/>
 		</article>
 	</div>

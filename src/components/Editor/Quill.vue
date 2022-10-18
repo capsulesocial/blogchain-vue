@@ -388,6 +388,8 @@ onMounted(() => {
 	}
 	setupEditor();
 });
+
+defineExpose({ getInputHTML, setupEditor });
 </script>
 
 <template>

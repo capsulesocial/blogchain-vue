@@ -10,6 +10,7 @@ export interface DraftPost extends Post {
 export interface DraftStore {
 	drafts: DraftPost[];
 	activeIndex: number;
+	draftWidget: boolean;
 }
 
 export const useDraftStore = defineStore(`draftStore`, {
@@ -17,6 +18,7 @@ export const useDraftStore = defineStore(`draftStore`, {
 		return {
 			drafts: [],
 			activeIndex: 0,
+			draftWidget: false,
 		};
 	},
 	persist: true,
@@ -70,11 +72,17 @@ export const useDraftStore = defineStore(`draftStore`, {
 			this.drafts.push(blank);
 			this.activeIndex = this.drafts.indexOf(blank);
 		},
+		handleDraftWidget(v: boolean) {
+			this.draftWidget = v;
+		},
 		setTitle(title: string) {
 			this.drafts[this.activeIndex].title = title;
 		},
 		setSubtitle(subtitle: string) {
 			this.drafts[this.activeIndex].subtitle = subtitle;
+		},
+		setTimestamp(timestamp: number) {
+			this.drafts[this.activeIndex].timestamp = timestamp;
 		},
 		addTag(tag: string) {
 			this.drafts[this.activeIndex].tags.push({ name: tag });
