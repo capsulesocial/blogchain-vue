@@ -18,6 +18,7 @@ import { validMimeTypes } from '@/backend/utilities/helpers';
 import { uploadPhoto } from '@/backend/photos';
 import { BASE_ALLOWED_TAGS } from '@/helpers/helpers';
 import router from '@/router';
+import { IPostImageKey } from '@/backend/post';
 
 useMeta({
 	title: `dynamicPostTitle`,
@@ -35,12 +36,33 @@ const titleError = ref(``);
 const subtitleError = ref(``);
 const titleInput = ref<HTMLTextAreaElement>();
 const subtitleInput = ref<HTMLTextAreaElement>();
+const wordCount = ref(0);
+const hasPosted = ref(false);
+const isX = ref(false);
+const isCollapsed = ref(false);
+const postImageKeys = ref<Array<IPostImageKey | Record<string, unknown>>>([]);
+const toggleAddContent = ref(false);
+const addContentPosTop = ref(0);
+const addContentPosLeft = ref(0);
+const waitingImage = ref(false);
 const editor = ref();
 const showPostPreview = computed(() => rootStore.$state.showDraftPreview);
 const showConfirmPopup = ref(false);
 const showDrafts = ref(false);
 const draftButtonHidden = ref(false);
 const isWriting = ref(false);
+
+function updateDraftPostImages() {
+	const postImages: string[] = [];
+
+	postImageKeys.value.forEach((p) => {
+		if (p.imageCID && typeof p.imageCID === 'string') {
+			postImages.push(p.imageCID);
+		}
+	});
+
+	draftStore.updatePostImages(postImages);
+}
 
 function handleTitle(e: any) {
 	if (!titleInput.value || !subtitleInput.value || !e) {

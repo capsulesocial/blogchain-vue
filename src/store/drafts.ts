@@ -94,6 +94,9 @@ export const useDraftStore = defineStore(`draftStore`, {
 		updateFeaturedPhotoCaption(caption: string | null) {
 			this.drafts[this.activeIndex].featuredPhotoCaption = caption;
 		},
+		updatePostImages(postImages?: string[]) {
+			this.drafts[this.activeIndex].postImages = postImages;
+		},
 		toggleEncrypted() {
 			this.drafts[this.activeIndex].encrypted = !this.drafts[this.activeIndex].encrypted;
 		},
