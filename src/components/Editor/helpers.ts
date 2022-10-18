@@ -1,7 +1,32 @@
+import hljs from 'highlight.js';
 import type { RangeStatic, Quill } from 'quill';
 
 export type InsertContent = string | { cid: string; url: string | ArrayBuffer };
 export type EditorImages = Map<string, { key: string; counter: string } | Record<string, unknown>>;
+
+export const quillToolbarOptions = [
+	[`bold`, `italic`, `underline`, `strike`],
+	[`blockquote`, `code-block`, `link`],
+	[{ header: 2 }],
+	[{ list: `ordered` }, { list: `bullet` }],
+];
+
+export const quillOptions = {
+	placeholder: `Start typing here...`,
+	readOnly: false,
+	theme: `bubble`,
+	bounds: `#editor`,
+	scrollingContainer: `#editor`,
+	modules: {
+		syntax: {
+			highlight: (code: string) => hljs.highlightAuto(code).value,
+		},
+		counter: true,
+		toolbar: {
+			container: quillToolbarOptions,
+		},
+	},
+};
 
 export function getContentImages(content: string) {
 	const domParser = new DOMParser();

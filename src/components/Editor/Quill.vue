@@ -2,7 +2,6 @@
 import DOMPurify from 'dompurify';
 import type { RangeStatic, Quill } from 'quill';
 import QuillMarkdown from 'quilljs-markdown';
-import hljs from 'highlight.js';
 import turndownService from './TurndownService';
 import EditorActions from './EditorActions.vue';
 import {
@@ -16,30 +15,7 @@ import {
 	EditorImages,
 } from './helpers';
 import { onMounted, ref } from 'vue';
-
-const toolbarOptions = [
-	[`bold`, `italic`, `underline`, `strike`],
-	[`blockquote`, `code-block`, `link`],
-	[{ header: 2 }],
-	[{ list: `ordered` }, { list: `bullet` }],
-];
-
-const options = {
-	placeholder: `Start typing here...`,
-	readOnly: false,
-	theme: `bubble`,
-	bounds: `#editor`,
-	scrollingContainer: `#editor`,
-	modules: {
-		syntax: {
-			highlight: (code: string) => hljs.highlightAuto(code).value,
-		},
-		counter: true,
-		toolbar: {
-			container: toolbarOptions,
-		},
-	},
-};
+import { quillOptions } from './helpers';
 
 const emit = defineEmits([`onError`, `isWriting`, `editorImageUpdates`, `updateWordCount`]);
 
@@ -383,7 +359,6 @@ async function setupEditor(this: any) {
 		emit(`isWriting`, true);
 		const text = getInputHTML().replace(/(<([^>]+)>)/gi, ` `);
 		const n = text.split(/\s+/).length;
-		draftStore.updateWordCount(n);
 	};
 	// Handles draft overlay
 	const onSelectionChange = (range: RangeStatic) => {
@@ -408,7 +383,7 @@ async function setupEditor(this: any) {
 		counterModuleFactory(QuillClass, onTextChange.bind(this), onSelectionChange.bind(this), onEditorChange.bind(this)),
 		true,
 	);
-	const e = new QuillClass(`#editor`, options);
+	const e = new QuillClass(`#editor`, quillOptions);
 	qeditor.value = e;
 	qeditor.value.root.addEventListener(`drop`, (ev: DragEvent) => {
 		handleDroppedContent(ev);
@@ -426,9 +401,7 @@ async function setupEditor(this: any) {
 }
 
 onMounted(() => {
-	if (props.initialEditorImages) {
-		editorImages.value = props.initialEditorImages;
-	}
+	editorImages.value = props.initialEditorImages;
 	setupEditor();
 });
 </script>
