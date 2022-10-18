@@ -5,7 +5,7 @@ import QuillMarkdown from 'quilljs-markdown';
 import turndownService from './TurndownService';
 import EditorActions from './EditorActions.vue';
 import {
-	getBlobExtension,
+	urlToFile,
 	getContentImages,
 	InsertContent,
 	isError,
@@ -67,25 +67,6 @@ async function handleImage(e: Event) {
 	}
 	await handleFile(files[0]);
 	target.value = ``;
-}
-
-async function urlToFile(url: string): Promise<{ file: File } | { error: string }> {
-	try {
-		const response = await fetch(url, { mode: `cors` });
-		if (!response.ok) {
-			return { error: `Could not fetch image` };
-		}
-		const blob = await response.blob();
-		const blobExtension = getBlobExtension(blob);
-		if (!blobExtension) {
-			return { error: `Invalid image type` };
-		}
-		const file = new File([blob], `image${Date.now()}${blobExtension}`, { type: blob.type });
-		return { file };
-	} catch (error: any) {
-		emit(`onError`, error);
-		return { error: error.message };
-	}
 }
 
 function sanitize(html: string): string {
@@ -359,6 +340,7 @@ async function setupEditor(this: any) {
 		emit(`isWriting`, true);
 		const text = getInputHTML().replace(/(<([^>]+)>)/gi, ` `);
 		const n = text.split(/\s+/).length;
+		emit(`updateWordCount`, n);
 	};
 	// Handles draft overlay
 	const onSelectionChange = (range: RangeStatic) => {
@@ -401,7 +383,9 @@ async function setupEditor(this: any) {
 }
 
 onMounted(() => {
-	editorImages.value = props.initialEditorImages;
+	if (props.initialEditorImages) {
+		editorImages.value = props.initialEditorImages;
+	}
 	setupEditor();
 });
 </script>

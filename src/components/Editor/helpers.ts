@@ -109,3 +109,21 @@ export function createEditorImageSet(content: string, uploadedImages: EditorImag
 
 	return usedImages;
 }
+
+export async function urlToFile(url: string): Promise<{ file: File } | { error: string }> {
+	try {
+		const response = await fetch(url, { mode: `cors` });
+		if (!response.ok) {
+			return { error: `Could not fetch image` };
+		}
+		const blob = await response.blob();
+		const blobExtension = getBlobExtension(blob);
+		if (!blobExtension) {
+			return { error: `Invalid image type` };
+		}
+		const file = new File([blob], `image${Date.now()}${blobExtension}`, { type: blob.type });
+		return { file };
+	} catch (error: any) {
+		return { error: error.message };
+	}
+}
