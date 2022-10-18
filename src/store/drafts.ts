@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import type { Post, Tag } from '@/backend/post';
 import { useStore } from '@/store/session';
 
-interface DraftPost extends Post {
+export interface DraftPost extends Post {
 	accessTiers: Array<string>;
 }
 
@@ -91,8 +91,8 @@ export const useDraftStore = defineStore(`draftStore`, {
 			const i = this.drafts[this.activeIndex].accessTiers.indexOf(t);
 			this.drafts[this.activeIndex].accessTiers.splice(i, 1);
 		},
-		updateContent(c: string) {
-			this.drafts[this.activeIndex].content = c;
+		updateContent(c: string, index: number) {
+			this.drafts[index].content = c;
 		},
 	},
 });

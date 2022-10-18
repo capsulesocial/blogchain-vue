@@ -141,7 +141,7 @@ function updateContent() {
 	const editorHtml = getInputHTML();
 	if (editorHtml !== ``) {
 	}
-	draftStore.updateContent(editorHtml);
+	draftStore.updateContent(editorHtml, draftStore.activeIndex);
 }
 
 function calculateAddPos(index: number) {

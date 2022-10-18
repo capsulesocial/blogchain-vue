@@ -19,6 +19,7 @@ import { useRouter } from 'vue-router';
 import { watch, computed } from 'vue';
 import { nextTick } from 'process';
 import { useProfilesStore } from '@/store/profiles';
+import { useDraftStore } from './store/drafts';
 
 const router = useRouter();
 const store = useStore();
@@ -26,6 +27,7 @@ const settings = useStoreSettings();
 const connections = useConnectionsStore();
 const profile = useProfilesStore();
 const rootStore = useRootStore();
+const draftStore = useDraftStore();
 
 const unauthRoutes = ref<string[]>([`Login`, `Register`]);
 const fullPageRoutes = ref<string[]>([`Payment Policy`, `Content Policy`, `Not Found`, `Post Reader`]);
@@ -44,6 +46,9 @@ onBeforeMount(() => {
 	initColors();
 	if (store.id === ``) {
 		return;
+	}
+	if (draftStore.activeIndex > draftStore.drafts.length) {
+		draftStore.setActiveDraft(0);
 	}
 	connections.fetchConnections(store.id);
 	profile.fetchProfile(store.id);
