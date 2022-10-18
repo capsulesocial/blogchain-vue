@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, ref } from 'vue';
+import { onBeforeUnmount, ref, onMounted } from 'vue';
 import { useStoreSettings } from '@/store/settings';
 import { DraftPost } from '@/store/drafts';
 import { formatDate } from '@/helpers/helpers';
@@ -55,6 +55,25 @@ onBeforeUnmount(() => {
 		const i = draftStore.getDraftIndex(props.draft);
 		draftStore.setActiveDraft(i);
 	}
+});
+
+onMounted(() => {
+	window.addEventListener(
+		`click`,
+		(e: any) => {
+			if (!e.target) {
+				return;
+			}
+			if (
+				e.target.parentNode === null ||
+				e.target.parentNode.classList === undefined ||
+				!e.target.parentNode.classList.contains(`toggleRepost`)
+			) {
+				showDelete.value = false;
+			}
+		},
+		true,
+	);
 });
 
 // IF featuredPhotoCID: fetch featuredPhoto

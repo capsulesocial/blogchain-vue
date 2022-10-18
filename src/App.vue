@@ -39,6 +39,15 @@ useMeta({
 	htmlAttrs: { lang: 'en', amp: true },
 });
 
+function handleDrafts() {
+	if (draftStore.activeIndex > draftStore.drafts.length) {
+		draftStore.setActiveDraft(0);
+	}
+	if (draftStore.drafts.length === 0) {
+		draftStore.createNewDraft();
+	}
+}
+
 // Run init methods
 onBeforeMount(() => {
 	store.login();
@@ -47,9 +56,7 @@ onBeforeMount(() => {
 	if (store.id === ``) {
 		return;
 	}
-	if (draftStore.activeIndex > draftStore.drafts.length) {
-		draftStore.setActiveDraft(0);
-	}
+	handleDrafts();
 	connections.fetchConnections(store.id);
 	profile.fetchProfile(store.id);
 });

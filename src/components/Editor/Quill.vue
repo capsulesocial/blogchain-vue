@@ -44,7 +44,7 @@ const options = {
 	},
 };
 
-defineExpose({ updateContent });
+defineExpose({ updateContent, setupEditor });
 const emit = defineEmits([`onError`, `isWriting`, `editorImageUpdates`]);
 
 const props = withDefaults(
