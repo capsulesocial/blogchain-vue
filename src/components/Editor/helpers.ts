@@ -1,7 +1,7 @@
 import type { RangeStatic, Quill } from 'quill';
 
 export type InsertContent = string | { cid: string; url: string | ArrayBuffer };
-export type EditorImages = Map<string, { key: string; counter: string }>;
+export type EditorImages = Map<string, { key: string; counter: string } | Record<string, unknown>>;
 
 export function getContentImages(content: string) {
 	const domParser = new DOMParser();

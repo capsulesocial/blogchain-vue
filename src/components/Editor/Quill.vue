@@ -46,15 +46,16 @@ const emit = defineEmits([`onError`, `isWriting`, `editorImageUpdates`, `updateW
 const props = withDefaults(
 	defineProps<{
 		initialContent: string;
-		initialEditorImages: Map<string, EditorImages> | null;
-		validImageTypes: string[] | undefined;
+		initialEditorImages: Map<string, EditorImages>;
+		validImageTypes: string[];
 		imageUploader: (file: File, encrypt?: boolean) => Promise<any>;
 		allowedTags: string[];
 		maxPostImages: number;
 		encryptedContent: boolean;
 	}>(),
 	{
-		initialEditorImages: null,
+		initialEditorImages: () => new Map(),
+		validImageTypes: () => [],
 		maxPostImages: 10,
 		encryptedContent: false,
 	},
