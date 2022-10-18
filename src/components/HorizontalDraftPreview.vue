@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onBeforeUnmount, ref } from 'vue';
 import { useStoreSettings } from '@/store/settings';
-import { Post } from '@/backend/post';
+import { DraftPost } from '@/store/drafts';
 import { formatDate } from '@/helpers/helpers';
 import MoreIcon from '@/components/icons/MoreIcon.vue';
 import ImageIcon from '@/components/icons/ImageIcon.vue';
@@ -10,20 +10,35 @@ import BinIcon from '@/components/icons/BinIcon.vue';
 import { useDraftStore } from '@/store/drafts';
 import router from '@/router';
 
+const emit = defineEmits([`closeDraftsPopup`]);
+
 const props = defineProps<{
-	draft: Post;
+	draft: DraftPost;
 }>();
 
 const settings = useStoreSettings();
 const draftStore = useDraftStore();
 const featuredPhoto = ref<any>();
 const inWidget = ref(true);
+const delayActiveDraft = ref(false);
 const showDelete = ref(false);
 
 function setActiveDraft() {
 	const i = draftStore.getDraftIndex(props.draft);
-	draftStore.setActiveDraft(i);
+	// drafts popup on editor
+	if (router.currentRoute.value.name === `Write`) {
+		draftStore.setActiveDraft(i);
+		emit(`closeDraftsPopup`);
+		return;
+	}
+	// Prevent overwriting of selected draft
+	if (settings.widgets.primary === `editor` && router.currentRoute.value.name === `Home`) {
+		router.push(`/write`);
+		delayActiveDraft.value = true;
+		return;
+	}
 	router.push(`/write`);
+	draftStore.setActiveDraft(i);
 }
 
 function deleteDraft() {
@@ -34,6 +49,13 @@ function deleteDraft() {
 function toggleDropdownDelete() {
 	showDelete.value = !showDelete.value;
 }
+
+onBeforeUnmount(() => {
+	if (delayActiveDraft.value) {
+		const i = draftStore.getDraftIndex(props.draft);
+		draftStore.setActiveDraft(i);
+	}
+});
 
 // IF featuredPhotoCID: fetch featuredPhoto
 </script>

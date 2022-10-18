@@ -19,6 +19,7 @@ import { useRouter } from 'vue-router';
 import { watch, computed } from 'vue';
 import { nextTick } from 'process';
 import { useProfilesStore } from '@/store/profiles';
+import { useDraftStore } from './store/drafts';
 
 const router = useRouter();
 const store = useStore();
@@ -26,6 +27,7 @@ const settings = useStoreSettings();
 const connections = useConnectionsStore();
 const profile = useProfilesStore();
 const rootStore = useRootStore();
+const draftStore = useDraftStore();
 
 const unauthRoutes = ref<string[]>([`Login`, `Register`]);
 const fullPageRoutes = ref<string[]>([`Payment Policy`, `Content Policy`, `Not Found`, `Post Reader`]);
@@ -44,6 +46,9 @@ onBeforeMount(() => {
 	initColors();
 	if (store.id === ``) {
 		return;
+	}
+	if (draftStore.activeIndex > draftStore.drafts.length) {
+		draftStore.setActiveDraft(0);
 	}
 	connections.fetchConnections(store.id);
 	profile.fetchProfile(store.id);
@@ -64,6 +69,23 @@ const setScroll = () => {
 	document.addEventListener('DOMContentLoaded', initScroll);
 	nextTick(setThumbHeight);
 };
+
+function calculateBody(): string {
+	let res = ``;
+	// calculate page width
+	if (routeName.value && fullPageRoutes.value.includes(routeName.value)) {
+		res += `w-full`;
+	} else {
+		res += `lg:w-7.5`;
+	}
+	// calculate page height
+	if (router.currentRoute.value.name === `Home` && settings.widgets.primary === `editor`) {
+		res += ` min-h-170 h-170`;
+	} else {
+		res += ` min-h-88 h-88`;
+	}
+	return res;
+}
 
 watch(router.currentRoute, () => {
 	setScroll();
@@ -105,8 +127,8 @@ watch(router.currentRoute, () => {
 				<TitleContainer v-if="routesWithTitle.includes(routeName ? routeName : ``)" />
 				<section class="modal-animation flex flex-row">
 					<div
-						:class="fullPageRoutes.includes(routeName ? routeName : ``) ? `w-full` : `lg:w-7.5`"
-						class="min-h-88 h-88 bg-lightBG dark:bg-darkBGStop border border-lightBorder z-10 w-full overflow-y-hidden rounded-t-lg shadow-lg relative"
+						:class="calculateBody()"
+						class="bg-lightBG dark:bg-darkBGStop border border-lightBorder z-10 w-full overflow-y-hidden rounded-t-lg shadow-lg relative"
 					>
 						<router-view :key="$route.path" />
 					</div>

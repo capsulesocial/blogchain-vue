@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useStoreSettings } from '@/store/settings';
-import { storeToRefs } from 'pinia';
 import TagsWidget from '@/components/widgets/TagsWidget.vue';
 import FollowersWidget from '@/components/widgets/FollowersWidget.vue';
 import DraftsWidget from '@/components/widgets/DraftsWidget.vue';
@@ -11,21 +8,27 @@ import CheckCircle from '@/components/icons/CheckCircle.vue';
 import PencilIcon from '@/components/icons/Pencil.vue';
 import BookmarksIcon from '@/components/icons/Bookmarks.vue';
 
+import { ref } from 'vue';
+import { useStoreSettings } from '@/store/settings';
+import { storeToRefs } from 'pinia';
+
 const settingsStore = useStoreSettings();
 const { primaryWidget, secondaryWidget, secondary2Widget } = storeToRefs(settingsStore);
-const showConfigure = ref<boolean>(false);
+const showConfigure = ref(false);
 
-function changePrimary(w: `feed` | `editor`) {
+function changePrimary(widget: `feed` | `editor`) {
 	// update state
-	settingsStore.setPrimaryWidget(w);
+	settingsStore.setPrimaryWidget(widget);
 }
-function changeSecondary(w: `drafts` | `bookmarks`) {
+
+function changeSecondary(widget: `drafts` | `bookmarks`) {
 	// Update state
-	settingsStore.setSecondaryWidget(w);
+	settingsStore.setSecondaryWidget(widget);
 }
-function changeSecondary2(w: `tags` | `followers`) {
+
+function changeSecondary2(widget: `tags` | `followers`) {
 	// update state
-	settingsStore.setSecondary2Widget(w);
+	settingsStore.setSecondary2Widget(widget);
 }
 </script>
 <template>
