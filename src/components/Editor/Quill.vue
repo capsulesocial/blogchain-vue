@@ -69,7 +69,7 @@ async function handleImage(e: Event) {
 	target.value = ``;
 }
 
-function sanitize(html: string): string {
+function sanitize(html: string) {
 	return DOMPurify.sanitize(html, {
 		ALLOWED_TAGS: props.allowedTags,
 	});
@@ -151,7 +151,7 @@ function updatePostImages(
 		waitingImage.value = false;
 		return { error: `Cannot add more than ${props.maxPostImages} images in a post` };
 	}
-	editorImages.value.set(cid, encryptionData ?? {});
+	editorImages.value.set(cid, encryptionData);
 	emit(`editorImageUpdates`, {
 		editorImages: editorImages.value,
 		newImage: { cid, image, imageName },
