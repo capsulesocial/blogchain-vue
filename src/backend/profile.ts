@@ -72,8 +72,6 @@ export async function sendProfileServer(
 		}
 		throw new Error(`Failed to send Profile`);
 	} catch (error) {
-		// eslint-disable-next-line no-console
-		console.log(error);
 		return { success: false, cid: `` };
 	}
 }
