@@ -70,6 +70,23 @@ const setScroll = () => {
 	nextTick(setThumbHeight);
 };
 
+function calculateBody(): string {
+	let res = ``;
+	// calculate page width
+	if (routeName.value && fullPageRoutes.value.includes(routeName.value)) {
+		res += `w-full`;
+	} else {
+		res += `lg:w-7.5`;
+	}
+	// calculate page height
+	if (router.currentRoute.value.name === `Home` && settings.widgets.primary === `editor`) {
+		res += ` min-h-170 h-170`;
+	} else {
+		res += ` min-h-88 h-88`;
+	}
+	return res;
+}
+
 watch(router.currentRoute, () => {
 	setScroll();
 });
@@ -110,8 +127,8 @@ watch(router.currentRoute, () => {
 				<TitleContainer v-if="routesWithTitle.includes(routeName ? routeName : ``)" />
 				<section class="modal-animation flex flex-row">
 					<div
-						:class="fullPageRoutes.includes(routeName ? routeName : ``) ? `w-full` : `lg:w-7.5`"
-						class="min-h-88 h-88 bg-lightBG dark:bg-darkBGStop border border-lightBorder z-10 w-full overflow-y-hidden rounded-t-lg shadow-lg relative"
+						:class="calculateBody()"
+						class="bg-lightBG dark:bg-darkBGStop border border-lightBorder z-10 w-full overflow-y-hidden rounded-t-lg shadow-lg relative"
 					>
 						<router-view :key="$route.path" />
 					</div>
