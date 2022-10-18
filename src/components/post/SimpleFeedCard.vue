@@ -22,6 +22,8 @@ import { createPostExcerpt } from '@/helpers/post';
 import TimestampAndReadingTime from '@/components/TimestampAndReadingTime.vue';
 import RepostButton from '@/components/post/RepostButton.vue';
 import { useCommentsStore } from '@/store/comments';
+import router from '@/router';
+import { usePostsStore } from '@/store/posts';
 
 const commentsStore = useCommentsStore();
 const store = useStore();
@@ -35,10 +37,12 @@ const props = withDefaults(
 	defineProps<{
 		fetchedPost?: IGenericPostResponse;
 		activeAction?: string;
+		homeIndex?: number;
 	}>(),
 	{
 		activeAction: ``,
 		fetchedPost: undefined,
+		homeIndex: -1,
 	},
 );
 
@@ -81,6 +85,13 @@ function triggerProfileCardFalse() {
 function triggerProfileCardTrue() {
 	hasEntered.value = true;
 	showProfileCard.value = true;
+}
+
+function handlePostRedirect() {
+	if (router.currentRoute.value.name === `Home`) {
+		usePostsStore().setSavedOffset(props.homeIndex);
+	}
+	router.push(`/post/` + props.fetchedPost.post._id);
 }
 
 onBeforeMount(() => {
@@ -211,7 +222,7 @@ onBeforeMount(() => {
 			<div class="mt-4 flex flex-col justify-between xl:flex-row">
 				<!-- Left side: Title, subtitle / preview, tags -->
 				<div class="mr-4 flex w-full flex-col justify-between">
-					<router-link class="cursor-pointer" :to="`/post/` + fetchedPost.post._id">
+					<div class="cursor-pointer" @click="handlePostRedirect">
 						<div class="flex max-w-full flex-col overflow-hidden pr-4">
 							<div class="flex flex-row w-full justify-between">
 								<h3 class="break-words pb-2 text-lg font-semibold dark:text-darkPrimaryText">
@@ -225,7 +236,7 @@ onBeforeMount(() => {
 								}}
 							</h6>
 						</div>
-					</router-link>
+					</div>
 					<!-- Display tags (Desktop) -->
 					<div class="my-2 hidden overflow-x-auto xl:flex xl:flex-wrap text-lg">
 						<TagCard
@@ -268,17 +279,18 @@ onBeforeMount(() => {
 					</div>
 				</div>
 				<!-- Right side: Image -->
-				<router-link
+				<div
 					v-if="fetchedPost.post.featuredPhotoCID !== `` && fetchedPost.post.featuredPhotoCID"
 					class="cursor-pointer"
 					:to="`/post/` + fetchedPost.post._id"
+					@click="handlePostRedirect"
 				>
 					<IpfsImage
 						class="mt-4 w-full flex-shrink-0 xl:mt-0 xl:w-56 h-48 xl:h-32 rounded-lg"
 						:img-class="'h-48 w-full flex-shrink-0 rounded-lg xl:h-32'"
 						:cid="fetchedPost.post.featuredPhotoCID"
 					/>
-				</router-link>
+				</div>
 			</div>
 			<!-- Display tags (Mobile) -->
 			<div class="my-2 flex flex-wrap overflow-x-auto xl:hidden">

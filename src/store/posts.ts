@@ -264,5 +264,15 @@ export const usePostsStore = defineStore(`posts`, {
 				handleError(error);
 			}
 		},
+		setSavedOffset(index: number, override = false) {
+			if (override) {
+				this.homeFeed.savedOffset = index;
+				return;
+			}
+			this.homeFeed.savedOffset = index + this.homeFeed.savedOffset;
+		},
+		setCurrentOffset(offset: number) {
+			this.homeFeed.currentOffset = offset;
+		},
 	},
 });
