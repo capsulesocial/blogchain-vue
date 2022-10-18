@@ -26,7 +26,7 @@ const showDelete = ref(false);
 function setActiveDraft() {
 	const i = draftStore.getDraftIndex(props.draft);
 	// drafts popup on editor
-	if (router.currentRoute.value.name === `Write`) {
+	if (router.currentRoute.value.name === `Post Editor`) {
 		draftStore.setActiveDraft(i);
 		emit(`closeDraftsPopup`);
 		return;
@@ -44,6 +44,7 @@ function setActiveDraft() {
 function deleteDraft() {
 	const i = draftStore.getDraftIndex(props.draft);
 	draftStore.deleteDraft(i);
+	emit(`closeDraftsPopup`);
 }
 
 function toggleDropdownDelete() {

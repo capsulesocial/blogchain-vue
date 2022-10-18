@@ -144,6 +144,7 @@ function initDraft() {
 
 function handleCloseDrafts() {
 	showDrafts.value = false;
+	initDraft();
 	editor.value.setupEditor();
 }
 
