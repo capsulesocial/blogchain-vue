@@ -30,6 +30,7 @@ const rootStore = useRootStore();
 const draft = computed(() => draftStore.getActiveDraft);
 const activeIndex = computed(() => draftStore.getActiveIndex);
 const isSaving = ref(false);
+const showSaved = ref(false);
 const titleError = ref(``);
 const subtitleError = ref(``);
 const titleInput = ref<HTMLTextAreaElement>();
@@ -106,8 +107,11 @@ async function sleep(ms: any) {
 async function handleSave() {
 	isSaving.value = true;
 	editor.value.updateContent();
+	await sleep(600);
+	showSaved.value = true;
 	await sleep(800);
 	isSaving.value = false;
+	showSaved.value = false;
 }
 
 function saveContent() {
@@ -161,21 +165,25 @@ onMounted(() => {
 	<div id="scrollable_content" class="min-h-88 h-88 w-full relative p-8">
 		<!-- Title, dave, close -->
 		<article class="flex flex-col px-2">
-			<div v-if="!isSaving && $route.name !== 'home'" class="absolute right-0 top-0 flex flex-row items-center m-8">
-				<p class="mr-5 cursor-pointer text-primary" @click="handleSave">Save</p>
+			<div
+				v-if="!isSaving && router.currentRoute.value.name !== 'Home'"
+				class="absolute right-0 top-0 flex flex-row items-center m-8"
+			>
+				<button class="mr-5 text-primary" @click="handleSave">Save</button>
 				<button class="bg-gray1 dark:bg-gray5 focus:outline-none rounded-full p-1" @click="saveContent">
 					<XIcon />
 				</button>
 			</div>
-			<article v-else-if="isSaving" class="modal-animation absolute right-0 top-0 p-8">
+			<article
+				v-else-if="isSaving && router.currentRoute.value.name !== 'Home'"
+				class="modal-animation absolute right-0 top-0 p-8"
+			>
+				<p v-if="showSaved" class="text-positive modal-animation absolute right-0 top-0 p-8 mr-10">Saved!</p>
 				<div
 					class="loader border-2 border-gray1 dark:border-gray7 h-6 w-6 rounded-3xl"
 					:style="`border-top: 2px solid`"
 				></div>
 			</article>
-			<p v-else class="text-positive modal-animation absolute right-0 top-0 p-8">
-				<span v-if="$route.name !== 'home'">Saved!</span>
-			</p>
 			<p class="text-negative text-xs">{{ titleError }}</p>
 			<label for="title" class="hidden">Title</label>
 			<textarea
