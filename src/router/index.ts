@@ -21,6 +21,7 @@ import SettingsSecurity from '@/pages/Settings/Security.vue';
 import SettingsStyling from '@/pages/Settings/Styling.vue';
 import SettingsAccount from '@/pages/Settings/Account.vue';
 import SettingsHome from '@/pages/Settings/Nav.vue';
+import Notifications from '@/pages/Settings/Notifications.vue';
 import PaymentPolicy from '@/pages/PaymentPolicy.vue';
 import ContentPolicy from '@/pages/ContentPolicy.vue';
 import NotFound from '@/pages/404.vue';
@@ -175,6 +176,11 @@ const routes = [
 				path: 'styling',
 				name: 'Styling',
 				component: SettingsStyling,
+			},
+			{
+				path: 'notifications',
+				name: 'notifications',
+				component: Notifications,
 			},
 		],
 		meta: {
