@@ -40,7 +40,7 @@ const scrollListener = async (e: Event) => {
 	const { scrollTop, scrollHeight, clientHeight } = e.target as HTMLElement;
 	if (scrollTop + clientHeight >= scrollHeight - 5) {
 		isLoading.value = true;
-		const newPosts = await usePostsStore().fetchHomePosts();
+		const newPosts = await postsStore.fetchHomePosts();
 		homePosts.value = homePosts.value.concat(newPosts);
 		isLoading.value = false;
 	}
@@ -61,22 +61,34 @@ const handleFeedSwitch = async (alg: Algorithm, timeframe?: Timeframe) => {
 		homePosts.value = [];
 	}
 	isLoading.value = true;
+	postsStore.setSavedOffset(0, true);
 	postsStore.setAlgorithm(alg);
-	const newPosts = await usePostsStore().fetchHomePosts();
+	const newPosts = await postsStore.fetchHomePosts();
 	homePosts.value = homePosts.value.concat(newPosts);
 	isLoading.value = false;
 };
 
+async function handleReloadAction() {
+	postsStore.setSavedOffset(0, true);
+	postsStore.setCurrentOffset(0);
+	homePosts.value = [];
+	await initHome();
+}
+
+async function initHome() {
+	isLoading.value = true;
+	const newPosts = await postsStore.fetchHomePosts();
+	homePosts.value = homePosts.value.concat(newPosts);
+	isLoading.value = false;
+}
+
 onMounted(async () => {
 	if (postsStore.$state.homeFeed.savedOffset > 0) {
 		postsStore.$state.homeFeed.currentOffset = postsStore.$state.homeFeed.savedOffset;
-		postsStore.$state.homeFeed.savedOffset = 0;
 	} else {
 		postsStore.$state.homeFeed.currentOffset = 0;
 	}
-	isLoading.value = true;
-	homePosts.value = await usePostsStore().fetchHomePosts();
-	isLoading.value = false;
+	await initHome();
 	document.addEventListener(`click`, (e) => {
 		if (!showAlgorithmDropdown.value) {
 			return;
@@ -192,19 +204,14 @@ onMounted(async () => {
 				v-if="postsStore.$state.homeFeed.savedOffset !== 0"
 				ref="reload"
 				class="flex w-full justify-center items-center text-sm text-primary py-2 hover:bg-gray1 dark:hover:bg-darkBG hover:bg-opacity-25 dark:hover:bg-opacity-25 transition ease-in-out"
-				@click="
-					() => {
-						postsStore.$state.homeFeed.savedOffset = 0;
-						usePostsStore().fetchHomePosts();
-					}
-				"
+				@click="handleReloadAction"
 			>
 				<ReloadIcon class="mr-2 w-4 h-4" />
 				Load newest posts
 			</button>
 
 			<div v-for="post in homePosts" :key="`new_${post.post._id}`">
-				<PostCardContainer :fetched-post="post" />
+				<PostCardContainer :fetched-post="post" :home-index="homePosts.indexOf(post)" />
 			</div>
 			<p v-if="postsStore.homeFeed.noMorePosts" class="text-gray5 dark:text-gray3 py-5 text-center text-sm">
 				No more posts

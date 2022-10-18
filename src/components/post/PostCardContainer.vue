@@ -13,9 +13,11 @@ import { useStore } from '@/store/session';
 const props = withDefaults(
 	defineProps<{
 		fetchedPost?: IGenericPostResponse;
+		homeIndex?: number;
 	}>(),
 	{
 		fetchedPost: undefined,
+		homeIndex: 0,
 	},
 );
 
@@ -42,6 +44,7 @@ const activeAction = ref<`` | `comments` | `stats` | `share` | `quote`>(``);
 <template>
 	<div v-if="props.fetchedPost && !isDeleted">
 		<SimpleFeedCard
+			:home-index="props.homeIndex"
 			:fetched-post="props.fetchedPost"
 			:active-action="activeAction"
 			@toggle-action="toggleAction"
