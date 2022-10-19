@@ -24,6 +24,7 @@ import FollowersPopup from '@/components/popups/FollowersPopup.vue';
 import FollowingPopup from '@/components/popups/FollowingPopup.vue';
 import BioPopup from '@/components/popups/BioPopup.vue';
 import PencilIcon from '@/components/icons/Pencil.vue';
+import Image from '@/components/popups/Image.vue';
 
 const store = useStore();
 const settings = useStoreSettings();
@@ -343,7 +344,7 @@ onMounted(async () => {
 			<button
 				v-show="longBio"
 				id="readMore"
-				class="header-profile focus:outline-none text-xs text-primary py-1"
+				class="header-profile focus:outline-none text-xs text-primary py-1 px-1"
 				@click="expandBio = true"
 			>
 				Read more
@@ -401,6 +402,7 @@ onMounted(async () => {
 		<FollowersPopup v-if="openFollowersPopup" @close="openFollowersPopup = false" />
 		<FollowingPopup v-if="openFollowingPopup" @close="openFollowingPopup = false" />
 		<BioPopup v-if="expandBio" :id="authorID" @close="expandBio = false" />
+		<Image v-if="showAvatarPopup && profile.avatar" :image="profile.avatar" @close="showAvatarPopup = false" />
 	</Teleport>
 </template>
 
