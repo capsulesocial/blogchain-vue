@@ -162,7 +162,7 @@ onMounted(() => {
 </script>
 
 <template>
-	<div id="scrollable_content" class="min-h-88 h-88 w-full relative p-8">
+	<div id="scrollable_content" class="min-h-88 h-88 w-full overflow-y-auto lg:overflow-y-hidden relative p-8">
 		<!-- Title, dave, close -->
 		<article class="flex flex-col px-2">
 			<div
