@@ -44,7 +44,6 @@ export const emailNotificationssStore = defineStore(`emailnotifications`, {
 			if (fetchedNewsletters !== undefined) {
 				this.emailSubsciptionMap[authorId] = fetchedNewsletters;
 			}
-			return [];
 		},
 		async deleteEmailSubsciption(authorId: string, username: string) {
 			try {
