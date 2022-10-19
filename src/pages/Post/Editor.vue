@@ -23,7 +23,7 @@ import { BASE_ALLOWED_TAGS } from '@/helpers/helpers';
 import { createRegularPost, IKeyData, sendEncryptedPost, sendRegularPost, Tag } from '@/backend/post';
 import { toastError } from '@/plugins/toast';
 import turndownService from '@/components/Editor/TurndownService';
-import { createEditorImageSet } from '@/components/Editor/helpers';
+import { createEditorImageSet, EditorImages } from '@/components/Editor/helpers';
 import textLimits from '@/backend/utilities/text_limits';
 import { createEncryptedPost } from '../../backend/post';
 
@@ -51,7 +51,7 @@ const subtitleInput = ref<HTMLTextAreaElement>();
 const wordCount = ref(0);
 const hasPosted = ref(false);
 const isX = ref(false);
-const postImageKeys = ref<Map<string, IKeyData | Record<string, unknown>>>(new Map());
+const postImageKeys = ref<EditorImages>(new Map());
 const editor = ref();
 const showPostPreview = computed(() => rootStore.$state.showDraftPreview);
 const showConfirmPopup = ref(false);
@@ -462,13 +462,16 @@ defineExpose({ checkPost });
 			<Quill
 				ref="editor"
 				:initial-content="draft.content"
+				:initial-editor-images="postImageKeys"
 				:valid-image-types="validMimeTypes"
 				:image-uploader="uploadPhoto"
 				:is-primary-widget="false"
 				:allowed-tags="BASE_ALLOWED_TAGS"
-				@is-writing="hideDraftButton"
+				:max-post-images="10"
+				:encrypted-content="draft.encrypted"
 				@editor-image-updates="editorImageUpdated"
 				@update-word-count="updateWordCount"
+				@is-writing="hideDraftButton"
 				@on-error="handleEditorError"
 			/>
 		</article>
