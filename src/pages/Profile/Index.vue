@@ -161,9 +161,9 @@ onMounted(async () => {
 	<section>
 		<!-- collapsed -->
 		<article
-			v-show="scrollingDown"
 			ref="topContainer"
-			class="min-h-fit header-profile z-20 w-full px-4 pt-3 xl:px-6 xl:pt-4"
+			class="min-h-fit header-profile z-20 w-full px-4 pt-3 xl:px-6 border-b border-lightBorder"
+			:class="scrollingDown ? `opacity-1 xl:pt-4` : `opacity-0 h-0 min-h-0 xl:pt-0`"
 		>
 			<div class="flex flex-row items-center pb-4">
 				<button
@@ -240,14 +240,15 @@ onMounted(async () => {
 		</article>
 		<!-- top -->
 		<article
-			v-show="!scrollingDown"
 			id="header"
 			ref="topContainer"
-			class="min-h-fit header-profile z-20 w-full px-4 pt-3 xl:px-6 xl:pt-4"
+			class="header-profile z-20 w-full px-4 pt-3 xl:px-6 border-b border-lightBorder"
+			:class="scrollingDown ? `opacity-0 xl:pt-0 min-h-0 h-0` : `xl:pt-4 opacity-1 min-h-fit h-fit`"
 		>
 			<button
 				v-if="authorID !== store.$state.id"
-				class="focus:outline-none flex flex-row items-center pb-4"
+				class="focus:outline-none flex flex-row items-center mb-4"
+				style="height: 34.8px"
 				@click="handleBack"
 			>
 				<span class="bg-gray1 dark:bg-gray5 rounded-full p-1"><BackButton :reduce-size="true" /></span>
@@ -408,17 +409,7 @@ onMounted(async () => {
 	transition: all 0.4s;
 	/* z-index: 50; */
 }
-.headercollapsed {
-	min-height: 1rem !important;
-	height: 4rem !important;
-}
 .headernotcollapsed {
-	opacity: 1;
-}
-.opacity0 {
-	opacity: 0;
-}
-.opacity1 {
 	opacity: 1;
 }
 </style>
