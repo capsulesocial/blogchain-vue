@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import Avatar from '@/components/Avatar.vue';
-import { getPhotoFromIPFS } from '@/backend/getPhoto';
 import { Profile } from '@/backend/profile';
 
 const props = withDefaults(
@@ -11,16 +10,11 @@ const props = withDefaults(
 	{},
 );
 
-const avatar = ref<string | ArrayBuffer | undefined>(undefined);
 const isLoading = ref(true);
 
 defineEmits([`manageNewsletter`]);
 
 onMounted(async () => {
-	// fetch avatar
-	if (props.profile.avatar !== null && props.profile.avatar !== ``) {
-		avatar.value = await getPhotoFromIPFS(props.profile.avatar);
-	}
 	isLoading.value = false;
 });
 </script>
@@ -29,17 +23,19 @@ onMounted(async () => {
 		v-if="!isLoading"
 		class="py-6 px-4 w-full xl:w-40 from-lightBGStart to-lightBGStop dark:from-darkBG dark:to-darkBG border border-lightBorder bg-gradient-to-r shadow-sm rounded-lg flex flex-col justify-center items-center text-center modal-animation"
 	>
-		<Avatar :author-i-d="profile.id" :avatar="avatar" size="w-14 h-14" />
+		<Avatar :authorid="props.profile.id" :cid="props.profile.avatar" size="w-14 h-14" />
 		<div class="h-12 flex-grow w-full mt-2">
 			<div class="flex flex-col items-center">
-				<span v-if="profile.name != ``" class="text-base font-medium dark:text-darkPrimaryText truncate w-full">
-					{{ profile.name }}
+				<span v-if="props.profile.name != ``" class="text-base font-medium dark:text-darkPrimaryText truncate w-full">
+					{{ props.profile.name }}
 				</span>
-				<span v-else class="text-gray5 dark:text-gray3 text-base font-medium truncate w-full"> {{ profile.id }} </span>
-				<span class="text-gray5 dark:text-gray3 text-sm truncate w-full">@{{ profile.id }}</span>
+				<span v-else class="text-gray5 dark:text-gray3 text-base font-medium truncate w-full">
+					{{ props.profile.id }}
+				</span>
+				<span class="text-gray5 dark:text-gray3 text-sm truncate w-full">@{{ props.profile.id }}</span>
 			</div>
 		</div>
-		<button class="text-primary text-sm mt-2" @click="$emit(`manageNewsletter`, profile)">Manage</button>
+		<button class="text-primary text-sm mt-2" @click="$emit(`manageNewsletter`, props.profile)">Manage</button>
 	</div>
 	<div
 		v-else

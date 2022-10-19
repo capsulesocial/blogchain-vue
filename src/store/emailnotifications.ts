@@ -8,6 +8,7 @@ import {
 	EmailSubscriptionMode,
 	listEmails,
 	UserEmail,
+	listAllAuthors,
 } from '@/backend/emails';
 import { handleError, toastSuccess } from '@/plugins/toast';
 
@@ -34,6 +35,7 @@ export const emailNotificationssStore = defineStore(`emailnotifications`, {
 			if (state.userListEmails[authorId]) {
 				return state.userListEmails[authorId];
 			}
+			return [];
 		},
 	},
 	actions: {
@@ -42,12 +44,12 @@ export const emailNotificationssStore = defineStore(`emailnotifications`, {
 			if (fetchedNewsletters !== undefined) {
 				this.emailSubsciptionMap[authorId] = fetchedNewsletters;
 			}
+			return [];
 		},
 		async deleteEmailSubsciption(authorId: string, username: string) {
 			try {
 				await deleteSubscription(username, authorId);
 				toastSuccess(`Email subscription deleted successfully 🎉`);
-				this.fetchNewsletters(authorId, username);
 			} catch (err) {
 				handleError(err);
 			}
@@ -62,7 +64,6 @@ export const emailNotificationssStore = defineStore(`emailnotifications`, {
 			try {
 				await startEmailSubscription(authorID, email, topics, mode, username);
 				this.fetchNewsletters(authorID, username);
-				toastSuccess(`Started newsletter successfully  🎉`);
 			} catch (err) {
 				handleError(err);
 			}
@@ -71,10 +72,17 @@ export const emailNotificationssStore = defineStore(`emailnotifications`, {
 			try {
 				const userEmails = await listEmails(username, authorID);
 				if (userEmails !== undefined) {
-					this.userListEmails[username] = userEmails;
+					this.userListEmails[authorID] = userEmails;
 				}
 			} catch (err) {
 				handleError(err);
+			}
+		},
+		async listAuthors(username: string) {
+			try {
+				return await listAllAuthors(username);
+			} catch (error) {
+				handleError(error);
 			}
 		},
 	},

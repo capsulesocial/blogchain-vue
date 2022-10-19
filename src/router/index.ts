@@ -179,7 +179,7 @@ const routes = [
 			},
 			{
 				path: 'notifications',
-				name: 'notifications',
+				name: 'Notifications',
 				component: Notifications,
 			},
 		],

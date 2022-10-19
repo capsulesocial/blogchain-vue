@@ -86,7 +86,7 @@ onMounted(async () => {
 					<!-- Delete -->
 					<button
 						class="focus:outline-none text-negative flex"
-						@click="$emit(`deleteSubscription`, props.newsletter._id), toggleDropdownDelete"
+						@click="$emit(`deleteSubscription`, props.newsletter), toggleDropdownDelete"
 					>
 						<BinIcon class="p-1" />
 						<span class="text-negative ml-1 self-center text-sm pr-1">Delete</span>

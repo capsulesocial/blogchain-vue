@@ -10,6 +10,7 @@ import { useStore } from '@/store/session';
 import { useProfilesStore } from '@/store/profiles';
 import { emailNotificationssStore } from '@/store/emailnotifications';
 import { useRoute } from 'vue-router';
+import { IEmailSubscription } from '@/backend/emails';
 
 const store = useStore();
 const profilesStore = useProfilesStore();
@@ -26,7 +27,7 @@ const profile = computed(() => profilesStore.getProfile(paramId.value));
 const newsletters = computed(() => emailNotification.getEmailSubsciption(paramId.value));
 const showNewsletterPopup = ref(false);
 const showDeletePopup = ref(false);
-const tobeDeleteId = ref(``);
+const tobeDeleted = ref<IEmailSubscription>();
 
 // methods
 function toggleNewsletterPopup() {
@@ -40,16 +41,17 @@ async function fetchNewsletters() {
 	await emailNotification.fetchNewsletters(paramId.value, store.$state.id);
 }
 
-function toggleConfirmPopup(id: string) {
+function toggleConfirmPopup(newsletter: IEmailSubscription) {
+	tobeDeleted.value = newsletter;
 	showDeletePopup.value = true;
-	tobeDeleteId.value = id;
 }
 
 async function confirmDelete() {
-	await emailNotification.deleteEmailSubsciption(tobeDeleteId.value, store.$state.id);
+	if (tobeDeleted.value !== undefined) {
+		await emailNotification.deleteEmailSubsciption(tobeDeleted.value._id as string, store.$state.id);
+		fetchNewsletters();
+	}
 }
-
-fetchNewsletters();
 
 onMounted(async () => {
 	await profilesStore.fetchProfile(paramId.value);
@@ -81,7 +83,7 @@ onMounted(async () => {
 					<TagCard :tag="`ham`" class="mr-2" />
 				</div> -->
 				<button
-					v-if="newsletters.length > 0"
+					v-if="newsletters !== undefined && newsletters.length > 0"
 					class="rounded-lg px-3 py-2 bg-black text-white focus:outline-none text-sm font-semibold mt-2"
 					@click="toggleNewsletterPopup"
 				>
@@ -130,6 +132,7 @@ onMounted(async () => {
 			:profile="profile"
 			:avatar="profile.avatar"
 			@toggle-newsletter-popup="toggleNewsletterPopup"
+			@newsletter-started="fetchNewsletters"
 		/>
 		<BasicConfirmAlert
 			v-if="showDeletePopup"

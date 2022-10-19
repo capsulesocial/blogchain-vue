@@ -59,6 +59,13 @@ function closePopup() {
 	emit(`toggleNewsletterPopup`);
 }
 
+async function fetchNewsletters() {
+	if (!store.$state.id) {
+		return;
+	}
+	await emailNotification.fetchNewsletters(paramId.value, store.$state.id);
+}
+
 // function toggleAllPosts() {
 // 	allPosts.value = !allPosts.value;
 // }
@@ -76,7 +83,7 @@ async function submitSubscription() {
 		store.$state.id,
 	);
 	confirmEmailSent.value = true;
-	emit(`toggleNewsletterPopup`);
+	fetchNewsletters();
 }
 // selectTag(tag: any) {
 // 	return tag
@@ -90,12 +97,14 @@ function saveNewsletterTags() {
 async function submitSubscriptionFromSelected() {
 	await emailNotification.createEmailSubscription(
 		props.profile.id,
-		selectedEmail.value,
+		selectedEmail.value.toLowerCase(),
 		[],
 		EmailSubscriptionMode.AllPosts,
 		store.$state.id,
 	);
-	emit(`toggleNewsletterPopup`);
+
+	fetchNewsletters();
+	closePopup();
 }
 
 onMounted(async () => {
