@@ -7,21 +7,18 @@ import {
 	startEmailSubscription,
 	EmailSubscriptionMode,
 	listEmails,
-	UserEmail,
 	listAllAuthors,
 } from '@/backend/emails';
 import { handleError, toastSuccess } from '@/plugins/toast';
 
 export interface EmailSubsciptions {
 	emailSubsciptionMap: Record<string, IEmailSubscription[]>;
-	userListEmails: Record<string, UserEmail[]>;
 }
 
 export const emailNotificationssStore = defineStore(`emailnotifications`, {
 	state: (): EmailSubsciptions => {
 		return {
 			emailSubsciptionMap: {},
-			userListEmails: {},
 		};
 	},
 	persist: true,
@@ -29,11 +26,6 @@ export const emailNotificationssStore = defineStore(`emailnotifications`, {
 		getEmailSubsciption: (state: EmailSubsciptions) => (authorId: string) => {
 			if (state.emailSubsciptionMap[authorId]) {
 				return state.emailSubsciptionMap[authorId];
-			}
-		},
-		getUserEmailList: (state: EmailSubsciptions) => (authorId: string) => {
-			if (state.userListEmails[authorId]) {
-				return state.userListEmails[authorId];
 			}
 		},
 	},

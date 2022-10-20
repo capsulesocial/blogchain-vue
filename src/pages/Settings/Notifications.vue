@@ -60,7 +60,7 @@ onMounted(async () => {
 			<h6 class="font-semibold dark:text-darkPrimaryText">All Settings</h6>
 		</router-link>
 		<!-- Email newsletter -->
-		<div class="ml-10 pt-5">
+		<div class="px-6 pt-4">
 			<h3 class="text-lightPrimaryText dark:text-darkPrimaryText pb-2 text-base font-semibold">Email notifications</h3>
 			<p class="text-gray5 dark:text-gray3 text-sm">
 				You are currently receiving email notifications from the following authors:

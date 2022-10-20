@@ -2,17 +2,19 @@
 import { ref, computed, onMounted } from 'vue';
 import NewsletterPreview from '@/components/NewsletterPreview.vue';
 import AddNewsletterPopup from '@/components/popups/AddNewsletter.vue';
+import EmailConfirmation from '@/components/popups/EmailConfirmation.vue';
 // import TagCard from '@/components/Tag.vue'
 // import PlusIcon from '@/components/icons/Plus.vue'
 
 import { useStore } from '@/store/session';
 import { useProfilesStore } from '@/store/profiles';
 import { emailNotificationssStore } from '@/store/emailnotifications';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 const store = useStore();
 const profilesStore = useProfilesStore();
 const route = useRoute();
+const router = useRouter();
 const emailNotification = emailNotificationssStore();
 
 const paramId = computed(() => {
@@ -24,6 +26,16 @@ const paramId = computed(() => {
 const profile = computed(() => profilesStore.getProfile(paramId.value));
 const newsletters = computed(() => emailNotification.getEmailSubsciption(paramId.value));
 const showNewsletterPopup = ref(false);
+const fromExternalSite = ref(false);
+
+// Check if coming from external site
+router.beforeEach((to, from, next) => {
+	next(() => {
+		if (to && from.name === null) {
+			fromExternalSite.value = true;
+		}
+	});
+});
 
 // methods
 function toggleNewsletterPopup() {
@@ -115,6 +127,12 @@ onMounted(async () => {
 			:avatar="profile.avatar"
 			@toggle-newsletter-popup="toggleNewsletterPopup"
 			@newsletter-started="fetchNewsletters"
+		/>
+		<EmailConfirmation
+			v-if="fromExternalSite"
+			:author-name="paramId"
+			:email-address="newsletters[0].email"
+			@close="fromExternalSite = false"
 		/>
 	</Teleport>
 </template>

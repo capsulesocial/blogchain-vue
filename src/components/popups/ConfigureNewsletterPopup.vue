@@ -50,7 +50,7 @@ async function updateNewsletter() {
 
 onMounted(async () => {
 	window.addEventListener(`click`, handleClose, false);
-	fetchNewsletter();
+	updateNewsletter();
 });
 </script>
 

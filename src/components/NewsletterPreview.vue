@@ -107,7 +107,7 @@ onMounted(async () => {
 						class="focus:outline-none text-negative flex"
 						@click="(showDeleteConfirm = true), toggleDropdownDelete"
 					>
-						<BinIcon class="p-1" />
+						<BinIcon class="m-1 w-4 h-4" />
 						<span class="text-negative ml-1 self-center text-sm pr-1">Delete</span>
 					</button>
 				</div>
