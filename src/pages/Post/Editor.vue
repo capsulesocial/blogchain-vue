@@ -190,7 +190,7 @@ async function handleSave() {
 
 async function saveContent() {
 	isSaving.value = true;
-	editor.value.updateContent();
+	updateContent();
 	await sleep(600);
 	showSaved.value = true;
 	await sleep(800);
