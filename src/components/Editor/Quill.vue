@@ -41,16 +41,16 @@ const toggleAddContent = ref(false);
 const addContentPosTop = ref(0);
 const addContentPosLeft = ref(0);
 const waitingImage = ref(false);
-const qeditor = ref<Quill>();
-const editor = ref<QuillMarkdown>();
+let qeditor: Quill | null = null;
+let editor: QuillMarkdown | null = null;
 const editorImages = ref(new Map());
 
 async function handleCutPaste(range: RangeStatic, pastedText: string) {
 	const { default: QuillClass } = await import(`quill`);
 	const Delta = QuillClass.import(`delta`);
 	const delta = new Delta().compose(new Delta().retain(range.index + range.length).insert(pastedText));
-	qeditor.value?.updateContents(delta);
-	setTimeout(() => qeditor.value?.setSelection(range.index + pastedText.length, 0, `user`), 0);
+	qeditor?.updateContents(delta);
+	setTimeout(() => qeditor?.setSelection(range.index + pastedText.length, 0, `user`), 0);
 }
 
 async function handleImage(e: Event) {
@@ -80,7 +80,7 @@ function actionsUpload() {
 }
 
 function getInputHTML(): string {
-	const input = qeditor.value?.root.innerHTML;
+	const input = qeditor?.root.innerHTML;
 	if (!input) {
 		return ``;
 	}
@@ -89,11 +89,11 @@ function getInputHTML(): string {
 }
 
 function calculateAddPos(index: number) {
-	if (!qeditor.value) {
+	if (!qeditor) {
 		return;
 	}
-	const line = qeditor.value.getLine(index);
-	const pos = qeditor.value.getBounds(index);
+	const line = qeditor.getLine(index);
+	const pos = qeditor.getBounds(index);
 	if (line[1] === 0 && line[0].domNode.innerHTML === `<br>` && !waitingImage.value) {
 		if (index === 0) {
 			addContentPosTop.value = pos.top + 50;
@@ -110,23 +110,23 @@ function calculateAddPos(index: number) {
 
 function insertContent(content: InsertContent | null, plainText = false) {
 	try {
-		if (!qeditor.value || !content) {
+		if (!qeditor || !content) {
 			return;
 		}
-		const range = qeditor.value.getSelection(true);
+		const range = qeditor.getSelection(true);
 		if (typeof content === `string`) {
 			if (plainText) {
-				qeditor.value.insertText(range.index, content, `user`);
+				qeditor.insertText(range.index, content, `user`);
 			} else {
-				qeditor.value.clipboard.dangerouslyPasteHTML(range.index, content, `user`);
+				qeditor.clipboard.dangerouslyPasteHTML(range.index, content, `user`);
 			}
 		} else {
 			const { cid, url } = content;
-			qeditor.value.insertEmbed(range.index, `image`, { alt: cid.toString(), url }, `user`);
+			qeditor.insertEmbed(range.index, `image`, { alt: cid.toString(), url }, `user`);
 		}
-		const contentLength = qeditor.value.getContents().length();
+		const contentLength = qeditor.getContents().length();
 		setTimeout(() => {
-			qeditor.value?.setSelection(contentLength, 0, `user`);
+			qeditor?.setSelection(contentLength, 0, `user`);
 			calculateAddPos(contentLength);
 		}, 0);
 	} catch (error: any) {
@@ -268,7 +268,7 @@ async function handlePastedContent(e: ClipboardEvent) {
 	e.stopPropagation();
 	e.preventDefault();
 
-	if (!qeditor.value) {
+	if (!qeditor) {
 		emit(`onError`, new Error(`Something went wrong while pasting the content`));
 		return;
 	}
@@ -281,10 +281,10 @@ async function handlePastedContent(e: ClipboardEvent) {
 	const pastedText = sanitize(clipboard.getData(`text/plain`));
 	const pastedFile = items.length > 0 ? items[0].getAsFile() : null;
 	const contentImgs = getContentImages(pastedContent);
-	const range = qeditor.value.getSelection(true);
+	const range = qeditor.getSelection(true);
 
 	// handle cut and paste
-	if (qeditor.value.getLength() !== range.index + 1 && contentImgs.length === 0 && !pastedFile) {
+	if (qeditor.getLength() !== range.index + 1 && contentImgs.length === 0 && !pastedFile) {
 		handleCutPaste(range, pastedText);
 		scrollToBottom(e);
 		return;
@@ -326,8 +326,8 @@ async function setupEditor(this: any) {
 	};
 	// Handle updates to body
 	const onTextChange = (_delta?: any, oldDelta?: any, source?: string) => {
-		if (qeditor.value && source === `user`) {
-			const currentContent = qeditor.value.getContents();
+		if (qeditor && source === `user`) {
+			const currentContent = qeditor.getContents();
 			const diff = currentContent.diff(oldDelta);
 			const imageInCurrentContent = currentContent.ops.find((op: any) => op.insert && op.insert.image);
 			const imageInDiff = diff.ops.find((op: any) => op.insert && op.insert.image);
@@ -366,20 +366,20 @@ async function setupEditor(this: any) {
 		true,
 	);
 	const e = new QuillClass(`#editor`, quillOptions);
-	qeditor.value = e;
-	qeditor.value.root.addEventListener(`drop`, (ev: DragEvent) => {
+	qeditor = e;
+	qeditor.root.addEventListener(`drop`, (ev: DragEvent) => {
 		handleDroppedContent(ev);
 	});
-	qeditor.value.root.addEventListener(`paste`, (ev: ClipboardEvent) => {
+	qeditor.root.addEventListener(`paste`, (ev: ClipboardEvent) => {
 		handlePastedContent(ev);
 	});
-	qeditor.value.focus();
+	qeditor.focus();
 	// Set link placeholder
 	const qe: HTMLElement | null = document.querySelector(`.ql-tooltip-editor input`);
 	if (qe) {
 		qe.setAttribute(`data-link`, `https://capsule.social`);
 	}
-	editor.value = new QuillMarkdown(e, {});
+	editor = new QuillMarkdown(e, {});
 }
 
 onMounted(() => {
