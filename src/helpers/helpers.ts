@@ -21,7 +21,7 @@ export const afterSanitizeAttrsHook = () => {
 	});
 };
 
-export const BASE_ALLOWED_ATTRS = [`class`, `id`, `href`];
+export const BASE_ALLOWED_ATTRS = [`href`];
 
 export const BASE_ALLOWED_TAGS = [
 	`pre`,
@@ -39,8 +39,12 @@ export const BASE_ALLOWED_TAGS = [
 	`h3`,
 	`h4`,
 	`h5`,
+	`h6`,
 	`a`,
 	`span`,
+	`img`,
+	`ul`,
+	`s`,
 ];
 
 export const sanitizeHtml = (content: string, ALLOWED_TAGS: string[], ALLOWED_ATTR: string[]) => {

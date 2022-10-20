@@ -1,7 +1,32 @@
+import hljs from 'highlight.js';
 import type { RangeStatic, Quill } from 'quill';
 
 export type InsertContent = string | { cid: string; url: string | ArrayBuffer };
-export type EditorImages = Map<string, { key: string; counter: string }>;
+export type EditorImages = Map<string, { key: string; counter: string } | Record<string, unknown>>;
+
+export const quillToolbarOptions = [
+	[`bold`, `italic`, `underline`, `strike`],
+	[`blockquote`, `code-block`, `link`],
+	[{ header: 2 }],
+	[{ list: `ordered` }, { list: `bullet` }],
+];
+
+export const quillOptions = {
+	placeholder: `Start typing here...`,
+	readOnly: false,
+	theme: `bubble`,
+	bounds: `#editor`,
+	scrollingContainer: `#editor`,
+	modules: {
+		syntax: {
+			highlight: (code: string) => hljs.highlightAuto(code).value,
+		},
+		counter: true,
+		toolbar: {
+			container: quillToolbarOptions,
+		},
+	},
+};
 
 export function getContentImages(content: string) {
 	const domParser = new DOMParser();
@@ -83,4 +108,22 @@ export function createEditorImageSet(content: string, uploadedImages: EditorImag
 	});
 
 	return usedImages;
+}
+
+export async function urlToFile(url: string): Promise<{ file: File } | { error: string }> {
+	try {
+		const response = await fetch(url, { mode: `cors` });
+		if (!response.ok) {
+			return { error: `Could not fetch image` };
+		}
+		const blob = await response.blob();
+		const blobExtension = getBlobExtension(blob);
+		if (!blobExtension) {
+			return { error: `Invalid image type` };
+		}
+		const file = new File([blob], `image${Date.now()}${blobExtension}`, { type: blob.type });
+		return { file };
+	} catch (error: any) {
+		return { error: error.message };
+	}
 }

@@ -1,15 +1,18 @@
 import { defineStore } from 'pinia';
 import type { Post, Tag } from '@/backend/post';
 import { useStore } from '@/store/session';
+import { EditorImages } from '@/components/Editor/helpers';
 
 export interface DraftPost extends Post {
 	accessTiers: Array<string>;
 	wordCount: number;
+	editorImageKeys: EditorImages;
 }
 
 export interface DraftStore {
 	drafts: DraftPost[];
 	activeIndex: number;
+	draftWidget: boolean;
 }
 
 export const useDraftStore = defineStore(`draftStore`, {
@@ -17,6 +20,7 @@ export const useDraftStore = defineStore(`draftStore`, {
 		return {
 			drafts: [],
 			activeIndex: 0,
+			draftWidget: false,
 		};
 	},
 	persist: true,
@@ -66,15 +70,22 @@ export const useDraftStore = defineStore(`draftStore`, {
 				encrypted: false,
 				accessTiers: [],
 				wordCount: 0,
+				editorImageKeys: new Map(),
 			};
 			this.drafts.push(blank);
 			this.activeIndex = this.drafts.indexOf(blank);
+		},
+		handleDraftWidget(v: boolean) {
+			this.draftWidget = v;
 		},
 		setTitle(title: string) {
 			this.drafts[this.activeIndex].title = title;
 		},
 		setSubtitle(subtitle: string) {
 			this.drafts[this.activeIndex].subtitle = subtitle;
+		},
+		setTimestamp(timestamp: number) {
+			this.drafts[this.activeIndex].timestamp = timestamp;
 		},
 		addTag(tag: string) {
 			this.drafts[this.activeIndex].tags.push({ name: tag });
@@ -93,6 +104,12 @@ export const useDraftStore = defineStore(`draftStore`, {
 		},
 		updateFeaturedPhotoCaption(caption: string | null) {
 			this.drafts[this.activeIndex].featuredPhotoCaption = caption;
+		},
+		updatePostImages(postImages?: string[]) {
+			this.drafts[this.activeIndex].postImages = postImages;
+		},
+		updateEditorImageKeys(editorImageKeys: EditorImages) {
+			this.drafts[this.activeIndex].editorImageKeys = editorImageKeys;
 		},
 		toggleEncrypted() {
 			this.drafts[this.activeIndex].encrypted = !this.drafts[this.activeIndex].encrypted;
