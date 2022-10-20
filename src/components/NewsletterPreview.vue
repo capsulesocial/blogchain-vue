@@ -2,6 +2,10 @@
 import { ref, onMounted } from 'vue';
 import MoreIcon from '@/components/icons/MoreIcon.vue';
 import BinIcon from '@/components/icons/BinIcon.vue';
+import BasicConfirmAlert from '@/components/popups/BasicConfirmAlert.vue';
+
+import { useStore } from '@/store/session';
+import { emailNotificationssStore } from '@/store/emailnotifications';
 
 import { useStoreSettings } from '@/store/settings';
 
@@ -15,11 +19,14 @@ const props = withDefaults(
 );
 
 const storeSettings = useStoreSettings();
+const store = useStore();
+const emailNotification = emailNotificationssStore();
 
 const showDelete = ref(false);
 const showStatus = ref(false);
+const showDeleteConfirm = ref(false);
 
-defineEmits([`deleteSubscription`]);
+const emit = defineEmits([`refetchSubs`]);
 
 // methods
 function toggleDropdownDelete() {
@@ -33,6 +40,18 @@ function handleDropdown(e: any) {
 	if (!e.target.parentNode.classList.contains(`icon`)) {
 		showDelete.value = false;
 	}
+}
+
+async function update() {
+	await emailNotification.fetchNewsletters(props.newsletter.authorID, store.$state.id);
+}
+
+async function confirmDelete() {
+	if (props.newsletter._id) {
+		await emailNotification.deleteEmailSubsciption(props.newsletter._id, store.$state.id);
+	}
+	update();
+	emit(`refetchSubs`);
 }
 
 onMounted(async () => {
@@ -86,7 +105,7 @@ onMounted(async () => {
 					<!-- Delete -->
 					<button
 						class="focus:outline-none text-negative flex"
-						@click="$emit(`deleteSubscription`, props.newsletter), toggleDropdownDelete"
+						@click="(showDeleteConfirm = true), toggleDropdownDelete"
 					>
 						<BinIcon class="p-1" />
 						<span class="text-negative ml-1 self-center text-sm pr-1">Delete</span>
@@ -95,6 +114,14 @@ onMounted(async () => {
 			</div>
 		</div>
 	</div>
+	<Teleport to="body">
+		<BasicConfirmAlert
+			v-if="showDeleteConfirm"
+			:text="`Are you sure you want to cancel this email notification? You can still add it again later`"
+			@close="showDeleteConfirm = false"
+			@confirm="confirmDelete()"
+		/>
+	</Teleport>
 </template>
 <style>
 .deleteEmailOpen::before {

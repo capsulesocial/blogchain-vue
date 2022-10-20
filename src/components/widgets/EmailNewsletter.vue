@@ -2,7 +2,6 @@
 import { ref, computed, onMounted } from 'vue';
 import NewsletterPreview from '@/components/NewsletterPreview.vue';
 import AddNewsletterPopup from '@/components/popups/AddNewsletter.vue';
-import BasicConfirmAlert from '@/components/popups/BasicConfirmAlert.vue';
 // import TagCard from '@/components/Tag.vue'
 // import PlusIcon from '@/components/icons/Plus.vue'
 
@@ -10,7 +9,6 @@ import { useStore } from '@/store/session';
 import { useProfilesStore } from '@/store/profiles';
 import { emailNotificationssStore } from '@/store/emailnotifications';
 import { useRoute } from 'vue-router';
-import { IEmailSubscription } from '@/backend/emails';
 
 const store = useStore();
 const profilesStore = useProfilesStore();
@@ -26,8 +24,6 @@ const paramId = computed(() => {
 const profile = computed(() => profilesStore.getProfile(paramId.value));
 const newsletters = computed(() => emailNotification.getEmailSubsciption(paramId.value));
 const showNewsletterPopup = ref(false);
-const showDeletePopup = ref(false);
-const tobeDeleted = ref<IEmailSubscription>();
 
 // methods
 function toggleNewsletterPopup() {
@@ -41,41 +37,27 @@ async function fetchNewsletters() {
 	await emailNotification.fetchNewsletters(paramId.value, store.$state.id);
 }
 
-function toggleConfirmPopup(newsletter: IEmailSubscription) {
-	tobeDeleted.value = newsletter;
-	showDeletePopup.value = true;
-}
-
-async function confirmDelete() {
-	if (tobeDeleted.value !== undefined) {
-		await emailNotification.deleteEmailSubsciption(tobeDeleted.value._id as string, store.$state.id);
-		fetchNewsletters();
-	}
-}
-
 onMounted(async () => {
 	await profilesStore.fetchProfile(paramId.value);
+	fetchNewsletters();
 });
 </script>
 
 <template>
 	<article
+		v-if="store.$state.id !== paramId"
 		class="from-lightBGStart to-lightBGStop dark:from-darkBGStart dark:to-darkBGStop border-lightBorder mb-5 w-full rounded-lg border bg-gradient-to-r px-6 pt-4 pb-5 shadow-lg"
 		style="backdrop-filter: blur(10px)"
 	>
 		<!-- Public view -->
-		<div v-if="store.$state.id !== paramId">
+		<div>
 			<h6 class="text-lightPrimaryText dark:text-darkPrimaryText mb-3 font-semibold">Email notifications</h6>
+
 			<p class="text-gray5 dark:text-gray3 text-sm mb-4">
 				Create email notifications to be aware of <b>{{ profile.name ? profile.name : `@${profile.id}` }}</b
 				>'s new posts directly in your inbox:
 			</p>
-			<NewsletterPreview
-				v-for="newsletter in newsletters"
-				:key="newsletter.email"
-				:newsletter="newsletter"
-				@delete-subscription="toggleConfirmPopup"
-			/>
+			<NewsletterPreview v-for="newsletter in newsletters" :key="newsletter.email" :newsletter="newsletter" />
 			<div class="flex flex-row justify-between flex-wrap gap-y-2">
 				<!-- <div class="flex flex-row items-center text-lg">
 					<TagCard :tag="`green`" class="mr-2" />
@@ -99,7 +81,7 @@ onMounted(async () => {
 			</div>
 		</div>
 		<!-- Self-view -->
-		<div v-else>
+		<div>
 			<!-- <h6 class="text-lightPrimaryText dark:text-darkPrimaryText mb-3 font-semibold">Email newsletter</h6>
 			<p class="text-gray5 dark:text-gray3 text-sm mb-4">
 				Display highlighted tags on your profile for readers to enable email newsletter to receive your posts:
@@ -133,12 +115,6 @@ onMounted(async () => {
 			:avatar="profile.avatar"
 			@toggle-newsletter-popup="toggleNewsletterPopup"
 			@newsletter-started="fetchNewsletters"
-		/>
-		<BasicConfirmAlert
-			v-if="showDeletePopup"
-			:text="`Are you sure you want to cancel this email notification? You can still add it again later`"
-			@close="showDeletePopup = false"
-			@confirm="confirmDelete"
 		/>
 	</Teleport>
 </template>

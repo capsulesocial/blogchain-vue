@@ -2,7 +2,6 @@
 import { ref, onMounted } from 'vue';
 import ProfilePreviewCard from '@/components/ProfilePreviewCard.vue';
 import ConfigureNewsletterPopup from '@/components/popups/ConfigureNewsletterPopup.vue';
-import BasicConfirmAlert from '@/components/popups/BasicConfirmAlert.vue';
 
 import ChevronLeft from '@/components/icons/ChevronLeft.vue';
 
@@ -12,7 +11,6 @@ import { handleError } from '@/plugins/toast';
 
 import { createDefaultProfile, getProfile, Profile } from '@/backend/profile';
 import { getPhotoFromIPFS } from '@/backend/getPhoto';
-import { IEmailSubscription } from '@/backend/emails';
 
 const store = useStore();
 const emailNotification = emailNotificationssStore();
@@ -22,8 +20,6 @@ const isLoading = ref(true);
 const showNewsletterPopup = ref(false);
 const authorProfile = ref();
 const clickedAuthorAvatar = ref<string | ArrayBuffer>();
-const showDeletePopup = ref(false);
-const tobeDeleted = ref<IEmailSubscription>();
 
 async function toggleNewsletterPopup(clickedAuthor: Profile) {
 	if (clickedAuthor) {
@@ -35,28 +31,7 @@ async function toggleNewsletterPopup(clickedAuthor: Profile) {
 	showNewsletterPopup.value = !showNewsletterPopup.value;
 }
 
-async function fetchNewsletters() {
-	if (!store.$state.id) {
-		return;
-	}
-	if (tobeDeleted.value !== undefined) {
-		await emailNotification.fetchNewsletters(tobeDeleted.value.authorID, store.$state.id);
-	}
-}
-
-async function toggleConfirmPopup(newsletter: IEmailSubscription) {
-	showDeletePopup.value = true;
-	tobeDeleted.value = newsletter;
-}
-async function confirmDelete() {
-	if (tobeDeleted.value !== undefined) {
-		await emailNotification.deleteEmailSubsciption(tobeDeleted.value.authorID, store.$state.id);
-	}
-
-	fetchNewsletters();
-}
-
-onMounted(async () => {
+async function authorLists() {
 	try {
 		const authorIDs = await emailNotification.listAuthors(store.$state.id);
 		if (authorIDs !== undefined) {
@@ -70,6 +45,10 @@ onMounted(async () => {
 	} catch (err) {
 		handleError(err);
 	}
+}
+
+onMounted(async () => {
+	authorLists();
 	isLoading.value = false;
 });
 </script>
@@ -103,19 +82,10 @@ onMounted(async () => {
 			</p>
 		</div>
 	</main>
-	<Teleport to="body">
-		<ConfigureNewsletterPopup
-			v-if="showNewsletterPopup"
-			:profile="authorProfile"
-			:avatar="clickedAuthorAvatar"
-			@toggle-newsletter-popup="toggleNewsletterPopup"
-			@show-delete-popup="toggleConfirmPopup"
-		/>
-		<BasicConfirmAlert
-			v-if="showDeletePopup"
-			:text="`Are you sure you want to cancel this email notification? You can still add it again later`"
-			@close="showDeletePopup = false"
-			@confirm="confirmDelete"
-		/>
-	</Teleport>
+	<ConfigureNewsletterPopup
+		v-if="showNewsletterPopup"
+		:profile="authorProfile"
+		:avatar="clickedAuthorAvatar"
+		@toggle-newsletter-popup="toggleNewsletterPopup"
+	/>
 </template>

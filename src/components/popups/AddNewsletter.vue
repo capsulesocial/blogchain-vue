@@ -13,16 +13,14 @@ import { EmailSubscriptionMode } from '@/backend/emails';
 import { useStore } from '@/store/session';
 import { emailNotificationssStore } from '@/store/emailnotifications';
 import { useRoute } from 'vue-router';
+import { toastSuccess } from '@/plugins/toast';
 
 const props = withDefaults(
 	defineProps<{
-		profile?: Profile;
-		avatar?: ArrayBuffer | string | null;
+		profile: Profile;
+		avatar: ArrayBuffer | string | null;
 	}>(),
-	{
-		profile: undefined,
-		avatar: null,
-	},
+	{},
 );
 
 const store = useStore();
@@ -38,7 +36,7 @@ const paramId = computed(() => {
 });
 // const allPosts = ref(true);
 const selectedEmail = ref(``);
-const userEmails = computed(() => emailNotification.getUserEmailList(store.$state.id));
+const userEmails = ref();
 const ShowAddEmail = ref(false);
 const newEmail = ref(``);
 const confirmEmailSent = ref(false);
@@ -60,9 +58,6 @@ function closePopup() {
 }
 
 async function fetchNewsletters() {
-	if (!store.$state.id) {
-		return;
-	}
 	await emailNotification.fetchNewsletters(paramId.value, store.$state.id);
 }
 
@@ -102,14 +97,14 @@ async function submitSubscriptionFromSelected() {
 		EmailSubscriptionMode.AllPosts,
 		store.$state.id,
 	);
-
+	toastSuccess(`Started newsletter successfully 🎉`);
 	fetchNewsletters();
 	closePopup();
 }
 
 onMounted(async () => {
 	window.addEventListener(`click`, handleClose, false);
-	await emailNotification.listUserEmails(store.$state.id, props.profile.id);
+	userEmails.value = await emailNotification.listUserEmails(store.$state.id, props.profile.id);
 });
 </script>
 
@@ -181,7 +176,7 @@ onMounted(async () => {
 						<Avatar :avatar="avatar" :author-i-d="props.profile.id" :no-click="true" :size="`w-12 h-12`" />
 						<p class="text-lightPrimaryText dark:text-darkPrimaryText ml-4 w-10/12">
 							Create a new email notification from
-							{{ props.profile.name !== `` ? props.profile.name : `@${props.profile.id}'s` }} posts and manage its
+							{{ props.profile.name !== `` ? props.profile.name : `@${props.profile.id}` }}'s posts and manage its
 							destination here:
 						</p>
 					</div>

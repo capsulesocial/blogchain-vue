@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
-
 import CloseIcon from '@/components/icons/XIcon.vue';
 import Avatar from '@/components/Avatar.vue';
 import NewsletterPreview from '@/components/NewsletterPreview.vue';
 
-import { Profile } from '@/backend/profile';
-
+import { ref, onMounted } from 'vue';
+import { useStore } from '@/store/session';
 import { emailNotificationssStore } from '@/store/emailnotifications';
-import { IEmailSubscription } from '@/backend/emails';
+
+import { Profile } from '@/backend/profile';
 
 const props = withDefaults(
 	defineProps<{
@@ -20,14 +19,14 @@ const props = withDefaults(
 	},
 );
 
+const store = useStore();
 const emailNotification = emailNotificationssStore();
+const newsletters = ref();
 
-const newsletters = computed(() => emailNotification.getEmailSubsciption(props.profile.id));
-
-const emit = defineEmits([`toggleNewsletterPopup`, `showDeletePopup`]);
+const emit = defineEmits([`toggleNewsletterPopup`]);
 
 // methods
-function handleClose(e: any): void {
+function handleClose(e: any) {
 	if (!e.target || e.target.parentNode === null || e.target.firstChild?.classList === undefined) {
 		return;
 	}
@@ -36,24 +35,28 @@ function handleClose(e: any): void {
 	}
 }
 
+async function fetchNewsletter() {
+	newsletters.value = await emailNotification.getEmailSubsciption(props.profile.id);
+}
+
 function closePopup() {
 	emit(`toggleNewsletterPopup`);
 }
 
-function createNewsletter() {
-	closePopup();
+async function updateNewsletter() {
+	await emailNotification.fetchNewsletters(props.profile.id, store.$state.id);
+	fetchNewsletter();
 }
-async function deleteSubscription(newsletter: IEmailSubscription) {
-	emit(`showDeletePopup`, newsletter);
-}
+
 onMounted(async () => {
 	window.addEventListener(`click`, handleClose, false);
+	fetchNewsletter();
 });
 </script>
 
 <template>
 	<div
-		class="bg-darkBG dark:bg-gray5 modal-animation fixed top-0 bottom-0 left-0 right-0 z-30 flex h-screen w-full items-center justify-center bg-opacity-50 dark:bg-opacity-50"
+		class="bg-darkBG dark:bg-gray5 modal-animation fixed top-0 bottom-0 left-0 right-0 z-20 flex h-screen w-full items-center justify-center bg-opacity-50 dark:bg-opacity-50"
 	>
 		<div
 			class="popup w-full lg:w-600 bg-lightBG dark:bg-darkBGStop card-animation max-h-90 z-10 overflow-y-auto rounded-lg px-6 pt-4 pb-6 shadow-lg"
@@ -71,7 +74,7 @@ onMounted(async () => {
 			<div>
 				<!-- Avatar and description -->
 				<div class="flex mb-6 items-center">
-					<Avatar :author-i-d="props.profile.id" :avatar="avatar" :no-click="true" :size="`w-12 h-12`" />
+					<Avatar :author-i-d="props.profile.id" :avatar="props.avatar" :no-click="true" :size="`w-12 h-12`" />
 					<p v-if="props.profile.name !== ``" class="text-lightPrimaryText dark:text-darkPrimaryText ml-4 w-10/12">
 						Manage all your email notifications from {{ props.profile.name }} here:
 					</p>
@@ -84,7 +87,7 @@ onMounted(async () => {
 					v-for="newsletter in newsletters"
 					:key="newsletter.email"
 					:newsletter="newsletter"
-					@delete-subscription="deleteSubscription"
+					@refetch-subs="updateNewsletter"
 				/>
 
 				<!-- Submit or manage email newsletter -->
@@ -92,7 +95,7 @@ onMounted(async () => {
 					<button
 						class="bg-darkBG text-lightButtonText focus:outline-none transform rounded-lg font-bold transition duration-500 ease-in-out hover:bg-opacity-75"
 						style="padding: 0.4rem 1.5rem"
-						@click="createNewsletter"
+						@click="closePopup"
 					>
 						<span class="font-sans" style="font-size: 0.95rem"> Save </span>
 					</button>

@@ -35,14 +35,18 @@ export const emailNotificationssStore = defineStore(`emailnotifications`, {
 			if (state.userListEmails[authorId]) {
 				return state.userListEmails[authorId];
 			}
-			return [];
 		},
 	},
 	actions: {
 		async fetchNewsletters(authorId: string, username: string) {
-			const fetchedNewsletters = await listForAuthor(authorId, username);
-			if (fetchedNewsletters !== undefined) {
+			if (!authorId || !username) {
+				return;
+			}
+			try {
+				const fetchedNewsletters = await listForAuthor(authorId, username);
 				this.emailSubsciptionMap[authorId] = fetchedNewsletters;
+			} catch (error) {
+				handleError(error);
 			}
 		},
 		async deleteEmailSubsciption(authorId: string, username: string) {
@@ -60,6 +64,9 @@ export const emailNotificationssStore = defineStore(`emailnotifications`, {
 			mode: EmailSubscriptionMode = EmailSubscriptionMode.AllPosts,
 			username: string,
 		) {
+			if (!authorID || !username) {
+				return;
+			}
 			try {
 				await startEmailSubscription(authorID, email, topics, mode, username);
 				this.fetchNewsletters(authorID, username);
@@ -68,16 +75,19 @@ export const emailNotificationssStore = defineStore(`emailnotifications`, {
 			}
 		},
 		async listUserEmails(username: string, authorID: string) {
+			if (!username || !authorID) {
+				return;
+			}
 			try {
-				const userEmails = await listEmails(username, authorID);
-				if (userEmails !== undefined) {
-					this.userListEmails[authorID] = userEmails;
-				}
+				return await listEmails(username, authorID);
 			} catch (err) {
 				handleError(err);
 			}
 		},
 		async listAuthors(username: string) {
+			if (!username) {
+				return;
+			}
 			try {
 				return await listAllAuthors(username);
 			} catch (error) {
