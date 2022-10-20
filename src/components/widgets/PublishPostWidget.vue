@@ -63,3 +63,29 @@ function sendPost() {
 	</article>
 	<ConfirmPopup v-if="showConfirmPopup" @close="showConfirmPopup = false" @post="sendPost" />
 </template>
+<style>
+.hoverPreview::before {
+	content: '';
+	position: absolute;
+	top: 0.5rem;
+	right: -0.5rem;
+	transform: rotate(45deg);
+	width: 1rem;
+	height: 1rem;
+	background-color: #fff;
+	border-radius: 2px;
+	z-index: 1;
+}
+.hoverPreviewDark::before {
+	content: '';
+	position: absolute;
+	top: 0.5rem;
+	right: -0.5rem;
+	transform: rotate(45deg);
+	width: 1rem;
+	height: 1rem;
+	background-color: #686868;
+	border-radius: 2px;
+	z-index: 1;
+}
+</style>

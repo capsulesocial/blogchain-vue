@@ -38,7 +38,11 @@ function newPost() {
 					<button class="text-primary focus:outline-none ml-1" @click="newPost">write a new draft</button>
 				</p>
 			</div>
-			<HorizontalDraftPreview v-for="draft in drafts.slice(0, 2)" :key="draft.timestamp" :draft="draft" />
+			<HorizontalDraftPreview
+				v-for="draft in drafts.slice(drafts.length - 2, drafts.length).reverse()"
+				:key="draft.timestamp"
+				:draft="draft"
+			/>
 			<button v-if="drafts.length > 2" class="text-primary text-sm" @click="openDraftPopup = true">Show more</button>
 		</div>
 		<div v-else class="text-gray5 dark:text-gray3 pt-3 text-sm">

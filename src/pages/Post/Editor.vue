@@ -40,6 +40,7 @@ const showPostPreview = computed(() => rootStore.$state.showDraftPreview);
 const showConfirmPopup = ref(false);
 const showDrafts = ref(false);
 const draftButtonHidden = ref(false);
+const isWriting = ref(false);
 
 function handleTitle(e: any) {
 	if (!titleInput.value || !subtitleInput.value || !e) {
@@ -92,11 +93,11 @@ function hideDraftButton(value: boolean) {
 		return;
 	}
 	if (value === true) {
-		draftButton.classList.add(`hidedraftButton`);
 		draftButtonHidden.value = true;
+		isWriting.value = true;
 	} else {
-		draftButton.classList.remove(`hidedraftButton`);
 		draftButtonHidden.value = false;
+		isWriting.value = false;
 	}
 }
 
@@ -114,8 +115,14 @@ async function handleSave() {
 	showSaved.value = false;
 }
 
-function saveContent() {
+async function saveContent() {
+	isSaving.value = true;
 	editor.value.updateContent();
+	await sleep(600);
+	showSaved.value = true;
+	await sleep(800);
+	isSaving.value = false;
+	showSaved.value = false;
 	router.go(-1);
 }
 
@@ -226,8 +233,10 @@ onMounted(() => {
 	</div>
 	<div
 		id="draftButton"
-		class="animatedraftButton bg-lightBG dark:bg-darkBG border-lightBorder text-xs text-gray5 dark:text-gray3 modal-animation card-animation-delay1 absolute bottom-0 z-10 m-4 flex rounded-lg py-3 shadow-lg"
-		:class="draftButtonHidden ? `px-3` : `px-5`"
+		class="animatedraftButton bg-lightBG dark:bg-darkBG border-lightBorder text-xs text-gray5 dark:text-gray3 modal-animation card-animation-delay1 absolute bottom-0 z-10 m-4 ml-0 flex rounded-r-lg shadow-lg"
+		:class="draftButtonHidden ? `hidedraftButtonclass px-3 py-2.5` : `showraftButtonclass py-3 px-5`"
+		@mouseenter="draftButtonHidden = false"
+		@mouseleave="isWriting ? (draftButtonHidden = true) : ``"
 	>
 		<p v-if="!draftButtonHidden" class="mr-2">Resume writing?</p>
 		<button v-if="!draftButtonHidden" class="text-primary focus:outline-none" @click="showDrafts = true">
@@ -245,8 +254,10 @@ onMounted(() => {
 .animatedraftButton {
 	transition: all 0.4s;
 }
-.hidedraftButton {
-	transform: translateX(-2rem);
-	padding: 0.7rem;
+.hidedraftButtonclass {
+	transform: translateX(-0.8rem);
+}
+.showdraftButtonclass {
+	transform: translateX(0rem);
 }
 </style>
