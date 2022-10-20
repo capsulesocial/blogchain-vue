@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onBeforeMount, onBeforeUnmount, ref, watch } from 'vue';
 import { useMeta } from 'vue-meta';
-import { useRoute, useRouter } from 'vue-router';
+import { useRouter } from 'vue-router';
 
 import { useDraftStore } from '@/store/drafts';
 import { useRootStore } from '@/store/index';
@@ -59,13 +59,18 @@ const showDrafts = ref(false);
 const draftButtonHidden = ref(false);
 const isWriting = ref(false);
 
-function updateDraftPostImages() {
-	draftStore.updatePostImages(Array.from(postImageKeys.value.keys()));
+function updateDraftPostImages(editorImages: EditorImages) {
+	const editorImageKeys = new Map(postImageKeys.value);
+	editorImages.forEach((value, key) => {
+		postImageKeys.value.set(key, value);
+		editorImageKeys.set(key, value);
+	});
+	draftStore.updateEditorImageKeys(editorImageKeys);
+	draftStore.updatePostImages(Array.from(editorImages.keys()));
 }
 
 function editorImageUpdated(updates: any) {
-	postImageKeys.value = updates.editorImages;
-	updateDraftPostImages();
+	updateDraftPostImages(updates.editorImages);
 	if (updates.newImage) {
 		const { cid, image, imageName } = updates.newImage;
 		preUploadPhoto(cid, image, imageName, sessionStore.id, draft.value.encrypted);
