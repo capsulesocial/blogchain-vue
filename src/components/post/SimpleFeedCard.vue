@@ -255,7 +255,7 @@ onBeforeMount(() => {
 							:class="activeAction === `comments` ? `text-primary` : ``"
 							@click="emit(`toggle-action`, `comments`)"
 						>
-							<CommentIcon :is-active="activeAction === `comments`" class="w-5 h-5" />
+							<CommentIcon :is-active="activeAction === `comments`" class="w-5 h-5 mr-1" />
 							<span class="ml-1 text-sm">{{ commentsStats?.total }}</span>
 						</button>
 						<!-- Repost -->

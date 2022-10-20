@@ -155,27 +155,27 @@ async function sendComment() {
 					:size="`h-12 w-12`"
 				/>
 			</div>
-			<div
-				id="faceSelector"
-				class="border-lightBorder flex w-full overflow-hidden rounded-xl border"
-				:class="
-					showEmotions
-						? ``
-						: (selectedEmotionColor === `positive` ||
-								selectedEmotionColor === `neutral` ||
-								selectedEmotionColor === `negative`) &&
-						  selectedEmotion
-						? `border p-2 bg-` + selectedEmotionColor
-						: `p-2 bg-lightBG dark:bg-darkBG`
-				"
-			>
+			<div id="faceSelector" class="border-lightBorder flex w-full overflow-hidden rounded-xl border">
 				<div
 					class="flex w-full items-center justify-center overflow-hidden rounded-xl relative"
 					:style="showEmotions ? `height: 20rem` : `height: 10rem`"
 				>
 					<div v-if="store.$state.id !== ``" class="flex w-full flex-row">
 						<!-- Front side: Type comment -->
-						<div v-show="!showEmotions" class="flex w-full bg-lightBG dark:bg-darkBG">
+						<div
+							v-show="!showEmotions"
+							class="flex w-full bg-lightBG dark:bg-darkBG"
+							:class="
+								showEmotions
+									? ``
+									: (selectedEmotionColor === `positive` ||
+											selectedEmotionColor === `neutral` ||
+											selectedEmotionColor === `negative`) &&
+									  selectedEmotion
+									? `bg-opacity-10 bg-` + selectedEmotionColor
+									: `bg-lightBG dark:bg-darkBG`
+							"
+						>
 							<button class="focus:outline-none h-auto flex-shrink-0" @click="toggleShowEmotions">
 								<span v-if="activeEmotion">
 									<img

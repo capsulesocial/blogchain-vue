@@ -135,7 +135,7 @@ onMounted(async () => {
 			<div class="flex flex-col w-full">
 				<!-- Comment -->
 				<div
-					class="relative flex flex-row w-full overflow-x-auto justify-between rounded-lg bg-opacity-5"
+					class="relative flex flex-row w-full overflow-x-auto justify-between rounded-lg bg-opacity-10"
 					:class="
 						emotionCategories.positive.has(props.emotion)
 							? `bg-positive`
