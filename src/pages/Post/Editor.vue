@@ -374,7 +374,10 @@ function initDraft() {
 }
 
 onBeforeMount(async () => {
-	const { postImages } = draft.value;
+	const { postImages, editorImageKeys } = draft.value;
+	if (editorImageKeys.size > 0) {
+		postImageKeys.value = editorImageKeys;
+	}
 	if (postImages) {
 		postImages.forEach((p) => {
 			postImageKeys.value.set(p, {});
