@@ -113,7 +113,7 @@ export const useDraftStore = defineStore(`draftStore`, {
 			if (state.hasPosted) {
 				return false;
 			}
-			const postImages = createEditorImageSet(clean, allPostImages);
+			const postImages = createEditorImageSet(clean, state.drafts[state.activeIndex].editorImageKeys);
 			if (postImages.size > textLimits.post_images.max) {
 				toastError(`Cannot add more than ${textLimits.post_images.max} images in a post`);
 				return false;
@@ -230,9 +230,9 @@ export const useDraftStore = defineStore(`draftStore`, {
 				);
 				try {
 					const tiers: string[] = this.drafts[this.activeIndex].accessTiers;
-					const postImages = this.drafts[this.activeIndex].postImages;
+					// const postImages = this.drafts[this.activeIndex].postImages;
 					// const postImages: string[] = [];
-					const cid: string = await sendEncryptedPost(p, tiers, postImages);
+					const cid: string = await sendEncryptedPost(p, tiers, this.drafts[this.activeIndex].editorImageKeys);
 					router.push(`/post/` + cid);
 				} catch (err: unknown) {
 					handleError(err);
@@ -251,7 +251,7 @@ export const useDraftStore = defineStore(`draftStore`, {
 				post.authorID,
 				post.featuredPhotoCID,
 				post.featuredPhotoCaption,
-				post.images,
+				post.postImages,
 			);
 			try {
 				this.hasPosted = true;
