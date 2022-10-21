@@ -13,7 +13,6 @@ const rootStore = useRootStore();
 const draftStore = useDraftStore();
 
 const hoverPreview = ref(false);
-//should correspond to draft.wordcount
 const wordCount = computed(() => draftStore.getWordCount);
 const showConfirmPopup = ref(false);
 
@@ -23,9 +22,7 @@ function togglePreview() {
 
 function sendPost() {
 	//send post to backend from store and redirect to the the published post
-	if (draftStore.checkPost) {
-		draftStore.sendPost();
-	}
+	draftStore.triggerIsPosting(true);
 }
 </script>
 <template>
@@ -79,6 +76,7 @@ function sendPost() {
 	border-radius: 2px;
 	z-index: 1;
 }
+
 .hoverPreviewDark::before {
 	content: '';
 	position: absolute;

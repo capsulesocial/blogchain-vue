@@ -1,23 +1,7 @@
 import { defineStore } from 'pinia';
-import {
-	createEncryptedPost,
-	createRegularPost,
-	IEncryptedPost,
-	IRegularPost,
-	Post,
-	sendEncryptedPost,
-	sendRegularPost,
-	Tag,
-} from '@/backend/post';
+import { Post, Tag } from '@/backend/post';
 import { useStore } from '@/store/session';
 import { EditorImages } from '@/components/Editor/helpers';
-import { handleError, toastError } from '@/plugins/toast';
-import turndownService from '@/components/Editor/TurndownService';
-import { qualityContent, qualityFeaturedPhotoCaption, qualitySubtitle, qualityTitle } from '@/plugins/quality';
-import { createEditorImageSet, isError } from '@/components/Editor/helpers';
-import textLimits from '@/backend/utilities/text_limits';
-import router from '@/router';
-
 export interface DraftPost extends Post {
 	accessTiers: Array<string>;
 	wordCount: number;
@@ -29,6 +13,7 @@ export interface DraftStore {
 	activeIndex: number;
 	draftWidget: boolean;
 	hasPosted: boolean;
+	isPosting: boolean;
 }
 
 export const useDraftStore = defineStore(`draftStore`, {
@@ -38,6 +23,7 @@ export const useDraftStore = defineStore(`draftStore`, {
 			activeIndex: 0,
 			draftWidget: false,
 			hasPosted: false,
+			isPosting: false,
 		};
 	},
 	persist: true,
@@ -57,68 +43,8 @@ export const useDraftStore = defineStore(`draftStore`, {
 		getActiveIndex: (state: DraftStore) => {
 			return state.activeIndex;
 		},
-		checkPost: (state: DraftStore): boolean => {
-			const post = state.drafts[state.activeIndex];
-			// Check for tiers on premium post
-			if (post.encrypted && post.accessTiers.length === 0) {
-				toastError(`At least one subscription tier must be selected`);
-				return false;
-			}
-			// Check for quality title
-			const titleCheck = qualityTitle(post.title);
-			if (isError(titleCheck)) {
-				toastError(titleCheck.error);
-				return false;
-			}
-			// Check for subtitle on encrypted posts
-			if (post.encrypted && (post.subtitle === `` || !post.subtitle)) {
-				toastError(`Subtitles are required on encrypted premium posts`);
-				return false;
-			}
-			// Check if using a subtitle and is a quality subtitle
-			if (post.subtitle) {
-				const subtitleCheck = qualitySubtitle(post.subtitle);
-				if (isError(subtitleCheck)) {
-					toastError(subtitleCheck.error);
-					return false;
-				}
-			}
-			// Check for quality featuredPhotoCaption
-			if (post.featuredPhotoCaption) {
-				const featuredPhotoCaptionCheck = qualityFeaturedPhotoCaption(post.featuredPhotoCaption);
-				if (isError(featuredPhotoCaptionCheck)) {
-					toastError(featuredPhotoCaptionCheck.error);
-					return false;
-				}
-			}
-			// Check category
-			if (post.category === ``) {
-				toastError(`Missing category`);
-				return false;
-			}
-			// Check tags
-			for (const { name } of post.tags) {
-				if (name.replace(/\s/, ``).trim() !== name) {
-					toastError(`Tag with spaces is not allowed`);
-					return false;
-				}
-			}
-			// Check content quality
-			const clean = turndownService.turndown(post.content);
-			const contentQualityCheck = qualityContent(clean);
-			if (isError(contentQualityCheck)) {
-				toastError(contentQualityCheck.error);
-				return false;
-			}
-			if (state.hasPosted) {
-				return false;
-			}
-			const postImages = createEditorImageSet(clean, state.drafts[state.activeIndex].editorImageKeys);
-			if (postImages.size > textLimits.post_images.max) {
-				toastError(`Cannot add more than ${textLimits.post_images.max} images in a post`);
-				return false;
-			}
-			return true;
+		getIsPosting: (state: DraftStore) => {
+			return state.isPosting;
 		},
 	},
 	actions: {
@@ -207,60 +133,8 @@ export const useDraftStore = defineStore(`draftStore`, {
 		updateWordCount(n: number) {
 			this.drafts[this.activeIndex].wordCount = n;
 		},
-		async sendPost() {
-			const post = this.drafts[this.activeIndex];
-			// Send encrypted post
-			const clean = turndownService.turndown(post.content);
-			if (post.encrypted) {
-				// quality rules
-				if (!post.subtitle) {
-					toastError(`Subtitle required on encrypted posts`);
-					return;
-				}
-				const p: IEncryptedPost = createEncryptedPost(
-					post.title,
-					post.subtitle,
-					clean,
-					post.category,
-					post.tags,
-					post.authorID,
-					post.featuredPhotoCID,
-					post.featuredPhotoCaption,
-					post.postImages,
-				);
-				try {
-					const tiers: string[] = this.drafts[this.activeIndex].accessTiers;
-					// const postImages = this.drafts[this.activeIndex].postImages;
-					// const postImages: string[] = [];
-					const cid: string = await sendEncryptedPost(p, tiers, this.drafts[this.activeIndex].editorImageKeys);
-					router.push(`/post/` + cid);
-				} catch (err: unknown) {
-					handleError(err);
-				} finally {
-					this.deleteDraft(this.activeIndex);
-				}
-				return;
-			}
-			// Send unencrypted post
-			const p: IRegularPost = createRegularPost(
-				post.title,
-				post.subtitle === `` ? null : post.subtitle,
-				clean,
-				post.category,
-				post.tags,
-				post.authorID,
-				post.featuredPhotoCID,
-				post.featuredPhotoCaption,
-				post.postImages,
-			);
-			try {
-				this.hasPosted = true;
-				const cid: string = await sendRegularPost(p);
-				router.push(`/post/` + cid);
-			} catch (err: unknown) {
-				this.hasPosted = false;
-				handleError(err);
-			}
+		triggerIsPosting(v: boolean) {
+			this.isPosting = v;
 		},
 	},
 });
