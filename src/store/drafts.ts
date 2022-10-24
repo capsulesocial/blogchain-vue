@@ -1,8 +1,7 @@
 import { defineStore } from 'pinia';
-import type { Post, Tag } from '@/backend/post';
+import { Post, Tag } from '@/backend/post';
 import { useStore } from '@/store/session';
 import { EditorImages } from '@/components/Editor/helpers';
-
 export interface DraftPost extends Post {
 	accessTiers: Array<string>;
 	wordCount: number;
@@ -13,6 +12,8 @@ export interface DraftStore {
 	drafts: DraftPost[];
 	activeIndex: number;
 	draftWidget: boolean;
+	hasPosted: boolean;
+	isPosting: boolean;
 }
 
 export const useDraftStore = defineStore(`draftStore`, {
@@ -21,6 +22,8 @@ export const useDraftStore = defineStore(`draftStore`, {
 			drafts: [],
 			activeIndex: 0,
 			draftWidget: false,
+			hasPosted: false,
+			isPosting: false,
 		};
 	},
 	persist: true,
@@ -39,6 +42,9 @@ export const useDraftStore = defineStore(`draftStore`, {
 		},
 		getActiveIndex: (state: DraftStore) => {
 			return state.activeIndex;
+		},
+		getIsPosting: (state: DraftStore) => {
+			return state.isPosting;
 		},
 	},
 	actions: {
@@ -126,6 +132,9 @@ export const useDraftStore = defineStore(`draftStore`, {
 		},
 		updateWordCount(n: number) {
 			this.drafts[this.activeIndex].wordCount = n;
+		},
+		triggerIsPosting(v: boolean) {
+			this.isPosting = v;
 		},
 	},
 });

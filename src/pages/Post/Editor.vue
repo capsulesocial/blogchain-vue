@@ -21,7 +21,7 @@ import { validMimeTypes } from '@/backend/utilities/helpers';
 import { preUploadPhoto, uploadPhoto } from '@/backend/photos';
 import { BASE_ALLOWED_TAGS } from '@/helpers/helpers';
 import { createRegularPost, IKeyData, sendEncryptedPost, sendRegularPost, Tag } from '@/backend/post';
-import { toastError } from '@/plugins/toast';
+import { handleError, toastError } from '@/plugins/toast';
 import turndownService from '@/components/Editor/TurndownService';
 import { createEditorImageSet, EditorImages } from '@/components/Editor/helpers';
 import textLimits from '@/backend/utilities/text_limits';
@@ -54,6 +54,7 @@ const isX = ref(false);
 const postImageKeys = ref<EditorImages>(new Map());
 const editor = ref();
 const showPostPreview = computed(() => rootStore.$state.showDraftPreview);
+const postingStatus = computed(() => draftStore.getIsPosting);
 const showConfirmPopup = ref(false);
 const showDrafts = ref(false);
 const draftButtonHidden = ref(false);
@@ -219,11 +220,8 @@ function checkPostPreview() {
 }
 
 function checkPost(checksOnly = false) {
-	const title = titleInput.value?.value.trim();
-	const subtitle = subtitleInput.value?.value.trim();
-	if (!title || !subtitle) {
-		return false;
-	}
+	const title = titleInput.value ? titleInput.value?.value.trim() : ``;
+	const subtitle = subtitleInput.value ? subtitleInput.value?.value.trim() : ``;
 	const { category, tags, featuredPhotoCID, featuredPhotoCaption, encrypted } = draft.value;
 
 	// Check for tiers on premium post
@@ -340,18 +338,18 @@ async function sendPost(
 			featuredPhotoCaption,
 			images,
 		);
-
 		try {
 			hasPosted.value = true;
 			const cid = await sendRegularPost(p);
-			// draftStore.resetDraft()
-			// settingsStore.setRecentlyPosted(true)
+			draftStore.deleteDraft(draftStore.$state.activeIndex);
+			settingsStore.setRecentlyPosted(true);
 			router.push(`/post/${cid}`);
 		} catch (error) {
 			hasPosted.value = false;
-			// handleError(error)
+			handleError(error);
 		}
 	}
+	draftStore.triggerIsPosting(false);
 	showConfirmPopup.value = false;
 	//send post to backend from store and redirect to the the published post
 	updateContent();
@@ -385,15 +383,22 @@ onBeforeMount(async () => {
 	}
 });
 
-onMounted(() => {
-	initDraft();
-});
-
 function handleCloseDrafts() {
 	showDrafts.value = false;
 	initDraft();
 	editor.value.setupEditor();
 }
+
+onMounted(() => {
+	initDraft();
+	draftStore.triggerIsPosting(false);
+});
+
+watch(postingStatus, () => {
+	if (draftStore.isPosting) {
+		checkPost(false);
+	}
+});
 
 watch(activeIndex, () => {
 	initDraft();
@@ -465,6 +470,7 @@ defineExpose({ checkPost });
 				@input="handleSubtitle"
 			/>
 		</article>
+
 		<!-- WYSIWYG -->
 		<article class="w-full">
 			<Quill
@@ -503,6 +509,7 @@ defineExpose({ checkPost });
 	<ConfirmPopup v-if="showConfirmPopup" @close="showConfirmPopup = false" @post="sendPost" />
 	<DraftsPopup v-if="showDrafts" @close="handleCloseDrafts" />
 </template>
+
 <style>
 .animatedraftButton {
 	transition: all 0.4s;
