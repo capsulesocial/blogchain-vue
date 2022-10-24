@@ -181,8 +181,10 @@ onMounted(async () => {
 						<Avatar :avatar="avatar" :author-i-d="props.profile.id" :no-click="true" :size="`w-12 h-12`" />
 						<p class="text-lightPrimaryText dark:text-darkPrimaryText ml-4 w-10/12">
 							Create a new email notification from
-							{{ props.profile.name !== `` ? props.profile.name : `@${props.profile.id}` }}'s posts and manage its
-							destination here:
+							<span class="font-semibold">{{
+								props.profile.name !== `` ? props.profile.name : `@${props.profile.id}`
+							}}</span
+							>'s posts and manage its destination here:
 						</p>
 					</div>
 					<!-- Topics -->
