@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import ProfileIcon from '@/components/icons/ProfileIcon.vue';
 import BrushIcon from '@/components/icons/Brush.vue';
+import BellIcon from '@/components/icons/BellIcon.vue';
 </script>
 <template>
 	<div
@@ -18,6 +19,18 @@ import BrushIcon from '@/components/icons/Brush.vue';
 		>
 			<ProfileIcon class="w-4 h-4" />
 			<p class="ml-4">Account</p>
+		</router-link>
+		<router-link
+			to="/settings/notifications"
+			:class="
+				$route.name === `Notifications`
+					? `bg-lightInput dark:bg-darkInput font-semibold text-primary`
+					: `text-gray5 dark:text-gray3`
+			"
+			class="focus:outline-none mb-4 w-full rounded-lg py-2 px-4 text-left flex flex-row items-center"
+		>
+			<BellIcon class="w-4 h-4" />
+			<p class="ml-4">Notifications</p>
 		</router-link>
 		<router-link
 			to="/settings/styling"
