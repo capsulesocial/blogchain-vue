@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useStore } from '@/store/session';
+import { useMeta } from 'vue-meta';
+
 import { useStoreSettings } from '@/store/settings';
 import { getBGImage } from '@/plugins/background';
 import { getCurrentBG } from '@/config/backgrounds';
@@ -12,6 +14,11 @@ import ChangeColorPopup from '@/components/popups/ChangeColorPopup.vue';
 
 const settings = useStoreSettings();
 const session = useStore();
+
+useMeta({
+	title: `Style Settings - Blogchain`,
+	htmlAttrs: { lang: 'en', amp: true },
+});
 
 const currentBG = ref(getCurrentBG(session.background));
 
