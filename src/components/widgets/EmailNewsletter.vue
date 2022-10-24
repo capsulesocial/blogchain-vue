@@ -7,6 +7,7 @@ import EmailConfirmation from '@/components/popups/EmailConfirmation.vue';
 // import PlusIcon from '@/components/icons/Plus.vue'
 
 import { useStore } from '@/store/session';
+import { useRootStore } from '@/store/index';
 import { useProfilesStore } from '@/store/profiles';
 import { emailNotificationsStore } from '@/store/emailnotifications';
 import { useRoute, useRouter } from 'vue-router';
@@ -16,6 +17,7 @@ const profilesStore = useProfilesStore();
 const route = useRoute();
 const router = useRouter();
 const emailNotification = emailNotificationsStore();
+const rootStore = useRootStore();
 
 const paramId = computed(() => {
 	if (typeof route.params.id !== `string`) {
@@ -39,7 +41,10 @@ router.beforeEach((to, from, next) => {
 
 // methods
 function toggleNewsletterPopup() {
-	showNewsletterPopup.value = !showNewsletterPopup.value;
+	if (store.$state.id) {
+		showNewsletterPopup.value = !showNewsletterPopup.value;
+	}
+	rootStore.toggleUnauthPopup(true);
 }
 
 async function fetchNewsletters() {
