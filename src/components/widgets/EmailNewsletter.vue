@@ -134,7 +134,7 @@ onMounted(async () => {
 			@newsletter-started="fetchNewsletters"
 		/>
 		<EmailConfirmation
-			v-if="fromExternalSite"
+			v-if="fromExternalSite && newsletters"
 			:author-name="paramId"
 			:email-address="newsletters[0].email"
 			@close="fromExternalSite = false"
