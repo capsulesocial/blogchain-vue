@@ -43,7 +43,9 @@ async function fetchNewsletter() {
 async function updateNewsletter() {
 	await emailNotification.fetchNewsletters(props.profile.id, store.$state.id);
 	fetchNewsletter();
-	deleted.value = true;
+	if (newsletters.value.length <= 1) {
+		deleted.value = true;
+	}
 }
 
 function closePopup() {
