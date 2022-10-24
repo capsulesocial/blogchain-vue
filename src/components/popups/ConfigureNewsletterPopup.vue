@@ -5,7 +5,7 @@ import NewsletterPreview from '@/components/NewsletterPreview.vue';
 
 import { ref, onMounted } from 'vue';
 import { useStore } from '@/store/session';
-import { emailNotificationssStore } from '@/store/emailnotifications';
+import { emailNotificationsStore } from '@/store/emailnotifications';
 
 import { Profile } from '@/backend/profile';
 
@@ -20,8 +20,9 @@ const props = withDefaults(
 );
 
 const store = useStore();
-const emailNotification = emailNotificationssStore();
+const emailNotification = emailNotificationsStore();
 const newsletters = ref();
+const deleted = ref(false);
 
 const emit = defineEmits([`toggleNewsletterPopup`]);
 
@@ -39,18 +40,20 @@ async function fetchNewsletter() {
 	newsletters.value = await emailNotification.getEmailSubsciption(props.profile.id);
 }
 
-function closePopup() {
-	emit(`toggleNewsletterPopup`);
-}
-
 async function updateNewsletter() {
 	await emailNotification.fetchNewsletters(props.profile.id, store.$state.id);
 	fetchNewsletter();
+	deleted.value = true;
+}
+
+function closePopup() {
+	emit(`toggleNewsletterPopup`, props.profile, deleted.value);
 }
 
 onMounted(async () => {
 	window.addEventListener(`click`, handleClose, false);
-	updateNewsletter();
+	await emailNotification.fetchNewsletters(props.profile.id, store.$state.id);
+	fetchNewsletter();
 });
 </script>
 
@@ -64,10 +67,7 @@ onMounted(async () => {
 			<!-- Header and close icon -->
 			<div class="flex items-center justify-between pb-4">
 				<h4 class="text-xl font-semibold dark:text-darkPrimaryText">Configure email notification</h4>
-				<button
-					class="focus:outline-none bg-gray1 dark:bg-gray5 rounded-full p-1"
-					@click="$emit(`toggleNewsletterPopup`)"
-				>
+				<button class="focus:outline-none bg-gray1 dark:bg-gray5 rounded-full p-1" @click="closePopup">
 					<CloseIcon />
 				</button>
 			</div>
@@ -75,11 +75,12 @@ onMounted(async () => {
 				<!-- Avatar and description -->
 				<div class="flex mb-6 items-center">
 					<Avatar :author-i-d="props.profile.id" :avatar="props.avatar" :no-click="true" :size="`w-12 h-12`" />
-					<p v-if="props.profile.name !== ``" class="text-lightPrimaryText dark:text-darkPrimaryText ml-4 w-10/12">
-						Manage all your email notifications from {{ props.profile.name }} here:
-					</p>
-					<p v-else class="text-lightPrimaryText dark:text-darkPrimaryText ml-4 w-10/12">
-						Manage all your email notifications from @{{ props.profile.id }} here:
+					<p class="text-lightPrimaryText dark:text-darkPrimaryText ml-4 w-10/12">
+						Manage all your email notifications from
+						<span class="font-semibold"
+							>{{ props.profile.name !== `` ? props.profile.name : `@${props.profile.id}` }}
+						</span>
+						here:
 					</p>
 				</div>
 				<!-- List of newsletters for this author -->

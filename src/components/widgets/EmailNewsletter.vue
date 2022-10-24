@@ -8,14 +8,14 @@ import EmailConfirmation from '@/components/popups/EmailConfirmation.vue';
 
 import { useStore } from '@/store/session';
 import { useProfilesStore } from '@/store/profiles';
-import { emailNotificationssStore } from '@/store/emailnotifications';
+import { emailNotificationsStore } from '@/store/emailnotifications';
 import { useRoute, useRouter } from 'vue-router';
 
 const store = useStore();
 const profilesStore = useProfilesStore();
 const route = useRoute();
 const router = useRouter();
-const emailNotification = emailNotificationssStore();
+const emailNotification = emailNotificationsStore();
 
 const paramId = computed(() => {
 	if (typeof route.params.id !== `string`) {

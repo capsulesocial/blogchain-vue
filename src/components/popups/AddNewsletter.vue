@@ -11,7 +11,7 @@ import { Profile } from '@/backend/profile';
 import { EmailSubscriptionMode } from '@/backend/emails';
 
 import { useStore } from '@/store/session';
-import { emailNotificationssStore } from '@/store/emailnotifications';
+import { emailNotificationsStore } from '@/store/emailnotifications';
 import { useRoute } from 'vue-router';
 import { toastSuccess } from '@/plugins/toast';
 
@@ -25,7 +25,7 @@ const props = withDefaults(
 
 const store = useStore();
 const route = useRoute();
-const emailNotification = emailNotificationssStore();
+const emailNotification = emailNotificationsStore();
 
 // refs
 const paramId = computed(() => {
@@ -70,15 +70,18 @@ function toggleAddEmailPopup() {
 }
 
 async function submitSubscription() {
-	await emailNotification.createEmailSubscription(
+	const res = await emailNotification.createEmailSubscription(
 		props.profile.id,
 		newEmail.value.toLowerCase(),
 		[],
 		EmailSubscriptionMode.AllPosts,
 		store.$state.id,
 	);
-	confirmEmailSent.value = true;
-	fetchNewsletters();
+
+	if (res) {
+		confirmEmailSent.value = true;
+		fetchNewsletters();
+	}
 }
 // selectTag(tag: any) {
 // 	return tag
@@ -90,16 +93,18 @@ function saveNewsletterTags() {
 	return;
 }
 async function submitSubscriptionFromSelected() {
-	await emailNotification.createEmailSubscription(
+	const res = await emailNotification.createEmailSubscription(
 		props.profile.id,
 		selectedEmail.value.toLowerCase(),
 		[],
 		EmailSubscriptionMode.AllPosts,
 		store.$state.id,
 	);
-	toastSuccess(`Started newsletter successfully 🎉`);
-	fetchNewsletters();
-	closePopup();
+	if (res) {
+		fetchNewsletters();
+		closePopup();
+		toastSuccess(`Started newsletter successfully 🎉`);
+	}
 }
 
 onMounted(async () => {

@@ -15,7 +15,7 @@ export interface EmailSubsciptions {
 	emailSubsciptionMap: Record<string, IEmailSubscription[]>;
 }
 
-export const emailNotificationssStore = defineStore(`emailnotifications`, {
+export const emailNotificationsStore = defineStore(`emailnotifications`, {
 	state: (): EmailSubsciptions => {
 		return {
 			emailSubsciptionMap: {},
@@ -60,8 +60,9 @@ export const emailNotificationssStore = defineStore(`emailnotifications`, {
 				return;
 			}
 			try {
-				await startEmailSubscription(authorID, email, topics, mode, username);
+				const res = await startEmailSubscription(authorID, email, topics, mode, username);
 				this.fetchNewsletters(authorID, username);
+				return res;
 			} catch (err) {
 				handleError(err);
 			}

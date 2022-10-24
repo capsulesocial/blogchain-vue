@@ -1,19 +1,25 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { useMeta } from 'vue-meta';
 import ProfilePreviewCard from '@/components/ProfilePreviewCard.vue';
 import ConfigureNewsletterPopup from '@/components/popups/ConfigureNewsletterPopup.vue';
 
 import ChevronLeft from '@/components/icons/ChevronLeft.vue';
 
 import { useStore } from '@/store/session';
-import { emailNotificationssStore } from '@/store/emailnotifications';
+import { emailNotificationsStore } from '@/store/emailnotifications';
 import { handleError } from '@/plugins/toast';
 
 import { createDefaultProfile, getProfile, Profile } from '@/backend/profile';
 import { getPhotoFromIPFS } from '@/backend/getPhoto';
 
 const store = useStore();
-const emailNotification = emailNotificationssStore();
+const emailNotification = emailNotificationsStore();
+
+useMeta({
+	title: `Active Email Notifications - Blogchain`,
+	htmlAttrs: { lang: 'en', amp: true },
+});
 
 const authorProfiles = ref<Profile[]>([]);
 const isLoading = ref(true);
@@ -24,8 +30,8 @@ const clickedAuthorAvatar = ref<string | ArrayBuffer>();
 async function toggleNewsletterPopup(clickedAuthor: Profile) {
 	if (clickedAuthor) {
 		authorProfile.value = clickedAuthor;
-		getPhotoFromIPFS(clickedAuthor.avatar).then((p) => {
-			clickedAuthorAvatar.value = p;
+		getPhotoFromIPFS(clickedAuthor.avatar).then((profile) => {
+			clickedAuthorAvatar.value = profile;
 		});
 	}
 	showNewsletterPopup.value = !showNewsletterPopup.value;
@@ -47,13 +53,25 @@ async function authorLists() {
 	}
 }
 
+function deleteNewsletter(profile: Profile, deleted: boolean) {
+	if (deleted === true) {
+		showNewsletterPopup.value = false;
+		authorProfiles.value.splice(
+			authorProfiles.value.findIndex((p) => p.id === profile.id),
+			1,
+		);
+	}
+
+	showNewsletterPopup.value = false;
+}
+
 onMounted(async () => {
 	authorLists();
 	isLoading.value = false;
 });
 </script>
 <template>
-	<main>
+	<main id="scrollable_content">
 		<!-- Mobile back button -->
 		<router-link to="/settings" class="mb-6 flex items-center lg:hidden">
 			<span class="bg-gray1 dark:bg-gray5 mr-4 rounded-full p-1"><ChevronLeft :reduce-size="false" /></span>
@@ -65,17 +83,24 @@ onMounted(async () => {
 			<p class="text-gray5 dark:text-gray3 text-sm">
 				You are currently receiving email notifications from the following authors:
 			</p>
-			<div v-if="!isLoading" class="flex flex-wrap mt-4">
-				<ProfilePreviewCard
-					v-for="profile in authorProfiles"
-					:key="profile.id"
-					:profile="profile"
-					class="pb-4 mx-1 mb-2"
-					@manage-newsletter="toggleNewsletterPopup"
-				/>
-			</div>
 		</div>
-		<div v-if="!isLoading && authorProfiles.length === 0" class="flex justify-center text-center px-20 mt-20">
+		<!-- loading spinner -->
+		<div v-if="isLoading" class="modal-animation flex w-full justify-center z-20 mt-24 px-5 sm:px-4 xl:px-5">
+			<div
+				class="loader m-5 border-2 border-gray1 dark:border-gray7 h-8 w-8 rounded-3xl"
+				:style="`border-top: 2px solid`"
+			></div>
+		</div>
+		<div v-if="!isLoading && authorProfiles.length > 0" class="flex flex-wrap mt- px-6 pt-4">
+			<ProfilePreviewCard
+				v-for="profile in authorProfiles"
+				:key="profile.id"
+				:profile="profile"
+				class="pb-4 mx-1 mb-2"
+				@manage-newsletter="toggleNewsletterPopup"
+			/>
+		</div>
+		<div v-if="!isLoading && authorProfiles.length <= 0" class="flex flex-col items-center text-center px-20 mt-20">
 			<p class="text-gray5 dark:text-gray3 text-sm">
 				It seems you have not setup any email notifications to Blogchain's authors. You can create one directly on their
 				profile
@@ -86,6 +111,6 @@ onMounted(async () => {
 		v-if="showNewsletterPopup"
 		:profile="authorProfile"
 		:avatar="clickedAuthorAvatar"
-		@toggle-newsletter-popup="toggleNewsletterPopup"
+		@toggle-newsletter-popup="deleteNewsletter"
 	/>
 </template>

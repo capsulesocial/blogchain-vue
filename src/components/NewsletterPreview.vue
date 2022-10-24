@@ -5,7 +5,7 @@ import BinIcon from '@/components/icons/BinIcon.vue';
 import BasicConfirmAlert from '@/components/popups/BasicConfirmAlert.vue';
 
 import { useStore } from '@/store/session';
-import { emailNotificationssStore } from '@/store/emailnotifications';
+import { emailNotificationsStore } from '@/store/emailnotifications';
 
 import { useStoreSettings } from '@/store/settings';
 
@@ -20,7 +20,7 @@ const props = withDefaults(
 
 const storeSettings = useStoreSettings();
 const store = useStore();
-const emailNotification = emailNotificationssStore();
+const emailNotification = emailNotificationsStore();
 
 const showDelete = ref(false);
 const showStatus = ref(false);
@@ -49,9 +49,9 @@ async function update() {
 async function confirmDelete() {
 	if (props.newsletter._id) {
 		await emailNotification.deleteEmailSubsciption(props.newsletter._id, store.$state.id);
+		update();
+		emit(`refetchSubs`);
 	}
-	update();
-	emit(`refetchSubs`);
 }
 
 onMounted(async () => {
