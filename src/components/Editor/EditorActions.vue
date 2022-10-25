@@ -4,7 +4,7 @@ import ImageIcon from '@/components/icons/Image.vue';
 import { onBeforeMount, ref } from 'vue';
 
 const showActionButtons = ref(false);
-const emit = defineEmits([`image`]);
+defineEmits([`image`]);
 
 function toggleDropdown() {
 	showActionButtons.value = !showActionButtons.value;
