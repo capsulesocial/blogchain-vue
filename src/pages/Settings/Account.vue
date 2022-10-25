@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useMeta } from 'vue-meta';
 import { useRouter } from 'vue-router';
+
 import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
 import { toastError, toastSuccess } from '@/plugins/toast';
 import { getNearPrivateKey } from '@/backend/near';
 import { getEncryptedPrivateKey } from '@/backend/privateKey';
+
 import SecondaryButton from '@/components/SecondaryButton.vue';
 import BrandedButton from '@/components/BrandedButton.vue';
 import FileDownloadIcon from '@/components/icons/FileDownload.vue';
@@ -19,6 +22,11 @@ const settings = useStoreSettings();
 const encryptionKey = ref(``);
 const encrypted = ref(false);
 const showEncrypted = ref(false);
+
+useMeta({
+	title: `Account Settings - Blogchain`,
+	htmlAttrs: { lang: 'en', amp: true },
+});
 
 async function downloadPrivateKey() {
 	try {

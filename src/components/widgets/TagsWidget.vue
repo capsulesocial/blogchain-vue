@@ -12,7 +12,6 @@ import { Timeframe, readableTimeframe } from '@/backend/post';
 const settings = useStoreSettings();
 const postsStore = usePostsStore();
 
-// TODO: fetch tags from store / backend
 const tags = ref<string[]>([]);
 const showAlgorithmDropdown = ref(false);
 const timeFrames = [Timeframe.WEEK, Timeframe.MONTH, Timeframe.YEAR, Timeframe.ALL_TIME];
@@ -59,7 +58,7 @@ onMounted(async () => {
 			<div
 				v-if="showAlgorithmDropdown"
 				class="hotzone border-lightBorder modal-animation absolute top-0 right-0 z-20 rounded-lg border bg-lightBG dark:bg-darkBG px-4 py-3 shadow-lg mr-0 lg:mr-6"
-				style="margin-top: 40px"
+				style="margin-top: 43px"
 			>
 				<div
 					v-for="timeframe in timeFrames"
