@@ -6,8 +6,9 @@ import { decryptData } from '@/backend/crypto';
 import { IPostImageKey } from '@/backend/post';
 import { isValidPhoto, getPhotoFromIPFS } from '@/backend/getPhoto';
 import { afterSanitizeAttrsHook, BASE_ALLOWED_ATTRS, BASE_ALLOWED_TAGS, sanitizeHtml } from '@/helpers/helpers';
-import { computed, onBeforeMount, onMounted, ref } from 'vue';
+import { computed, onBeforeMount, onMounted, ref, watch } from 'vue';
 import { toastError } from '@/plugins/toast';
+import { nextTick } from 'process';
 
 const ALLOWED_TAGS = [...BASE_ALLOWED_TAGS, `ipfsimage`];
 const ALLOWED_ATTR = [...BASE_ALLOWED_ATTRS, `cid`, `alt`];
@@ -100,14 +101,27 @@ onBeforeMount(() => {
 	afterSanitizeAttrsHook();
 });
 
-onMounted(() => {
-	if (!el.value) {
-		return;
-	}
-	const images = el.value.querySelectorAll(`img`);
-	images.forEach((image) => {
-		lazyLoad(image);
+function initReader() {
+	nextTick(() => {
+		if (!el.value) {
+			return;
+		}
+		const images = el.value.querySelectorAll(`img`);
+		images.forEach((image) => {
+			lazyLoad(image);
+		});
 	});
+}
+
+watch(
+	() => props.content,
+	() => {
+		initReader();
+	},
+);
+
+onMounted(() => {
+	initReader();
 });
 </script>
 <template>
