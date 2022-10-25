@@ -14,8 +14,9 @@ import {
 	ImageBlotFactory,
 	EditorImages,
 } from './helpers';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { quillOptions } from './helpers';
+import { useDraftStore } from '@/store/drafts';
 
 const emit = defineEmits([`onError`, `isWriting`, `editorImageUpdates`, `updateWordCount`]);
 
@@ -27,13 +28,11 @@ const props = withDefaults(
 		imageUploader: (file: File, encrypt?: boolean) => Promise<any>;
 		allowedTags: string[];
 		maxPostImages: number;
-		encryptedContent: boolean;
 	}>(),
 	{
 		initialEditorImages: () => new Map(),
 		validImageTypes: () => [],
 		maxPostImages: 10,
-		encryptedContent: false,
 	},
 );
 
@@ -44,6 +43,8 @@ const waitingImage = ref(false);
 let qeditor: Quill | null = null;
 let editor: QuillMarkdown | null = null;
 const editorImages = ref(new Map());
+const draftStore = useDraftStore();
+const encryptedContent = computed(() => draftStore.$state.drafts[draftStore.activeIndex].encrypted);
 
 async function handleCutPaste(range: RangeStatic, pastedText: string) {
 	const { default: QuillClass } = await import(`quill`);
@@ -167,9 +168,9 @@ async function handleFile(file: File) {
 	try {
 		waitingImage.value = true;
 		toggleAddContent.value = false;
-		const res = await props.imageUploader(file, props.encryptedContent);
+		const res = await props.imageUploader(file, encryptedContent.value);
 		const { cid, url, image, imageName, key, counter } = res;
-		const updatedPostImages = updatePostImages(cid, image, imageName, props.encryptedContent ? { counter, key } : {});
+		const updatedPostImages = updatePostImages(cid, image, imageName, encryptedContent.value ? { counter, key } : {});
 		if (isError(updatedPostImages)) {
 			emit(`onError`, new Error(updatedPostImages.error));
 			waitingImage.value = false;
@@ -202,9 +203,9 @@ async function handleHtml(pastedContent: string) {
 			continue;
 		}
 		try {
-			const res = await props.imageUploader(f.file, props.encryptedContent);
+			const res = await props.imageUploader(f.file, encryptedContent.value);
 			const { cid, url, image, imageName, key, counter } = res;
-			const updatedPostImages = updatePostImages(cid, image, imageName, props.encryptedContent ? { key, counter } : {});
+			const updatedPostImages = updatePostImages(cid, image, imageName, encryptedContent.value ? { key, counter } : {});
 			if (isError(updatedPostImages)) {
 				emit(`onError`, new Error(updatedPostImages.error));
 				return null;

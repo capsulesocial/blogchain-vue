@@ -514,9 +514,11 @@ defineExpose({ checkPost });
 .animatedraftButton {
 	transition: all 0.4s;
 }
+
 .hidedraftButtonclass {
 	transform: translateX(-0.8rem);
 }
+
 .showdraftButtonclass {
 	transform: translateX(0rem);
 }
