@@ -76,7 +76,18 @@ const lazyLoad = (image: HTMLImageElement) => {
 				image.onclick = () => {
 					openImagePopup(image);
 				};
+				return;
 			}
+			// To prevent linking to a malicious third party image
+			if (!isValidPhoto(dataUrl)) {
+				toastError(`invalid in-post image`);
+				return;
+			}
+
+			image.src = dataUrl;
+			image.onclick = () => {
+				openImagePopup(image);
+			};
 		})
 		.catch((error) => {
 			imageError.value = error;
