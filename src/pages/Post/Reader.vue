@@ -109,33 +109,30 @@ async function checkEncryption() {
 		excerpt.value = post.value.data.content.slice(0, 100); // TODO refine
 		return;
 	}
+	// Encrypted post
 	if (store.$state.id === ``) {
 		showPaywall.value = true;
 		return;
 	}
-
 	try {
 		const decrypted = await getDecryptedContent(cid.value, post.value.data.content, store.$state.id);
 		if (`content` in decrypted) {
 			content.value = decrypted.content;
 			excerpt.value = decrypted.content.slice(0, 100); // TODO refine
 			postImageKeys.value = decrypted.postImageKeys;
-			return;
+		} else {
+			// show proper error message according to retrieval status
+			// decrypted.status is of type `INSUFFICIENT_TIER` | `NOT_SUBSCRIBED`
+			enabledTiers.value = decrypted.enabledTiers;
+			subscriptionStatus.value = decrypted.status;
+			showPaywall.value = true;
 		}
-
-		// show proper error message according to retrieval status
-		// decrypted.status is of type `INSUFFICIENT_TIER` | `NOT_SUBSCRIBED`
-		enabledTiers.value = decrypted.enabledTiers;
-		subscriptionStatus.value = decrypted.status;
 	} catch (err) {
 		if (err instanceof AxiosError && err.response && err.response.data.error) {
 			toastError(err.response.data.error);
 			return;
 		}
-
 		throw err;
-	} finally {
-		showPaywall.value = true;
 	}
 }
 
@@ -331,10 +328,8 @@ function handleScroll() {
 								<div class="h-3 w-2/5 rounded-xl bg-gray1 dark:bg-gray7 animate-pulse"></div>
 							</div>
 						</div>
-						<!-- If post is premium without photo, add height to display the paywall -->
-						<div v-else-if="showPaywall && !hasFeaturedPhoto" class="h-64"></div>
 						<!-- Post paywall -->
-						<article v-if="showPaywall">
+						<article v-if="showPaywall" :class="!hasFeaturedPhoto ? `h-64` : ``">
 							<PayWall
 								:id="postMetadata.post.authorID"
 								:has-featured-photo="hasFeaturedPhoto"
@@ -346,7 +341,7 @@ function handleScroll() {
 						<article v-else-if="post" class="mt-5">
 							<div class="text-lightPrimaryText dark:text-darkSecondaryText editable content max-w-none break-words">
 								<ReaderView
-									:content="post.data.content"
+									:content="content"
 									:post-images="post.data.postImages"
 									:encrypted="post.data.encrypted"
 									:post-image-keys="postImageKeys"
