@@ -50,7 +50,6 @@ function goWrite() {
 		return;
 	}
 	rootStore.toggleUnauthPopup(true);
-	// router.push(`/home`);
 }
 
 function toggleDropdown() {

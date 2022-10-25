@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import { IGenericPostResponse } from '@/backend/post';
+import { getEncryptionKeys, IGenericPostResponse } from '@/backend/post';
 import Comment from '@/components/post/comments/Comment.vue';
 import SimplePopupCard from '@/components/post/SimplePopupCard.vue';
 import StatsIcon from '@/components/icons/StatsIcon.vue';
 import CommentFilter from '@/components/post/comments/CommentFilter.vue';
 import CommentEditor from '@/components/post/comments/CommentEditor.vue';
 import { useCommentsStore } from '@/store/comments';
+import { useStore } from '@/store/session';
 
 const emit = defineEmits([`close`, `stats`, `delete`]);
 
@@ -18,7 +19,9 @@ const props = withDefaults(
 );
 
 const filter = ref<string>(``);
+const canComment = ref(true);
 const commentsStore = useCommentsStore();
+const store = useStore();
 const postComments = computed(() => commentsStore.getCommentsOfPost(props.fetchedPost.post._id));
 const commentsStats = computed(() => commentsStore.getCommentStats(props.fetchedPost.post._id));
 
@@ -28,6 +31,13 @@ function setFilter(reaction: string) {
 }
 onMounted(async () => {
 	await commentsStore.fetchCommentsOfPost(props.fetchedPost.post._id);
+	if (props.fetchedPost.post.encrypted && store.$state.id !== ``) {
+		// fetch keys
+		const res = await getEncryptionKeys(store.$state.id, props.fetchedPost.post._id);
+		if (res.status === `INSUFFICIENT_TIER` || res.status === `NOT_SUBSCRIBED`) {
+			canComment.value = false;
+		}
+	}
 });
 </script>
 
@@ -53,7 +63,12 @@ onMounted(async () => {
 				<CommentFilter :filter="filter" class="modal-animation" @clicked="setFilter" />
 			</div>
 			<!-- Comment editor -->
-			<CommentEditor :comments-count="commentsStats?.total" :parentcid="fetchedPost.post._id" class="px-6" />
+			<CommentEditor
+				v-if="canComment"
+				:comments-count="commentsStats?.total"
+				:parentcid="fetchedPost.post._id"
+				class="px-6"
+			/>
 			<!-- Comments -->
 			<div v-for="c in postComments" :key="c._id">
 				<Comment

@@ -248,7 +248,7 @@ export function isRegularPost(post: Post): post is IRegularPost {
 	return !post.encrypted;
 }
 
-async function getEncryptionKeys(username: string, cid: string) {
+export async function getEncryptionKeys(username: string, cid: string) {
 	const res = await genericRequest<IKeyRetrievalResult>({
 		method: `get`,
 		path: `/content/${cid}`,

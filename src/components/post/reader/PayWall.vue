@@ -57,10 +57,10 @@ async function getTiers() {
 
 <template>
 	<article
-		class="from-lightBGStart to-transparent dark:from-darkBGStart dark:to-transparent bg-gradient-to-t z-10 absolute top-0 w-full h-full flex overflow-hidden"
+		class="from-lightBGStart to-transparent dark:from-darkBGStart dark:to-transparent bg-gradient-to-t z-10 absolute top-0 w-full h-full flex"
 	>
 		<div
-			class="w-full shadow-lg flex flex-col items-center py-10 px-16 bg-lightBG dark:bg-darkBGStop rounded-lg h-full"
+			class="w-full shadow-lg flex flex-col items-center py-10 px-16 bg-lightBG dark:bg-darkBGStop rounded-lg h-auto"
 			:class="hasFeaturedPhoto ? `sm:mt-36` : `mt-0`"
 		>
 			<!-- Not a subscriber -->
