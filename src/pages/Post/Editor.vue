@@ -323,8 +323,7 @@ async function sendPost(
 			const cid = await sendEncryptedPost(p, tiers, postImages);
 			router.push(`/post/${cid}`);
 		} catch (error) {
-			console.log(error);
-			// handleError(err)
+			handleError(error);
 		}
 	} else {
 		const p = createRegularPost(

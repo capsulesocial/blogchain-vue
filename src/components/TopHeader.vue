@@ -7,19 +7,22 @@ import BookmarksIcon from './icons/BookmarkIcon.vue';
 import DashboardIcon from './icons/OverviewIcon.vue';
 import Crown2Icon from './icons/CrownEmptyIcon.vue';
 import Avatar from './../components/Avatar.vue';
+import ProfileIcon from './icons/ProfileIcon.vue';
+import SettingsIcon from './icons/SettingsIcon.vue';
+import LogoutIcon from './icons/LogoutIcon.vue';
+
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from '../store/session';
 import { useStoreSettings } from '@/store/settings';
-import ProfileIcon from './icons/ProfileIcon.vue';
-import SettingsIcon from './icons/SettingsIcon.vue';
-import LogoutIcon from './icons/LogoutIcon.vue';
+import { useRootStore } from '@/store/index';
 import { useDraftStore } from '@/store/drafts';
 
 const sessionStore = useStore();
 const settings = useStoreSettings();
 const router = useRouter();
 const draftStore = useDraftStore();
+const rootStore = useRootStore();
 
 const showMobileMenu = ref(false);
 const showDropdown = ref(false);
@@ -41,8 +44,12 @@ onMounted(() => {
 });
 
 function goWrite() {
-	draftStore.createNewDraft();
-	router.push(`/write`);
+	if (sessionStore.$state.id) {
+		draftStore.createNewDraft();
+		router.push(`/write`);
+	}
+	rootStore.toggleUnauthPopup(true);
+	router.push(`/home`);
 }
 
 function toggleDropdown() {
