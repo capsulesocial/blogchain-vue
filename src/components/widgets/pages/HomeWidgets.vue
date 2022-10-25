@@ -11,7 +11,11 @@ import BookmarksIcon from '@/components/icons/Bookmarks.vue';
 import { ref } from 'vue';
 import { useStoreSettings } from '@/store/settings';
 import { storeToRefs } from 'pinia';
+import { useStore } from '@/store/session';
+import { useRootStore } from '@/store/index';
 
+const store = useStore();
+const rootStore = useRootStore();
 const settingsStore = useStoreSettings();
 const { primaryWidget, secondaryWidget, secondary2Widget } = storeToRefs(settingsStore);
 const showConfigure = ref(false);
@@ -30,6 +34,13 @@ function changeSecondary2(widget: `tags` | `followers`) {
 	// update state
 	settingsStore.setSecondary2Widget(widget);
 }
+
+function handleConfigure() {
+	if (store.$state.id) {
+		showConfigure.value = true;
+	}
+	rootStore.toggleUnauthPopup(true);
+}
 </script>
 <template>
 	<TagsWidget v-if="secondary2Widget === `tags`" />
@@ -41,7 +52,7 @@ function changeSecondary2(widget: `tags` | `followers`) {
 		class="bg-lightBG dark:bg-darkBGStop focus:outline-none mb-5 w-full rounded-lg border border-lightBorder shadow-lg"
 		style="height: 80px; background-repeat: no-repeat; background-position: -6em center; background-size: cover"
 		:style="{ backgroundImage: `url(${require(`@/assets/images/brand/configure-my-capsule.webp`)})` }"
-		@click="showConfigure = true"
+		@click="handleConfigure"
 	>
 		<p class="text-primary text-right text-sm flex flex-row justify-end">
 			<span class="p-6 xl:pr-0" style="background: opacity 0.9em">Configure</span>
