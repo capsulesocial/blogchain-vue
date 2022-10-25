@@ -44,12 +44,13 @@ onMounted(() => {
 });
 
 function goWrite() {
-	if (sessionStore.$state.id) {
+	if (sessionStore.$state.id !== ``) {
 		draftStore.createNewDraft();
 		router.push(`/write`);
+		return;
 	}
 	rootStore.toggleUnauthPopup(true);
-	router.push(`/home`);
+	// router.push(`/home`);
 }
 
 function toggleDropdown() {

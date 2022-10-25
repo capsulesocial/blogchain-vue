@@ -36,8 +36,9 @@ function changeSecondary2(widget: `tags` | `followers`) {
 }
 
 function handleConfigure() {
-	if (store.$state.id) {
+	if (store.$state.id !== ``) {
 		showConfigure.value = true;
+		return;
 	}
 	rootStore.toggleUnauthPopup(true);
 }
