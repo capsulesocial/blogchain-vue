@@ -1,5 +1,19 @@
 <script setup lang="ts">
 import ChevronLeft from '@/components/icons/ChevronLeft.vue';
+
+import { useRouter } from 'vue-router';
+import { useStore } from '@/store/session';
+import { onMounted } from 'vue';
+
+const store = useStore();
+const router = useRouter();
+
+onMounted(async () => {
+	if (!store.$state.id) {
+		router.push(`/home`);
+		return;
+	}
+});
 </script>
 
 <template>
