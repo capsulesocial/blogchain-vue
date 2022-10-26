@@ -6,15 +6,26 @@ import NearIcon from '@/components/icons/brands/Near.vue';
 import InfoIcon from '@/components/icons/Info.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
 
+import '@near-wallet-selector/modal-ui-js/styles.css';
+import { loginWithTorus, modal } from '@/plugins/loginMethods';
 // Refs
 const isLoading = ref<boolean>(false);
 const showInfos = ref<boolean>(false);
 
 defineEmits([`close`]);
 // Methods
-const torusLogin = (type: `discord` | `google`) => {};
-const walletLoginComponent = () => {};
-const implicitAccountCreate = () => {};
+const torusLogin = async (type: `discord` | `google`) => {
+	isLoading.value = true;
+	await loginWithTorus(type);
+	isLoading.value = false;
+};
+
+const walletLoginComponent = () => {
+	if (!modal) {
+		throw new Error('modal is not set up!');
+	}
+	modal.show();
+};
 </script>
 
 <template>
@@ -52,12 +63,6 @@ const implicitAccountCreate = () => {};
 			>
 				<NearIcon style="width: 22px; height: 22px" />
 				<h6 class="text-gray7 dark:text-gray2 ml-4 text-sm font-semibold">Signup with NEAR</h6>
-			</button>
-			<button
-				class="bg-gray2 dark:bg-gray7 focus:outline-none mb-4 flex w-full items-center justify-center rounded-lg py-3"
-				@click="implicitAccountCreate"
-			>
-				<h6 class="text-gray7 dark:text-gray2 ml-4 text-sm font-semibold">Generate a Blogchain private key</h6>
 			</button>
 			<button
 				class="w-full flex flex-row items-center justify-center text-center mt-10 text-gray5 dark:text-gray3 hover:text-primary dark:hover:text-primary text-sm"
@@ -118,16 +123,6 @@ const implicitAccountCreate = () => {};
 									sufficient for running the transaction on the smart contract and registering your account on the
 									blockchain. By signing up with NEAR, you need to download your Blogchain private key and use it to log
 									in under “Import private key”.
-								</p>
-							</div>
-							<div class="flex flex-col my-4">
-								<h4 class="text-lg font-semibold dark:text-darkPrimaryText">Sign up with Blogchain private key</h4>
-								<p class="my-2 text-gray5 dark:text-gray3">
-									Create an account where you self manage your account keys. You’ll need solve the captcha to verify
-									your human identity and enable Capsule Social to sponsor you with NEAR tokens. These NEAR tokens are
-									used for performing transactions on a smart contract and registering your account on the blockchain.
-									By signing up with this method, you’ll need to download your Blogchain private key and use it to log
-									in under “Import Blogchain private key”.
 								</p>
 							</div>
 						</div>

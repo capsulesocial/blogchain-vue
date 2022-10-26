@@ -14,7 +14,6 @@ export interface Session {
 	socials: Profile[`socials`];
 	background: Profile[`background`];
 	homeFeed: `TOP` | `NEW` | `FOLLOWING`;
-	cid: string;
 	subscriptionEnabled: boolean;
 }
 
@@ -117,9 +116,8 @@ export const useStore = defineStore(`session`, {
 	},
 });
 
-export function createSessionFromProfile(cid: string, p: Profile): Session {
+export function createSessionFromProfile(p: Profile): Session {
 	return {
-		cid,
 		id: p.id,
 		name: p.name,
 		email: p.email,

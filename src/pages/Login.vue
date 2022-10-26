@@ -11,8 +11,9 @@ import { createSessionFromProfile, useStore } from '../store/session';
 import router from '@/router/index';
 import { toastError, toastWarning } from '@/plugins/toast';
 import { getUserInfoNEAR, getUsernameNEAR } from '@/backend/near';
-import { loginNearAccount } from '@/backend/auth';
+import { getAccountIdFromPrivateKey, login, loginNearAccount } from '@/backend/auth';
 import { getDecryptedPrivateKey } from '@/backend/privateKey';
+import loginMethods, { loginWithTorus } from '@/plugins/loginMethods';
 // import { walletLogin } from '@/backend/near';
 
 // refs
@@ -66,10 +67,9 @@ async function walletVerify() {
 			throw new Error(`Unexpected condition!`);
 		}
 		isLoading.value = true;
-		const { profile, cid } = await loginNearAccount(username.value, privateKey.value, accountIdInput.value);
+		const profile = await loginNearAccount(username.value, privateKey.value, accountIdInput.value);
 		window.localStorage.setItem(`accountId`, accountIdInput.value);
-		const account = createSessionFromProfile(cid, profile);
-		store.setCID(cid);
+		const account = createSessionFromProfile(profile);
 		store.setID(account.id);
 		store.setName(account.name);
 		store.setEmail(account.email);
@@ -146,15 +146,60 @@ function decryptKey() {
 		walletLogin();
 	});
 }
-function torusLogin(type: string) {}
+async function torusLogin(type: 'discord' | 'google') {
+	isLoading.value = true;
+	await loginWithTorus(type);
+	isLoading.value = false;
+}
 
 // Lifecycle
 onMounted(async () => {
+	isLoading.value = true;
 	const accountIdLocalStorage = window.localStorage.getItem(`accountId`);
 	if (store.$state.id !== `` && accountIdLocalStorage) {
 		router.push(`/home`);
 		return;
 	}
+	const res = await loginMethods('login');
+	if (!res) {
+		isLoading.value = false;
+		return;
+	}
+	const accountId = getAccountIdFromPrivateKey(res.privateKey);
+	const username = await getUsernameNEAR(accountId);
+	console.log('test1');
+
+	if (!username) {
+		// If no username is found then register...
+		toastWarning(`looks like you don't have an account`);
+		router.push(`/register`);
+		return;
+	}
+	const { blocked } = await getUserInfoNEAR(username);
+	if (blocked) {
+		// If account is blocked then send to register page...
+		toastError(`Your account has been deactivated or banned`);
+		router.push(`/home`);
+		return;
+	}
+
+	console.log('test');
+	// Login
+	const profile = await login(username, res.privateKey);
+	window.localStorage.setItem(`accountId`, accountId);
+	console.log('ok');
+	const account = createSessionFromProfile(profile);
+	store.setID(account.id);
+	store.setName(account.name);
+	store.setEmail(account.email);
+	store.setAvatar(account.avatar);
+	store.setBio(account.bio);
+	store.setLocation(account.location);
+	store.setWebsite(account.website ? account.website : ``);
+	router.push(`/home`);
+	console.log('ok');
+	location.reload();
+	console.log('ok');
 });
 </script>
 
@@ -169,7 +214,13 @@ onMounted(async () => {
 		>
 			<CapsuleIcon class="pt-6 pl-10 text-lightPrimaryText dark:text-gray1" />
 			<section class="flex items-center justify-center" style="height: 86%">
-				<div class="-mt-5 flex w-full flex-col items-center p-14">
+				<div v-show="isLoading" class="modal-animation flex w-full justify-center lg:w-3/4 xl:w-1/2 z-20">
+					<div
+						class="loader m-5 border-2 border-gray1 dark:border-gray7 h-8 w-8 rounded-3xl border-top border-primary"
+						:style="`border-top: 2px solid`"
+					></div>
+				</div>
+				<div v-show="!isLoading" class="-mt-5 flex w-full flex-col items-center p-14">
 					<!-- Step 1: Choose Login / register -->
 					<article v-if="!noAccount" class="w-full lg:w-3/4 xl:w-1/2">
 						<h1 class="text-lightPrimaryText dark:text-gray1 mb-10 font-semibold font-serif" style="font-size: 2.6rem">
