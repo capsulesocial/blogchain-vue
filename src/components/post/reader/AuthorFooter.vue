@@ -38,30 +38,27 @@ onMounted(() => {
 							>
 								{{ profile.name }}
 							</router-link>
-							<router-link v-else :to="'/id/' + profile.id" class="text-gray5 text-2xl"> {{ profile.id }} </router-link>
-							<router-link
-								v-if="profile.bio"
-								:to="`/id/` + profile.id"
-								class="text-gray5 dark:text-darkSecondaryText w-full ml-1"
-							>
-								@{{ profile.id }}</router-link
-							>
+							<router-link v-else :to="'/id/' + profile.id" class="text-gray5 text-2xl">
+								{{ profile.id }}
+							</router-link>
 						</div>
 						<div v-show="profile.bio" id="bio" ref="bio" style="max-height: 6rem; overflow: hidden">
 							<p class="text-gray5 dark:text-darkSecondaryText w-full">
 								{{ profile.bio.slice(0, 180) + (profile.bio.length > 180 ? '...' : '') }}<br />
 							</p>
 						</div>
-						<button v-if="longBio" class="focus:outline-none text-xs text-primary py-1" @click="expandBio = true">
-							Read more
-						</button>
-						<router-link
-							v-if="!profile.bio"
-							:to="`/id/` + profile.id"
-							class="text-gray5 dark:text-darkSecondaryText w-full ml-1"
-						>
-							@{{ profile.id }}</router-link
-						>
+						<div>
+							<button v-if="longBio" class="focus:outline-none text-xs text-primary py-1" @click="expandBio = true">
+								Read more
+							</button>
+							<router-link
+								v-if="!profile.bio"
+								:to="`/id/` + profile.id"
+								class="text-gray5 dark:text-darkSecondaryText w-full ml-1"
+							>
+								@{{ profile.id }}</router-link
+							>
+						</div>
 					</div>
 				</div>
 			</div>
