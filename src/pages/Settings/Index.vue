@@ -8,10 +8,9 @@ import { onMounted } from 'vue';
 const store = useStore();
 const router = useRouter();
 
-onMounted(async () => {
+onMounted(() => {
 	if (!store.$state.id) {
 		router.push(`/home`);
-		return;
 	}
 });
 </script>
