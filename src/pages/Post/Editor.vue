@@ -321,8 +321,11 @@ async function sendPost(
 		try {
 			const tiers = draft.value.accessTiers;
 			const cid = await sendEncryptedPost(p, tiers, postImages);
+			draftStore.deleteDraft(draftStore.$state.activeIndex);
+			settingsStore.setRecentlyPosted(true);
 			router.push(`/post/${cid}`);
 		} catch (error) {
+			hasPosted.value = false;
 			handleError(error);
 		}
 	} else {
