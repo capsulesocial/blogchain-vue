@@ -398,7 +398,10 @@ onMounted(() => {
 
 watch(postingStatus, () => {
 	if (draftStore.isPosting) {
-		checkPost(false);
+		const success = checkPost(false);
+		if (!success) {
+			draftStore.triggerIsPosting(false);
+		}
 	}
 });
 
@@ -508,7 +511,7 @@ defineExpose({ checkPost });
 		</button>
 	</div>
 	<PreviewPopup v-if="showPostPreview" @close="closePostPreview" @confirm="checkPostPreview" />
-	<ConfirmPopup v-if="showConfirmPopup" @close="showConfirmPopup = false" @post="sendPost" />
+	<ConfirmPopup v-if="showConfirmPopup" @close="showConfirmPopup = false" />
 	<DraftsPopup v-if="showDrafts" @close="handleCloseDrafts" />
 </template>
 

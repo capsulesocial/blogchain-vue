@@ -3,25 +3,25 @@ import { ref } from 'vue';
 import { useStoreSettings } from '@/store/settings';
 import InfoIcon from '@/components/icons/Info.vue';
 import CloseIcon from '@/components/icons/XIcon.vue';
+import { useDraftStore } from '@/store/drafts';
 
 const showInfoBubble = ref(false);
-const isPosting = ref(false);
-const emit = defineEmits(['close', 'post']);
+const emit = defineEmits(['close']);
 const settingsStore = useStoreSettings();
+const draftStore = useDraftStore();
 
 function handlePost() {
-	if (isPosting.value) {
+	if (draftStore.getIsPosting) {
 		return;
 	}
-	emit(`post`);
-	isPosting.value = true;
+	draftStore.triggerIsPosting(true);
 }
 </script>
 
 <template>
 	<div
 		class="popup bg-darkBG dark:bg-gray5 modal-animation fixed top-0 bottom-0 left-0 right-0 z-30 flex h-screen w-full items-center justify-center bg-opacity-50 dark:bg-opacity-50"
-		@click.self="$emit(`close`)"
+		@click.self="emit(`close`)"
 	>
 		<!-- Container -->
 		<section>
@@ -65,9 +65,9 @@ function handlePost() {
 				<div class="flex justify-end items-center">
 					<button class="text-primary focus:outline-none mr-6" @click="$emit(`close`)">Keep writing</button>
 					<button
-						:class="isPosting ? `opacity-50` : `opacity-100`"
+						:class="draftStore.getIsPosting ? `opacity-50` : `opacity-100`"
 						class="focus:outline-none bg-primary text-lightButtonText transform rounded-lg px-12 py-2 font-bold shadow-lg transition duration-500 ease-in-out hover:scale-105"
-						:disabled="isPosting"
+						:disabled="draftStore.getIsPosting"
 						@click="handlePost"
 					>
 						Publish

@@ -27,11 +27,9 @@ const props = withDefaults(
 		validImageTypes: string[];
 		imageUploader: (file: File, encrypt?: boolean) => Promise<any>;
 		allowedTags: string[];
-		maxPostImages: number;
+		maxPostImages?: number;
 	}>(),
 	{
-		initialEditorImages: () => new Map(),
-		validImageTypes: () => [],
 		maxPostImages: 10,
 	},
 );
@@ -169,6 +167,7 @@ async function handleFile(file: File) {
 		waitingImage.value = true;
 		toggleAddContent.value = false;
 		const res = await props.imageUploader(file, encryptedContent.value);
+		console.log(`upload image `, res);
 		const { cid, url, image, imageName, key, counter } = res;
 		const updatedPostImages = updatePostImages(cid, image, imageName, encryptedContent.value ? { counter, key } : {});
 		if (isError(updatedPostImages)) {
