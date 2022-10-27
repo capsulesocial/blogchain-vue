@@ -13,6 +13,7 @@ import { toastError, toastWarning } from './toast';
 import router from '@/router';
 import { useProfilesStore } from '@/store/profiles';
 import { baseDecode } from 'borsh';
+import { revokeDiscordKey } from '@/backend/discordRevoke';
 
 export type { WalletSelectorModal } from '@near-wallet-selector/modal-ui-js';
 
@@ -101,7 +102,18 @@ export default function useLogin() {
 			const userData = await torusInstance.getRedirectResult();
 			if (userData) {
 				if (!userData.error && userData.result) {
-					return userData.result as ITorusResponse;
+					const res = userData.result as ITorusResponse;
+					if (res.userInfo.typeOfLogin === 'discord') {
+						try {
+							await revokeDiscordKey(res.userInfo.accessToken);
+						} catch (err) {
+							toastWarning(
+								`We couldn't revoke the Discord key, this might hinder you to login again for the next 30 minutes`,
+							);
+						}
+					}
+
+					return res;
 				}
 
 				throw new Error(userData.error);
