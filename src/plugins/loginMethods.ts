@@ -22,12 +22,12 @@ export interface ITorusResponse {
 	privateKey: string;
 }
 
+let torus: DirectWebSdk | null = null;
+let modal: WalletSelectorModal | null = null;
+
 export default function useLogin() {
 	const store = useStore();
 	const profilesStore = useProfilesStore();
-
-	let torus: DirectWebSdk | null = null;
-	let modal: WalletSelectorModal | null = null;
 
 	function loginWithTorus(type: `discord` | `google`) {
 		if (!torus) {

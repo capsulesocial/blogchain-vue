@@ -3,15 +3,16 @@ import { onMounted, ref } from 'vue';
 import CapsuleIcon from '@/components/icons/CapsuleIcon.vue';
 import RegisterMethods from '@/components/register/RegisterMethods.vue';
 import SignUp from '@/components/register/SignUp.vue';
-import loginMethods from '@/plugins/loginMethods';
+import useLogin from '@/plugins/loginMethods';
 
 const isLoading = ref<boolean>(false);
 const step = ref<`registerMethods` | `signUp`>(`registerMethods`);
+const login = useLogin();
 
 onMounted(async () => {
 	try {
 		isLoading.value = true;
-		const userData = await loginMethods('register');
+		const userData = await login.loginMethods('register');
 		if (userData) {
 			console.log(userData);
 		}

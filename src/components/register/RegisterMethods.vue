@@ -5,26 +5,28 @@ import GoogleIcon from '@/components/icons/brands/Google.vue';
 import NearIcon from '@/components/icons/brands/Near.vue';
 import InfoIcon from '@/components/icons/Info.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
+import useLogin from '@/plugins/loginMethods';
 
 import '@near-wallet-selector/modal-ui-js/styles.css';
-import { loginWithTorus, modal } from '@/plugins/loginMethods';
+
 // Refs
 const isLoading = ref<boolean>(false);
 const showInfos = ref<boolean>(false);
+const login = useLogin();
 
 defineEmits([`close`]);
 // Methods
 const torusLogin = async (type: `discord` | `google`) => {
 	isLoading.value = true;
-	await loginWithTorus(type);
+	await login.loginWithTorus(type);
 	isLoading.value = false;
 };
 
 const walletLoginComponent = () => {
-	if (!modal) {
+	if (!login.modal) {
 		throw new Error('modal is not set up!');
 	}
-	modal.show();
+	login.modal.show();
 };
 </script>
 
