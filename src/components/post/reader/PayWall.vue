@@ -4,6 +4,7 @@ import { useStore } from '@/store/session';
 import { useProfilesStore } from '@/store/profiles';
 import { usePaymentsStore } from '@/store/paymentProfile';
 import { SubscriptionTier } from '@/store/paymentProfile';
+import { useRootStore } from '@/store/index';
 
 import CheckCircleStaticIcon from '@/components/icons/CheckCircleStaticIcon.vue';
 import SubscribeButton from '@/components/subscriptions/SubscribeButton.vue';
@@ -16,6 +17,7 @@ const store = useStore();
 const profilesStore = useProfilesStore();
 const paymentStore = usePaymentsStore();
 const useSubscription = useSubscriptionStore();
+const rootStore = useRootStore();
 
 const props = defineProps<{
 	id: string;
@@ -32,13 +34,6 @@ const showSubscription = ref(false);
 const showChangeTier = ref(false);
 const activeSub = ref<ISubscriptionWithProfile>();
 
-onMounted(async () => {
-	profilesStore.fetchProfile(props.id);
-	await getTiers();
-	const activeSubs = useSubscription.$state.active;
-	activeSub.value = activeSubs.find((sub) => sub.authorID === profile.value.id);
-});
-
 async function getTiers() {
 	//how to access get payment profile in this file?
 	const paymentProfile = await paymentStore.fetchPaymentProfile(profile.value.id);
@@ -53,6 +48,21 @@ async function getTiers() {
 		}
 	});
 }
+
+function handleSubscription() {
+	if (!store.$state.id) {
+		rootStore.toggleUnauthPopup(true);
+		return;
+	}
+	showSubscription.value = !showSubscription.value;
+}
+
+onMounted(async () => {
+	profilesStore.fetchProfile(props.id);
+	await getTiers();
+	const activeSubs = useSubscription.$state.active;
+	activeSub.value = activeSubs.find((sub) => sub.authorID === profile.value.id);
+});
 </script>
 
 <template>
@@ -74,7 +84,7 @@ async function getTiers() {
 					this post and other subscriber-only content
 				</p>
 				<div class="flex items-center justify-center header-profile my-4" style="transform: scale(1.2)">
-					<SubscribeButton :is-subscribed="false" :action="() => (showSubscription = !showSubscription)" />
+					<SubscribeButton :is-subscribed="false" :action="handleSubscription" />
 				</div>
 				<p v-if="store.$state.id" class="text-sm mt-8 text-center text-gray5 dark:text-gray3">
 					Manage my <router-link to="/subscriptions" class="text-neutral text">subscriptions</router-link>

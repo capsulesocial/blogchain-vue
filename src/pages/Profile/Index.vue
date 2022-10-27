@@ -8,6 +8,7 @@ import { useStore } from '@/store/session';
 import { useStoreSettings } from '@/store/settings';
 import { useConnectionsStore } from '@/store/connections';
 import { usePaymentsStore } from '@/store/paymentProfile';
+import { useRootStore } from '@/store/index';
 import { getUserInfoNEAR } from '@/backend/near';
 import { handleError } from '@/plugins/toast';
 
@@ -34,6 +35,7 @@ const router = useRouter();
 const route = useRoute();
 const profilesStore = useProfilesStore();
 const connectionsStore = useConnectionsStore();
+const rootStore = useRootStore();
 
 const authorID = computed(() => {
 	if (typeof route.params.id !== `string`) {
@@ -120,6 +122,14 @@ function handleScroll() {
 	scrollingDown.value = currentScroll > lastScroll.value;
 	// set new value at end
 	lastScroll.value = currentScroll;
+}
+
+function handleSubscription() {
+	if (!store.$state.id) {
+		rootStore.toggleUnauthPopup(true);
+		return;
+	}
+	showSubscription.value = !showSubscription.value;
 }
 
 onBeforeMount(async () => {
@@ -230,7 +240,7 @@ onMounted(async () => {
 						<SubscribeButton
 							v-if="!selfView && paymentsProfile.paymentsEnabled"
 							:is-subscribed="isActiveSub"
-							:action="() => (showSubscription = !showSubscription)"
+							:action="handleSubscription"
 							class="header-profile ml-2"
 							:class="scrollingDown ? `cursor-pointer` : `cursor-default`"
 							:disabled="!scrollingDown"
@@ -327,7 +337,7 @@ onMounted(async () => {
 					<FriendButton v-else :authorid="authorID" class="header-profile flex-shrink-0" />
 					<!-- Subscription button -->
 					<div v-if="!selfView && paymentsProfile.paymentsEnabled" class="header-profile flex-shrink-0 ml-2">
-						<SubscribeButton :is-subscribed="isActiveSub" :action="() => (showSubscription = !showSubscription)" />
+						<SubscribeButton :is-subscribed="isActiveSub" :action="handleSubscription" />
 					</div>
 				</div>
 			</div>

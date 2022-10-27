@@ -17,12 +17,20 @@ import { useStore } from '../store/session';
 import { useStoreSettings } from '@/store/settings';
 import { useRootStore } from '@/store/index';
 import { useDraftStore } from '@/store/drafts';
+import { emailNotificationsStore } from '@/store/emailnotifications';
+import { useConnectionsStore } from '@/store/connections';
+import { useSubscriptionStore } from '@/store/subscriptions';
+import { usePaymentsStore } from '@/store/paymentProfile';
 
 const sessionStore = useStore();
 const settings = useStoreSettings();
 const router = useRouter();
 const draftStore = useDraftStore();
 const rootStore = useRootStore();
+const emailNotifications = emailNotificationsStore();
+const subscriptions = useSubscriptionStore();
+const connections = useConnectionsStore();
+const paymentsprofile = usePaymentsStore();
 
 const showMobileMenu = ref(false);
 const showDropdown = ref(false);
@@ -62,6 +70,14 @@ function toggleMobileMenu() {
 
 function logout() {
 	localStorage.clear();
+	sessionStore.$reset();
+	emailNotifications.$reset();
+	subscriptions.$reset();
+	connections.$reset();
+	paymentsprofile.$reset();
+	settings.$reset();
+	draftStore.$reset();
+	rootStore.$reset();
 	window.location.replace(url.value + `/login`);
 }
 </script>
