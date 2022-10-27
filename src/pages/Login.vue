@@ -9,9 +9,9 @@ import InfoIcon from '@/components/icons/Info.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
 import { useStore } from '../store/session';
 import router from '@/router/index';
-import { toastError } from '@/plugins/toast';
+import { toastError, toastWarning } from '@/plugins/toast';
 import { getDecryptedPrivateKey } from '@/backend/privateKey';
-import useLogin from '@/plugins/loginMethods';
+import useLogin, { Status } from '@/plugins/loginMethods';
 
 let accountId: string | null = null;
 let privateKey: string | null = null;
@@ -32,6 +32,25 @@ const keyFileTarget = ref<HTMLInputElement | null>(null);
 function handleKeyClick() {
 	if (key.value) {
 		key.value.click();
+	}
+}
+
+async function performLogin(privateKey: string, accountId?: string) {
+	const res = await login.verify(privateKey, accountId);
+	switch (res) {
+		case Status.NO_ACCOUNT:
+			// If no username is found then register...
+			toastWarning(`looks like you don't have an account`);
+			router.push(`/register`);
+			return;
+		case Status.BLOCKED:
+			// If account is blocked then send to register page...
+			toastError(`Your account has been deactivated or banned`);
+			router.push(`/home`);
+			return;
+		case Status.SUCCESS:
+			router.push(`/home`);
+			location.reload();
 	}
 }
 
@@ -62,7 +81,7 @@ function handleKey(e: Event) {
 						return;
 					}
 
-					return login.verify(key.privateKey, key.accountId);
+					return performLogin(key.privateKey, key.accountId);
 				} catch (err: unknown) {
 					if (keyFileTarget.value) {
 						keyFileTarget.value = null;
@@ -111,7 +130,7 @@ onMounted(async () => {
 		isLoading.value = false;
 		return;
 	}
-	return login.verify(res.privateKey);
+	return performLogin(res.privateKey);
 });
 </script>
 

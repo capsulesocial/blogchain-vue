@@ -9,8 +9,7 @@ import { WalletSelectorModal } from '@near-wallet-selector/modal-ui';
 import { getAccountIdFromPrivateKey, setNearUserFromPrivateKey } from '@/backend/auth';
 import { getUserInfoNEAR, getUsernameNEAR, initContract, setNearPrivateKey } from '@/backend/near';
 import { createSessionFromProfile, useStore } from '@/store/session';
-import { toastError, toastWarning } from './toast';
-import router from '@/router';
+import { toastWarning } from './toast';
 import { useProfilesStore } from '@/store/profiles';
 import { baseDecode } from 'borsh';
 import { revokeDiscordKey } from '@/backend/discordRevoke';
@@ -25,6 +24,12 @@ export interface ITorusResponse {
 let torus: DirectWebSdk | null = null;
 let modal: WalletSelectorModal | null = null;
 
+export enum Status {
+	NO_ACCOUNT,
+	BLOCKED,
+	SUCCESS,
+}
+
 export default function useLogin() {
 	const store = useStore();
 	const profilesStore = useProfilesStore();
@@ -37,7 +42,7 @@ export default function useLogin() {
 		return torus.triggerLogin(torusVerifiers[type]);
 	}
 
-	async function verify(privateKey: string, accountIdInput?: string) {
+	async function verify(privateKey: string, accountIdInput?: string): Promise<Status> {
 		let accountId = accountIdInput;
 		if (!accountId) {
 			accountId = getAccountIdFromPrivateKey(privateKey);
@@ -46,18 +51,12 @@ export default function useLogin() {
 		const username = await getUsernameNEAR(accountId);
 
 		if (!username) {
-			// If no username is found then register...
-			toastWarning(`looks like you don't have an account`);
-			router.push(`/register`);
-			return;
+			return Status.NO_ACCOUNT;
 		}
 
 		const { blocked } = await getUserInfoNEAR(username);
 		if (blocked) {
-			// If account is blocked then send to register page...
-			toastError(`Your account has been deactivated or banned`);
-			router.push(`/home`);
-			return;
+			return Status.BLOCKED;
 		}
 
 		if (accountIdInput) {
@@ -82,8 +81,7 @@ export default function useLogin() {
 
 		// Login
 		window.localStorage.setItem(`accountId`, accountId);
-		router.push(`/home`);
-		location.reload();
+		return Status.SUCCESS;
 	}
 
 	async function loginMethods(type: 'login' | 'register') {
