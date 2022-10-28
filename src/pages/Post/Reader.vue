@@ -156,7 +156,6 @@ function checkNewPost() {
 		}, 1500);
 	}
 }
-
 // Fetch post
 onBeforeMount(async () => {
 	await fetchPostMetadata(cid.value, store.id);
@@ -329,7 +328,7 @@ function handleScroll() {
 							</div>
 						</div>
 						<!-- Post paywall -->
-						<article v-if="showPaywall" :class="!hasFeaturedPhoto ? `h-64` : ``">
+						<article v-if="showPaywall" :class="!hasFeaturedPhoto ? `h-64` : `h-48`">
 							<PayWall
 								:id="postMetadata.post.authorID"
 								:has-featured-photo="hasFeaturedPhoto"
