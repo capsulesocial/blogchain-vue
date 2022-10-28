@@ -50,6 +50,7 @@
 		"vue3-lazyload": "^0.3.6"
 	},
 	"devDependencies": {
+		"@hcaptcha/types": "^1.0.3",
 		"@babel/core": "^7.19.1",
 		"@babel/eslint-parser": "^7.19.1",
 		"@playwright/test": "^1.25.2",

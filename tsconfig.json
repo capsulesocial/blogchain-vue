@@ -13,7 +13,7 @@
     "sourceMap": true,
     "baseUrl": ".",
     "noUnusedLocals": true,
-    "types": ["webpack-env"],
+    "types": ["webpack-env", "@hcaptcha/types"],
     "paths": {
       "@/*": ["src/*"]
     },

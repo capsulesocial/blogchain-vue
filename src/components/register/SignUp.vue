@@ -1,1 +1,132 @@
-<template>Sign up</template>
+<script setup lang="ts">
+import { getAccountIdFromPrivateKey } from '@/backend/auth';
+import { requestOnboard, waitForFunds } from '@/backend/funder';
+import { validateUsernameNEAR } from '@/backend/near';
+import { hcaptchaSiteKey } from '@/backend/utilities/config';
+import { ValidationError } from '@/errors';
+import useLogin from '@/plugins/loginMethods';
+import { handleError } from '@/plugins/toast';
+import { onMounted, ref } from 'vue';
+import ChevronLeft from '../icons/ChevronLeft.vue';
+
+const id = ref('');
+const loadingState = ref<`checking_id` | `hcaptcha_loading` | `smart_contract` | `transfer_funds` | null>(null);
+const captchaID = ref<string | null>(null);
+
+const props = defineProps<{ privateKey: string }>();
+
+const login = useLogin();
+
+function back() {
+	localStorage.clear();
+	location.reload();
+}
+
+async function handleRegisterID() {
+	try {
+		if (!captchaID.value) {
+			return;
+		}
+
+		loadingState.value = `checking_id`;
+		id.value = id.value.toLowerCase();
+		const idValidity = await validateUsernameNEAR(id.value);
+		if (idValidity.error) {
+			loadingState.value = null;
+			throw new ValidationError(idValidity.error);
+		}
+		loadingState.value = `hcaptcha_loading`;
+		const res = await hcaptcha.execute(captchaID.value, { async: true });
+		// eslint-disable-next-line no-console
+		console.log(res);
+		if (!res) {
+			// eslint-disable-next-line no-console
+			console.log(`captchares`, res);
+			loadingState.value = null;
+			throw new Error(`Issue on captcha`);
+		}
+		const accountId = getAccountIdFromPrivateKey(props.privateKey);
+		loadingState.value = `smart_contract`;
+		await requestOnboard(res.response, accountId);
+		loadingState.value = `transfer_funds`;
+		await waitForFunds(accountId);
+		loadingState.value = null;
+		login.verify(props.privateKey);
+	} catch (error) {
+		if (typeof error === `string`) {
+			if (error === `challenge-closed`) {
+				return;
+			}
+			handleError({ message: `Captcha error: ${error}` });
+			return;
+		}
+		// eslint-disable-next-line no-console
+		console.log(`error`, error);
+		handleError(error);
+	} finally {
+		loadingState.value = null;
+	}
+}
+
+onMounted(async () => {
+	const doc = document.getElementById(`hcaptcha`);
+	if (!doc) {
+		throw new Error(`Impossible!`);
+	}
+	while (true) {
+		await Promise.resolve();
+		if (hcaptcha !== undefined && hcaptcha) {
+			break;
+		}
+	}
+	captchaID.value = hcaptcha.render(doc, {
+		size: `invisible`,
+		sitekey: hcaptchaSiteKey,
+	});
+});
+</script>
+
+<template>
+	<article>
+		<button class="flex items-center mb-10" @click="back">
+			<div class="bg-gray2 dark:bg-gray5 focus:outline-none rounded-full">
+				<ChevronLeft />
+			</div>
+			<span class="pl-2 text-sm font-semibold dark:text-darkPrimaryText" style="margin-bottom: 2px">
+				Signup methods
+			</span>
+		</button>
+		<h1 class="text-lightPrimaryText dark:text-gray1 text-4xl font-bold mb-10">Sign up</h1>
+		<label for="id" class="text-gray5 dark:text-gray3 block pb-1 text-sm font-semibold"
+			>Pick your Blogchain username</label
+		>
+		<input
+			id="id"
+			v-model="id"
+			type="text"
+			placeholder="Enter a new @id"
+			class="focus:outline-none focus:border-primary text-primary dark:text-darkPrimaryText bg-gray2 dark:bg-gray7 mt-1 mb-5 w-full rounded-lg px-4 py-3 font-sans font-semibold text-base"
+		/>
+		<!-- This is basically a BrandedButton -->
+		<button
+			v-if="loadingState === null"
+			id="hcaptcha"
+			style="padding: 0.6rem 1.7rem"
+			class="w-full bg-primary text-lightButtonText focus:outline-none transform rounded-lg font-bold transition duration-500 ease-in-out hover:shadow-lg"
+			@click="handleRegisterID"
+		>
+			<span class="font-sans" style="font-size: 0.95rem"> Sign Up </span>
+		</button>
+		<h6 v-else-if="loadingState === 'checking_id'" class="text-primary text-center">Checking ID...</h6>
+		<h6 v-else-if="loadingState === 'hcaptcha_loading'" class="text-primary text-center">Verifying humanity...</h6>
+		<h6 v-else-if="loadingState === 'smart_contract'" class="text-primary text-center">Executing smart contract...</h6>
+		<h6 v-else-if="loadingState === 'transfer_funds'" class="text-primary text-center">Waiting for funds...</h6>
+		<!-- <div v-show="!hasEnoughFunds()">
+        <p class="justify-between p-5 font-sans text-sm text-gray7 dark:text-gray3">
+            Ensure that the NEAR account with ID: "{{ accountId }}" has sufficient funds before signing up.
+        </p>
+        <p class="justify-between p-5 font-sans text-sm text-gray7 dark:text-gray3">Available funds: {{ funds }} yN</p>
+        <BrandedButton :text="`Re-check funds`" class="w-full" :action="() => $emit(`checkFunds`)" />
+    </div> -->
+	</article>
+</template>

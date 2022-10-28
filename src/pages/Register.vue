@@ -60,7 +60,7 @@ onMounted(async () => {
 				<div v-show="!isLoading" class="flex w-full h-full flex-col justify-center items-center px-14">
 					<!-- Step 1: Choose Login / register -->
 					<RegisterMethods v-if="userInfo === null" />
-					<SignUp v-else />
+					<SignUp v-else :private-key="userInfo.privateKey" />
 				</div>
 			</section>
 			<p class="text-gray5 dark:text-gray3 px-4 py-5 pl-10 text-sm">
