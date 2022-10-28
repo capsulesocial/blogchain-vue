@@ -54,8 +54,6 @@ export async function getUsernameNEAR(accountId: string): Promise<string | null>
 	});
 
 	if (`result` in rawResult) {
-		// format result
-		// res = [accountId, base58_encode_public_key]
 		const res = JSON.parse(Buffer.from(rawResult.result).toString());
 		return res;
 	}

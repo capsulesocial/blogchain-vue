@@ -7,13 +7,14 @@ import GoogleIcon from '@/components/icons/brands/Google.vue';
 import FileIcon from '@/components/icons/File.vue';
 import InfoIcon from '@/components/icons/Info.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
-import { createSessionFromProfile, useStore } from '../store/session';
+import { useStore } from '../store/session';
 import router from '@/router/index';
 import { toastError, toastWarning } from '@/plugins/toast';
-import { getUserInfoNEAR, getUsernameNEAR } from '@/backend/near';
-import { loginNearAccount } from '@/backend/auth';
 import { getDecryptedPrivateKey } from '@/backend/privateKey';
-// import { walletLogin } from '@/backend/near';
+import useLogin, { Status } from '@/plugins/loginMethods';
+
+let accountId: string | null = null;
+let privateKey: string | null = null;
 
 // refs
 const isLoading = ref(false);
@@ -25,80 +26,39 @@ const showPasswordPopup = ref(false);
 const passwordInput = ref<HTMLInputElement>();
 const password = ref(``);
 const store = useStore();
-const accountIdInput = ref(``);
-const privateKey = ref(``);
-const username = ref<string | null>(null);
+const login = useLogin();
 const keyFileTarget = ref<HTMLInputElement | null>(null);
-
-// methods
-async function walletLogin() {
-	try {
-		username.value = await getUsernameNEAR(accountIdInput.value);
-		// If no account found
-		if (!username.value) {
-			toastWarning(`Looks like you don't have an account`);
-			router.push(`/register`);
-			return;
-		}
-		// Check if blocked
-		const { blocked } = await getUserInfoNEAR(username.value);
-		if (blocked) {
-			toastError(`Your account has been deactivated or banned`);
-			router.push(`/register`);
-			return;
-		}
-		walletVerify();
-	} catch (err) {
-		if (keyFileTarget.value) {
-			keyFileTarget.value = null;
-		}
-		if (err instanceof Error) {
-			toastError(err.message);
-			return;
-		}
-		throw err;
-	}
-}
-
-async function walletVerify() {
-	try {
-		if (!accountIdInput.value || !privateKey.value || !username.value) {
-			throw new Error(`Unexpected condition!`);
-		}
-		isLoading.value = true;
-		const { profile, cid } = await loginNearAccount(username.value, privateKey.value, accountIdInput.value);
-		window.localStorage.setItem(`accountId`, accountIdInput.value);
-		const account = createSessionFromProfile(cid, profile);
-		store.setCID(cid);
-		store.setID(account.id);
-		store.setName(account.name);
-		store.setEmail(account.email);
-		store.setAvatar(account.avatar);
-		store.setBio(account.bio);
-		store.setLocation(account.location);
-		store.setWebsite(account.website ? account.website : ``);
-		router.push(`/home`);
-		location.reload();
-	} catch (err: unknown) {
-		isLoading.value = false;
-		if (err instanceof Error) {
-			toastError(err.message);
-			return;
-		}
-
-		throw err;
-	}
-}
 
 function handleKeyClick() {
 	if (key.value) {
 		key.value.click();
 	}
 }
+
+async function performLogin(privateKey: string, accountId?: string) {
+	const res = await login.verify(privateKey, accountId);
+	switch (res) {
+		case Status.NO_ACCOUNT:
+			// If no username is found then register...
+			toastWarning(`looks like you don't have an account`);
+			router.push(`/register`);
+			return;
+		case Status.BLOCKED:
+			// If account is blocked then send to register page...
+			toastError(`Your account has been deactivated or banned`);
+			router.push(`/home`);
+			return;
+		case Status.SUCCESS:
+			router.push(`/home`);
+			location.reload();
+	}
+}
+
 function handleKey(e: Event) {
 	keyFileTarget.value = e.target as HTMLInputElement;
 	const target = keyFileTarget.value;
 	const files = target.files;
+
 	if (files && files.length > 0) {
 		const keyFile = files[0];
 		const reader: FileReader = new FileReader();
@@ -106,21 +66,22 @@ function handleKey(e: Event) {
 		if (reader === null) {
 			return;
 		}
+
 		reader.onload = (i: Event) => {
 			if (i.target !== null && reader.result !== null) {
 				try {
 					const key = JSON.parse(reader.result.toString());
-					accountIdInput.value = key.accountId;
-					privateKey.value = key.privateKey;
-					if (privateKey.value.startsWith(`encrypted:`)) {
+					if (key.privateKey.startsWith(`encrypted:`)) {
+						privateKey = key.privateKey;
+						accountId = key.accountId;
 						showPasswordPopup.value = true;
 						nextTick(() => {
 							passwordInput.value?.focus();
 						});
 						return;
 					}
-					// Login with non-encrypted key
-					walletLogin();
+
+					return performLogin(key.privateKey, key.accountId);
 				} catch (err: unknown) {
 					if (keyFileTarget.value) {
 						keyFileTarget.value = null;
@@ -137,24 +98,39 @@ function handleKey(e: Event) {
 	}
 }
 function decryptKey() {
-	getDecryptedPrivateKey(password.value, accountIdInput.value, privateKey.value).then((pk) => {
+	// This gets global vars
+	if (!accountId || !privateKey) {
+		throw new Error('Unexpected!');
+	}
+
+	getDecryptedPrivateKey(password.value, accountId, privateKey).then((pk) => {
 		if (!pk) {
 			toastError(`Password incorrect`);
 			return;
 		}
-		privateKey.value = pk;
-		walletLogin();
+		return login.verify(pk);
 	});
 }
-function torusLogin(type: string) {}
+async function torusLogin(type: 'discord' | 'google') {
+	isLoading.value = true;
+	await login.loginWithTorus(type);
+	isLoading.value = false;
+}
 
 // Lifecycle
 onMounted(async () => {
+	isLoading.value = true;
 	const accountIdLocalStorage = window.localStorage.getItem(`accountId`);
 	if (store.$state.id !== `` && accountIdLocalStorage) {
 		router.push(`/home`);
 		return;
 	}
+	const res = await login.loginMethods('login');
+	if (!res) {
+		isLoading.value = false;
+		return;
+	}
+	return performLogin(res.privateKey);
 });
 </script>
 
@@ -169,7 +145,13 @@ onMounted(async () => {
 		>
 			<CapsuleIcon class="pt-6 pl-10 text-lightPrimaryText dark:text-gray1" />
 			<section class="flex items-center justify-center" style="height: 86%">
-				<div class="-mt-5 flex w-full flex-col items-center p-14">
+				<div v-show="isLoading" class="modal-animation flex w-full justify-center lg:w-3/4 xl:w-1/2 z-20">
+					<div
+						class="loader m-5 border-2 border-gray1 dark:border-gray7 h-8 w-8 rounded-3xl border-top border-primary"
+						:style="`border-top: 2px solid`"
+					></div>
+				</div>
+				<div v-show="!isLoading" class="-mt-5 flex w-full flex-col items-center p-14">
 					<!-- Step 1: Choose Login / register -->
 					<article v-if="!noAccount" class="w-full lg:w-3/4 xl:w-1/2">
 						<h1 class="text-lightPrimaryText dark:text-gray1 mb-10 font-semibold font-serif" style="font-size: 2.6rem">

@@ -1,11 +1,43 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import CapsuleIcon from '@/components/icons/CapsuleIcon.vue';
 import RegisterMethods from '@/components/register/RegisterMethods.vue';
 import SignUp from '@/components/register/SignUp.vue';
+import useLogin, { Status } from '@/plugins/loginMethods';
+import router from '@/router';
+import { toastError, toastWarning } from '@/plugins/toast';
 
 const isLoading = ref<boolean>(false);
 const step = ref<`registerMethods` | `signUp`>(`registerMethods`);
+const login = useLogin();
+
+onMounted(async () => {
+	try {
+		isLoading.value = true;
+		const userData = await login.loginMethods('register');
+		if (userData) {
+			const res = await login.verify(userData.privateKey);
+			switch (res) {
+				case Status.NO_ACCOUNT:
+					// If no username is found then register...
+					toastWarning(`looks like you don't have an account`);
+					return;
+				case Status.BLOCKED:
+					// If account is blocked then send to register page...
+					toastError(`Your account has been deactivated or banned`);
+					router.push(`/home`);
+					return;
+				case Status.SUCCESS:
+					router.push(`/home`);
+					location.reload();
+					return;
+			}
+		}
+		isLoading.value = false;
+	} catch (err) {
+		console.log(err);
+	}
+});
 </script>
 <template>
 	<main

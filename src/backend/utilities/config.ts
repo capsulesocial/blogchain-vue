@@ -1,5 +1,8 @@
-import type { SubVerifierDetails, TORUS_NETWORK_TYPE } from '@toruslabs/customauth';
+import { Network, NetworkId } from '@near-wallet-selector/core';
+import type { SubVerifierDetails } from '@toruslabs/customauth';
 import type { ILocalNetNearConfig, INearConfig } from '../near';
+
+export type TORUS_NETWORK_TYPE = `mainnet` | `testnet` | `cyan`;
 
 const defaultBootstraps = [
 	`/dns4/node1.blogchain.app/tcp/443/wss/p2p/12D3KooW9qeCwGnG7ncn1YFh7Kth7oH93TCmMuAzdafV8WwGTMkX`,
@@ -32,7 +35,8 @@ if (parsedTorusNetwork && parsedTorusNetwork !== `mainnet` && parsedTorusNetwork
 export const torusNetwork: TORUS_NETWORK_TYPE =
 	(parsedTorusNetwork as `mainnet` | `testnet` | `cyan` | undefined) || `testnet`;
 
-export const nearNetwork = process.env.VUE_APP_NEAR_NETWORK || `testnet`;
+export const nearNetwork: Network | NetworkId =
+	(process.env.VUE_APP_NEAR_NETWORK as `testnet` | `mainnet`) || `testnet`;
 
 export function nodeUrl() {
 	const preferredNodeUrl = window.localStorage.getItem(`preferredNodeUrl`);
