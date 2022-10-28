@@ -30,6 +30,7 @@ onMounted(async () => {
 				case Status.SUCCESS:
 					router.push(`/home`);
 					location.reload();
+					return;
 			}
 		}
 		isLoading.value = false;
