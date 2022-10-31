@@ -136,7 +136,7 @@ onMounted(async () => {
 		<EmailConfirmation
 			v-if="fromExternalSite && newsletters"
 			:author-name="paramId"
-			:email-address="newsletters[0].email"
+			:email-address="newsletters[newsletters.length - 1].email"
 			@close="fromExternalSite = false"
 		/>
 	</Teleport>

@@ -48,14 +48,8 @@ const followersList = computed(() => connections.getConnections(authorID.value)?
 					>
 						Your followers
 					</h2>
-					<h2
-						v-else-if="profile.name !== ``"
-						class="text-lightPrimaryText dark:text-darkPrimaryText text-xl font-semibold"
-					>
-						{{ profile.name }}'s followers
-					</h2>
 					<h2 v-else class="text-lightPrimaryText dark:text-darkPrimaryText text-xl font-semibold">
-						{{ profile.id }}'s followers
+						{{ profile.name !== `` ? profile.name : profile.id }}'s followers
 					</h2>
 					<button class="focus:outline-none bg-gray1 dark:bg-gray5 rounded-full p-1" @click="emit(`close`)">
 						<CloseIcon />
@@ -66,10 +60,10 @@ const followersList = computed(() => connections.getConnections(authorID.value)?
 						<span v-if="$route.name === `home` || authorID === store.$state.id">
 							It seems you don't have any followers yet!
 						</span>
-						<span v-else-if="profile.name !== ``">
-							It looks like {{ profile.name }} doesn't have any followers yet!
+						<span v-else>
+							It looks like {{ profile.name !== `` ? profile.name : profile.id }}
+							doesn't have any followers yet!
 						</span>
-						<span v-else> It seems that {{ profile.id }} doesn't have any followers yet! </span>
 					</p>
 				</article>
 				<article>
