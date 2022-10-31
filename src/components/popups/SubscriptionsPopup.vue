@@ -5,6 +5,8 @@ import { useRoute } from 'vue-router';
 import { Profile } from '@/backend/profile';
 import { toastError, toastSuccess } from '@/plugins/toast';
 import { getAmountFromTier, getCurrencySymbol, getZeroDecimalAmount, retrieveReaderProfile } from '@/backend/payment';
+import { SubscriptionTier } from '@/store/paymentProfile';
+
 import Avatar from '@/components/Avatar.vue';
 import SecondaryButton from '@/components/SecondaryButton.vue';
 import CloseIcon from '@/components/icons/XIcon.vue';
@@ -63,17 +65,6 @@ let cardElement: StripeCardElement | null = null;
 
 const emit = defineEmits([`close`]);
 
-onMounted(() => {
-	// Fetch updated payment profile of author
-	usePayments.fetchPaymentProfile(props.author.id).then(() => {
-		initializeProfile();
-	});
-	// Check for saved email
-	retrieveReaderProfile(store.$state.id).then(({ email }) => {
-		customerEmail.value = email ?? ``;
-	});
-});
-
 // methods
 function startReading() {
 	emit(`close`);
@@ -88,9 +79,11 @@ function startReading() {
 		}, 4000);
 	}
 }
+
 function displayCurrency(currency: string): string {
 	return getCurrencySymbol(currency);
 }
+
 function initializeProfile() {
 	if (!props.author) {
 		toastError(`Author profile is missing`);
@@ -112,6 +105,7 @@ function initializeProfile() {
 		toastError(`Author hasn't set-up subscriptions`);
 	}
 }
+
 function switchPeriod() {
 	if (selectedPeriod.value === `month`) {
 		useSubscription.updateSelectedPeriod(`year`);
@@ -119,11 +113,14 @@ function switchPeriod() {
 		useSubscription.updateSelectedPeriod(`month`);
 	}
 }
+
 function showPaymentButtons(period: string) {
-	if (selectedTier.value !== null) {
-		_showPaymentButtons(period);
+	if (!selectedTier.value._id) {
+		return;
 	}
+	_showPaymentButtons(period);
 }
+
 async function _showPaymentButtons(period: string) {
 	nextStep();
 	useSubscription.updateSelectedPeriod(period);
@@ -177,9 +174,9 @@ async function _showPaymentButtons(period: string) {
 			useSubscription.updateCardMessage(event.error.message);
 			return;
 		}
-		useSubscription.updateCardMessage(`null`);
 	});
 }
+
 function selectPaymentType(paymentType: string) {
 	if (!paymentRequest) {
 		useSubscription.updateCardMessage(`Unexpected error with payment request`);
@@ -211,12 +208,15 @@ function selectPaymentType(paymentType: string) {
 	cardElement.mount(`#card-element`);
 	nextStep();
 }
+
 function nextStep() {
 	useSubscription.nextStep();
 }
+
 function previousStep() {
 	useSubscription.previousStep();
 }
+
 async function submitCardPayment() {
 	isLoading.value = true;
 	const stripe = await useSubscription.stripeClient();
@@ -249,10 +249,32 @@ async function submitCardPayment() {
 	await useSubscription.submitPayment(paymentMethod, customerEmail.value);
 	isLoading.value = false;
 }
+
+function updateSelectedTier(tier: SubscriptionTier) {
+	if (!selectedTier.value._id) {
+		useSubscription.updateSelectedTier(tier);
+	} else if (selectedTier.value._id !== tier._id) {
+		useSubscription.updateSelectedTier(tier);
+	} else {
+		useSubscription.resetSelectedTier();
+	}
+}
+
 async function toggleFriend() {}
 function toggleSaveEmail() {
 	useSubscription.updateEmail(!useSubscription.$state.saveEmail);
 }
+
+onMounted(() => {
+	// Fetch updated payment profile of author
+	usePayments.fetchPaymentProfile(props.author.id).then(() => {
+		initializeProfile();
+	});
+	// Check for saved email
+	retrieveReaderProfile(store.$state.id).then(({ email }) => {
+		customerEmail.value = email ?? ``;
+	});
+});
 </script>
 <template>
 	<div
@@ -310,10 +332,9 @@ function toggleSaveEmail() {
 						<h6 class="font-semibold text-neutral text-xl mb-2">Your subscription plan</h6>
 						<p class="text-base text-center text-gray5 dark:text-gray3 mb-4">
 							Choose a subscription plan and a billing method to access subscribers-only content of
-							<span v-if="author.name !== ``" class="font-semibold text-primary dark:text-secondary">{{
-								author.name
+							<span class="font-semibold text-primary dark:text-secondary">{{
+								author.name !== `` ? author.name : `@${author.id}`
 							}}</span>
-							<span v-else class="font-semibold text-primary dark:text-secondary">@{{ author.id }}</span>
 						</p>
 					</div>
 					<!-- Period switch -->
@@ -337,7 +358,7 @@ function toggleSaveEmail() {
 									: `opacity-50 cursor-not-allowed border-lightBorder dark:border-darkBorder`
 							"
 							:disabled="!(props.enabledTiers.includes(tier._id) || props.enabledTiers.length === 0)"
-							@click.stop="useSubscription.updateSelectedTier(tier)"
+							@click.stop="updateSelectedTier(tier)"
 						>
 							<!-- Check mark -->
 							<div class="w-12 flex justify-center">
@@ -373,7 +394,7 @@ function toggleSaveEmail() {
 							:class="selectedTier._id !== `` ? `` : `opacity-50 cursor-not-allowed`"
 							class="bg-darkBG text-lightButtonText focus:outline-none transform rounded-lg font-bold transition duration-500 ease-in-out hover:bg-opacity-75"
 							style="padding: 0.4rem 1.5rem"
-							@click.stop="showPaymentButtons(selectedPeriod), nextStep"
+							@click.stop="showPaymentButtons(selectedPeriod)"
 						>
 							<span class="font-sans" style="font-size: 0.95rem"> Next </span>
 						</button>

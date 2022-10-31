@@ -47,6 +47,11 @@ export const useSubscriptionStore = defineStore(`subscriptions`, {
 			step: 0,
 		};
 	},
+	getters: {
+		getStep: (state): number => {
+			return state.step;
+		},
+	},
 	actions: {
 		async fetchSubs(id: string) {
 			if (!id) {
@@ -214,10 +219,16 @@ export const useSubscriptionStore = defineStore(`subscriptions`, {
 			}
 			return _stripe;
 		},
-	},
-	getters: {
-		getStep: (state): number => {
-			return state.step;
+		resetSelectedTier() {
+			this.selectedTier = {
+				_id: ``,
+				username: ``,
+				name: ``,
+				monthlyEnabled: true,
+				monthlyPrice: 0,
+				yearlyEnabled: false,
+				yearlyPrice: 10,
+			};
 		},
 	},
 });
