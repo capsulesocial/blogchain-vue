@@ -354,7 +354,6 @@ async function sendPost(
 	draftStore.triggerIsPosting(false);
 	showConfirmPopup.value = false;
 	//send post to backend from store and redirect to the the published post
-	updateContent();
 }
 
 function initDraft() {
@@ -512,7 +511,7 @@ defineExpose({ checkPost });
 	</div>
 	<PreviewPopup v-if="showPostPreview" @close="closePostPreview" @confirm="checkPostPreview" />
 	<ConfirmPopup v-if="showConfirmPopup" @close="showConfirmPopup = false" />
-	<DraftsPopup v-if="showDrafts" @close="handleCloseDrafts" />
+	<DraftsPopup v-if="showDrafts" @close="handleCloseDrafts" @save="updateContent" />
 </template>
 
 <style>
