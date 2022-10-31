@@ -10,7 +10,7 @@ import BinIcon from '@/components/icons/BinIcon.vue';
 import { useDraftStore } from '@/store/drafts';
 import router from '@/router';
 
-const emit = defineEmits([`closeDraftsPopup`]);
+const emit = defineEmits([`closeDraftsPopup`, `save`]);
 
 const props = defineProps<{
 	draft: DraftPost;
@@ -27,7 +27,8 @@ function setActiveDraft() {
 	const i = draftStore.getDraftIndex(props.draft);
 	// drafts popup on editor
 	if (router.currentRoute.value.name === `Post Editor`) {
-		draftStore.setActiveDraft(i);
+		emit(`save`);
+		delayActiveDraft.value = true;
 		emit(`closeDraftsPopup`);
 		return;
 	}

@@ -5,7 +5,7 @@ import SecondaryButton from '@/components/SecondaryButton.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
 import { computed } from 'vue';
 
-const emit = defineEmits([`close`]);
+const emit = defineEmits([`close`, `save`]);
 const draftStore = useDraftStore();
 const drafts = computed(() => draftStore.$state.drafts);
 
@@ -49,6 +49,7 @@ function handleClose() {
 						:key="draft.timestamp"
 						:draft="draft"
 						@close-drafts-popup="handleClose"
+						@save="emit(`save`)"
 					/>
 				</div>
 			</div>
