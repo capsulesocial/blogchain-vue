@@ -4,6 +4,7 @@ import ImageIcon from '@/components/icons/Image.vue';
 import { onBeforeMount, ref } from 'vue';
 
 const showActionButtons = ref(false);
+const emit = defineEmits([`image`]);
 
 function toggleDropdown() {
 	showActionButtons.value = !showActionButtons.value;
@@ -46,7 +47,7 @@ onBeforeMount(() => {
 			style="left: 50px; top: -12px"
 		>
 			<!-- Add Image -->
-			<button class="focus:outline-none text-gray5 flex hover:text-lightPrimaryText" @click="$emit(`image`)">
+			<button class="focus:outline-none text-gray5 flex hover:text-lightPrimaryText" @click="emit(`image`)">
 				<ImageIcon class="h-5 w-5 fill-current" />
 			</button>
 		</div>
