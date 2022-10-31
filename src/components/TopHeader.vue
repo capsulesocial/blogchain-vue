@@ -52,12 +52,20 @@ onMounted(() => {
 });
 
 function goWrite() {
-	if (sessionStore.$state.id !== ``) {
-		draftStore.createNewDraft();
-		router.push(`/write`);
+	// Unauth
+	if (sessionStore.$state.id === ``) {
+		rootStore.toggleUnauthPopup(true);
 		return;
 	}
-	rootStore.toggleUnauthPopup(true);
+	// Handle new draft on write page
+	if (router.currentRoute.value.name === `Post Editor`) {
+		draftStore.createNewDraft();
+		// re-init editor
+		location.reload();
+		return;
+	}
+	draftStore.createNewDraft();
+	router.push(`/write`);
 }
 
 function toggleDropdown() {
