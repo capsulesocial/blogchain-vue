@@ -82,7 +82,7 @@ onMounted(async () => {
 			<TagCard v-for="t in tags" v-else :key="t" :tag="t" :no-click="false" class="my-2 mr-4 text-lg" />
 		</div>
 		<img
-			v-if="$route.name === `Discover`"
+			v-if="$route.name === `Discover` || $route.name === `Category`"
 			v-lazy="{
 				src: settings.isDarkMode
 					? require(`@/assets/images/brand/dark/discover.webp`)
