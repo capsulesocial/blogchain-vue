@@ -150,7 +150,9 @@ export const usePostsStore = defineStore(`posts`, {
 				// Add to store
 				for (const post of posts) {
 					this.$state.posts.set(post.post._id, post);
-					postArr.push(post.post._id);
+					if (!postArr.includes(post.post._id)) {
+						postArr.push(post.post._id);
+					}
 				}
 				this.profilePosts.set(authorID, postArr);
 				return posts;

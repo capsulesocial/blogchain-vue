@@ -30,7 +30,7 @@ async function fetchContent() {
 	}
 	isLoading.value = true;
 
-	const res = await usePostsStore().fetchProfilePosts(authorID.value, offset.value);
+	const res = await postsStore.fetchProfilePosts(authorID.value, offset.value);
 
 	if (res && res.length < limit.value) {
 		noMorePosts.value = true;
@@ -54,8 +54,9 @@ function handleScroll() {
 onBeforeMount(() => {
 	fetchContent();
 });
+
 onMounted(() => {
-	usePostsStore().getProfilePosts(authorID.value);
+	postsStore.getProfilePosts(authorID.value);
 	// scrolling event handler
 	window.addEventListener('wheel', handleScroll);
 	window.addEventListener('touchmove', handleScroll);
