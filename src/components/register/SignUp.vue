@@ -17,11 +17,6 @@ const props = defineProps<{ privateKey: string }>();
 
 const login = useLogin();
 
-function back() {
-	localStorage.clear();
-	location.reload();
-}
-
 async function handleRegisterID() {
 	try {
 		if (!captchaID.value) {
@@ -66,6 +61,11 @@ async function handleRegisterID() {
 	} finally {
 		loadingState.value = null;
 	}
+}
+
+function back() {
+	localStorage.clear();
+	location.reload();
 }
 
 onMounted(async () => {
