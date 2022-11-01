@@ -11,8 +11,8 @@ const store = useStore();
 	>
 		<!-- Home -->
 		<div v-if="$route.name === `Home`">
-			<h1 v-if="store.$state.name" class="text-lightSecondaryText dark:text-gray1 text-3xl font-semibold xl:text-4xl">
-				Hello, {{ store.$state.name === `` ? `@` + store.$state.id : store.$state.name }}
+			<h1 v-if="store.$state.id" class="text-lightSecondaryText dark:text-gray1 text-3xl font-semibold xl:text-4xl">
+				Hello, {{ store.$state.name === `` ? `@${store.$state.id}` : store.$state.name }}
 			</h1>
 			<h1 v-else class="text-lightSecondaryText dark:text-gray1 text-3xl font-semibold xl:text-4xl">Hello!</h1>
 		</div>
