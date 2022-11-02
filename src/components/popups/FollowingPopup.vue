@@ -2,14 +2,17 @@
 import { computed } from 'vue';
 import HorizontalProfilePreview from '@/components/HorizontalProfilePreview.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
+import SecondaryButton from '@/components/SecondaryButton.vue';
+
 import { useProfilesStore } from '@/store/profiles';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useStore } from '@/store/session';
 import { useConnectionsStore } from '@/store/connections';
 
 const profilesStore = useProfilesStore();
 const connections = useConnectionsStore();
 const route = useRoute();
+const router = useRouter();
 const store = useStore();
 const emit = defineEmits([`close`]);
 
@@ -31,6 +34,10 @@ const authorID = computed(() => {
 const profile = computed(() => profilesStore.getProfile(authorID.value));
 // TODO: fetch following from store / backend
 const followingList = computed(() => connections.getConnections(authorID.value)?.following);
+
+function toggleDiscover() {
+	router.push(`/discover`);
+}
 </script>
 <template>
 	<div
@@ -71,6 +78,11 @@ const followingList = computed(() => connections.getConnections(authorID.value)?
 						<span v-else-if="profile.name !== ``"> It looks like {{ profile.name }} isn't following anyone yet! </span>
 						<span v-else> It seems that {{ profile.id }} isn't following anyone yet! </span>
 					</p>
+					<SecondaryButton
+						v-if="store.$state.id === route.params.id || route.name === `Home`"
+						:text="`Discover new content`"
+						:action="toggleDiscover"
+					/>
 				</article>
 				<article>
 					<HorizontalProfilePreview v-for="follower in followingList" :id="follower" :key="follower" />

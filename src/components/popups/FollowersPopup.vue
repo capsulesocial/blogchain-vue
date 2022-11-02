@@ -1,14 +1,18 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
+
 import HorizontalProfilePreview from '@/components/HorizontalProfilePreview.vue';
 import CloseIcon from '@/components/icons/CloseIcon.vue';
+import SecondaryButton from '@/components/SecondaryButton.vue';
+
 import { useProfilesStore } from '@/store/profiles';
 import { useStore } from '@/store/session';
 import { useConnectionsStore } from '@/store/connections';
 
 const profilesStore = useProfilesStore();
 const route = useRoute();
+const router = useRouter();
 const store = useStore();
 const emit = defineEmits([`close`]);
 const connections = useConnectionsStore();
@@ -28,6 +32,10 @@ profilesStore.fetchProfile(authorID.value);
 
 const profile = computed(() => profilesStore.getProfile(authorID.value));
 const followersList = computed(() => connections.getConnections(authorID.value)?.followers);
+
+function toggleDiscover() {
+	router.push(`/discover`);
+}
 </script>
 <template>
 	<div
@@ -65,6 +73,11 @@ const followersList = computed(() => connections.getConnections(authorID.value)?
 							doesn't have any followers yet!
 						</span>
 					</p>
+					<SecondaryButton
+						v-if="store.$state.id === route.params.id || route.name === `Home`"
+						:text="`Discover new content`"
+						:action="toggleDiscover"
+					/>
 				</article>
 				<article>
 					<HorizontalProfilePreview v-for="follower in followersList" :id="follower" :key="follower" />
