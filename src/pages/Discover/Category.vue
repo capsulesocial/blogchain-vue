@@ -142,7 +142,9 @@ onMounted(() => {
 			</p>
 			<SecondaryButton :text="`All categories`" :action="() => $router.push(`/discover`)" />
 		</div>
-		<p v-if="noMorePosts" class="text-gray5 dark:text-gray3 py-5 text-center text-sm">No more posts</p>
+		<p v-if="noMorePosts && categoryPosts!.length > 0" class="text-gray5 dark:text-gray3 py-5 text-center text-sm">
+			No more posts
+		</p>
 	</article>
 </template>
 <style>
