@@ -68,6 +68,10 @@ function goWrite() {
 	router.push(`/write`);
 }
 
+function handleThought() {
+	draftStore.toggleThought();
+}
+
 function toggleDropdown() {
 	showDropdown.value = !showDropdown.value;
 }
@@ -135,8 +139,8 @@ function logout() {
 					:style="router.currentRoute.value.name === `Bookmarks` ? `padding: 0` : `padding: 0 0.111rem`"
 					>Bookmarks</router-link
 				>
+				<button style="padding: 0.6rem 1.7rem" @click="handleThought">Write a Thought</button>
 				<button
-					to="/write"
 					style="padding: 0.6rem 1.7rem"
 					class="mx-4 bg-primary dark:bg-secondary text-lightButtonText focus:outline-none transform rounded-lg font-bold transition duration-500 ease-in-out hover:shadow-lg"
 					@click="goWrite"

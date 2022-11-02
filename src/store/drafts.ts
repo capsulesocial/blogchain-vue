@@ -14,6 +14,7 @@ export interface DraftStore {
 	draftWidget: boolean;
 	hasPosted: boolean;
 	isPosting: boolean;
+	composeThought: boolean;
 }
 
 export const useDraftStore = defineStore(`draftStore`, {
@@ -24,6 +25,7 @@ export const useDraftStore = defineStore(`draftStore`, {
 			draftWidget: false,
 			hasPosted: false,
 			isPosting: false,
+			composeThought: false,
 		};
 	},
 	persist: true,
@@ -48,6 +50,9 @@ export const useDraftStore = defineStore(`draftStore`, {
 		},
 	},
 	actions: {
+		toggleThought() {
+			this.composeThought = !this.composeThought;
+		},
 		setActiveDraft(index: number) {
 			this.activeIndex = index;
 		},
