@@ -375,6 +375,8 @@ onMounted(async () => {
 			</div>
 		</article>
 		<router-view></router-view>
+	</section>
+	<Teleport to="body">
 		<!-- editProfile popup -->
 		<div
 			v-if="showEditProfile"
@@ -387,8 +389,6 @@ onMounted(async () => {
 				@close="toggleEdit"
 			/>
 		</div>
-	</section>
-	<Teleport to="body">
 		<SubscriptionsPopup
 			v-if="showSubscription && paymentsProfile.paymentsEnabled && !isActiveSub"
 			:is-subscribed="false"
