@@ -4,8 +4,6 @@ import { useMeta } from 'vue-meta';
 import ProfilePreviewCard from '@/components/ProfilePreviewCard.vue';
 import ConfigureNewsletterPopup from '@/components/popups/ConfigureNewsletterPopup.vue';
 
-import ChevronLeft from '@/components/icons/ChevronLeft.vue';
-
 import { useStore } from '@/store/session';
 import { emailNotificationsStore } from '@/store/emailnotifications';
 import { handleError } from '@/plugins/toast';
@@ -72,11 +70,6 @@ onMounted(async () => {
 </script>
 <template>
 	<main id="scrollable_content">
-		<!-- Mobile back button -->
-		<router-link to="/settings" class="mb-6 flex items-center lg:hidden">
-			<span class="bg-gray1 dark:bg-gray5 mr-4 rounded-full p-1"><ChevronLeft :reduce-size="false" /></span>
-			<h6 class="font-semibold dark:text-darkPrimaryText">All Settings</h6>
-		</router-link>
 		<!-- Email newsletter -->
 		<div class="px-6 pt-4">
 			<h3 class="text-lightPrimaryText dark:text-darkPrimaryText pb-2 text-base font-semibold">Email notifications</h3>
