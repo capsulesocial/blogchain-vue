@@ -169,18 +169,18 @@ function logout() {
 					:class="settings.isDarkMode ? `dropdownOpenDark` : `dropdownOpen`"
 				>
 					<!-- Unauthenticated: Log in -->
-					<a
+					<router-link
 						v-if="sessionStore.$state.id === ``"
-						:href="url + `/login`"
+						to="/login"
 						class="text-gray5 dark:text-gray3 mx-2 mb-4 flex w-24 flex-row items-center text-left"
-						>Log In</a
+						>Log In</router-link
 					>
 					<!-- Unauthenticated: Register -->
-					<a
+					<router-link
 						v-if="sessionStore.$state.id === ``"
-						:href="url + `/register`"
+						to="/register"
 						class="text-gray5 dark:text-gray3 mx-2 flex w-24 flex-row items-center text-left"
-						>Register</a
+						>Register</router-link
 					>
 					<!-- Authenticated -->
 					<div v-if="sessionStore.$state.id !== ``" class="flex items-center">
@@ -214,24 +214,24 @@ function logout() {
 						class="bg-lightBorder dark:bg-darkBorder w-full rounded my-3"
 						style="height: 1px"
 					></div>
-					<a
+					<router-link
 						v-if="sessionStore.$state.id !== ``"
-						:href="url + `/subscriptions`"
+						to="/subscriptions"
 						class="text-gray5 dark:text-gray3 flex w-full flex-row items-center text-left"
 					>
-						<Crown2Icon class="mr-2 h-5 w-5 flex-shrink-0" />Subscriptions</a
+						<Crown2Icon class="mr-2 h-5 w-5 flex-shrink-0" />Subscriptions</router-link
 					>
 					<div
 						v-if="sessionStore.$state.id !== ``"
 						class="bg-lightBorder dark:bg-darkBorder w-full rounded my-3"
 						style="height: 1px"
 					></div>
-					<a
+					<router-link
 						v-if="sessionStore.$state.id !== ``"
-						:href="url + `/settings/account`"
+						to="/settings/account"
 						class="text-gray5 dark:text-gray3 mb-2 flex w-full flex-row items-center text-left"
 					>
-						<SettingsIcon class="mr-2 h-5 w-5 flex-shrink-0" />Settings</a
+						<SettingsIcon class="mr-2 h-5 w-5 flex-shrink-0" />Settings</router-link
 					>
 					<!-- What to do to disconnect here? -->
 					<button
@@ -256,32 +256,32 @@ function logout() {
 					class="from-lightBGStart to-lightBGStop dark:from-darkBGStart dark:to-darkBGStop border-lightBorder modal-animation absolute mt-4 -ml-1 flex flex-col rounded-lg border bg-gradient-to-r p-4 shadow-lg backdrop-blur-lg backdrop-filter"
 					:class="settings.isDarkMode ? `dropdownMainOpenDark` : `dropdownMainOpen`"
 				>
-					<a
-						:href="url + `/home`"
+					<router-link
+						to="/home"
 						class="mb-4 flex w-full flex-row items-center border-none text-left font-regular text-gray5 dark:text-gray3"
 					>
-						<HomeIcon class="mr-2 h-5 w-5 flex-shrink-0" />Home</a
+						<HomeIcon class="mr-2 h-5 w-5 flex-shrink-0" />Home</router-link
 					>
-					<a
-						:href="url + `/discover`"
+					<router-link
+						to="/discover"
 						class="mb-4 flex w-full flex-row items-center border-none text-left font-regular text-gray5 dark:text-gray3"
 					>
-						<DiscoverIcon class="mr-2 h-5 w-5 flex-shrink-0" />Discover</a
+						<DiscoverIcon class="mr-2 h-5 w-5 flex-shrink-0" />Discover</router-link
 					>
-					<a
-						:href="url + `/bookmarks`"
+					<router-link
+						to="/bookmarks"
 						class="flex w-full flex-row items-center border-none text-left font-regular text-gray5 dark:text-gray3"
 					>
-						<BookmarksIcon class="mr-2 h-5 w-5 flex-shrink-0" />Bookmarks</a
+						<BookmarksIcon class="mr-2 h-5 w-5 flex-shrink-0" />Bookmarks</router-link
 					>
 				</div>
 			</div>
 			<!-- Middle branding -->
-			<a :href="url + `/home`">
+			<router-link to="/home">
 				<div class="flex items-center">
 					<Logo class="text-lightSecondaryText dark:text-gray1 mr-2" />
 				</div>
-			</a>
+			</router-link>
 			<!-- Right side: avatar & icons -->
 			<div class="relative flex flex-row">
 				<button class="dropdown focus:outline-none" @click.stop="toggleDropdown()">
@@ -307,18 +307,18 @@ function logout() {
 					:class="settings.isDarkMode ? `dropdownOpenDark` : `dropdownOpen`"
 				>
 					<!-- Unauthenticated: Log in -->
-					<a
+					<router-link
 						v-if="sessionStore.$state.id === ``"
-						:href="url + `/login`"
+						to="/login"
 						class="text-gray5 dark:text-gray3 mx-2 mb-4 flex w-24 flex-row items-center text-left"
-						>Log In</a
+						>Log In</router-link
 					>
 					<!-- Unauthenticated: Register -->
-					<a
+					<router-link
 						v-if="sessionStore.$state.id === ``"
-						:href="url + `/register`"
+						to="/register"
 						class="text-gray5 dark:text-gray3 mx-2 flex w-24 flex-row items-center text-left"
-						>Register</a
+						>Register</router-link
 					>
 					<!-- Authenticated -->
 					<div v-if="sessionStore.$state.id !== ``" class="flex items-center">
@@ -352,29 +352,30 @@ function logout() {
 						class="bg-lightBorder dark:bg-darkBorder w-full rounded my-3"
 						style="height: 1px"
 					></div>
-					<a
+					<router-link
 						v-if="sessionStore.$state.id !== ``"
-						:href="url + `/subscriptions`"
+						to="/subscriptions"
 						class="text-gray5 dark:text-gray3 flex w-full flex-row items-center text-left"
 					>
-						<Crown2Icon class="mr-2 h-5 w-5 flex-shrink-0" />Subscriptions</a
+						<Crown2Icon class="mr-2 h-5 w-5 flex-shrink-0" />Subscriptions</router-link
 					>
 					<div
 						v-if="sessionStore.$state.id !== ``"
 						class="bg-lightBorder dark:bg-darkBorder w-full rounded my-3"
 						style="height: 1px"
 					></div>
-					<a
+					<router-link
 						v-if="sessionStore.$state.id !== ``"
-						:href="url + `/settings/account`"
+						to="/settings/account"
 						class="text-gray5 dark:text-gray3 mb-2 flex w-full flex-row items-center text-left"
 					>
-						<SettingsIcon class="mr-2 h-5 w-5 flex-shrink-0" />Settings</a
+						<SettingsIcon class="mr-2 h-5 w-5 flex-shrink-0" />Settings</router-link
 					>
 					<!-- What to do to disconnect here? -->
 					<button
 						v-if="sessionStore.$state.id !== ``"
 						class="focus:outline-none text-negative flex w-full flex-row items-center text-left"
+						@click="logout"
 					>
 						<LogoutIcon class="mr-2 h-5 w-5 flex-shrink-0" />Disconnect
 					</button>
