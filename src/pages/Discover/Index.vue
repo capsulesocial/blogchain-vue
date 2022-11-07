@@ -12,9 +12,8 @@ import CategoryCard from '@/components/CategoryCard.vue';
 	</div>
 	<article
 		id="scrollable_content"
-		class="min-h-115 h-115 lg:min-h-210 lg:h-210 xl:min-h-220 xl:h-220 overflow-y-auto lg:overflow-y-hidden relative w-full flex flex-wrap px-4"
+		class="min-h-170 h-170 xl:min-h-240 xl:h-240 box-border grid w-full grid-cols-1 gap-4 overflow-y-auto px-6 pb-8 pt-4 xl:grid-cols-2"
 	>
-		<CategoryCard v-for="c in categories" :key="c" :text="c" :bg-image="c" />
-		<div class="h-10 w-full"></div>
+		<CategoryCard v-for="category in categories" :key="category" :text="category" :bg-image="category" />
 	</article>
 </template>

@@ -6,7 +6,7 @@ defineProps<{
 </script>
 
 <template>
-	<div class="flex justify-center w-1/2 p-2">
+	<div class="flex justify-center">
 		<router-link
 			v-if="bgImage !== ``"
 			:to="'/discover/' + text"
