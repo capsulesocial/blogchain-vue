@@ -5,27 +5,20 @@ import PlusIcon from '../icons/PlusIcon.vue';
 import XIcon from '../icons/XIcon.vue';
 import { useDraftStore } from '@/store/drafts';
 import { qualityTags } from '@/plugins/quality';
-import { nextTick, onMounted, ref } from 'vue';
+import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import { isError } from '@/plugins/helpers';
 import { handleError, toastError } from '@/plugins/toast';
 import { preUploadPhoto, uploadPhoto } from '@/backend/photos';
 import { useStore } from '@/store/session';
+import { Tag } from '@/backend/post';
 
 const draftStore = useDraftStore();
 const chirpInput = ref<HTMLInputElement>();
 const tagInput = ref<HTMLInputElement>();
 const featuredPhotoInput = ref<HTMLInputElement>();
-const length = ref(0);
 const waitingImage = ref(false);
 const tags = ref<string[]>([]);
 const featuredPhoto = ref<string | null>(null);
-
-function handleInput() {
-	if (!chirpInput.value) {
-		return;
-	}
-	length.value = chirpInput.value.value.length;
-}
 
 function handleTag() {
 	const tag = tagInput.value?.value;
@@ -37,16 +30,15 @@ function handleTag() {
 		toastError(quality.error);
 		return;
 	}
-	tags.value.push(tag);
+	draftStore.addChirpTag(tag);
 	if (!tagInput.value) {
 		return;
 	}
 	tagInput.value.value = ``;
 }
 
-function removeTag(t: string) {
-	const i = tags.value.indexOf(t);
-	tags.value.splice(i, 1);
+function removeTag(t: Tag) {
+	draftStore.removeChirpTag(t);
 }
 
 function handleUploadImageClick() {
@@ -74,6 +66,7 @@ async function handleImage(e: Event) {
 		const { cid, image, imageName, url } = await uploadPhoto(imageFile);
 		await preUploadPhoto(cid, image, imageName, useStore().$state.id);
 		featuredPhoto.value = url as string;
+		draftStore.updateChirpImage(featuredPhoto.value);
 	} catch (err) {
 		handleError(err);
 	} finally {
@@ -84,6 +77,7 @@ async function handleImage(e: Event) {
 
 function removeImage() {
 	featuredPhoto.value = null;
+	draftStore.updateChirpImage(null);
 }
 
 function sendChirp() {
@@ -92,9 +86,21 @@ function sendChirp() {
 }
 
 onMounted(() => {
+	if (chirpInput.value) {
+		chirpInput.value.value = draftStore.getChirp.content;
+	}
+	featuredPhoto.value = draftStore.getChirp.featuredPhotoCID ? draftStore.getChirp.featuredPhotoCID : null;
 	nextTick(() => {
 		chirpInput.value?.focus();
 	});
+});
+
+onBeforeUnmount(() => {
+	if (!chirpInput.value) {
+		return;
+	}
+	const c = chirpInput.value.value;
+	draftStore.updateChirp(c);
 });
 </script>
 
@@ -119,7 +125,6 @@ onMounted(() => {
 					ref="chirpInput"
 					placeholder="What's your Chirp?"
 					class="w-full h-32 resize-none bg-gray1 dark:bg-gray5 rounded-lg focus:outline-none px-2 py-1 border focus:border-primary"
-					@keydown="handleInput"
 				/>
 			</div>
 			<!-- Featured photo -->
@@ -141,18 +146,18 @@ onMounted(() => {
 					<input
 						v-show="tags.length < 3"
 						ref="tagInput"
-						class="focus:outline-none border border-gray1 rounded-lg px-2 py-1 focus:border-primary"
+						class="focus:outline-none bg-gray1 dark:bg-gray5 rounded-lg px-2 py-1 border border-gray1 focus:border-primary"
 						type="text"
 						placeholder="Tag"
 						@keypress.enter="handleTag"
 					/>
 					<button
-						v-for="t in tags"
-						:key="t"
+						v-for="t in draftStore.chirp.tags"
+						:key="t.name"
 						class="bg-gray1 px-2 py-1 mr-2 rounded-lg flex items-center"
 						@click="removeTag(t)"
 					>
-						{{ t }}
+						{{ t.name }}
 						<XIcon class="p-1" />
 					</button>
 				</div>
