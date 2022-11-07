@@ -65,9 +65,9 @@ const openFollowingPopup = ref(false);
 const showEditProfile = ref(false);
 const showSubscription = ref(false);
 const showChangeTier = ref(false);
-const friendlyUrl = ref<string>(``);
-const isLeaving = ref<boolean>(false);
-const realUrl = ref<string>(``);
+const friendlyUrl = ref(``);
+const isLeaving = ref(false);
+const realUrl = ref(``);
 
 useMeta({
 	title: profile.value.name ? `${profile.value.name} -  Blogchain` : `@${authorID.value} -  Blogchain`,
