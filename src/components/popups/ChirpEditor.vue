@@ -12,7 +12,7 @@ import { preUploadPhoto, uploadPhoto } from '@/backend/photos';
 import { useStore } from '@/store/session';
 
 const draftStore = useDraftStore();
-const thoughtInput = ref<HTMLInputElement>();
+const chirpInput = ref<HTMLInputElement>();
 const tagInput = ref<HTMLInputElement>();
 const featuredPhotoInput = ref<HTMLInputElement>();
 const length = ref(0);
@@ -21,10 +21,10 @@ const tags = ref<string[]>([]);
 const featuredPhoto = ref<string | null>(null);
 
 function handleInput() {
-	if (!thoughtInput.value) {
+	if (!chirpInput.value) {
 		return;
 	}
-	length.value = thoughtInput.value.value.length;
+	length.value = chirpInput.value.value.length;
 }
 
 function handleTag() {
@@ -86,14 +86,14 @@ function removeImage() {
 	featuredPhoto.value = null;
 }
 
-function sendThought() {
-	console.log(thoughtInput.value?.value);
-	console.log(thoughtInput.value?.value.length);
+function sendChirp() {
+	console.log(chirpInput.value?.value);
+	console.log(chirpInput.value?.value.length);
 }
 
 onMounted(() => {
 	nextTick(() => {
-		thoughtInput.value?.focus();
+		chirpInput.value?.focus();
 	});
 });
 </script>
@@ -101,7 +101,7 @@ onMounted(() => {
 <template>
 	<div
 		class="popup bg-darkBG dark:bg-gray5 modal-animation fixed top-0 bottom-0 left-0 right-0 z-40 flex h-screen w-full items-start justify-center bg-opacity-50 dark:bg-opacity-50"
-		@click.self="draftStore.toggleThought"
+		@click.self="draftStore.toggleChirp"
 	>
 		<div
 			class="popup popupCard w-full lg:w-600 min-h-40 max-h-90 bg-lightBG dark:bg-darkBGStop card-animation mt-12 overflow-y-auto rounded-lg p-6 pt-4 shadow-lg"
@@ -109,16 +109,16 @@ onMounted(() => {
 			<!-- Header and close icon -->
 			<div class="flex items-center justify-between pb-6">
 				<h1 class="text-lightPrimaryText dark:text-darkPrimaryText text-4xl font-semibold">Write a Chirp</h1>
-				<button class="bg-gray1 dark:bg-gray5 focus:outline-none rounded-full p-1" @click="draftStore.toggleThought">
+				<button class="bg-gray1 dark:bg-gray5 focus:outline-none rounded-full p-1" @click="draftStore.toggleChirp">
 					<CloseIcon />
 				</button>
 			</div>
 			<!-- Input textarea -->
 			<div class="">
 				<textarea
-					ref="thoughtInput"
+					ref="chirpInput"
 					placeholder="What's your Chirp?"
-					class="w-full h-32 resize-none bg-gray1 dark:bg-gray5 rounded-lg focus:outline-none p-1"
+					class="w-full h-32 resize-none bg-gray1 dark:bg-gray5 rounded-lg focus:outline-none px-2 py-1 border focus:border-primary"
 					@keydown="handleInput"
 				/>
 			</div>
@@ -182,8 +182,8 @@ onMounted(() => {
 			</div>
 			<!-- Post and convert buttons -->
 			<div class="flex justify-between items-center">
-				<button>Convert to Post</button>
-				<BrandedButton :text="`Send Chirp`" :action="sendThought" />
+				<button class="text-gray5 text-semibold">Convert to Post</button>
+				<BrandedButton :text="`Send Chirp`" :action="sendChirp" />
 			</div>
 		</div>
 	</div>

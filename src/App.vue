@@ -146,7 +146,7 @@ watch(router.currentRoute, () => {
 		</div>
 	</main>
 	<UnauthPopup v-if="rootStore.$state.showUnauthPopup" />
-	<ChirpEditor v-if="draftStore.$state.composeThought" />
+	<ChirpEditor v-if="draftStore.$state.composeChirp" />
 	<div id="popup"></div>
 </template>
 
