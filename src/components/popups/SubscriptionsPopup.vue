@@ -71,7 +71,9 @@ function startReading() {
 	useSubscription.fetchSubs(store.$state.id);
 	if (route.name === `Post Reader`) {
 		window.location.reload();
-	} else if (route.name === `Profile` || `Posts` || `Comments` || `Reposts`) {
+	}
+
+	if (route.name === `Profile` || `Posts` || `Comments` || `Reposts`) {
 		toastSuccess(`Subscribed! Reloading profile...`);
 		setTimeout(() => {
 			window.location.reload();
