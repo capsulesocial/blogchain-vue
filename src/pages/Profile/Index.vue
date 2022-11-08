@@ -84,12 +84,14 @@ router.beforeEach((to, from, next) => {
 });
 
 // replace URL when leaving the page
-onBeforeRouteLeave((to, from, next) => {
-	if (realUrl.value !== `` && to.path !== from.path) {
-		history.replaceState(history.state, ``, realUrl.value);
-	}
-	next();
-});
+if (process.env.NODE_ENV === 'production') {
+	onBeforeRouteLeave((to, from, next) => {
+		if (realUrl.value !== `` && to.path !== from.path) {
+			history.replaceState(history.state, ``, realUrl.value);
+		}
+		next();
+	});
+}
 
 // methods
 function handleBack() {
