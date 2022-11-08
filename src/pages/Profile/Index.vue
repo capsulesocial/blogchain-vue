@@ -160,6 +160,10 @@ async function getShareableLink() {
 	}
 }
 
+if (process.env.NODE_ENV === 'production') {
+	getShareableLink();
+}
+
 onBeforeUnmount(() => {
 	isLeaving.value = true;
 });
@@ -197,7 +201,6 @@ onMounted(async () => {
 	}
 	window.addEventListener('wheel', handleScroll);
 	window.addEventListener('touchmove', handleScroll);
-	getShareableLink();
 });
 </script>
 
