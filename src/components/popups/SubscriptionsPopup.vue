@@ -69,13 +69,12 @@ const emit = defineEmits([`close`]);
 function startReading() {
 	emit(`close`);
 	useSubscription.fetchSubs(store.$state.id);
-	if (route.name === `post-post`) {
-		location.reload();
-	}
-	if (route.name === `id-id`) {
+	if (route.name === `Post Reader`) {
+		window.location.reload();
+	} else if (route.name === `Profile` || `Posts` || `Comments` || `Reposts`) {
 		toastSuccess(`Subscribed! Reloading profile...`);
 		setTimeout(() => {
-			location.reload();
+			window.location.reload();
 		}, 4000);
 	}
 }
@@ -564,7 +563,7 @@ onMounted(() => {
 						:user-is-followed="userIsFollowed ? userIsFollowed : false"
 						:toggle-friend="toggleFriend"
 						:selected-tier="selectedTier"
-						@star-reading="startReading"
+						@start-reading="startReading"
 					/>
 				</article>
 				<!-- Step 5: Payment policy page -->

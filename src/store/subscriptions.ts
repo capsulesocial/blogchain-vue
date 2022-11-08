@@ -72,11 +72,18 @@ export const useSubscriptionStore = defineStore(`subscriptions`, {
 				}
 
 				subsWithProfiles.forEach((subWithProfile) => {
-					if (subWithProfile.isActive) {
-						this.$state.active.push(subWithProfile);
-						return;
+					// needs refactor
+					if (!subWithProfile.isActive) {
+						const checkInactive = this.$state.inActive.findIndex((inSub) => inSub.authorID === subWithProfile.authorID);
+						if (checkInactive === -1) {
+							this.$state.inActive.push(subWithProfile);
+						}
+					} else {
+						const checkActive = this.$state.active.findIndex((aSub) => aSub.authorID === subWithProfile.authorID);
+						if (checkActive === -1) {
+							this.$state.active.push(subWithProfile);
+						}
 					}
-					this.$state.inActive.push(subWithProfile);
 				});
 			} catch (err) {
 				handleError(`Error when fetching subscriptions`);

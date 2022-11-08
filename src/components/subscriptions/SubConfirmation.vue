@@ -3,7 +3,7 @@ import FriendButton from '@/components/FriendButton.vue';
 import Avatar from '@/components/Avatar.vue';
 import CrownIcon from '@/components/icons/CrownIcon.vue';
 import { Profile } from '@/backend/profile';
-import { darkMode } from '@/plugins/colors';
+import { useStoreSettings } from '@/store/settings';
 import { SubscriptionTier } from '@/store/paymentProfile';
 import { useConnectionsStore } from '@/store/connections';
 import { useStore } from '@/store/session';
@@ -14,6 +14,7 @@ const props = withDefaults(
 	{},
 );
 
+const storeSetting = useStoreSettings();
 const userIsFollowed = computed(() => useConnectionsStore().getFollowStatus(useStore().$state.id, props.author.id));
 
 defineEmits([`startReading`]);
@@ -27,7 +28,7 @@ defineEmits([`startReading`]);
 			<p class="text-base text-center text-gray5 dark:text-gray3 mb-4">You are now subscribed to:</p>
 		</div>
 		<!-- Premium profile preview -->
-		<div class="flex flex-row items-center p-4 border border-neutral rounded-lg w-2/3">
+		<div class="flex flex-row items-center p-4 border border-neutral rounded-lg w-2/3 mx-auto">
 			<Avatar
 				class="flex-shrink-0"
 				:authorid="props.author.id"
@@ -54,7 +55,9 @@ defineEmits([`startReading`]);
 		</div>
 		<div class="w-full flex flex-col justify-center items-center text-center px-10 mt-5">
 			<p class="text-base text-center text-gray5 dark:text-gray3 mb-4 max-w-md">
-				All premium articles under {{ props.selectedTier ? props.selectedTier.name : `` }} tier<br />
+				All premium articles under
+				<span class="font-semibold text-lg text-primary">{{ props.selectedTier ? props.selectedTier.name : `` }}</span>
+				tier<br />
 				are now unlocked for your account.
 			</p>
 			<button
@@ -74,7 +77,11 @@ defineEmits([`startReading`]);
 		</div>
 		<img
 			loading="lazy"
-			:src="darkMode ? `@/assets/brand/dark/subscriptions.webp` : `@/assets/brand/light/subscriptions.webp`"
+			:src="
+				storeSetting.$state.darkMode
+					? require(`@/assets/images/brand/dark/subscriptions.webp`)
+					: require(`@/assets/images/brand/light/subscriptions.webp`)
+			"
 			class="h-auto rounded-lg"
 		/>
 	</div>
