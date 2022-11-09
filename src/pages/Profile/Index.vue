@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeMount } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
+import { ref, computed, onMounted, onBeforeMount, onBeforeUnmount } from 'vue';
+import { useRouter, useRoute, onBeforeRouteLeave } from 'vue-router';
 import { useMeta } from 'vue-meta';
 import { useProfilesStore } from '@/store/profiles';
 import { useSubscriptionStore, ISubscriptionWithProfile } from '@/store/subscriptions';
@@ -11,6 +11,7 @@ import { usePaymentsStore } from '@/store/paymentProfile';
 import { useRootStore } from '@/store/index';
 import { getUserInfoNEAR } from '@/backend/near';
 import { handleError } from '@/plugins/toast';
+import { getShareableProfileLink } from '@/backend/shareable_links';
 
 import BackButton from '@/components/icons/ChevronLeft.vue';
 import SecondaryButton from '@/components/SecondaryButton.vue';
@@ -64,6 +65,9 @@ const openFollowingPopup = ref(false);
 const showEditProfile = ref(false);
 const showSubscription = ref(false);
 const showChangeTier = ref(false);
+const friendlyUrl = ref(``);
+const isLeaving = ref(false);
+const realUrl = ref(``);
 
 useMeta({
 	title: profile.value.name ? `${profile.value.name} -  Blogchain` : `@${authorID.value} -  Blogchain`,
@@ -78,6 +82,16 @@ router.beforeEach((to, from, next) => {
 		}
 	});
 });
+
+// replace URL when leaving the page
+if (process.env.NODE_ENV === 'production') {
+	onBeforeRouteLeave((to, from, next) => {
+		if (realUrl.value !== `` && to.path !== from.path) {
+			history.replaceState(history.state, ``, realUrl.value);
+		}
+		next();
+	});
+}
 
 // methods
 function handleBack() {
@@ -132,10 +146,37 @@ function handleSubscription() {
 	showSubscription.value = !showSubscription.value;
 }
 
+async function getShareableLink() {
+	try {
+		const link = await getShareableProfileLink(authorID.value);
+		friendlyUrl.value = link;
+		if (!isLeaving.value) {
+			realUrl.value = route.fullPath;
+			history.replaceState(null, ``, friendlyUrl.value);
+		}
+	} catch (error) {
+		// eslint-disable-next-line no-console
+		console.log(`Cannot replace state to shareable profile link: ${error}`);
+	}
+}
+
+onBeforeUnmount(() => {
+	isLeaving.value = true;
+});
+
 onBeforeMount(async () => {
 	useSubscription.fetchSubs(store.$state.id);
 	paymentStore.fetchPaymentProfile(authorID.value);
+	if (process.env.NODE_ENV === 'production') {
+		await getShareableLink();
+	}
 });
+
+// watch(authorID, async () => {
+// 	if (process.env.NODE_ENV === 'production') {
+// 		await getShareableLink();
+// 	}
+// });
 
 onMounted(async () => {
 	try {
