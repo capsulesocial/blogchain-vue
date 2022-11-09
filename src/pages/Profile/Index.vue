@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeMount, onBeforeUnmount } from 'vue';
+import { ref, computed, onMounted, onBeforeMount, onBeforeUnmount, watch } from 'vue';
 import { useRouter, useRoute, onBeforeRouteLeave } from 'vue-router';
 import { useMeta } from 'vue-meta';
 import { useProfilesStore } from '@/store/profiles';
@@ -160,10 +160,6 @@ async function getShareableLink() {
 	}
 }
 
-if (process.env.NODE_ENV === 'production') {
-	getShareableLink();
-}
-
 onBeforeUnmount(() => {
 	isLeaving.value = true;
 });
@@ -171,6 +167,15 @@ onBeforeUnmount(() => {
 onBeforeMount(async () => {
 	useSubscription.fetchSubs(store.$state.id);
 	paymentStore.fetchPaymentProfile(authorID.value);
+	if (process.env.NODE_ENV === 'production') {
+		await getShareableLink();
+	}
+});
+
+watch(authorID, async () => {
+	if (process.env.NODE_ENV === 'production') {
+		await getShareableLink();
+	}
 });
 
 onMounted(async () => {
