@@ -253,7 +253,7 @@ onMounted(async () => {
 		<article
 			id="header"
 			ref="topContainer"
-			class="header-profile z-20 w-full px-4 pt-3 xl:px-6 border-b border-lightBorder"
+			class="header-profile z-20 w-full px-4 xl:px-6 border-b border-lightBorder"
 			:class="scrollingDown ? `opacity-0 xl:pt-0 min-h-0 h-0` : `xl:pt-4 opacity-1 min-h-fit h-fit`"
 		>
 			<button
