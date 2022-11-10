@@ -7,7 +7,7 @@ import useLogin, { Status } from '@/plugins/loginMethods';
 import router from '@/router';
 import { toastError, toastWarning } from '@/plugins/toast';
 
-const isLoading = ref<boolean>(false);
+const isLoading = ref(false);
 const step = ref<`registerMethods` | `signUp`>(`registerMethods`);
 const login = useLogin();
 

@@ -54,12 +54,12 @@ const cid = computed(() => {
 
 const post = ref<ISignedIPFSObject<Post>>();
 const postMetadata = ref<IPostResponseWithHidden>();
-const deleted = ref<boolean>(false);
-const showPaywall = ref<boolean>(false);
-const content = ref<string>(``);
-const excerpt = ref<string>(``);
-const wordCount = ref<number>();
-const hasFeaturedPhoto = ref<boolean>(false);
+const deleted = ref(false);
+const showPaywall = ref(false);
+const content = ref(``);
+const excerpt = ref(``);
+const wordCount = ref(0);
+const hasFeaturedPhoto = ref(false);
 const enabledTiers = ref<Array<string>>();
 const postImageKeys = ref<Array<IPostImageKey>>([]);
 const captionHeight = ref<number | undefined>(0);
@@ -67,12 +67,12 @@ const subscriptionStatus = ref<`INSUFFICIENT_TIER` | `NOT_SUBSCRIBED` | ``>(``);
 const postComments = computed(() => commentsStore.getCommentsOfPost(cid.value));
 
 // Local states
-const showShare = ref<boolean>(false);
-const showStats = ref<boolean>(false);
-const showQuote = ref<boolean>(false);
-const showPhoto = ref<boolean>(false);
-const lastScroll = ref<number>(0);
-const filter = ref<string>(``);
+const showShare = ref(false);
+const showStats = ref(false);
+const showQuote = ref(false);
+const showPhoto = ref(false);
+const lastScroll = ref(0);
+const filter = ref(``);
 
 // Functions
 const toggleFriend = () => {};

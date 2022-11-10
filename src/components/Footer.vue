@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-const currentYear = ref<string>(``);
+const currentYear = ref(``);
 const theDate = new Date();
 currentYear.value = theDate.getFullYear().toString();
 </script>
