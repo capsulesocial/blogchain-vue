@@ -89,7 +89,7 @@ function calculateBody(): string {
 	if (router.currentRoute.value.name === `Home` && settings.widgets.primary === `editor`) {
 		res += ` min-h-170 h-170`;
 	} else {
-		res += ` min-h-88 h-88`;
+		res += ` min-h-full h-full sm:min-h-88 sm:h-88`;
 	}
 	return res;
 }
