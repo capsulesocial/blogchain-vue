@@ -75,13 +75,17 @@ const lastScroll = ref(0);
 const filter = ref(``);
 
 // Functions
-const toggleFriend = () => {};
-// const getBookmarkStatus = () => {};
+
+// sets title metadata with retrieved post
+function setTitle(title: string) {
+	window.document.title = title;
+}
 
 const fetchPostMetadata = async (cid: string, currentUser?: string) => {
 	const u = currentUser ? currentUser : `x`;
 	try {
 		postMetadata.value = await getOnePost(cid, u);
+		setTitle(postMetadata.value.post.title);
 		if (postMetadata.value.hidden) {
 			deleted.value = true;
 			toastWarning(`This post has been hidden by the author`);
@@ -96,6 +100,7 @@ const fetchPostMetadata = async (cid: string, currentUser?: string) => {
 		toastError(`Unknown error loading post`);
 	}
 };
+
 const setFilter = (f: string) => {
 	filter.value = f;
 };
@@ -156,6 +161,7 @@ function checkNewPost() {
 		}, 1500);
 	}
 }
+
 // Fetch post
 onBeforeMount(async () => {
 	await fetchPostMetadata(cid.value, store.id);
@@ -241,7 +247,6 @@ function handleScroll() {
 				:timestamp="postMetadata.post.timestamp"
 				:word-count="wordCount"
 				:postimages="postMetadata.post.postImages?.length"
-				:toggle-friend="toggleFriend"
 			/>
 			<!-- Reader -->
 			<section class="mb-5 mt-8 p-5 lg:p-0 pb-16 pt-2 md:pb-5">
@@ -400,11 +405,7 @@ function handleScroll() {
 					</div>
 				</article>
 				<!-- Author -->
-				<AuthorFooter
-					:id="postMetadata.post.authorID"
-					:toggle-friend="toggleFriend"
-					:class="showPaywall ? `mb-20` : ``"
-				/>
+				<AuthorFooter :id="postMetadata.post.authorID" :class="showPaywall ? `mb-20` : ``" />
 				<!-- Comments -->
 				<article v-if="postMetadata && !showPaywall && !showStats" class="pb-14">
 					<!-- filters -->
