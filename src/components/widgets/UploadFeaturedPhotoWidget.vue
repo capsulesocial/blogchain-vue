@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 
 import UploadIcon from '@/components/icons/UploadIcon.vue';
 import { handleError } from '@/plugins/toast';
@@ -13,6 +13,7 @@ const featuredPhoto = ref<string | null>(null);
 const featuredPhotoInput = ref<HTMLInputElement>();
 const waitingImage = ref(false);
 const caption = ref();
+const activeIndex = computed(() => draftStore.getActiveIndex);
 
 function handleUploadImageClick() {
 	if (featuredPhotoInput.value) {
@@ -59,13 +60,23 @@ function handleCaption() {
 	draftStore.updateFeaturedPhotoCaption(c === `` ? null : c);
 }
 
-onMounted(async () => {
+async function initImage() {
+	featuredPhoto.value = null;
+	waitingImage.value = false;
 	const draftFeaturedPhotoCID = draftStore.drafts[draftStore.activeIndex].featuredPhotoCID;
 	if (!draftFeaturedPhotoCID) {
 		return;
 	}
 	featuredPhoto.value = await getPhotoFromIPFS(draftFeaturedPhotoCID);
 	caption.value.value = draftStore.drafts[draftStore.activeIndex].featuredPhotoCaption;
+}
+
+watch(activeIndex, async () => {
+	await initImage();
+});
+
+onMounted(async () => {
+	await initImage();
 });
 </script>
 <template>

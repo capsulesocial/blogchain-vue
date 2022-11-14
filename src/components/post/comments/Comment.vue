@@ -154,7 +154,9 @@ onMounted(async () => {
 									{{ author.name }}
 								</span>
 								<span v-else class="text-gray5 dark:text-gray3 font-semibold">{{ props.authorid }}</span>
-								<span class="text-gray5 dark:text-gray3 ml-2 text-sm"> @{{ props.authorid }} </span>
+								<span class="text-lightPrimaryText dark:text-darkPrimaryText ml-2 text-sm lg:text-base">
+									@{{ props.authorid }}
+								</span>
 								<span
 									v-if="props.authorid === props.parentauthorid"
 									class="bg-gray1 dark:bg-lightBG dark:text-darkPrimaryText ml-2 rounded-2xl dark:bg-opacity-25 py-1 px-2 text-xs"
@@ -162,7 +164,6 @@ onMounted(async () => {
 									Author
 								</span>
 							</router-link>
-							<div class="h-1 w-1 bg-gray5 mr-2 rounded-xl"></div>
 							<span v-if="props.timestamp" class="self-center text-xs dark:text-gray3 mb-2 lg:mt-2">
 								{{ formatDate(props.timestamp) }}
 							</span>
@@ -244,8 +245,8 @@ onMounted(async () => {
 				</div>
 				<p v-if="route.name === `Comments`" class="mt-1 text-right">
 					<router-link :to="`/post/` + props.parentcid" class="text-gray5 dark:text-gray3 text-xs"
-						>View Post</router-link
-					>
+						>View Post
+					</router-link>
 				</p>
 				<!-- Replies -->
 				<div v-if="showReplies" class="modal-animation mr-5 mt-4 border-l border-gray3 pl-2">
@@ -308,6 +309,7 @@ onMounted(async () => {
 	background-color: #fff;
 	border-radius: 2px;
 }
+
 .dropdownDeleteOpenDark::before {
 	content: '';
 	position: absolute;
