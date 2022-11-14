@@ -8,12 +8,22 @@ export interface DraftPost extends Post {
 	editorImageKeys: EditorImages;
 }
 
+export interface IChirp {
+	authorID: string;
+	content: string;
+	timestamp: number;
+	featuredPhotoCID?: string | null;
+	tags: Tag[];
+}
+
 export interface DraftStore {
 	drafts: DraftPost[];
 	activeIndex: number;
 	draftWidget: boolean;
 	hasPosted: boolean;
 	isPosting: boolean;
+	composeChirp: boolean;
+	chirp: IChirp;
 }
 
 export const useDraftStore = defineStore(`draftStore`, {
@@ -24,6 +34,14 @@ export const useDraftStore = defineStore(`draftStore`, {
 			draftWidget: false,
 			hasPosted: false,
 			isPosting: false,
+			composeChirp: false,
+			chirp: {
+				authorID: useStore().$state.id,
+				content: ``,
+				timestamp: Date.now(),
+				featuredPhotoCID: null,
+				tags: [],
+			},
 		};
 	},
 	persist: true,
@@ -46,8 +64,29 @@ export const useDraftStore = defineStore(`draftStore`, {
 		getIsPosting: (state: DraftStore) => {
 			return state.isPosting;
 		},
+		getChirp: (state: DraftStore) => {
+			return state.chirp;
+		},
 	},
 	actions: {
+		toggleChirp() {
+			this.composeChirp = !this.composeChirp;
+		},
+		updateChirp(c: string) {
+			this.chirp.content = c;
+		},
+		addChirpTag(tag: string) {
+			this.chirp.tags.push({ name: tag });
+		},
+		updateChirpImage(cid: string | null) {
+			this.chirp.featuredPhotoCID = cid;
+		},
+		removeChirpTag(tag: Tag) {
+			const i = this.chirp.tags.indexOf(tag);
+			if (i > -1) {
+				this.chirp.tags.splice(i, 1);
+			}
+		},
 		setActiveDraft(index: number) {
 			this.activeIndex = index;
 		},
