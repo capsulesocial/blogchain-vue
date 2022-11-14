@@ -113,7 +113,7 @@ function handleTitle(e: any) {
 	}
 	if (e.inputType === `insertLineBreak` || (e.inputType === `insertText` && e.data === null)) {
 		e.preventDefault();
-		titleInput.value.value.replace(/\n*$/, '');
+		titleInput.value.value = titleInput.value.value.replace(/\n*$/, '');
 		subtitleInput.value.focus();
 	}
 	titleInput.value.style.height = `60px`;
@@ -144,7 +144,11 @@ function handleSubtitle(e: any) {
 	}
 	if (e.inputType === `insertLineBreak` || (e.inputType === `insertText` && e.data === null)) {
 		e.preventDefault();
-		subtitleInput.value.value.replace(/\n*$/, '');
+		subtitleInput.value.value = subtitleInput.value.value.replace(/\n*$/, '');
+		const editor = document.getElementsByClassName(`ql-editor`)[0] as HTMLInputElement;
+		if (editor) {
+			editor.focus();
+		}
 		// focus on editor
 	}
 	subtitleInput.value.style.height = `60px`;
