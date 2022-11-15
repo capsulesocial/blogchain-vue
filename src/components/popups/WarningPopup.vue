@@ -13,6 +13,7 @@ const showInfoBubble = ref<boolean>(false);
 	<div
 		class="popup bg-darkBG dark:bg-gray5 modal-animation fixed top-0 bottom-0 left-0 right-0 z-30 flex h-screen w-full items-center justify-center bg-opacity-50"
 		style="backdrop-filter: blur(100px)"
+		@click.self="emit(`close`)"
 	>
 		<!-- Container -->
 		<section>

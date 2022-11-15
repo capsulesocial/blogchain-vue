@@ -25,11 +25,8 @@ const profile = computed(() => profilesStore.getProfile(props.id));
 			class="popup w-full lg:w-600 min-h-40 max-h-90 bg-lightBG dark:bg-darkBGStop card-animation z-10 overflow-y-auto rounded-lg p-6 pt-4 shadow-lg"
 		>
 			<div class="sticky flex items-center justify-between">
-				<h2 v-if="profile.name !== ``" class="text-lightPrimaryText dark:text-darkPrimaryText text-xl font-semibold">
-					{{ profile.name }}'s bio
-				</h2>
-				<h2 v-else class="text-lightPrimaryText dark:text-darkPrimaryText text-xl font-semibold">
-					@{{ profile.id }}'s bio
+				<h2 class="text-lightPrimaryText dark:text-darkPrimaryText text-xl font-semibold">
+					{{ profile.name !== `` ? profile.name : `@${profile.id}` }}'s bio
 				</h2>
 				<button class="focus:outline-none bg-gray1 dark:bg-gray5 rounded-full p-1" @click.prevent="$emit(`close`)">
 					<CloseIcon />

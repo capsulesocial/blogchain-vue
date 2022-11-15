@@ -150,10 +150,9 @@ onMounted(async () => {
 							<router-link :to="`/id/` + author.id" class="mr-3 flex items-center lg:mb-0 mb-2">
 								<!-- <Avatar :avatar="avatar" :author-i-d="authorID" size="w-8 h-8" class="mr-2 flex-shrink-0 lg:hidden" /> -->
 								<div class="w-8 h-8 rounded-lg bg-gray1 animate-pulse lg:hidden mr-2"></div>
-								<span v-if="author.name != ``" class="font-semibold dark:text-darkPrimaryText">
-									{{ author.name }}
+								<span class="font-semibold dark:text-darkPrimaryText">
+									{{ author.name != `` ? author.name : props.authorid }}
 								</span>
-								<span v-else class="text-gray5 dark:text-gray3 font-semibold">{{ props.authorid }}</span>
 								<span class="text-lightPrimaryText dark:text-darkPrimaryText ml-2 text-sm lg:text-base">
 									@{{ props.authorid }}
 								</span>
