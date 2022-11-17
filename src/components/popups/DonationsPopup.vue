@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
 import { useStoreSettings } from '@/store/settings';
 import { handleError, toastError } from '@/plugins/toast';
 import {
@@ -32,14 +31,12 @@ import { stripePublishableKey } from '@/backend/utilities/config';
 import { useSubscriptionStore } from '@/store/subscriptions';
 import { useStore } from '@/store/session';
 import { usePaymentsStore } from '@/store/paymentProfile';
-import { useConnectionsStore } from '@/store/connections';
 
-const router = useRouter();
-const route = useRoute();
+import { HTMLInputEvent } from '@/interfaces/HTMLInputEvent';
+
 const store = useStore();
 const settings = useStoreSettings();
 const useSubscription = useSubscriptionStore();
-const connectionsStore = useConnectionsStore();
 const usePayments = usePaymentsStore();
 
 // props
@@ -54,7 +51,7 @@ const props = withDefaults(
 		authorAvatar: null,
 	},
 );
-defineEmits([`close`]);
+const emit = defineEmits([`close`]);
 
 // refs
 const step = ref(0);
@@ -66,8 +63,13 @@ const displayButtons = ref({
 	googlePay: false,
 });
 const isLoading = ref(false);
+let _stripe: Stripe | null = null;
+let paymentRequest: PaymentRequest | null = null;
+let elements: StripeElements | null = null;
+let cardElement: StripeCardElement | null = null;
 
 // methods
+
 function displayCurrency(currency: string) {
 	return getCurrencySymbol(currency);
 }
@@ -95,7 +97,7 @@ function initializeProfile() {
 }
 
 function previousStep() {
-	useSubscription.previousStep();
+	step.value = +1;
 }
 
 async function stripeClient(connectId?: string): Promise<Stripe> {
@@ -145,6 +147,7 @@ function selectPaymentType(paymentType: string) {
 	// this.displayCardElement = true
 	step.value += 1;
 }
+
 function showPaymentButtons() {
 	if (!payAmount.value) {
 		toastError(`Enter donation amount to proceed`);
@@ -152,6 +155,7 @@ function showPaymentButtons() {
 	}
 	_showPaymentButtons();
 }
+
 async function _showPaymentButtons() {
 	step.value += 1;
 	if (!payAmount.value || payAmount.value <= 0 || payAmount.value > 10000) {
@@ -160,7 +164,7 @@ async function _showPaymentButtons() {
 	}
 
 	const amount = getZeroDecimalAmount(paymentProfile.value.currency, payAmount.value);
-	isLoading.value = true;
+	// isLoading.value = true;
 	const stripe = await stripeClient(paymentProfile.value.stripeAccountId);
 	const currency = paymentProfile.value.currency;
 	paymentRequest = stripe.paymentRequest({
@@ -258,6 +262,7 @@ async function handleAuthenticatedPayment(paymentAttemptId: string, clientSecret
 	}
 	return confirmAuthenticatedPayment(paymentAttemptId, paymentIntent.id);
 }
+
 async function confirmAuthenticatedPayment(paymentAttemptId: string, paymentIntentId: string): Promise<boolean> {
 	try {
 		const { error, status } = await confirmDonationPayment(store.$state.id, paymentAttemptId, paymentIntentId);
@@ -277,6 +282,42 @@ async function confirmAuthenticatedPayment(paymentAttemptId: string, paymentInte
 	}
 }
 
+async function submitCardPayment(e: HTMLInputEvent): Promise<void> {
+	isLoading.value = true;
+	e.preventDefault();
+	const stripe = await stripeClient();
+	if (!cardElement) {
+		isLoading.value = false;
+		throw new Error(`Card elements is not initialized`);
+	}
+
+	const { error, paymentMethod } = await stripe.createPaymentMethod({
+		type: `card`,
+		card: cardElement,
+	});
+
+	if (error) {
+		useSubscription.updateCardMessage(error.message ?? `An unknown error happened`);
+		isLoading.value = false;
+		return;
+	}
+
+	if (!paymentMethod) {
+		useSubscription.updateCardMessage(`Invalid payment method`);
+		isLoading.value = false;
+		return;
+	}
+
+	await submitPayment(paymentMethod);
+	isLoading.value = false;
+}
+
+function closePopup() {
+	emit(`close`);
+	payAmount.value = null;
+	useSubscription.updateCardMessage(``);
+}
+
 onMounted(() => {
 	usePayments.fetchPaymentProfile(props.author.id).then(() => {
 		initializeProfile();
@@ -287,7 +328,7 @@ onMounted(() => {
 <template>
 	<div
 		class="bg-darkBG dark:bg-gray5 modal-animation fixed top-0 bottom-0 left-0 right-0 z-30 flex h-screen w-full items-center justify-center bg-opacity-50 dark:bg-opacity-50"
-		@click.self="$emit(`close`)"
+		@click.self="closePopup"
 	>
 		<!-- Container -->
 		<section class="popup">
@@ -316,12 +357,12 @@ onMounted(() => {
 						</div>
 					</div>
 					<div v-else></div>
-					<button class="focus:outline-none bg-gray1 dark:bg-gray5 rounded-full p-1" @click="$emit(`close`)">
+					<button class="focus:outline-none bg-gray1 dark:bg-gray5 rounded-full p-1" @click="closePopup">
 						<CloseIcon />
 					</button>
 				</div>
 				<!-- Step 0: Enter amount -->
-				<article v-show="step === 0" class="modal-animation">
+				<article v-show="step === 0" class="modal-animation my-14">
 					<div class="w-full flex flex-col justify-center text-center px-10">
 						<input
 							v-model.number="payAmount"
@@ -473,7 +514,7 @@ onMounted(() => {
 							</h5>
 						</div>
 					</div>
-					<nuxt-img
+					<img
 						loading="lazy"
 						:src="
 							settings.$state.darkMode

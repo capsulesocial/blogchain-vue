@@ -189,12 +189,6 @@ onBeforeMount(async () => {
 	}
 });
 
-// watch(authorID, async () => {
-// 	if (process.env.NODE_ENV === 'production') {
-// 		await getShareableLink();
-// 	}
-// });
-
 onMounted(async () => {
 	try {
 		const nearUserInfo = await getUserInfoNEAR(authorID.value);
@@ -483,6 +477,7 @@ onMounted(async () => {
 			v-if="showDonations"
 			:author="profile"
 			:author-avatar="profile.avatar"
+			:is-subscribed="false"
 			@close="showDonations = false"
 		/>
 	</Teleport>
