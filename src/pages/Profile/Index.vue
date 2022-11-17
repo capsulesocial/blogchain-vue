@@ -391,14 +391,26 @@ onMounted(async () => {
 					<div v-if="!selfView && paymentsProfile.paymentsEnabled" class="header-profile flex-shrink-0 ml-2">
 						<SubscribeButton :is-subscribed="isActiveSub" :action="handleSubscription" />
 					</div>
-
-					<button
+					<!-- Donate button -->
+					<div
 						v-if="store.$state.id !== $route.params.id && paymentsProfile.paymentsEnabled"
-						class="focus:outline-none block rounded-lg bg-neutral hover:bg-opacity-75 rounded-lg px-5 text-sm font-semibold text-white shadow-sm border border-lightBorder transition duration-300 ease-in-out xl:flex flex-row items-center"
+						class="cursor-pointer ml-2"
 						@click="toggleDonation"
 					>
-						Donate
-					</button>
+						<!-- Desktop -->
+						<div
+							class="bg-neutral hover:bg-opacity-75 hidden rounded-lg px-5 text-sm font-semibold text-white shadow-sm border border-lightBorder transition duration-300 ease-in-out xl:flex flex-row items-center"
+							style="padding-top: 0.4rem; padding-bottom: 0.4rem"
+						>
+							<p class="place-self-center">Donate</p>
+						</div>
+						<!-- Mobile -->
+						<div
+							class="bg-neutral rounded-lg p-1 text-white shadow-sm border border-lightBorder transition duration-300 ease-in-out xl:hidden"
+						>
+							<p class="place-self-center">Donate</p>
+						</div>
+					</div>
 				</div>
 			</div>
 			<!-- Bio -->

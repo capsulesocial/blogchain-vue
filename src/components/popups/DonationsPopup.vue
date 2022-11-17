@@ -1,6 +1,15 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
-import { useStoreSettings } from '@/store/settings';
+
+import Avatar from '@/components/Avatar.vue';
+import SecondaryButton from '@/components/SecondaryButton.vue';
+import CloseIcon from '@/components/icons/XIcon.vue';
+import CrownIcon from '@/components/icons/CrownIcon.vue';
+import ChevronLeft from '@/components/icons/ChevronLeft.vue';
+import CreditCardIcon from '@/components/icons/CreditCard.vue';
+import AppleIcon from '@/components/icons/brands/Apple.vue';
+import GoogleIcon from '@/components/icons/brands/Google.vue';
+
 import { handleError, toastError } from '@/plugins/toast';
 import {
 	Stripe,
@@ -16,30 +25,20 @@ import {
 	getZeroDecimalAmount,
 	startStripeDonationPayment,
 } from '@/backend/payment';
-
-import Avatar from '@/components/Avatar.vue';
-import SecondaryButton from '@/components/SecondaryButton.vue';
-import CloseIcon from '@/components/icons/XIcon.vue';
-import CrownIcon from '@/components/icons/CrownIcon.vue';
-import ChevronLeft from '@/components/icons/ChevronLeft.vue';
-import CreditCardIcon from '@/components/icons/CreditCard.vue';
-import AppleIcon from '@/components/icons/brands/Apple.vue';
-import GoogleIcon from '@/components/icons/brands/Google.vue';
 import { Profile } from '@/backend/profile';
 import { stripePublishableKey } from '@/backend/utilities/config';
+import { HTMLInputEvent } from '@/interfaces/HTMLInputEvent';
 
 import { useSubscriptionStore } from '@/store/subscriptions';
 import { useStore } from '@/store/session';
 import { usePaymentsStore } from '@/store/paymentProfile';
-
-import { HTMLInputEvent } from '@/interfaces/HTMLInputEvent';
+import { useStoreSettings } from '@/store/settings';
 
 const store = useStore();
 const settings = useStoreSettings();
 const useSubscription = useSubscriptionStore();
 const usePayments = usePaymentsStore();
 
-// props
 const props = withDefaults(
 	defineProps<{
 		isSubscribed: boolean;
@@ -69,7 +68,6 @@ let elements: StripeElements | null = null;
 let cardElement: StripeCardElement | null = null;
 
 // methods
-
 function displayCurrency(currency: string) {
 	return getCurrencySymbol(currency);
 }
@@ -97,7 +95,7 @@ function initializeProfile() {
 }
 
 function previousStep() {
-	step.value = +1;
+	step.value -= 1;
 }
 
 async function stripeClient(connectId?: string): Promise<Stripe> {
@@ -212,6 +210,36 @@ async function _showPaymentButtons() {
 	});
 }
 
+async function submitCardPayment(e: HTMLInputEvent) {
+	isLoading.value = true;
+	e.preventDefault();
+	const stripe = await stripeClient();
+	if (!cardElement) {
+		isLoading.value = false;
+		throw new Error(`Card elements is not initialized`);
+	}
+
+	const { error, paymentMethod } = await stripe.createPaymentMethod({
+		type: `card`,
+		card: cardElement,
+	});
+
+	if (error) {
+		useSubscription.updateCardMessage(error.message ?? `An unknown error happened`);
+		isLoading.value = false;
+		return;
+	}
+
+	if (!paymentMethod) {
+		useSubscription.updateCardMessage(`Invalid payment method`);
+		isLoading.value = false;
+		return;
+	}
+
+	await submitPayment(paymentMethod);
+	isLoading.value = false;
+}
+
 async function submitPayment(paymentMethod: PaymentMethod): Promise<boolean> {
 	if (!payAmount.value) {
 		handleError(`Invalid amount`);
@@ -248,7 +276,6 @@ async function submitPayment(paymentMethod: PaymentMethod): Promise<boolean> {
 		return false;
 	}
 }
-
 async function handleAuthenticatedPayment(paymentAttemptId: string, clientSecret: string): Promise<boolean> {
 	const stripe = await stripeClient();
 	const { paymentIntent, error } = await stripe.confirmCardPayment(clientSecret);
@@ -274,42 +301,12 @@ async function confirmAuthenticatedPayment(paymentAttemptId: string, paymentInte
 			useSubscription.updateCardMessage(`This donation payment failed with an unknown error`);
 			return false;
 		}
-		step.value += 1;
+		step.value = 4;
 		return true;
 	} catch (err) {
 		useSubscription.updateCardMessage((err as Error).message ?? `Unknown error`);
 		return false;
 	}
-}
-
-async function submitCardPayment(e: HTMLInputEvent): Promise<void> {
-	isLoading.value = true;
-	e.preventDefault();
-	const stripe = await stripeClient();
-	if (!cardElement) {
-		isLoading.value = false;
-		throw new Error(`Card elements is not initialized`);
-	}
-
-	const { error, paymentMethod } = await stripe.createPaymentMethod({
-		type: `card`,
-		card: cardElement,
-	});
-
-	if (error) {
-		useSubscription.updateCardMessage(error.message ?? `An unknown error happened`);
-		isLoading.value = false;
-		return;
-	}
-
-	if (!paymentMethod) {
-		useSubscription.updateCardMessage(`Invalid payment method`);
-		isLoading.value = false;
-		return;
-	}
-
-	await submitPayment(paymentMethod);
-	isLoading.value = false;
 }
 
 function closePopup() {
@@ -389,7 +386,9 @@ onMounted(() => {
 						<h6 class="font-semibold text-neutral text-xl mb-2">Your order</h6>
 						<p class="text-base text-center text-gray5 dark:text-gray3 mb-2">
 							Donation to
-							<span class="font-semibold text-primary dark:text-secondary">{{ author.id }}</span>
+							<span class="font-semibold text-primary dark:text-secondary">{{
+								author.name ? author.name : `@${author.id}`
+							}}</span>
 						</p>
 						<div v-if="payAmount !== null" class="font-semibold text-lg mb-4 dark:text-darkPrimaryText">
 							{{ displayCurrency(paymentProfile.currency) }}{{ payAmount.toLocaleString() }}
