@@ -17,6 +17,7 @@ import BackButton from '@/components/icons/ChevronLeft.vue';
 import SecondaryButton from '@/components/SecondaryButton.vue';
 import FriendButton from '@/components/FriendButton.vue';
 import SubscribeButton from '@/components/subscriptions/SubscribeButton.vue';
+import DonateButton from '@/components/DonateButton.vue';
 import Avatar from '@/components/Avatar.vue';
 import SubscriptionsPopup from '@/components/popups/SubscriptionsPopup.vue';
 import ChangeTierPopup from '@/components/popups/ChangeTierPopup.vue';
@@ -27,6 +28,7 @@ import FollowingPopup from '@/components/popups/FollowingPopup.vue';
 import BioPopup from '@/components/popups/BioPopup.vue';
 import PencilIcon from '@/components/icons/Pencil.vue';
 import Image from '@/components/popups/Image.vue';
+import DonationsPopup from '@/components/popups/DonationsPopup.vue';
 
 const store = useStore();
 const settings = useStoreSettings();
@@ -68,6 +70,7 @@ const showChangeTier = ref(false);
 const friendlyUrl = ref(``);
 const isLeaving = ref(false);
 const realUrl = ref(``);
+const showDonations = ref(false);
 
 useMeta({
 	title: profile.value.name ? `${profile.value.name} -  Blogchain` : `@${authorID.value} -  Blogchain`,
@@ -101,12 +104,27 @@ function handleBack() {
 	}
 	router.go(-1);
 }
+
 function toggleEdit() {
 	showEditProfile.value = !showEditProfile.value;
 }
+
+function toggleDonation() {
+	if (store.$state.id === ``) {
+		rootStore.toggleUnauthPopup(true);
+		return;
+	}
+	if (authorID.value === store.$state.id) {
+		handleError(`You cannot donate to yourself`);
+		return;
+	}
+	showDonations.value = !showDonations.value;
+}
+
 function updateProfileMethod() {
 	store.updateFromProfile();
 }
+
 function getStyles(tab: string) {
 	let res = ``;
 	if (route.name === tab) {
@@ -171,12 +189,6 @@ onBeforeMount(async () => {
 		await getShareableLink();
 	}
 });
-
-// watch(authorID, async () => {
-// 	if (process.env.NODE_ENV === 'production') {
-// 		await getShareableLink();
-// 	}
-// });
 
 onMounted(async () => {
 	try {
@@ -380,6 +392,14 @@ onMounted(async () => {
 					<div v-if="!selfView && paymentsProfile.paymentsEnabled" class="header-profile flex-shrink-0 ml-2">
 						<SubscribeButton :is-subscribed="isActiveSub" :action="handleSubscription" />
 					</div>
+					<!-- Donate button -->
+					<div
+						v-if="store.$state.id !== $route.params.id && paymentsProfile.paymentsEnabled"
+						class="cursor-pointer ml-2"
+						@click="toggleDonation"
+					>
+						<DonateButton />
+					</div>
 				</div>
 			</div>
 			<!-- Bio -->
@@ -454,6 +474,13 @@ onMounted(async () => {
 		<FollowingPopup v-if="openFollowingPopup" @close="openFollowingPopup = false" />
 		<BioPopup v-if="expandBio" :id="authorID" @close="expandBio = false" />
 		<Image v-if="showAvatarPopup && profile.avatar" :image="profile.avatar" @close="showAvatarPopup = false" />
+		<DonationsPopup
+			v-if="showDonations"
+			:author="profile"
+			:author-avatar="profile.avatar"
+			:is-subscribed="false"
+			@close="showDonations = false"
+		/>
 	</Teleport>
 </template>
 
