@@ -17,6 +17,7 @@ import BackButton from '@/components/icons/ChevronLeft.vue';
 import SecondaryButton from '@/components/SecondaryButton.vue';
 import FriendButton from '@/components/FriendButton.vue';
 import SubscribeButton from '@/components/subscriptions/SubscribeButton.vue';
+import DonateButton from '@/components/DonateButton.vue';
 import Avatar from '@/components/Avatar.vue';
 import SubscriptionsPopup from '@/components/popups/SubscriptionsPopup.vue';
 import ChangeTierPopup from '@/components/popups/ChangeTierPopup.vue';
@@ -397,19 +398,7 @@ onMounted(async () => {
 						class="cursor-pointer ml-2"
 						@click="toggleDonation"
 					>
-						<!-- Desktop -->
-						<div
-							class="bg-neutral hover:bg-opacity-75 hidden rounded-lg px-5 text-sm font-semibold text-white shadow-sm border border-lightBorder transition duration-300 ease-in-out xl:flex flex-row items-center"
-							style="padding-top: 0.4rem; padding-bottom: 0.4rem"
-						>
-							<p class="place-self-center">Donate</p>
-						</div>
-						<!-- Mobile -->
-						<div
-							class="bg-neutral rounded-lg p-1 text-white shadow-sm border border-lightBorder transition duration-300 ease-in-out xl:hidden"
-						>
-							<p class="place-self-center">Donate</p>
-						</div>
+						<DonateButton />
 					</div>
 				</div>
 			</div>

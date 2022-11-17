@@ -360,7 +360,7 @@ onMounted(() => {
 				</div>
 				<!-- Step 0: Enter amount -->
 				<article v-show="step === 0" class="modal-animation my-14">
-					<div class="w-full flex flex-col justify-center text-center px-10">
+					<div class="w-full flex flex-col justify-center text-center lg:px-10">
 						<input
 							v-model.number="payAmount"
 							type="number"
