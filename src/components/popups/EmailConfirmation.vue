@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import CloseIcon from '@/components/icons/XIcon.vue';
-import CheckIcon from '@/components/icons/CheckCircleStaticIcon.vue';
+import CrownIcon from '@/components/icons/CrownIcon.vue';
 
 import { useStore } from '@/store/session';
 
@@ -32,16 +32,20 @@ const emit = defineEmits([`close`]);
 						<CloseIcon />
 					</button>
 				</div>
-				<div class="flex w-full flex-col items-center mt-24">
-					<CheckIcon />
-					<h1 class="py-4">
-						Hey {{ store.$state.name !== `` ? store.$state.name : `@${store.$state.id}` }} you're all setup!
+				<div class="flex w-full flex-col items-center mt-10">
+					<CrownIcon class="text-neutral stroke-neutral self-center w-12 h-12 mb-2" />
+					<h1 class="py-4 text-xl my-2">
+						Hey
+						<span class="font-semibold text-primary">{{
+							store.$state.name !== `` ? store.$state.name : `@${store.$state.id}`
+						}}</span>
+						you're all setup! 🎉
 					</h1>
 				</div>
 				<div class="flex w-full flex-col-reverse items-center">
-					<p class="text-gray5 dark:text-gray3 mb-5 text-sm text-center">
-						Your email {{ props.emailAddress }} has been confirmed and you will receive {{ props.authorName }}'s new
-						post in your inbox
+					<p class="text-gray5 dark:text-gray3 mb-5 text-center">
+						Your email <span class="text-primary font-semibold">{{ props.emailAddress }}</span> has been confirmed and
+						you will receive {{ `@${props.authorName}` }}'s new post in your inbox
 					</p>
 				</div>
 			</div>

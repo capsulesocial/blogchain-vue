@@ -103,11 +103,8 @@ function nextStep(selectTier: SubscriptionTier, selectPeriod: string) {
 							:size="`w-14 h-14`"
 						/>
 						<div class="flex flex-col ml-4">
-							<h4 v-if="author.name !== ``" class="text-xl font-semibold dark:text-darkPrimaryText">
-								{{ author.name }}
-							</h4>
-							<h4 v-else class="text-xl font-semibold text-gray5 dark:text-gray3">
-								{{ author.id }}
+							<h4 class="text-xl font-semibold dark:text-darkPrimaryText">
+								{{ author.name !== `` ? author.name : author.id }}
 							</h4>
 							<h5 class="text-lg text-primary dark:text-secondary">@{{ author.id }}</h5>
 						</div>
