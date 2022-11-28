@@ -1,18 +1,20 @@
 <script setup lang="ts">
-import TagsWidget from '@/components/widgets/TagsWidget.vue';
-import FollowersWidget from '@/components/widgets/FollowersWidget.vue';
-import DraftsWidget from '@/components/widgets/DraftsWidget.vue';
-import BookmarksWidget from '@/components/widgets/BookmarksWidget.vue';
-import XIcon from '@/components/icons/CloseIcon.vue';
-import CheckCircle from '@/components/icons/CheckCircle.vue';
-import PencilIcon from '@/components/icons/Pencil.vue';
-import BookmarksIcon from '@/components/icons/Bookmarks.vue';
+import { defineAsyncComponent } from 'vue';
 
 import { ref } from 'vue';
 import { useStoreSettings } from '@/store/settings';
 import { storeToRefs } from 'pinia';
 import { useStore } from '@/store/session';
 import { useRootStore } from '@/store/index';
+
+const TagsWidget = defineAsyncComponent(() => import('@/components/widgets/TagsWidget.vue'));
+const FollowersWidget = defineAsyncComponent(() => import('@/components/widgets/FollowersWidget.vue'));
+const DraftsWidget = defineAsyncComponent(() => import('@/components/widgets/DraftsWidget.vue'));
+const BookmarksWidget = defineAsyncComponent(() => import('@/components/widgets/BookmarksWidget.vue'));
+const XIcon = defineAsyncComponent(() => import('@/components/icons/CloseIcon.vue'));
+const CheckCircle = defineAsyncComponent(() => import('@/components/icons/CheckCircle.vue'));
+const PencilIcon = defineAsyncComponent(() => import('@/components/icons/Pencil.vue'));
+const BookmarksIcon = defineAsyncComponent(() => import('@/components/icons/Bookmarks.vue'));
 
 const store = useStore();
 const rootStore = useRootStore();

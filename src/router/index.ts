@@ -1,31 +1,32 @@
 import { createWebHistory, createRouter } from 'vue-router';
-import Index from '@/pages/Index.vue';
-import Home from '@/pages/Home.vue';
-import Discover from '@/pages/Discover/Index.vue';
-import Bookmarks from '@/pages/Bookmarks.vue';
-import PostEditor from '@/pages/Post/Editor.vue';
-import PostReader from '@/pages/Post/Reader.vue';
-import Login from '@/pages/Login.vue';
-import Register from '@/pages/Register.vue';
-import Category from '@/pages/Discover/Category.vue';
-import Profile from '@/pages/Profile/Index.vue';
-import Posts from '@/pages/Profile/Posts.vue';
-import Comments from '@/pages/Profile/Comments.vue';
-import Reposts from '@/pages/Profile/Reposts.vue';
-import Tag from '@/pages/Tag.vue';
-import Help from '@/pages/Help.vue';
-import Subscriptions from '@/pages/Subscriptions.vue';
-import Settings from '@/pages/Settings/Index.vue';
-import SettingsNetwork from '@/pages/Settings/Network.vue';
-import SettingsSecurity from '@/pages/Settings/Security.vue';
-import SettingsStyling from '@/pages/Settings/Styling.vue';
-import SettingsAccount from '@/pages/Settings/Account.vue';
-import SettingsHome from '@/pages/Settings/Nav.vue';
-import Notifications from '@/pages/Settings/Notifications.vue';
-import PaymentPolicy from '@/pages/PaymentPolicy.vue';
-import ContentPolicy from '@/pages/ContentPolicy.vue';
-import NotFound from '@/pages/404.vue';
 import { useStore } from '@/store/session';
+
+const Index = () => import('@/pages/Index.vue');
+const Home = () => import('@/pages/Home.vue');
+const Discover = () => import('@/pages/Discover/Index.vue');
+const Bookmarks = () => import('@/pages/Bookmarks.vue');
+const PostEditor = () => import('@/pages/Post/Editor.vue');
+const PostReader = () => import('@/pages/Post/Reader.vue');
+const Login = () => import('@/pages/Login.vue');
+const Register = () => import('@/pages/Register.vue');
+const Category = () => import('@/pages/Discover/Category.vue');
+const Profile = () => import('@/pages/Profile/Index.vue');
+const Posts = () => import('@/pages/Profile/Posts.vue');
+const Comments = () => import('@/pages/Profile/Comments.vue');
+const Reposts = () => import('@/pages/Profile/Reposts.vue');
+const Tag = () => import('@/pages/Tag.vue');
+const Help = () => import('@/pages/Help.vue');
+const Subscriptions = () => import('@/pages/Subscriptions.vue');
+const Settings = () => import('@/pages/Settings/Index.vue');
+const SettingsNetwork = () => import('@/pages/Settings/Network.vue');
+const SettingsSecurity = () => import('@/pages/Settings/Security.vue');
+const SettingsStyling = () => import('@/pages/Settings/Styling.vue');
+const SettingsAccount = () => import('@/pages/Settings/Account.vue');
+const SettingsHome = () => import('@/pages/Settings/Nav.vue');
+const Notifications = () => import('@/pages/Settings/Notifications.vue');
+const PaymentPolicy = () => import('@/pages/PaymentPolicy.vue');
+const ContentPolicy = () => import('@/pages/ContentPolicy.vue');
+const NotFound = () => import('@/pages/404.vue');
 
 const routes = [
 	{
