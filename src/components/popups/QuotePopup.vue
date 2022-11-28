@@ -36,8 +36,8 @@ const props = withDefaults(
 		subtitle: undefined,
 	},
 );
-const quoteContent = ref<string>(``);
-const replyInputHeight = ref<number>(64);
+const quoteContent = ref(``);
+const replyInputHeight = ref(64);
 
 async function handleSendRepost() {
 	if (quoteContent.value === ``) {

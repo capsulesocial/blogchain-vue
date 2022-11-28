@@ -16,7 +16,7 @@ const props = withDefaults(
 );
 
 const settings = useStoreSettings();
-const showFilter = ref<boolean>(false);
+const showFilter = ref(false);
 const feeling = ref<EmotionCategories>(`positive`);
 
 function setCommentFilterFeeling(input: EmotionCategories) {

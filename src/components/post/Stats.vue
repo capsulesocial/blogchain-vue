@@ -29,9 +29,9 @@ interface FaceStat {
 const settings = useStoreSettings();
 const commentsStore = useCommentsStore();
 const facePercentage = ref<FaceStat[]>([]);
-const page = ref<number>(0);
-const showReposters = ref<boolean>(false);
-const showQuotes = ref<boolean>(false);
+const page = ref(0);
+const showReposters = ref(false);
+const showQuotes = ref(false);
 const commentsStats = computed(() => commentsStore.getCommentStats(props.id));
 
 async function updateCommentsStats() {

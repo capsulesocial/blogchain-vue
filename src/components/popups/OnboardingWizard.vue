@@ -14,7 +14,7 @@ const store = useStore();
 const route = useRoute();
 const rootStore = useRootStore();
 const profileStore = useProfilesStore();
-const step = ref<number>(0);
+const step = ref(0);
 const myProfile = computed(() => profileStore.getProfile(store.$state.id));
 const myAvatar = ref<string | ArrayBuffer | null>(null);
 const settings = ref<any>();

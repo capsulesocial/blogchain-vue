@@ -214,7 +214,7 @@ defineExpose({ updateFromProfile });
 					id="bio"
 					:maxlength="maxCharBio"
 					:value="bio"
-					:placeholder="`Display Blogchain Bio`"
+					:placeholder="`Enter your Blogchain bio`"
 					class="bg-gray1 dark:bg-gray7 dark:text-darkPrimaryText placeholder-gray5 dark:placeholder-gray3 focus:outline-none w-full rounded-lg px-2 py-1 text-black"
 					@input="bio = ($event.target as HTMLInputElement).value"
 					@keyup="checkBio()"
@@ -229,7 +229,7 @@ defineExpose({ updateFromProfile });
 				id="location"
 				v-model="location"
 				type="text"
-				:placeholder="`Display your location`"
+				:placeholder="`Enter your location`"
 				class="bg-gray1 dark:bg-gray7 dark:text-darkPrimaryText placeholder-gray5 dark:placeholder-gray3 focus:outline-none flex-grow rounded-lg px-2 py-1 text-black"
 			/>
 		</div>
@@ -240,7 +240,7 @@ defineExpose({ updateFromProfile });
 				id="website"
 				v-model="website"
 				type="text"
-				:placeholder="`Display a website`"
+				:placeholder="`Enter your website`"
 				class="bg-gray1 dark:bg-gray7 dark:text-darkPrimaryText placeholder-gray5 dark:placeholder-gray3 focus:outline-none flex-grow rounded-lg px-2 py-1 text-black"
 			/>
 		</div>
@@ -251,7 +251,7 @@ defineExpose({ updateFromProfile });
 				id="newEmail"
 				v-model="newEmail"
 				type="email"
-				:placeholder="`Display a contact email`"
+				:placeholder="`Enter your email address`"
 				class="bg-gray1 dark:bg-gray7 dark:text-darkPrimaryText placeholder-gray5 dark:placeholder-gray3 focus:outline-none flex-grow rounded-lg px-2 py-1 text-black"
 			/>
 		</div>

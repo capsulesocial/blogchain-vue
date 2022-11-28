@@ -29,9 +29,9 @@ const commentsStore = useCommentsStore();
 const store = useStore();
 const settings = useStoreSettings();
 const profilesStore = useProfilesStore();
-const showDelete = ref<boolean>(false);
-const showProfileCard = ref<boolean>(false);
-const hasEntered = ref<boolean>(false);
+const showDelete = ref(false);
+const showProfileCard = ref(false);
+const hasEntered = ref(false);
 
 const props = withDefaults(
 	defineProps<{

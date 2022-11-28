@@ -72,7 +72,7 @@ function toggleDiscover() {
 				</div>
 				<article v-if="followingList.size == 0" class="mt-24 grid justify-items-center px-10 xl:px-0">
 					<p class="text-gray5 dark:text-gray3 mb-5 text-center text-sm">
-						<span v-if="$route.name === `home` || authorID === store.$state.id">
+						<span v-if="$route.name === `Home` || authorID === store.$state.id">
 							It seems you aren't following anyone yet!
 						</span>
 						<span v-else-if="profile.name !== ``"> It looks like {{ profile.name }} isn't following anyone yet! </span>

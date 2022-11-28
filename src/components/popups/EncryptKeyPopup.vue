@@ -6,8 +6,8 @@ import EyeIcon from '@/components/icons/PreviewIcon.vue';
 
 const emit = defineEmits([`close`, `encrypt`]);
 
-const seePassword = ref<boolean>(false);
-const encryptedPassword = ref<string>(``);
+const seePassword = ref(false);
+const encryptedPassword = ref(``);
 const passwordInput = ref<HTMLInputElement>();
 
 function handleEncryption() {

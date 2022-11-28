@@ -7,7 +7,7 @@ import CloseIcon from '@/components/icons/CloseIcon.vue';
 const settings = useStoreSettings();
 const emit = defineEmits([`close`]);
 
-const showInfoBubble = ref<boolean>(false);
+const showInfoBubble = ref(false);
 </script>
 <template>
 	<div

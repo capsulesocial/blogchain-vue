@@ -28,11 +28,11 @@ const props = withDefaults(
 
 const store = useStore();
 const usePayment = usePaymentsStore();
-const step = ref<number>(0);
+const step = ref(0);
 const selectedTier = ref<SubscriptionTier>(props.toPreSelectTier);
-const selectedPeriod = ref<string>(`month`);
+const selectedPeriod = ref(`month`);
 const paymentProfile = computed(() => usePayment.paymentProfile(props.author.id));
-const canSwitchTier = ref<boolean>(true);
+const canSwitchTier = ref(true);
 
 defineEmits([`close`]);
 

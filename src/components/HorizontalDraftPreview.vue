@@ -18,7 +18,7 @@ const props = defineProps<{
 
 const settings = useStoreSettings();
 const draftStore = useDraftStore();
-const featuredPhoto = ref<any>();
+const featuredPhoto = ref<string | HTMLImageElement | ArrayBuffer>();
 const inWidget = ref(true);
 const delayActiveDraft = ref(false);
 const showDelete = ref(false);
