@@ -17,6 +17,7 @@ const connectionsStore = useConnectionsStore();
 const rootStore = useRootStore();
 
 const isFollowing = computed(() => connectionsStore.getFollowStatus(store.id, props.authorid));
+const checkFollow = computed(() => connectionsStore.getFollowingStatus(store.id, props.authorid));
 
 function handleFollowUnfollow() {
 	if (store.$state.id === ``) {
@@ -51,7 +52,7 @@ function handleFollowUnfollow() {
 			<span
 				class="bg-darkBG hover:bg-opacity-75 hidden rounded-lg px-5 text-sm font-semibold text-lightOnPrimaryText shadow-sm border border-lightBorder dark:border-gray7 transition duration-300 ease-in-out xl:block"
 				style="padding-top: 0.4rem; padding-bottom: 0.4rem"
-				>Follow</span
+				>{{ checkFollow ? `Follow back` : `Follow` }}</span
 			>
 			<!-- Mobile -->
 			<div

@@ -28,6 +28,13 @@ export const useConnectionsStore = defineStore(`connections`, {
 			const myFollowing = state.profiles.get(me)?.following;
 			return myFollowing?.has(them);
 		},
+		getFollowingStatus: (state: Connections) => (me: string, them: string) => {
+			if (me === ``) {
+				return false;
+			}
+			const checkFollowing = state.profiles.get(them)?.following?.has(me);
+			return checkFollowing;
+		},
 		getConnections: (state: Connections) => (id: string) => {
 			return state.profiles.get(id);
 		},
