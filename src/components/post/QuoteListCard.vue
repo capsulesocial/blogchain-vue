@@ -28,7 +28,7 @@ const postsStore = usePostsStore();
 const settings = useStoreSettings();
 const profile = computed(() => profileStore.getProfile(props.authorid));
 const content = ref<string | undefined>();
-const showDelete = ref<boolean>(false);
+const showDelete = ref(false);
 
 function openDeleteDropdown() {
 	showDelete.value = true;

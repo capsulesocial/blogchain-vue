@@ -52,12 +52,12 @@ const selectedPeriod = computed(() => useSubscription.$state.selectedPeriod);
 const cardErrorMessage = computed(() => useSubscription.$state.cardErrorMessage);
 const saveEmail = computed(() => useSubscription.$state.saveEmail);
 const paymentProfile = computed(() => usePayments.paymentProfile(props.author.id));
-const customerEmail = ref<string>(``);
+const customerEmail = ref(``);
 const displayButtons = ref({
 	applePay: false,
 	googlePay: false,
 });
-const isLoading = ref<boolean>(false);
+const isLoading = ref(false);
 const userIsFollowed = computed(() => connectionsStore.getFollowStatus(store.id, props.author.id));
 let paymentRequest: PaymentRequest | null = null;
 let elements: StripeElements | null = null;

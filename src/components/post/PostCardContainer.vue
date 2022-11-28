@@ -24,7 +24,7 @@ const props = withDefaults(
 const postsStore = usePostsStore();
 const store = useStore();
 
-const isDeleted = ref<boolean>(false);
+const isDeleted = ref(false);
 async function deletePost() {
 	try {
 		await postsStore.removePost(props.fetchedPost.post._id, store.$state.id);

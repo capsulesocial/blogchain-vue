@@ -18,7 +18,7 @@ const props = withDefaults(
 	{},
 );
 
-const filter = ref<string>(``);
+const filter = ref(``);
 const canComment = ref(true);
 const commentsStore = useCommentsStore();
 const store = useStore();

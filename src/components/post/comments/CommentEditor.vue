@@ -25,11 +25,11 @@ const props = withDefaults(
 	{},
 );
 
-const showEmotions = ref<boolean>(false);
+const showEmotions = ref(false);
 const selectedEmotionColor = ref<EmotionCategories | `neutralLightest`>(`neutralLightest`);
 const selectedEmotion = ref<IFace | null>(null);
 const activeEmotion = ref<IFace | null>(null);
-const comment = ref<string>(``);
+const comment = ref(``);
 const commentsStats = computed(() => commentsStore.getCommentStats(props.parentcid));
 
 function sleep(ms: any) {

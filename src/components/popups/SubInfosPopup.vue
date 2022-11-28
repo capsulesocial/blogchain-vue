@@ -28,9 +28,9 @@ const store = useStore();
 const useSubscription = useSubscriptionStore();
 const usePayment = usePaymentsStore();
 const transactions = ref<SubsTransaction[]>([]);
-const showAlert = ref<boolean>(false);
+const showAlert = ref(false);
 const paymentProfile = ref<PaymentProfile>();
-const currency = ref<string>(getCurrencySymbol(props.sub.currency));
+const currency = ref(getCurrencySymbol(props.sub.currency));
 
 const emit = defineEmits(['close', 'switchPopup']);
 

@@ -24,7 +24,7 @@ const rootStore = useRootStore();
 const isReposted = ref<boolean>(props.repost !== undefined);
 const repostsCount = ref<number>(props.repostCount);
 const repostCID = ref<string | undefined>(props.repost);
-const repostDropdown = ref<boolean>(false);
+const repostDropdown = ref(false);
 
 async function toggleRepost() {
 	// undo repost

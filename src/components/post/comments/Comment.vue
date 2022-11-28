@@ -32,12 +32,12 @@ const props = defineProps<{
 	parentauthorid?: string;
 }>();
 // comment
-const showLabel = ref<boolean>(false);
+const showLabel = ref(false);
 
-const showReplies = ref<boolean>(false);
-const showDelete = ref<boolean>(false);
-const commentDeleted = ref<boolean>(false);
-const content = ref<string>('');
+const showReplies = ref(false);
+const showDelete = ref(false);
+const commentDeleted = ref(false);
+const content = ref('');
 const replies = computed(() => commentsStore.getCommentsOfPost(props.cid));
 const author = computed(() => {
 	if (typeof props.authorid !== `string`) {
@@ -47,8 +47,8 @@ const author = computed(() => {
 });
 
 // replies
-const reply = ref<string>(``);
-const replyInputHeight = ref<number>(64);
+const reply = ref(``);
+const replyInputHeight = ref(64);
 
 function handleResize(e: any) {
 	if (e.srcElement.clientHeight !== e.srcElement.scrollHeight) {

@@ -16,7 +16,7 @@ const props = withDefaults(
 	{},
 );
 
-const isLoading = ref<boolean>(true);
+const isLoading = ref(true);
 const reposts = ref<IRepostResponse[]>([]);
 
 onMounted(async () => {

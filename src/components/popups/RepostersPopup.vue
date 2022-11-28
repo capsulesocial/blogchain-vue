@@ -18,7 +18,7 @@ const props = withDefaults(
 	{},
 );
 
-const isLoading = ref<boolean>(true);
+const isLoading = ref(true);
 const reposters = ref<Array<string>>([]);
 const repostersProfiles = ref<Array<Profile>>([]);
 

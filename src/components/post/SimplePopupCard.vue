@@ -29,7 +29,7 @@ const emit = defineEmits([`close`, `delete`]);
 const store = useStore();
 const settings = useStoreSettings();
 const profilesStore = useProfilesStore();
-const showDelete = ref<boolean>(false);
+const showDelete = ref(false);
 
 // Get profile of authorID
 const author = computed(() => profilesStore.getProfile(props.fetchedPost.post.authorID));

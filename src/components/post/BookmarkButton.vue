@@ -17,7 +17,7 @@ const postsStore = usePostsStore();
 const store = useStore();
 const rootStore = useRootStore();
 
-const isBookmarked = ref<boolean>(props.hasBookmark);
+const isBookmarked = ref(props.hasBookmark);
 
 const handleBookmark = async () => {
 	if (store.$state.id === ``) {

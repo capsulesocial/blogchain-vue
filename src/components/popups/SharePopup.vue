@@ -30,13 +30,13 @@ const props = withDefaults(
 	{},
 );
 
-const image = ref<string>(``);
+const image = ref(``);
 
-const isOpen1 = ref<boolean>(false);
-const isLoading = ref<boolean>(true);
+const isOpen1 = ref(false);
+const isLoading = ref(true);
 
-const generatedDirectLink = ref<string>(``);
-const generatedBlogchainLink = ref<string>(``);
+const generatedDirectLink = ref(``);
+const generatedBlogchainLink = ref(``);
 
 function toggleAccordion1() {
 	isOpen1.value = !isOpen1.value;

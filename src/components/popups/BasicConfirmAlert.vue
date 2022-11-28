@@ -9,7 +9,7 @@ withDefaults(
 );
 
 defineEmits(['close', 'confirm']);
-const showInfoBubble = ref<boolean>(false);
+const showInfoBubble = ref(false);
 </script>
 
 <template>
