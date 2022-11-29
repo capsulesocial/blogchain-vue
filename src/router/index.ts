@@ -2,7 +2,7 @@ import { createWebHistory, createRouter } from 'vue-router';
 import { useStore } from '@/store/session';
 
 const Index = () => import('@/pages/Index.vue');
-const Home = () => import('@/pages/Home.vue');
+import Home from '@/pages/Home.vue';
 const Discover = () => import('@/pages/Discover/Index.vue');
 const Bookmarks = () => import('@/pages/Bookmarks.vue');
 const PostEditor = () => import('@/pages/Post/Editor.vue');
