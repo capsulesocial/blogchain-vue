@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import TopHeader from './components/TopHeader.vue';
-import WidgetsContainer from './components/WidgetsContainer.vue';
+import { defineAsyncComponent } from 'vue';
+
 import '@/assets/css/tailwind.css';
 import '@/assets/css/quill.css';
-import TitleContainer from './components/TitleContainer.vue';
-import UnauthPopup from '@/components/popups/UnauthPopup.vue';
 
 import { useStore } from './store/session';
 import { useStoreSettings } from './store/settings';
@@ -20,6 +18,11 @@ import { watch, computed } from 'vue';
 import { nextTick } from 'process';
 import { useProfilesStore } from '@/store/profiles';
 import { useDraftStore } from './store/drafts';
+
+const TopHeader = defineAsyncComponent(() => import('./components/TopHeader.vue'));
+const WidgetsContainer = defineAsyncComponent(() => import('./components/WidgetsContainer.vue'));
+const TitleContainer = defineAsyncComponent(() => import('./components/TitleContainer.vue'));
+const UnauthPopup = defineAsyncComponent(() => import('@/components/popups/UnauthPopup.vue'));
 
 const router = useRouter();
 const store = useStore();

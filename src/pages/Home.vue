@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, defineAsyncComponent } from 'vue';
 import { storeToRefs } from 'pinia';
 import { usePostsStore } from '@/store/posts';
 import { useRootStore } from '@/store/index';
@@ -8,15 +8,15 @@ import { useConnectionsStore } from '@/store/connections';
 import { useStoreSettings } from '@/store/settings';
 import { useRoute } from 'vue-router';
 
-import ChevronUp from '@/components/icons/ChevronUp.vue';
-import ChevronDown from '@/components/icons/ChevronDown.vue';
-import PostCardContainer from '@/components/post/PostCardContainer.vue';
-import OnboardingWizard from '@/components/popups/OnboardingWizard.vue';
-import BrandedButton from '@/components/BrandedButton.vue';
-import ReloadIcon from '@/components/icons/ReloadIcon.vue';
-import Editor from '@/pages/Post/Editor.vue';
-
 import { Algorithm, Timeframe, readableTimeframe, IGenericPostResponse } from '@/backend/post';
+
+import PostCardContainer from '@/components/post/PostCardContainer.vue';
+const ChevronUp = defineAsyncComponent(() => import('@/components/icons/ChevronUp.vue'));
+const ChevronDown = defineAsyncComponent(() => import('@/components/icons/ChevronDown.vue'));
+const OnboardingWizard = defineAsyncComponent(() => import('@/components/popups/OnboardingWizard.vue'));
+const BrandedButton = defineAsyncComponent(() => import('@/components/BrandedButton.vue'));
+const ReloadIcon = defineAsyncComponent(() => import('@/components/icons/ReloadIcon.vue'));
+const Editor = defineAsyncComponent(() => import('@/pages/Post/Editor.vue'));
 
 const postsStore = usePostsStore();
 const rootStore = useRootStore();
