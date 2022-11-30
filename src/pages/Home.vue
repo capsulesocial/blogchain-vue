@@ -10,9 +10,9 @@ import { useRoute } from 'vue-router';
 
 import { Algorithm, Timeframe, readableTimeframe, IGenericPostResponse } from '@/backend/post';
 
+import PostCardContainer from '@/components/post/PostCardContainer.vue';
 const ChevronUp = defineAsyncComponent(() => import('@/components/icons/ChevronUp.vue'));
 const ChevronDown = defineAsyncComponent(() => import('@/components/icons/ChevronDown.vue'));
-const PostCardContainer = defineAsyncComponent(() => import('@/components/post/PostCardContainer.vue'));
 const OnboardingWizard = defineAsyncComponent(() => import('@/components/popups/OnboardingWizard.vue'));
 const BrandedButton = defineAsyncComponent(() => import('@/components/BrandedButton.vue'));
 const ReloadIcon = defineAsyncComponent(() => import('@/components/icons/ReloadIcon.vue'));
