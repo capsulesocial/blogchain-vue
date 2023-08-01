@@ -20,6 +20,7 @@ import { watch, computed } from 'vue';
 import { nextTick } from 'process';
 import { useProfilesStore } from '@/store/profiles';
 import { useDraftStore } from './store/drafts';
+import ChirpEditor from './components/popups/ChirpEditor.vue';
 
 const router = useRouter();
 const store = useStore();
@@ -145,6 +146,7 @@ watch(router.currentRoute, () => {
 		</div>
 	</main>
 	<UnauthPopup v-if="rootStore.$state.showUnauthPopup" />
+	<ChirpEditor v-if="draftStore.$state.composeChirp" />
 	<div id="popup"></div>
 </template>
 

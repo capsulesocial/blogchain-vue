@@ -222,17 +222,24 @@ onBeforeMount(() => {
 			<div class="mt-4 flex flex-col justify-between xl:flex-row">
 				<!-- Left side: Title, subtitle / preview, tags -->
 				<div class="mr-4 flex w-full flex-col justify-between">
+					<!-- Regular post -->
 					<div class="cursor-pointer" @click="handlePostRedirect">
-						<div class="flex max-w-full flex-col overflow-hidden pr-4">
+						<!-- Short post -->
+						<!-- TODO: Check if short post -->
+						<div v-if="true" class="flex max-w-full flex-col overflow-hidden pr-4">
+							<div class="break-words pb-2 text-lg font-semibold dark:text-darkPrimaryText">tweet style goes here</div>
+						</div>
+						<!-- Long post -->
+						<div v-else class="flex max-w-full flex-col overflow-hidden pr-4">
 							<div class="flex flex-row w-full justify-between">
 								<h3 class="break-words pb-2 text-lg font-semibold dark:text-darkPrimaryText">
-									{{ fetchedPost.post.title
-									}}<CrownIcon v-if="fetchedPost.post.encrypted" class="ml-2 inline text-neutral w-5 h-5 -mt-1" />
+									{{ fetchedPost?.post.title
+									}}<CrownIcon v-if="fetchedPost?.post.encrypted" class="ml-2 inline text-neutral w-5 h-5 -mt-1" />
 								</h3>
 							</div>
 							<h6 class="break-words text-lightSecondaryText dark:text-darkSecondaryText">
 								{{
-									fetchedPost.post.subtitle ? fetchedPost.post.subtitle : createPostExcerpt(fetchedPost.post.excerpt)
+									fetchedPost?.post.subtitle ? fetchedPost?.post.subtitle : createPostExcerpt(fetchedPost?.post.excerpt)
 								}}
 							</h6>
 						</div>

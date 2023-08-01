@@ -102,6 +102,7 @@ export function qualityFeaturedPhotoCaption(featuredPhotoCaption: string): Check
 	return { success: true };
 }
 export function qualityTags(tag: string, tags?: Array<any>): CheckResult {
+	console.log(tag, tags);
 	if (tag.trim().length < textLimits.post_tag.min) {
 		return { error: `Tag length cannot be less than ${textLimits.post_tag.min} characters` };
 	}
